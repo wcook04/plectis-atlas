@@ -1,0 +1,30 @@
+name: upstream
+# Follow openai/math: when it changes (new results, withdrawals, repairs,
+# formalisations), rebuild the data and open a pull request for review.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch the latest upstream commit
+        run: sh scripts/fetch_upstream.sh --latest "$RUNNER_TEMP/openai-math"
+      - name: Rebuild data and README
+        run: |
+          python3 scripts/build_data.py --upstream "$RUNNER_TEMP/openai-math" --quiet
+          python3 scripts/sync_readme.py
+      - uses: peter-evans/create-pull-request@v6
+        with:
+          branch: upstream-bump
+          title: "Follow openai/math to its latest commit"
+          commit-message: "Follow openai/math to its latest commit"
+          body: "Automated: rebuilds data/ and the README numbers from the latest openai/math commit. Review history.md changes (withdrawals, repairs) before merging."

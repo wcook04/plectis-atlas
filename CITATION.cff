@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use the atlas or its dataset, please cite it as below."
+title: "OpenAI Math Atlas: a reader's atlas to the openai/math collection"
+authors:
+  - family-names: "Cook"
+    given-names: "Will"
+repository-code: "https://github.com/wcook04/openai-math-atlas"
+url: "https://wcook04.github.io/openai-math-atlas/"
+license: Apache-2.0
+type: dataset
+keywords:
+  - mathematics
+  - Lean
+  - formal verification
+  - exposition
+  - AI-generated mathematics

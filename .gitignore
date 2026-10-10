@@ -1,0 +1,6 @@
+.private/
+__pycache__/
+*.pyc
+.DS_Store
+/upstream/
+/site/_build/

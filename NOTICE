@@ -1,0 +1,16 @@
+OpenAI Math Atlas
+Copyright 2026 Will Cook and contributors
+
+This repository is independent and is not affiliated with or endorsed by OpenAI.
+
+It quotes and indexes material from the OpenAI mathematics collection,
+https://github.com/openai/math, Copyright OpenAI, licensed under the Apache
+License, Version 2.0. Quoted titles, abstracts, theorem statements, Lean
+statement files and scope notes are reproduced from the commit recorded in
+upstream.json, with links to their source files.
+
+Code, generated data and documentation in this repository are licensed under
+the Apache License, Version 2.0 (LICENSE). Explanations contributed under
+contributions/explanations/ are licensed under the Creative Commons
+Attribution 4.0 International licence (LICENSES/CC-BY-4.0.txt), and their
+authors are credited by name.

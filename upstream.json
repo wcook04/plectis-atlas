@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/openai/math",
+  "commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+  "license": "Apache-2.0",
+  "note": "The atlas reads a pinned checkout of the upstream collection. Bump the commit with scripts/fetch_upstream.sh and rebuild."
+}

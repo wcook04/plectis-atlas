@@ -1,0 +1,448 @@
+{
+ "upstream": {
+  "repository": "https://github.com/openai/math",
+  "commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+  "commit_date": "2026-10-07T22:20:00-07:00",
+  "formalization_yaml_review_status": "unchecked",
+  "formalization_yaml_sections": [
+   "version",
+   "project",
+   "sources",
+   "related_formalizations",
+   "status",
+   "automation",
+   "review",
+   "acknowledgements"
+  ]
+ },
+ "upstream_reported": {
+  "top_line_results_formalized": {
+   "formalized": 300,
+   "of": 719,
+   "percent": 42,
+   "source": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/history.md",
+   "quote": "top-line results formalized to 300 / 719 = ~42%"
+  },
+  "catalogue": {
+   "manuscripts": 719,
+   "families": 372,
+   "source": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/README.md",
+   "quote": "719 manuscripts organized into 372 families"
+  },
+  "problems_posed": {
+   "approximately": 4000,
+   "source": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/README.md",
+   "quote": "posed approximately 4,000 problems"
+  }
+ },
+ "families": 372,
+ "disciplines": 17,
+ "manuscripts_current": 719,
+ "manuscripts_withdrawn": 3,
+ "manuscripts_previous_editions": 27,
+ "manuscripts_other": [],
+ "manuscripts_tex_unparsed": [
+  "Algebraicity-of-Kuga-Satake-Correspondences-for-K3-Surfaces-October-3-2026",
+  "Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026",
+  "The-rational-Hodge-conjecture-for-products-of-K3-surfaces-October-4-2026"
+ ],
+ "statements_lean": 416,
+ "statements_lean_main_results": 189,
+ "main_result_declarations": 200,
+ "families_with_lean": 242,
+ "manuscripts_with_lean": 339,
+ "lean_statements_pure_mathlib": 10,
+ "lean_statements_with_custom_vocabulary": 405,
+ "lean_statements_importing_non_mathlib": 2,
+ "lean_statements_declaring_axioms": 1,
+ "lean_vocabulary_max": 1212,
+ "lean_vocabulary_max_statement": "EditApproximation",
+ "lean_vocabulary_median": 13,
+ "lean_statements_declaring_axioms_ids": [
+  "HarmonicGrowth"
+ ],
+ "lean_statements_pure_mathlib_ids": [
+  "AbhyankarSathaye",
+  "Catalan",
+  "DirichletSevenEighths",
+  "FalconerAllDimensions",
+  "KaplanskyFinitelyPresented",
+  "OstmannPrimes",
+  "PiExponent",
+  "QuasiRiemannHypothesis",
+  "SiegelZeros",
+  "SurfaceConeCandidateSupport"
+ ],
+ "lean_vocabulary_total": 10828,
+ "paper_statement_environments": {
+  "claim": 14,
+  "corollary": 1267,
+  "definition": 555,
+  "hypothesis": 21,
+  "lemma": 12397,
+  "proposition": 4745,
+  "question": 1,
+  "remark": 583,
+  "theorem": 2255
+ },
+ "internal_citation_edges": 578,
+ "manuscripts_citing_collection": 380,
+ "manuscripts_citing_withdrawn": [],
+ "manuscripts_citing_superseded_editions": [],
+ "manuscripts_citing_unformalised_collection_results": 213,
+ "external_works_cited": 11072,
+ "external_citations": 16078,
+ "definitions": {
+  "lean_statements_pure_mathlib": "Comparator challenge files that import only Mathlib and introduce no definitions, structures, instances, notation or axioms of their own: a reader checks the theorem statement against Mathlib vocabulary alone.",
+  "lean_vocabulary": "Definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms introduced inside a Comparator challenge file. Comparator certifies the proof against exactly this file, so each item is something a reader must check means what the paper means.",
+  "manuscripts_with_lean": "Current manuscripts listed as accompanying papers in a family's Lean scope note (lean/docs/NNN.md) that links at least one Comparator statement.",
+  "internal_citation_edges": "Bibliography entries in a manuscript's TeX sources that point to another manuscript in the collection (an openai/math preprint link or an OAI: key), counted once per citing and cited manuscript.",
+  "external_works_cited": "Distinct cited works outside the collection, identified by DOI, then arXiv id, then normalised title.",
+  "most_cited_outside_works": "Outside works ranked by how many current manuscripts cite them (each manuscript counted once).",
+  "most_cited_inside_collection": "Current manuscripts ranked by how many other current manuscripts in the collection cite them, with whether each has an accompanying Lean statement."
+ },
+ "highlights": {
+  "most_cited_outside_works": [
+   {
+    "authors": "The Stacks Project Authors",
+    "title": "The Stacks Project",
+    "year": "2026",
+    "id": "title:the stacks project",
+    "citing_manuscripts": 40
+   },
+   {
+    "authors": "Hatcher, Allen",
+    "title": "Algebraic Topology",
+    "year": "2002",
+    "id": "title:algebraic topology",
+    "citing_manuscripts": 23
+   },
+   {
+    "text": "Wassily Hoeffding. Probability inequalities for sums of bounded random variables. Journal of the American Statistical Association, 58 0 (301): 0 13-30, 1963. oi10.1080/01621459.1963.10500830.",
+    "year": "1963",
+    "id": "doi:10.1080/01621459.1963.10500830",
+    "citing_manuscripts": 21
+   },
+   {
+    "text": "C. Birkar, P. Cascini, C. D. Hacon, and J. McKernan, Existence of minimal models for varieties of log general type, J. Amer. Math. Soc. extbf23 (2010), 405-468. https://doi.org/10.1090/S0894-0347-09-0",
+    "year": "2010",
+    "id": "doi:10.1090/s0894-0347-09-00649-3",
+    "citing_manuscripts": 20
+   },
+   {
+    "authors": "Simon, Leon",
+    "title": "Introduction to Geometric Measure Theory",
+    "year": "2014",
+    "id": "title:introduction to geometric measure theory",
+    "citing_manuscripts": 19
+   },
+   {
+    "authors": "Gilbarg, David and Trudinger, Neil S.",
+    "title": "Elliptic Partial Differential Equations of Second Order",
+    "year": "2001",
+    "id": "doi:10.1007/978-3-642-61798-0",
+    "citing_manuscripts": 18
+   },
+   {
+    "authors": "Fortuin, C. M. and Kasteleyn, P. W. and Ginibre, J.",
+    "title": "Correlation inequalities on some partially ordered sets",
+    "year": "1971",
+    "id": "doi:10.1007/bf01651330",
+    "citing_manuscripts": 18
+   },
+   {
+    "authors": "Kollar, Janos and Mori, Shigefumi",
+    "title": "Birational Geometry of Algebraic Varieties",
+    "year": "1998",
+    "id": "doi:10.1017/cbo9780511662560",
+    "citing_manuscripts": 17
+   },
+   {
+    "text": "Boucksom, Sebastien; Demailly, Jean-Pierre; Paun, Mihai; Peternell, Thomas, The pseudo-effective cone of a compact Kahler manifold and varieties of negative Kodaira dimension, Journal of Algebraic Geo",
+    "year": "2013",
+    "id": "doi:10.1090/s1056-3911-2012-00574-8",
+    "citing_manuscripts": 14
+   },
+   {
+    "text": "B. Nienhuis. Exact critical point and critical exponents of $O(n)$ models in two dimensions. Physical Review Letters extbf49 (1982), 1062-1065. https://doi.org/10.1103/PhysRevLett.49.1062doi:10.1103/P",
+    "year": "1982",
+    "id": "doi:10.1103/physrevlett.49.1062",
+    "citing_manuscripts": 14
+   },
+   {
+    "text": "Deligne, Pierre, Theorie de Hodge, II, Publications Mathematiques de l'IHES extbf40 (1971), 5-57. https://doi.org/10.1007/BF02684692doi:10.1007/BF02684692.",
+    "year": "1971",
+    "id": "doi:10.1007/bf02684692",
+    "citing_manuscripts": 13
+   },
+   {
+    "text": "F. Guerra, Broken replica symmetry bounds in the mean field spin glass model, Communications in Mathematical Physics extbf233 (2003), 1-12. https://doi.org/10.1007/s00220-002-0773-5doi:10.1007/s00220-",
+    "year": "2003",
+    "id": "doi:10.1007/s00220-002-0773-5",
+    "citing_manuscripts": 13
+   },
+   {
+    "text": "C. M. Fortuin and P. W. Kasteleyn, On the random-cluster model. I. Introduction and relation to other models, Physica extbf57 (1972), no. 4, 536-564. https://doi.org/10.1016/0031-8914(72)90045-6doi:10",
+    "year": "1972",
+    "id": "doi:10.1016/0031-8914(72)90045-6",
+    "citing_manuscripts": 13
+   },
+   {
+    "text": "D. Sherrington and S. Kirkpatrick, Solvable model of a spin-glass, Physical Review Letters extbf35 (1975), no. 26, 1792-1796. https://doi.org/10.1103/PhysRevLett.35.1792doi:10.1103/PhysRevLett.35.1792",
+    "year": "1975",
+    "id": "doi:10.1103/physrevlett.35.1792",
+    "citing_manuscripts": 13
+   },
+   {
+    "authors": "Ambro, Florin",
+    "title": "The moduli b-divisor of an lc-trivial fibration",
+    "year": "2005",
+    "id": "doi:10.1112/s0010437x04001071",
+    "citing_manuscripts": 13
+   },
+   {
+    "text": "C. H. Bennett, Logical reversibility of computation, IBM J. Res. Develop. extbf17 (1973), 525-532. https://doi.org/10.1147/rd.176.0525 doi:10.1147/rd.176.0525.",
+    "year": "1973",
+    "id": "doi:10.1147/rd.176.0525",
+    "citing_manuscripts": 13
+   },
+   {
+    "text": "H. Duminil-Copin and S. Smirnov. The connective constant of the honeycomb lattice equals $ 2+ 2$. Annals of Mathematics extbf175 (2012), 1653-1665. https://doi.org/10.4007/annals.2012.175.3.14doi:10.4",
+    "year": "2012",
+    "id": "doi:10.4007/annals.2012.175.3.14",
+    "citing_manuscripts": 13
+   },
+   {
+    "authors": "Sagan, Bruce E.",
+    "title": "The Symmetric Group: Representations, Combinatorial Algorithms, and Symmetric Functions",
+    "year": "2001",
+    "id": "doi:10.1007/978-1-4757-6804-6",
+    "citing_manuscripts": 12
+   },
+   {
+    "text": "M. R. Bridson and A. Haefliger, Metric Spaces of Non-Positive Curvature, Grundlehren der mathematischen Wissenschaften 319, Springer, 1999. https://doi.org/10.1007/978-3-662-12494-9doi:10.1007/978-3-6",
+    "year": "1999",
+    "id": "doi:10.1007/978-3-662-12494-9",
+    "citing_manuscripts": 12
+   },
+   {
+    "authors": "Morris, Ben",
+    "title": "Improved mixing time bounds for the Thorp shuffle",
+    "year": "2013",
+    "id": "doi:10.1017/s0963548312000478",
+    "citing_manuscripts": 12
+   },
+   {
+    "authors": "Thorp, Edward O.",
+    "title": "Nonrandom shuffling with applications to the game of Faro",
+    "year": "1973",
+    "id": "doi:10.1080/01621459.1973.10481434",
+    "citing_manuscripts": 12
+   },
+   {
+    "authors": "Penrose, Roger",
+    "title": "Naked singularities",
+    "year": "1973",
+    "id": "doi:10.1111/j.1749-6632.1973.tb41447.x",
+    "citing_manuscripts": 12
+   },
+   {
+    "authors": "Morris, Ben",
+    "title": "Improved mixing time bounds for the Thorp shuffle and $L$-reversal chain",
+    "year": "2009",
+    "id": "doi:10.1214/08-aop409",
+    "citing_manuscripts": 12
+   },
+   {
+    "text": "A. Glazman and I. Manolescu. Self-avoiding walk on $ Z^2$ with Yang-Baxter weights: universality of critical fugacity and 2-point function. Annales de l'Institut Henri Poincare, Probabilites et Statis",
+    "year": "2020",
+    "id": "doi:10.1214/19-aihp1024",
+    "citing_manuscripts": 12
+   },
+   {
+    "authors": "Bray, Hubert L.",
+    "title": "Proof of the Riemannian Penrose inequality using the positive mass theorem",
+    "year": "2001",
+    "id": "doi:10.4310/jdg/1090349428",
+    "citing_manuscripts": 12
+   }
+  ],
+  "most_cited_inside_collection": [
+   {
+    "manuscript": "Log-abundance-in-characteristic-zero-September-24-2026",
+    "title": "Log abundance in characteristic zero",
+    "family": "034",
+    "cited_by": 15,
+    "has_lean": false
+   },
+   {
+    "manuscript": "Orbifold-and-logarithmic-Iitaka-subadditivity-September-26-2026",
+    "title": "Orbifold and logarithmic Iitaka subadditivity",
+    "family": "033",
+    "cited_by": 7,
+    "has_lean": false
+   },
+   {
+    "manuscript": "Anticanonical-nonvanishing-from-smooth-semipositivity-September-26-2026",
+    "title": "Anticanonical nonvanishing from smooth semipositivity",
+    "family": "068",
+    "cited_by": 6,
+    "has_lean": false
+   },
+   {
+    "manuscript": "Goldfelds-analytic-density-conjecture-and-the-2-converse-for-elliptic-curves-October-7-2026",
+    "title": "Goldfeld's analytic density conjecture and the 2-converse for elliptic curves",
+    "family": "006",
+    "cited_by": 6,
+    "has_lean": false
+   },
+   {
+    "manuscript": "The-spacetime-Penrose-inequality-and-enclosing-area-September-27-2026",
+    "title": "The spacetime Penrose inequality and enclosing area",
+    "family": "260",
+    "cited_by": 6,
+    "has_lean": false
+   },
+   {
+    "manuscript": "Optimal-order-mixing-of-the-Thorp-shuffle-September-26-2026",
+    "title": "Optimal-order mixing of the Thorp shuffle",
+    "family": "238",
+    "cited_by": 5,
+    "has_lean": true
+   },
+   {
+    "manuscript": "The-Quasi-Riemann-Hypothesis-September-30-2026",
+    "title": "The Quasi-Riemann Hypothesis: A Zero-Free Half-Plane \\(\\Re s\\gt 7/8\\)",
+    "family": "003",
+    "cited_by": 5,
+    "has_lean": true
+   },
+   {
+    "manuscript": "A-spectral-gap-throughout-the-high-temperature-Sherrington-Kirkpatrick-phase-September-24-2026",
+    "title": "A spectral gap throughout the high-temperature Sherrington–Kirkpatrick phase",
+    "family": "227",
+    "cited_by": 4,
+    "has_lean": true
+   },
+   {
+    "manuscript": "BKT-universality-for-height-and-planar-spin-fields-September-24-2026",
+    "title": "BKT universality for height and planar spin fields",
+    "family": "216",
+    "cited_by": 4,
+    "has_lean": false
+   },
+   {
+    "manuscript": "Equality-and-rigidity-in-the-spacetime-Penrose-inequality-September-27-2026",
+    "title": "Equality and rigidity in the spacetime Penrose inequality",
+    "family": "260",
+    "cited_by": 4,
+    "has_lean": false
+   },
+   {
+    "manuscript": "From-partial-permutation-information-to-Fourier-bounds-September-26-2026",
+    "title": "From partial permutation information to Fourier bounds",
+    "family": "238",
+    "cited_by": 4,
+    "has_lean": true
+   },
+   {
+    "manuscript": "Metric-measure-limits-of-subcritical-FK-and-spanning-tree-planar-maps-September-24-2026",
+    "title": "Metric-measure limits of subcritical FK and spanning-tree planar maps",
+    "family": "211",
+    "cited_by": 4,
+    "has_lean": false
+   },
+   {
+    "manuscript": "Random-coordinate-frames-and-partial-permutation-laws-September-26-2026",
+    "title": "Random coordinate frames and partial permutation laws",
+    "family": "238",
+    "cited_by": 4,
+    "has_lean": false
+   },
+   {
+    "manuscript": "The-Gaussian-free-field-limit-of-the-balanced-six-vertex-model-with-variance-multiplier-1-over-arcsin-c-over-2-September-23-2026",
+    "title": "The Gaussian free field limit of the balanced six-vertex model with variance multiplier 1/arcsin(c/2)",
+    "family": "225",
+    "cited_by": 4,
+    "has_lean": false
+   },
+   {
+    "manuscript": "The-Selmer-converse-for-elliptic-curves-at-every-prime-October-7-2026",
+    "title": "The Selmer converse for elliptic curves at every prime",
+    "family": "002",
+    "cited_by": 4,
+    "has_lean": false
+   },
+   {
+    "manuscript": "The-abelianity-conjecture-for-special-compact-Kahler-manifolds-September-23-2026",
+    "title": "The abelianity conjecture for special compact Kähler manifolds",
+    "family": "057",
+    "cited_by": 4,
+    "has_lean": false
+   },
+   {
+    "manuscript": "The-critical-correlation-exponent-of-the-planar-XY-model-September-24-2026",
+    "title": "The critical correlation exponent of the planar XY model",
+    "family": "216",
+    "cited_by": 4,
+    "has_lean": false
+   },
+   {
+    "manuscript": "Uniform-excess-charge-for-Coulomb-molecules-and-the-outer-radius-of-neutral-atoms-September-24-2026",
+    "title": "Uniform excess charge for Coulomb molecules and the outer radius of neutral atoms",
+    "family": "263",
+    "cited_by": 4,
+    "has_lean": false
+   },
+   {
+    "manuscript": "Weighted-Dilation-Graphs-Smooth-Shifted-Primes-and-Totient-Fibers-September-24-2026",
+    "title": "Weighted dilation graphs, smooth shifted primes and totient fibers",
+    "family": "011",
+    "cited_by": 4,
+    "has_lean": false
+   },
+   {
+    "manuscript": "A-Counterexample-to-Kaplanskys-Direct-Finiteness-Conjecture-in-Characteristic-Two-September-23-2026",
+    "title": "A Counterexample to Kaplansky's Direct-Finiteness Conjecture in Characteristic Two",
+    "family": "197",
+    "cited_by": 3,
+    "has_lean": true
+   },
+   {
+    "manuscript": "A-density-uniform-condensate-bound-for-dilute-Bose-gases-September-27-2026",
+    "title": "A density-uniform condensate bound for dilute Bose gases",
+    "family": "267",
+    "cited_by": 3,
+    "has_lean": false
+   },
+   {
+    "manuscript": "An-L3-bound-for-the-trilinear-Hilbert-transform-October-5-2026",
+    "title": "An <i>L</i><sup>3</sup> bound for the trilinear Hilbert transform",
+    "family": "086",
+    "cited_by": 3,
+    "has_lean": false
+   },
+   {
+    "manuscript": "An-isomorphism-of-the-free-group-factors-September-23-2026",
+    "title": "An isomorphism of the free group factors",
+    "family": "287",
+    "cited_by": 3,
+    "has_lean": true
+   },
+   {
+    "manuscript": "Canonical-conformal-limits-of-subcritical-FK-planar-maps-September-24-2026",
+    "title": "Canonical conformal limits of subcritical FK planar maps",
+    "family": "211",
+    "cited_by": 3,
+    "has_lean": false
+   },
+   {
+    "manuscript": "Conditional-information-under-deterministic-coordinate-sweeps-September-26-2026",
+    "title": "Conditional information under deterministic coordinate sweeps",
+    "family": "238",
+    "cited_by": 3,
+    "has_lean": false
+   }
+  ]
+ }
+}
