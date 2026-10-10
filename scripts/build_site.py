@@ -951,12 +951,34 @@ def coverage_html(sid):
     row = COVERAGE.get(sid)
     if not row:
         return ""
-    cls = row.get("class") or row.get("covers") or row.get("classification") or row.get("kind") or ""
-    label = COPY["statement"].get("coverage_classes", {}).get(str(cls), str(cls).replace("-", " ").replace("_", " "))
-    quote = row.get("quote") or row.get("scope_quote") or row.get("openai_quote") or ""
-    src = row.get("source") or row.get("url")
-    q = f'<blockquote class="quote md-math"><p>“{esc(quote)}”</p>' + (f'<footer><a class="ext" href="{esc(src)}" rel="noopener">{esc(C("statement.coverage_source"))}</a></footer>' if src else "") + "</blockquote>" if quote else ""
-    return f'<p class="coverage"><span class="pill pill--support">{esc(label)}</span></p>{q}'
+    cls = str(row.get("class") or "")
+    label = COPY["statement"].get("coverage_classes", {}).get(cls, cls.replace("-", " "))
+    quote = row.get("scope_quote") or row.get("quote") or ""
+    fam = row.get("family")
+    note_url = f"{BASE_BLOB}lean/docs/{fam}.md" if fam else None
+    expl = row.get("explanation") or ""
+    check = issue_url("check", C("statement.coverage_check_title", id=sid), statement=sid)
+    parts = [f'<p class="coverage"><span class="pill pill--support">{esc(label)}</span></p>']
+    if quote:
+        foot = f'<footer><a class="ext" href="{esc(note_url)}" rel="noopener">{esc(C("statement.coverage_source"))}</a></footer>' if note_url else ""
+        parts.append(f'<blockquote class="quote md-math"><p>\u201c{esc(quote)}\u201d</p>{foot}</blockquote>')
+    if expl:
+        parts.append(f'<p class="md-math">{esc(expl)}</p>')
+    parts.append(f'<p class="muted small">{esc(C("statement.coverage_provenance"))} <a class="ext" href="{esc(check)}" rel="noopener">{esc(C("statement.coverage_check"))}</a></p>')
+    return "".join(parts)
+
+
+COVER_RANK = {"headline": 4, "headline-part": 3, "consequence": 2, "weaker": 2, "unclear": 1, "supporting": 1}
+COVER_GRADE = {4: "full", 3: "part", 2: "less", 1: "support"}
+
+
+def fam_cover_grade(f):
+    """Strongest coverage among a family's statements: full, part, less, support, or none (no Lean)."""
+    ranks = [COVER_RANK.get(str(COVERAGE.get(s, {}).get("class")), 0) for s in f["statements"]]
+    if not f["statements"]:
+        return "none"
+    best = max(ranks) if ranks else 0
+    return COVER_GRADE.get(best, "unknown")
 
 
 
@@ -1798,6 +1820,7 @@ def map_data():
             "b": FAM_CITED_BY[f["id"]],
             "k": fam_cited_by_ms(f),
             "x": {"open": 0, "claimed": 1, "explained": 2}[status],
+            "g": fam_cover_grade(f),
         })
     vocab = sorted(v for v in (x["v"] for x in fams) if v is not None)
     return {
@@ -1876,7 +1899,7 @@ def build_home(md):
     for i, d in enumerate(DISCIPLINES):
         lis = "".join(f'<li><a href="families/{fid}.html">{fam_title_html(FAM[fid])}</a></li>' for fid in d["families"] if fid in FAM)
         idx.append(f'<section class="idx__d" id="idx-{DISC_SLUG[i]}"><h3 class="h3">{esc(d["name"])} <span class="count">{len(d["families"])}</span></h3><ul>{lis}</ul></section>')
-    ov = [("lean", "home.overlay_lean"), ("size", "home.overlay_size"), ("rests", "home.overlay_rests"), ("explained", "home.overlay_explained")]
+    ov = [("lean", "home.overlay_lean"), ("covers", "home.overlay_covers"), ("size", "home.overlay_size"), ("rests", "home.overlay_rests"), ("explained", "home.overlay_explained")]
     ov_btns = "".join(f'<button type="button" class="seg__b" data-overlay="{k}" aria-pressed="{"true" if k == "lean" else "false"}">{esc(C(lab))}</button>' for k, lab in ov)
     strings = {k: v for k, v in COPY["home"].items()}
     strings.update({"manuscript": C("words.manuscript"), "manuscripts": C("words.manuscripts"),

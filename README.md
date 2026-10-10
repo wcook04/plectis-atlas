@@ -15,6 +15,7 @@ The atlas is independent of OpenAI. It is built from the public collection at a 
 - **380 manuscripts** cite other manuscripts in the collection (578 citation links). 213 of them cite at least one manuscript with no accompanying Lean statement.
 - **16,078 citations** of earlier work outside the collection, to 11,069 distinct works (matched by DOI, then arXiv identifier, then title).
 - The TeX sources of the current manuscripts contain 2,255 theorems, 4,745 propositions, 1,267 corollaries and 12,397 lemmas.
+- **What the Lean certifies.** Of 416 Lean statements, 307 certify a paper's headline theorem as stated, 21 part of one, 28 a consequence, 24 a weaker form and 35 a supporting result. In 14 families with Lean statements, none certifies the headline result. Classified by an AI agent from OpenAI's own Lean notes, quoting each note (`curated/scope_coverage.json`); no person has reviewed it yet.
 
 Counted from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb) by `scripts/build_data.py`. Exact definitions are in `data/summary.json`.
 <!-- numbers:end -->

@@ -120,7 +120,14 @@
   "index_intro": "The same {families} results as the map, as a list.",
   "card_cited_count": "Cited by {n} manuscripts elsewhere in the collection",
   "card_cited_count_one": "Cited by 1 manuscript elsewhere in the collection",
-  "where_label": "Where you are in the map"
+  "where_label": "Where you are in the map",
+  "overlay_covers": "What the Lean covers",
+  "legend_covers_full": "A Lean statement certifies the paper’s headline theorem",
+  "legend_covers_part": "Part of the headline theorem is certified",
+  "legend_covers_less": "Only a consequence or a weaker form is certified",
+  "legend_covers_support": "Only supporting results are certified",
+  "legend_covers_none": "No Lean statement",
+  "legend_covers_note": "Each statement was classified from OpenAI’s own Lean notes by an AI agent, quoting the note. No person has reviewed the classification yet; corrections are welcome."
  },
  "family": {
   "trail_label": "Result {id}",
@@ -228,14 +235,19 @@
   "hole_item_nolink": "Comparator checks the name and type of `{name}`; its definition is in OpenAI’s library, in the modules that `{module}` imports.",
   "card_holes_one": "Comparator checks only the name and type of `{name}`; its definition is in OpenAI’s library.",
   "card_holes_many": "Comparator checks only the name and type of {n} definitions, among them `{name}`; their definitions are in OpenAI’s library.",
-  "coverage_source": "Source of the quotation",
+  "coverage_source": "OpenAI’s Lean note for this result",
   "coverage_classes": {
    "headline": "Certifies the paper’s headline theorem",
    "consequence": "Certifies a consequence of the headline theorem",
    "weaker": "Certifies a weaker form of the headline theorem",
    "weaker-form": "Certifies a weaker form of the headline theorem",
-   "supporting": "Certifies a supporting result"
-  }
+   "supporting": "Certifies a supporting result",
+   "headline-part": "Certifies part of the paper’s headline theorem",
+   "unclear": "Coverage unclear from the notes"
+  },
+  "coverage_provenance": "Classified from OpenAI’s note by an AI agent; no person has reviewed it yet.",
+  "coverage_check": "Check this classification",
+  "coverage_check_title": "Check the coverage of {id}"
  },
  "paper": {
   "in_result": "Part of result {id}: {title}.",

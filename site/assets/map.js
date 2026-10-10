@@ -249,6 +249,14 @@
       if (!f.s.length) return { fill: 'var(--t-none)', key: 'none' };
       return f.s.some(function (s) { return s[1]; }) ? { fill: 'var(--t-main)', key: 'main', ink: true } : { fill: 'var(--t-sup)', key: 'sup' };
     }
+    if (o === 'covers') {
+      var g = f.g || 'unknown';
+      if (g === 'full') return { fill: 'var(--t-main)', key: 'cfull', ink: true };
+      if (g === 'part') return { fill: 'var(--t-sup)', key: 'cpart' };
+      if (g === 'less') return { fill: 'var(--t-x1)', key: 'cless' };
+      if (g === 'support') return { fill: 'var(--t-none)', key: 'csup', ring: 'ring-steel' };
+      return { fill: 'var(--t-none)', key: 'cnone' };
+    }
     if (o === 'size') {
       var b = sizeBin(f.v);
       if (b < 0) return { fill: 'var(--t-none)', key: 'none' };
@@ -276,6 +284,9 @@
     }
     if (o === 'lean') {
       row('sw--main', S.legend_lean_main, 'main'); row('sw--sup', S.legend_lean_support, 'sup'); row('sw--none', S.legend_lean_none, 'none');
+    } else if (o === 'covers') {
+      row('sw--main', S.legend_covers_full, 'cfull'); row('sw--sup', S.legend_covers_part, 'cpart'); row('sw--x1', S.legend_covers_less, 'cless'); row('sw--none ring-steel', S.legend_covers_support, 'csup'); row('sw--none', S.legend_covers_none, 'cnone');
+      rows.push('<p class="legend__note">' + esc(S.legend_covers_note) + '</p>');
     } else if (o === 'size') {
       D.sizeBins.forEach(function (b, i) {
         var label = i === 0 ? S.legend_size_zero : (b[1] == null ? fmt(S.legend_size_bin_open, { lo: n(b[0]) }) : fmt(S.legend_size_bin, { lo: n(b[0]), hi: n(b[1]) }));
@@ -506,7 +517,7 @@
   function readHash() {
     var h = new URLSearchParams(location.hash.replace(/^#/, ''));
     var o = h.get('o');
-    if (o && /^(lean|size|rests|explained)$/.test(o)) setOverlay(o, true);
+    if (o && /^(lean|covers|size|rests|explained)$/.test(o)) setOverlay(o, true);
     var f = h.get('f');
     var d = h.get('d');
     if (f && fam[f]) return { level: 1, disc: fam[f].d, sel: f };

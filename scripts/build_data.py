@@ -1151,6 +1151,30 @@ def build(upstream: Path, out: Path, quiet: bool = False):
     def dump(name, obj):
         (out / name).write_text(json.dumps(obj, ensure_ascii=False, indent=1, sort_keys=False) + "\n", encoding="utf-8")
 
+    # Release-wide coverage classification (curated/scope_coverage.json), when present.
+    cov_path = ROOT / "curated" / "scope_coverage.json"
+    if cov_path.exists():
+        cov = json.loads(cov_path.read_text(encoding="utf-8"))
+        by_stmt = {r["statement"]: r for r in cov.get("rows", [])}
+        class_counts = Counter(r["class"] for r in cov.get("rows", []))
+        rank = {"headline": 4, "headline-part": 3, "consequence": 2, "weaker": 2, "unclear": 1, "supporting": 1}
+        no_headline = []
+        for f in families:
+            if f["statements"]:
+                best = max(rank.get(by_stmt.get(sid, {}).get("class"), 0) for sid in f["statements"])
+                if best < 3:
+                    no_headline.append(f["id"])
+        summary["scope_coverage"] = {
+            "classes": dict(sorted(class_counts.items())),
+            "statements_classified": len(by_stmt),
+            "families_with_lean_but_no_headline_coverage": sorted(no_headline),
+            "reviewed_by_people": False,
+            "upstream_commit": cov.get("upstream_commit"),
+        }
+        summary["definitions"]["scope_coverage"] = (
+            "What each Lean statement certifies relative to its paper's headline result (headline, part of the headline, "
+            "a consequence, a weaker form, a supporting result), classified by an AI agent from OpenAI's own Lean notes "
+            "with each row quoting the note (curated/scope_coverage.json). No person has reviewed it yet.")
     prior = out / "summary.json"
     if prior.exists():
         # The Lean claim-layer block comes from scripts/build_lean_claims.py; keep it across rebuilds.

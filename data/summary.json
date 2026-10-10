@@ -99,7 +99,8 @@
   "internal_citation_edges": "Bibliography entries in a manuscript's TeX sources that point to another manuscript in the collection (an openai/math preprint link or an OAI: key), counted once per citing and cited manuscript.",
   "external_works_cited": "Distinct cited works outside the collection, identified by DOI, then arXiv id, then normalised title.",
   "most_cited_outside_works": "Outside works ranked by how many current manuscripts cite them (each manuscript counted once).",
-  "most_cited_inside_collection": "Current manuscripts ranked by how many other current manuscripts in the collection cite them, with whether each has an accompanying Lean statement."
+  "most_cited_inside_collection": "Current manuscripts ranked by how many other current manuscripts in the collection cite them, with whether each has an accompanying Lean statement.",
+  "scope_coverage": "What each Lean statement certifies relative to its paper's headline result (headline, part of the headline, a consequence, a weaker form, a supporting result), classified by an AI agent from OpenAI's own Lean notes with each row quoting the note (curated/scope_coverage.json). No person has reviewed it yet."
  },
  "highlights": {
   "most_cited_outside_works": [
@@ -444,6 +445,35 @@
     "has_lean": false
    }
   ]
+ },
+ "scope_coverage": {
+  "classes": {
+   "consequence": 28,
+   "headline": 307,
+   "headline-part": 21,
+   "supporting": 35,
+   "unclear": 1,
+   "weaker": 24
+  },
+  "statements_classified": 416,
+  "families_with_lean_but_no_headline_coverage": [
+   "027",
+   "066",
+   "126",
+   "152",
+   "159",
+   "190",
+   "191",
+   "194",
+   "195",
+   "257",
+   "266",
+   "277",
+   "290",
+   "301"
+  ],
+  "reviewed_by_people": false,
+  "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
  },
  "lean_claim_layer": {
   "lean_projects": 559,

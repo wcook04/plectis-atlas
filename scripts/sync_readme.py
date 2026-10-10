@@ -40,6 +40,17 @@ def numbers_block(s: dict) -> str:
         f"(matched by DOI, then arXiv identifier, then title).",
         f"- The TeX sources of the current manuscripts contain {n(env.get('theorem', 0))} theorems, {n(env.get('proposition', 0))} propositions, "
         f"{n(env.get('corollary', 0))} corollaries and {n(env.get('lemma', 0))} lemmas.",
+    ]
+    sc = s.get("scope_coverage")
+    if sc:
+        k = sc["classes"]
+        rows.append(
+            f"- **What the Lean certifies.** Of {n(sc['statements_classified'])} Lean statements, {n(k.get('headline', 0))} certify a paper's headline theorem as stated, "
+            f"{n(k.get('headline-part', 0))} part of one, {n(k.get('consequence', 0))} a consequence, {n(k.get('weaker', 0))} a weaker form and {n(k.get('supporting', 0))} a supporting result. "
+            f"In {n(len(sc['families_with_lean_but_no_headline_coverage']))} families with Lean statements, none certifies the headline result. "
+            "Classified by an AI agent from OpenAI's own Lean notes, quoting each note (`curated/scope_coverage.json`); no person has reviewed it yet."
+        )
+    rows += [
         "",
         f"Counted from [openai/math at `{s['upstream']['commit'][:12]}`](https://github.com/openai/math/tree/{s['upstream']['commit']}) by "
         "`scripts/build_data.py`. Exact definitions are in `data/summary.json`.",
