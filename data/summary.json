@@ -90,7 +90,7 @@
  "manuscripts_citing_withdrawn": [],
  "manuscripts_citing_superseded_editions": [],
  "manuscripts_citing_unformalised_collection_results": 213,
- "external_works_cited": 11072,
+ "external_works_cited": 11069,
  "external_citations": 16078,
  "definitions": {
   "lean_statements_pure_mathlib": "Comparator challenge files that import only Mathlib and introduce no definitions, structures, instances, notation or axioms of their own: a reader checks the theorem statement against Mathlib vocabulary alone.",
@@ -118,13 +118,13 @@
     "citing_manuscripts": 23
    },
    {
-    "text": "Wassily Hoeffding. Probability inequalities for sums of bounded random variables. Journal of the American Statistical Association, 58 0 (301): 0 13-30, 1963. oi10.1080/01621459.1963.10500830.",
+    "text": "Wassily Hoeffding. Probability inequalities for sums of bounded random variables. Journal of the American Statistical Association, 58 0 (301): 0 13-30, 1963. 10.1080/01621459.1963.10500830.",
     "year": "1963",
     "id": "doi:10.1080/01621459.1963.10500830",
     "citing_manuscripts": 21
    },
    {
-    "text": "C. Birkar, P. Cascini, C. D. Hacon, and J. McKernan, Existence of minimal models for varieties of log general type, J. Amer. Math. Soc. extbf23 (2010), 405-468. https://doi.org/10.1090/S0894-0347-09-0",
+    "text": "C. Birkar, P. Cascini, C. D. Hacon, and J. McKernan, Existence of minimal models for varieties of log general type, J. Amer. Math. Soc. 23 (2010), 405-468. doi:10.1090/S0894-0347-09-00649-3.",
     "year": "2010",
     "id": "doi:10.1090/s0894-0347-09-00649-3",
     "citing_manuscripts": 20
@@ -164,31 +164,31 @@
     "citing_manuscripts": 14
    },
    {
-    "text": "B. Nienhuis. Exact critical point and critical exponents of $O(n)$ models in two dimensions. Physical Review Letters extbf49 (1982), 1062-1065. https://doi.org/10.1103/PhysRevLett.49.1062doi:10.1103/P",
+    "text": "B. Nienhuis. Exact critical point and critical exponents of $O(n)$ models in two dimensions. Physical Review Letters 49 (1982), 1062-1065. doi:10.1103/PhysRevLett.49.1062.",
     "year": "1982",
     "id": "doi:10.1103/physrevlett.49.1062",
     "citing_manuscripts": 14
    },
    {
-    "text": "Deligne, Pierre, Theorie de Hodge, II, Publications Mathematiques de l'IHES extbf40 (1971), 5-57. https://doi.org/10.1007/BF02684692doi:10.1007/BF02684692.",
+    "text": "Deligne, Pierre, Theorie de Hodge, II, Publications Mathematiques de l'IHES 40 (1971), 5-57. doi:10.1007/BF02684692.",
     "year": "1971",
     "id": "doi:10.1007/bf02684692",
     "citing_manuscripts": 13
    },
    {
-    "text": "F. Guerra, Broken replica symmetry bounds in the mean field spin glass model, Communications in Mathematical Physics extbf233 (2003), 1-12. https://doi.org/10.1007/s00220-002-0773-5doi:10.1007/s00220-",
+    "text": "F. Guerra, Broken replica symmetry bounds in the mean field spin glass model, Communications in Mathematical Physics 233 (2003), 1-12. doi:10.1007/s00220-002-0773-5; arXiv:cond-mat/0205123v1.",
     "year": "2003",
     "id": "doi:10.1007/s00220-002-0773-5",
     "citing_manuscripts": 13
    },
    {
-    "text": "C. M. Fortuin and P. W. Kasteleyn, On the random-cluster model. I. Introduction and relation to other models, Physica extbf57 (1972), no. 4, 536-564. https://doi.org/10.1016/0031-8914(72)90045-6doi:10",
+    "text": "C. M. Fortuin and P. W. Kasteleyn, On the random-cluster model. I. Introduction and relation to other models, Physica 57 (1972), no. 4, 536-564. doi:10.1016/0031-8914(72)90045-6.",
     "year": "1972",
     "id": "doi:10.1016/0031-8914(72)90045-6",
     "citing_manuscripts": 13
    },
    {
-    "text": "D. Sherrington and S. Kirkpatrick, Solvable model of a spin-glass, Physical Review Letters extbf35 (1975), no. 26, 1792-1796. https://doi.org/10.1103/PhysRevLett.35.1792doi:10.1103/PhysRevLett.35.1792",
+    "text": "D. Sherrington and S. Kirkpatrick, Solvable model of a spin-glass, Physical Review Letters 35 (1975), no. 26, 1792-1796. doi:10.1103/PhysRevLett.35.1792.",
     "year": "1975",
     "id": "doi:10.1103/physrevlett.35.1792",
     "citing_manuscripts": 13
@@ -201,13 +201,13 @@
     "citing_manuscripts": 13
    },
    {
-    "text": "C. H. Bennett, Logical reversibility of computation, IBM J. Res. Develop. extbf17 (1973), 525-532. https://doi.org/10.1147/rd.176.0525 doi:10.1147/rd.176.0525.",
+    "text": "C. H. Bennett, Logical reversibility of computation, IBM J. Res. Develop. 17 (1973), 525-532. https://doi.org/10.1147/rd.176.0525doi:10.1147/rd.176.0525.",
     "year": "1973",
     "id": "doi:10.1147/rd.176.0525",
     "citing_manuscripts": 13
    },
    {
-    "text": "H. Duminil-Copin and S. Smirnov. The connective constant of the honeycomb lattice equals $ 2+ 2$. Annals of Mathematics extbf175 (2012), 1653-1665. https://doi.org/10.4007/annals.2012.175.3.14doi:10.4",
+    "text": "H. Duminil-Copin and S. Smirnov. The connective constant of the honeycomb lattice equals $ 2+ 2$. Annals of Mathematics 175 (2012), 1653-1665. doi:10.4007/annals.2012.175.3.14.",
     "year": "2012",
     "id": "doi:10.4007/annals.2012.175.3.14",
     "citing_manuscripts": 13
@@ -220,7 +220,7 @@
     "citing_manuscripts": 12
    },
    {
-    "text": "M. R. Bridson and A. Haefliger, Metric Spaces of Non-Positive Curvature, Grundlehren der mathematischen Wissenschaften 319, Springer, 1999. https://doi.org/10.1007/978-3-662-12494-9doi:10.1007/978-3-6",
+    "text": "M. R. Bridson and A. Haefliger, Metric Spaces of Non-Positive Curvature, Grundlehren der mathematischen Wissenschaften 319, Springer, 1999. doi:10.1007/978-3-662-12494-9.",
     "year": "1999",
     "id": "doi:10.1007/978-3-662-12494-9",
     "citing_manuscripts": 12

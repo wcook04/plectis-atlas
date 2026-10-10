@@ -13,7 +13,7 @@ The atlas is independent of OpenAI. It is built from the public collection at a 
 - **416 Lean statements** checked through Comparator challenge files, 189 of them main results. 339 manuscripts are accompanying papers of a family with at least one Lean statement.
 - **10 Lean statements** are written in Mathlib's vocabulary alone. The median statement file introduces 13 definitions of its own, and the largest (EditApproximation) introduces 1,212. Comparator certifies a proof against exactly this file, so each definition is something a reader checks.
 - **380 manuscripts** cite other manuscripts in the collection (578 citation links). 213 of them cite at least one manuscript with no accompanying Lean statement.
-- **16,078 citations** of earlier work outside the collection, to 11,072 distinct works (matched by DOI, then arXiv identifier, then title).
+- **16,078 citations** of earlier work outside the collection, to 11,069 distinct works (matched by DOI, then arXiv identifier, then title).
 - The TeX sources of the current manuscripts contain 2,255 theorems, 4,745 propositions, 1,267 corollaries and 12,397 lemmas.
 
 Counted from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb) by `scripts/build_data.py`. Exact definitions are in `data/summary.json`.

@@ -373,6 +373,8 @@ def tex_macros(text: str) -> dict[str, str]:
             continue
         op = "\\operatorname*" if m.group(1) else "\\operatorname"
         macros["\\" + m.group(2)] = op + "{" + body + "}"
+    for m in re.finditer(r"\\DeclarePairedDelimiter(?:X|XPP)?\s*\{?\\([A-Za-z]+)\}?\s*(?:\[\d\])?\s*\{([^{}]*)\}\s*\{([^{}]*)\}", text):
+        macros.setdefault("\\" + m.group(1), "\\left" + m.group(2).strip() + " #1 \\right" + m.group(3).strip())
     for m in re.finditer(r"\\def\s*\\([A-Za-z]+)\s*\{", text):
         body, _ = brace_group(text, m.end() - 1)
         if body is None or len(body) > 400 or "#" in body:
@@ -622,8 +624,12 @@ def parse_bib(text: str):
 
 
 def detex(s: str) -> str:
-    s = re.sub(r"\\[`'^\"~=.uvHtcdbk]\s*\{?([A-Za-z])\}?", r"\1", s)
-    s = re.sub(r"\\(?:emph|textit|textbf|textsc|textrm|mathrm|text|url|href)\s*\{([^{}]*)\}", r"\1", s)
+    # Symbol accents (\'e, \"o, \^o ...) may touch their letter; letter accents (\u, \v, \H, \t, \c, \d, \b, \k)
+    # count only when not followed by more letters, so \textbf, \url and \doi survive to the rules below.
+    s = re.sub(r"\\[`'^\"~=.]\s*\{?([A-Za-z])\}?", r"\1", s)
+    s = re.sub(r"\\[uvHtcdbk](?![A-Za-z])\s*\{?([A-Za-z])\}?", r"\1", s)
+    s = re.sub(r"\\href\s*\{[^{}]*\}\s*\{([^{}]*)\}", r"\1", s)
+    s = re.sub(r"\\(?:emph|textit|textbf|textsc|textrm|textsf|texttt|mathrm|mathbf|mathit|text|url|nolinkurl|doi|path)\s*\{([^{}]*)\}", r"\1", s)
     s = re.sub(r"\\[A-Za-z]+\*?", " ", s)
     s = s.replace("{", "").replace("}", "").replace("~", " ").replace("--", "-")
     return norm_ws(s)
