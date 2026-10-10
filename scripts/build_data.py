@@ -1145,6 +1145,15 @@ def build(upstream: Path, out: Path, quiet: bool = False):
     def dump(name, obj):
         (out / name).write_text(json.dumps(obj, ensure_ascii=False, indent=1, sort_keys=False) + "\n", encoding="utf-8")
 
+    prior = out / "summary.json"
+    if prior.exists():
+        # The Lean claim-layer block comes from scripts/build_lean_claims.py; keep it across rebuilds.
+        try:
+            kept = json.loads(prior.read_text(encoding="utf-8")).get("lean_claim_layer")
+        except json.JSONDecodeError:
+            kept = None
+        if kept:
+            summary["lean_claim_layer"] = kept
     dump("summary.json", summary)
     dump("disciplines.json", [{"name": d["name"], "families": d["families"]} for d in disciplines])
     dump("families.json", families)

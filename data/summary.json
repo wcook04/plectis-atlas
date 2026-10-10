@@ -444,5 +444,22 @@
     "has_lean": false
    }
   ]
+ },
+ "lean_claim_layer": {
+  "lean_projects": 559,
+  "lean_files": 122458,
+  "projects_with_model_file": 248,
+  "model_statement_definitions": 967,
+  "manuscript_theorems": 5548,
+  "projects_with_manuscript_theorems": 12,
+  "manuscript_theorems_checked_by_comparator": 2,
+  "model_statement_projects_linked_to_a_family": 196,
+  "definitions": {
+   "model_statement_definitions": "Proposition-valued definitions (def or abbrev ending in `: Prop`) in a project's Model.lean, where projects state their papers' claims as Lean propositions.",
+   "manuscript_theorems": "Theorems or lemmas whose name contains 'manuscript', the naming some projects use for proofs of their papers' claims.",
+   "manuscript_theorems_checked_by_comparator": "Manuscript theorems whose full name is one of the theorem names in a Comparator challenge configuration.",
+   "lean_projects": "Folders OAI/<area>/<project>/ in OpenAI's Lean library that contain Lean files.",
+   "scan": "Textual scan of lean/OAI at the pinned commit; nothing is built, so a listed theorem exists in the source but is not thereby checked."
+  }
  }
 }

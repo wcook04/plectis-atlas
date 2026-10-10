@@ -1,12 +1,20 @@
 #!/bin/sh
 # Fetch the pinned openai/math commit as a light sparse checkout (no PDFs,
 # no Lean library sources): enough to rebuild the atlas data.
-# Usage: sh scripts/fetch_upstream.sh [--latest] [target-dir]   (default: ../openai-math-upstream)
+# Usage: sh scripts/fetch_upstream.sh [--latest] [--lean-library] [target-dir]   (default: ../openai-math-upstream)
+# --lean-library also fetches lean/OAI/ (about 1.7 GB) for scripts/build_lean_claims.py.
 # --latest moves the pin in upstream.json to openai/math's current main first.
 set -eu
 here=$(cd "$(dirname "$0")/.." && pwd)
 latest=0
-if [ "${1:-}" = "--latest" ]; then latest=1; shift; fi
+library=0
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --latest) latest=1; shift ;;
+    --lean-library) library=1; shift ;;
+    *) break ;;
+  esac
+done
 target=${1:-"$here/../openai-math-upstream"}
 if [ "$latest" = 1 ]; then
   # Move the pin to openai/math's current main and record it in upstream.json.
@@ -48,6 +56,10 @@ cat > .git/info/sparse-checkout <<'PATTERNS'
 !*.gz
 !*.tar
 PATTERNS
+if [ "$library" = 1 ]; then
+  # The whole Lean library (about 1.7 GB) for scripts/build_lean_claims.py.
+  printf '%s\n' '/lean/OAI/' >> .git/info/sparse-checkout
+fi
 git fetch --quiet origin "$commit"
 git checkout --quiet "$commit"
 echo "openai/math at $(git rev-parse HEAD) in $target"
