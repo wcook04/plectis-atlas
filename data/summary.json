@@ -476,6 +476,7 @@
   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
  },
  "lean_claim_layer": {
+  "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
   "lean_projects": 559,
   "lean_files": 122458,
   "projects_with_model_file": 248,

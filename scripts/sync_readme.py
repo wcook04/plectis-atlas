@@ -29,7 +29,7 @@ def numbers_block(s: dict) -> str:
     rows = [
         f"- **{n(s['families'])} result families** in {s['disciplines']} disciplines, from **{n(s['manuscripts_current'])} current manuscripts** "
         f"({s['manuscripts_withdrawn']} more were withdrawn and {s['manuscripts_previous_editions']} earlier editions remain in the collection).",
-        f"- **{n(s['statements_lean'])} Lean statements** checked through Comparator challenge files, {n(s['statements_lean_main_results'])} of them main results. "
+        f"- **{n(s['statements_lean'])} Lean statements** set up as Comparator challenges, {n(s['statements_lean_main_results'])} of them in OpenAI's list of main results. "
         f"{n(s['manuscripts_with_lean'])} manuscripts are accompanying papers of a family with at least one Lean statement.",
         f"- **{n(s['lean_statements_pure_mathlib'])} Lean statements** are written in Mathlib's vocabulary alone. The median statement file introduces "
         f"{s['lean_vocabulary_median']} definitions of its own, and the largest ({s['lean_vocabulary_max_statement']}) introduces {n(s['lean_vocabulary_max'])}. "
@@ -85,7 +85,7 @@ def example_block(families, manuscripts, statements) -> str:
         ">",
         f"> **Corollary** (label `{cor['label']}`). {paper_text}",
         "",
-        f"The Lean statement [`{stmt['id']}`]({stmt['url']}) that Comparator checks against OpenAI's proof "
+        f"The Lean statement [`{stmt['id']}`]({stmt['url']}), the fixed statement Comparator checks OpenAI's proof against when it is run "
         f"({stmt['vocabulary_count']} definitions of its own; permitted axioms {', '.join('`'+a+'`' for a in stmt['comparator']['permitted_axioms'])}):",
         "",
         "```lean",

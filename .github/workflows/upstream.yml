@@ -17,10 +17,11 @@ jobs:
         with:
           python-version: "3.12"
       - name: Fetch the latest upstream commit
-        run: sh scripts/fetch_upstream.sh --latest "$RUNNER_TEMP/openai-math"
+        run: sh scripts/fetch_upstream.sh --latest --lean-library "$RUNNER_TEMP/openai-math"
       - name: Rebuild data and README
         run: |
           python3 scripts/build_data.py --upstream "$RUNNER_TEMP/openai-math" --quiet
+          python3 scripts/build_lean_claims.py --upstream "$RUNNER_TEMP/openai-math"
           python3 scripts/sync_readme.py
       - uses: peter-evans/create-pull-request@v6
         with:

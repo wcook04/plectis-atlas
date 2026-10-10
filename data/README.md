@@ -8,7 +8,7 @@ Plain JSON, rebuilt from the openai/math commit in `../upstream.json` by `python
 |---|---|---|
 | `summary.json` | the release | every headline number, each with a definition under `definitions`; OpenAI's own reported figures under `upstream_reported`, quoted with their source |
 | `disciplines.json` | discipline (17) | `name`, `families` in OpenAI's catalogue order |
-| `families.json` | result family (372) | `id` ("001" to "372"), `discipline`, `title`, `description` (OpenAI's text, inline maths as `\( \)`), `manuscripts`, `statements`, `lean_doc` (OpenAI's per-family Lean scope note) |
+| `families.json` | result family (372) | `id` (three digits from "001" to "377"; 045, 061, 070, 123 and 163 are unused), `discipline`, `title`, `description` (OpenAI's text, inline maths as `\( \)`), `manuscripts`, `statements`, `lean_doc` (OpenAI's per-family Lean scope note) |
 | `manuscripts.json` | manuscript folder (749: 719 current, 3 withdrawn, 27 earlier editions) | `id` (the upstream folder name), `family`, `status`, `title`, `date`, `abstract`, `pdf_url`, `statements`, `references`, `rests_on`, `cited_by_in_collection`, `has_lean` |
 | `statements.json` | Comparator statement file (416) | `id` (challenge name), `lean` (full file), `sha256`, `imports`, `vocabulary`, `vocabulary_count`, `comparator`, `main_result`, `solution`, `families`, `labels`, `papers` |
 | `graph.json` | citation between two manuscripts in the collection (578) | `source`, `target`, `target_latest`, families and statuses |

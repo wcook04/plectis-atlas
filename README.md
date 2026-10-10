@@ -1,6 +1,6 @@
 # OpenAI Math Atlas
 
-A reader's atlas to the mathematics OpenAI released on 6 October 2026 in [openai/math](https://github.com/openai/math). For each of the 372 result families it shows the paper's headline theorems beside the Lean statements that Comparator checks, what each manuscript cites inside the collection, and whose earlier work each argument uses. Every family is open for a human explanation, credited by name.
+A reader's atlas to the mathematics OpenAI released on 6 October 2026 in [openai/math](https://github.com/openai/math). For each of the 372 result families it shows the paper's headline theorems beside the Lean statements OpenAI set up for checking with Comparator, what each manuscript cites inside the collection, and whose earlier work each argument uses. Every family is open for a human explanation, credited by name.
 
 **[Open the atlas](https://wcook04.github.io/openai-math-atlas/)** · [Explain a result](https://wcook04.github.io/openai-math-atlas/explain.html) · [Check a statement](CONTRIBUTING.md) · [The numbers](https://wcook04.github.io/openai-math-atlas/numbers.html)
 
@@ -10,7 +10,7 @@ The atlas is independent of OpenAI. It is built from the public collection at a 
 
 <!-- numbers:start -->
 - **372 result families** in 17 disciplines, from **719 current manuscripts** (3 more were withdrawn and 27 earlier editions remain in the collection).
-- **416 Lean statements** checked through Comparator challenge files, 189 of them main results. 339 manuscripts are accompanying papers of a family with at least one Lean statement.
+- **416 Lean statements** set up as Comparator challenges, 189 of them in OpenAI's list of main results. 339 manuscripts are accompanying papers of a family with at least one Lean statement.
 - **10 Lean statements** are written in Mathlib's vocabulary alone. The median statement file introduces 13 definitions of its own, and the largest (EditApproximation) introduces 1,212. Comparator certifies a proof against exactly this file, so each definition is something a reader checks.
 - **380 manuscripts** cite other manuscripts in the collection (578 citation links). 213 of them cite at least one manuscript with no accompanying Lean statement.
 - **16,078 citations** of earlier work outside the collection, to 11,069 distinct works (matched by DOI, then arXiv identifier, then title).
@@ -39,7 +39,7 @@ Counted from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree
 >
 > **Corollary** (label `ap:reciprocal`). Every set $A\subseteq\mathbb N$ with $\sum_{a\in A}a^{-1}=\infty$ contains nonconstant arithmetic progressions of every finite length.
 
-The Lean statement [`ErdosReciprocal`](https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/ErdosReciprocal.lean) that Comparator checks against OpenAI's proof (3 definitions of its own; permitted axioms `propext`, `Quot.sound`, `Classical.choice`):
+The Lean statement [`ErdosReciprocal`](https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/ErdosReciprocal.lean), the fixed statement Comparator checks OpenAI's proof against when it is run (3 definitions of its own; permitted axioms `propext`, `Quot.sound`, `Classical.choice`):
 
 ```lean
 def HasAP (A : Set ℕ) (k : ℕ) : Prop :=

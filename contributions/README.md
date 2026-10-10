@@ -18,7 +18,7 @@ Problem reports and claims of an explanation are GitHub issues, made with the is
 
 ## Identifiers
 
-- **Family id**: three digits, from `"001"` to `"372"`, always written in double quotes in frontmatter (`family: "159"`). Without quotes, YAML reads it as a number and drops leading zeros.
+- **Family id**: three digits, from `"001"` to `"377"` (045, 061, 070, 123 and 163 are unused), always written in double quotes in frontmatter (`family: "159"`). Without quotes, YAML reads it as a number and drops leading zeros.
 - **Statement id**: the name of a Comparator challenge file upstream, `lean/ComparatorChallenges/<id>.lean`, such as `ErdosReciprocal`. Case matters.
 - **Manuscript id**: the folder name under `preprints/` upstream, such as `Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026`.
 - **GitHub handle**: your GitHub user name, without `@`.

@@ -148,7 +148,10 @@ def main():
 
     props = [c for c in claims if c["kind"] == "statement"]
     ms = [c for c in claims if c["kind"] in ("theorem", "lemma")]
+    import subprocess
+    commit = subprocess.run(["git", "-C", str(up), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
     summary_block = {
+        "upstream_commit": commit,
         "lean_projects": len(projects),
         "lean_files": sum(1 for _ in oai.rglob("*.lean")),
         "projects_with_model_file": model_files,

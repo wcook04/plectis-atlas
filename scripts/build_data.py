@@ -1182,8 +1182,11 @@ def build(upstream: Path, out: Path, quiet: bool = False):
             kept = json.loads(prior.read_text(encoding="utf-8")).get("lean_claim_layer")
         except json.JSONDecodeError:
             kept = None
-        if kept:
+        if kept and kept.get("upstream_commit") == commit:
             summary["lean_claim_layer"] = kept
+        elif kept:
+            print("note: dropping lean_claim_layer built from another upstream commit; rerun scripts/build_lean_claims.py",
+                  file=sys.stderr)
     dump("summary.json", summary)
     dump("disciplines.json", [{"name": d["name"], "families": d["families"]} for d in disciplines])
     dump("families.json", families)
