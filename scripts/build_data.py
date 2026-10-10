@@ -1067,10 +1067,26 @@ def build(upstream: Path, out: Path, quiet: bool = False):
     if m:
         upstream_reported["catalogue"] = {"manuscripts": int(m.group(1)), "families": int(m.group(2)),
                                           "source": base_blob + "README.md", "quote": m.group(0)}
+    m = re.search(r"an? (unreleased internal OpenAI model)", readme_text)
+    if m:
+        upstream_reported["model"] = {"quote": m.group(1), "source": base_blob + "README.md"}
+    m = re.search(r"((?:On average, )?each result used [^.]*?compute[^.]*?)\.", readme_text)
+    if m:
+        upstream_reported["compute"] = {"quote": m.group(1), "source": base_blob + "README.md"}
+    m = re.search(r"(the writeup for [^.]*?human edited for readability)", readme_text, flags=re.I)
+    if m:
+        upstream_reported["human_edited"] = {"quote": m.group(1), "source": base_blob + "README.md"}
+    traces = re.findall(r"^\|\s*(\d{3})\s*\|\s*\[(.+?)\]\((reasoning_traces/[^)]+)\)\s*\|", readme_text, flags=re.M)
+    upstream_reported["reasoning_summaries"] = {"count": len(traces), "families": [t[0] for t in traces],
+                                                "source": base_blob + "README.md"}
     m = re.search(r"posed approximately ([\d,]+) problems", readme_text)
     if m:
         upstream_reported["problems_posed"] = {"approximately": int(m.group(1).replace(",", "")),
                                                "source": base_blob + "README.md", "quote": m.group(0)}
+
+    for fid, title, path in traces:
+        if fid in fam_by_id:
+            fam_by_id[fid]["reasoning_summary"] = {"title": title, "url": base_blob + path}
 
     # ---- summary
     cur = [m for m in manuscripts.values() if m["status"] == "current"]

@@ -88,10 +88,28 @@ def scan_file(path: Path, rel: str, want_props: bool):
                 is_prop = bool(re.search(r"\)\s*:\s*Prop\b|^\s*(?:noncomputable\s+)?(?:def|abbrev)\s+\S+\s*:\s*Prop\b", head, flags=re.M))
             manuscript = "manuscript" in name.lower()
             if (want_props and is_prop) or (manuscript and kind in ("theorem", "lemma")):
-                out.append({
-                    "name": full, "kind": "statement" if is_prop else kind, "file": rel, "line": i + 1,
-                    "doc": doc, "head": head[:1200],
-                })
+                rec = {"name": full, "kind": "statement" if is_prop else kind, "file": rel, "line": i + 1,
+                       "doc": doc, "head": head[:1200]}
+                if is_prop:
+                    # A proposition's body is the claim itself: keep the full definition (indented continuation lines).
+                    body = [lines[i].rstrip()]
+                    j = i + 1
+                    while j < len(lines) and j < i + 60:
+                        ln = lines[j]
+                        if not ln.strip():
+                            nxt = next((x for x in lines[j + 1:j + 4] if x.strip()), "")
+                            if nxt.startswith((" ", "\t")):
+                                body.append("")
+                                j += 1
+                                continue
+                            break
+                        if ln.startswith((" ", "\t")):
+                            body.append(ln.rstrip())
+                            j += 1
+                            continue
+                        break
+                    rec["text"] = "\n".join(body)[:4000]
+                out.append(rec)
         doc = None if st and not st.startswith("--") else doc
         i += 1
     return out

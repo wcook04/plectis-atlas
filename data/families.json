@@ -150,6 +150,10 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/007.md"
+  },
+  "reasoning_summary": {
+   "title": "Ordinary two-point correlations of multiplicative functions",
+   "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/ordinary-two-point-correlations.pdf"
   }
  },
  {
@@ -369,6 +373,10 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/017.md"
+  },
+  "reasoning_summary": {
+   "title": "The irrationality exponent of π",
+   "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/irrationality-exponent-of-pi.pdf"
   }
  },
  {
@@ -1660,6 +1668,10 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/087.md"
+  },
+  "reasoning_summary": {
+   "title": "Symmetric and general Mahler conjectures",
+   "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/symmetric-and-general-mahler-conjectures.pdf"
   }
  },
  {
@@ -2161,6 +2173,10 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/102.md"
+  },
+  "reasoning_summary": {
+   "title": "Ordinary NP-hardness at the basic semidefinite threshold",
+   "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/basic-semidefinite-threshold-np-hardness.pdf"
   }
  },
  {
@@ -3723,6 +3739,10 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/159.md"
+  },
+  "reasoning_summary": {
+   "title": "Quasipolynomial bounds for arithmetic progressions",
+   "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/quasipolynomial-arithmetic-progressions.pdf"
   }
  },
  {
@@ -4732,6 +4752,10 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/197.md"
+  },
+  "reasoning_summary": {
+   "title": "Kaplansky's direct-finiteness conjecture in characteristic two",
+   "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/kaplansky-direct-finiteness-characteristic-two.pdf"
   }
  },
  {
@@ -5289,6 +5313,10 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/221.md"
+  },
+  "reasoning_summary": {
+   "title": "The Mézard–Parisi formula for diluted spin glasses",
+   "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/mezard-parisi-formula.pdf"
   }
  },
  {
@@ -6728,6 +6756,10 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/271.md"
+  },
+  "reasoning_summary": {
+   "title": "Spontaneous magnetization in the quantum Heisenberg ferromagnet",
+   "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/spontaneous-magnetization-quantum-heisenberg-ferromagnet.pdf"
   }
  },
  {
@@ -7089,6 +7121,10 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/287.md"
+  },
+  "reasoning_summary": {
+   "title": "Isomorphism of free group factors",
+   "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/free-group-factor-isomorphism.pdf"
   }
  },
  {
@@ -8749,6 +8785,10 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/362.md"
+  },
+  "reasoning_summary": {
+   "title": "The three-dimensional relativistic Vlasov–Maxwell system",
+   "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/relativistic-vlasov-maxwell.pdf"
   }
  },
  {

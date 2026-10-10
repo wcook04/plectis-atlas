@@ -113,7 +113,7 @@ Close the mathematics by stating the exact stronger statement that remains open,
 
 ## 13. AI assistance and responsibility
 
-You may use AI tools to help you read, draft, check arithmetic or find references. Say what you used and for what in `ai_assistance`, in one plain sentence. Every named author must understand every sentence and be able to answer a question about any step. Open every reference an AI tool suggests before you cite it: such tools invent citations, theorem numbers and quotations.
+You may use AI tools to help you read, check arithmetic, test your understanding or find references. Write the explanation itself in your own words: readers and reviewers are asking for a person's understanding, and an explanation an AI tool wrote is the thing they are tired of. If any passage was drafted by a tool, mark it in the text and say so in `ai_assistance`, in one plain sentence. Every named author must understand every sentence and be able to answer a question about any step, in a talk or a reply, without the tool. Open every reference an AI tool suggests before you cite it: such tools invent citations, theorem numbers and quotations.
 
 ## 14. Format
 

@@ -52,6 +52,14 @@ HISTORY = load("history.json")
 FAM = {f["id"]: f for f in FAMILIES}
 MS = {m["id"]: m for m in MANUSCRIPTS}
 ST = {s["id"]: s for s in STATEMENTS}
+try:
+    _CLAIMS = load("lean_claims.json")
+except FileNotFoundError:
+    _CLAIMS = []
+CLAIMS_BY_FAMILY: dict = {}
+for _c in _CLAIMS:
+    for _f in _c.get("families") or []:
+        CLAIMS_BY_FAMILY.setdefault(_f, []).append(_c)
 UP = SUMMARY["upstream"]
 COMMIT = UP["commit"]
 COMMIT_SHORT = COMMIT[:7]
@@ -1511,6 +1519,22 @@ def build_family(f):
     if names:
         contributors = f'<h3 class="h3">{esc(C("family.contributors_heading"))}</h3><p>{esc(", ".join(dict.fromkeys(names)))}</p>'
     facts = C("family.facts", manuscripts=n_ms(len(mss)), discipline=disc, lean=(n_lean(len(f["statements"])) if f["statements"] else C("words.no_lean").capitalize()))
+    rs = f.get("reasoning_summary")
+    reasoning_html = (f'<p class="muted small">{esc(C("family.reasoning_summary"))} <a class="ext" href="{esc(rs["url"])}" rel="noopener">{esc(rs["title"])}</a></p>') if rs else ""
+    fam_claims = CLAIMS_BY_FAMILY.get(fid, [])
+    formulations_html = ""
+    stmts_c = [c for c in fam_claims if c["kind"] == "statement"]
+    thms_c = [c for c in fam_claims if c["kind"] in ("theorem", "lemma")]
+    if stmts_c:
+        items = []
+        for c in stmts_c[:12]:
+            head_lines = lean_lines("\n".join((c.get("text") or c["head"]).split("\n")[:14]))
+            cmp_note = f' <span class="pill pill--support">{esc(C("family.formulation_checked", id=c["comparator_statement"]))}</span>' if c.get("comparator_statement") else ""
+            items.append(f'<li><p><code>{esc(c["name"].split(".")[-1])}</code>{cmp_note} <a class="ext small" href="{esc(BASE_BLOB + c["file"] + "#L" + str(c["line"]))}" rel="noopener">{esc(c["file"].split("/")[-1])}:{c["line"]}</a></p><pre class="lean lean--snippet"><code>{"".join(chr(10) + l for l in head_lines).lstrip(chr(10))}</code></pre></li>')
+        more = f'<p class="muted small">{esc(C("family.formulations_more", n=len(stmts_c) - 12))}</p>' if len(stmts_c) > 12 else ""
+        thm_line = f'<p class="muted small">{esc(C("family.formulations_theorems", n=len(thms_c)))}</p>' if thms_c else ""
+        formulations_html = f'<section class="band" aria-labelledby="h-form"><h2 class="h2" id="h-form">{esc(C("family.formulations_heading"))}</h2><p class="intro">{esc(C("family.formulations_intro"))}</p><ol class="formulations">{"".join(items)}</ol>{more}{thm_line}</section>'
+
     body = f"""<div class="frame page">
 {trail(root, [(esc(disc), f'{root}index.html#d={DISC_SLUG[di]}'), (fam_title_html(f), None)])}
 <header class="phead">
@@ -1534,9 +1558,11 @@ def build_family(f):
    <h2 class="h2" id="h-lean">{esc(C('family.lean_heading'))}</h2>
    {lean_html}
    {('<h3 class="h3">' + esc(C('family.lean_scope_heading')) + '</h3>' + scope) if scope else ''}
+   {reasoning_html}
   </div>
  </aside>
 </div>
+{formulations_html}
 <section class="band" aria-labelledby="h-rests">
  <div class="cols2">
   <div><h2 class="h2" id="h-rests">{esc(C('family.rests_heading'))}</h2><p class="intro">{esc(C('family.rests_intro'))}</p>{rests}</div>
@@ -1688,6 +1714,8 @@ def build_statement(stmt, og_available: set):
         (C("statement.imports"), ", ".join(f"<code>{esc(a)}</code>" for a in stmt["imports"])),
         (C("statement.non_mathlib"), ", ".join(f"<code>{esc(a)}</code>" for a in nm) if nm else esc(C("statements.none"))),
         (C("statement.lines"), num(stmt["statement_lines"])),
+        (C("statement.replay_key"), esc(C("statement.replay_none") if not CONTRIB["replays"].get(sid) else C("statement.replay_some", n=len(CONTRIB["replays"][sid])))),
+        (C("statement.nanoda_key"), esc(C("statement.nanoda_yes") if stmt["comparator"].get("enable_nanoda") else C("statement.nanoda_no"))),
     ]
     dl = "".join(f"<div><dt>{esc(k)}</dt><dd>{v}</dd></div>" for k, v in facts)
     # axiom note
@@ -1770,6 +1798,7 @@ def build_statement(stmt, og_available: set):
 </section>
 {axiom}
 {holes_html}
+<section class="band band--tight"><div class="note"><p class="note__h">{esc(C("statement.comparator_box_heading"))}</p><p>{ctext(C("statement.comparator_box_does"))}</p><p>{ctext(C("statement.comparator_box_not"))}</p></div></section>
 <section class="band band--tight"><dl class="dl">{dl}</dl></section>
 {scope}
 <section class="band" aria-labelledby="h-sbs">
@@ -2231,11 +2260,25 @@ def build_about():
     fill = dict(release_date=CFG["release_date"], families=s["families"], families_with_lean=s["families_with_lean"],
                 commit_short=COMMIT_SHORT, author=CFG["author"])
     cite = C("about.cite_format", author=CFG["author"], name=C("site.name"), url=BASE_URL, commit=COMMIT)
+    ur = SUMMARY.get("upstream_reported", {})
+    disclosed = []
+    for key in ("catalogue", "model", "compute", "problems_posed", "top_line_results_formalized", "human_edited"):
+        if ur.get(key, {}).get("quote"):
+            disclosed.append(f'<li>\u201c{esc(ur[key]["quote"])}\u201d <a class="ext small" href="{esc(ur[key]["source"])}" rel="noopener">{esc(ur[key]["source"].rsplit("/", 1)[-1])}</a></li>')
+    if ur.get("reasoning_summaries", {}).get("count"):
+        disclosed.append(f'<li>{esc(C("about.disclosed_traces", n=ur["reasoning_summaries"]["count"]))}</li>')
+    disclosed_items = "".join(disclosed)
+    related_items = "".join(f'<li><a class="ext" href="{esc(u)}" rel="noopener">{esc(t)}</a>: {esc(d)}</li>' for t, u, d in CFG.get("related_efforts", []))
     body = f"""<div class="frame page page--narrow prose-page">
 <header class="phead"><h1 class="phead__title">{esc(C('about.title'))}</h1></header>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.what_heading'))}</h2><p>{esc(C('about.what', **fill))}</p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.how_heading'))}</h2><p>{esc(C('about.how', **fill))}</p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.independence_heading'))}</h2><p>{esc(C('about.independence'))}</p></section>
+<section class="band band--tight"><h2 class="h2">{esc(C('about.made_heading'))}</h2><p>{esc(C('about.made'))}</p></section>
+<section class="band band--tight"><h2 class="h2">{esc(C('about.not_heading'))}</h2><p>{esc(C('about.not'))}</p></section>
+{('<section class="band band--tight"><h2 class="h2">' + esc(C('about.interests_heading')) + '</h2><p>' + esc(C('about.interests')) + '</p></section>') if C('about.interests') else ''}
+<section class="band band--tight"><h2 class="h2">{esc(C('about.disclosed_heading'))}</h2><p>{esc(C('about.disclosed_intro'))}</p><ul>{disclosed_items}</ul><p class="muted small">{esc(C('about.disclosed_not'))}</p></section>
+<section class="band band--tight"><h2 class="h2">{esc(C('about.related_heading'))}</h2><p>{esc(C('about.related_intro'))}</p><ul>{related_items}</ul></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.licence_heading'))}</h2><p>{esc(C('about.licence'))} <a class="ext" href="{CFG['upstream_repo']}/blob/{COMMIT}/LICENSE" rel="noopener">LICENSE</a></p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.cite_heading'))}</h2><p>{esc(C('about.cite'))}</p><div class="texsrc__box texsrc__box--open"><button class="copy" type="button" data-copy-next>{esc(C('words.copy'))}</button><pre><code>{esc(cite)}</code></pre></div></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.author_heading'))}</h2><p>{esc(C('about.author', **fill))} <a class="ext" href="{esc(CFG['author_url'])}" rel="noopener">{esc(C('about.author_link'))}</a></p></section>

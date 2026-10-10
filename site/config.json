@@ -1,26 +1,88 @@
 {
-  "repo": "https://github.com/wcook04/openai-math-atlas",
-  "base_url": "https://wcook04.github.io/openai-math-atlas/",
-  "author": "Will Cook",
-  "author_url": "https://wcook04.github.io/plectis/",
-  "upstream_repo": "https://github.com/openai/math",
-  "release_date": "6 October 2026",
-  "katex_version": "0.16.11",
-  "fonts_css": "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400..700;1,400..700&family=STIX+Two+Text:ital,wght@0,400..700;1,400..700&display=swap",
-  "issue_templates": {
-    "claim": "claim-an-explanation",
-    "check": "check-a-statement",
-    "problem": "report-a-problem",
-    "credit": "suggest-a-credit",
-    "replay": "share-a-replay"
+ "repo": "https://github.com/wcook04/openai-math-atlas",
+ "base_url": "https://wcook04.github.io/openai-math-atlas/",
+ "author": "Will Cook",
+ "author_url": "https://wcook04.github.io/plectis/",
+ "upstream_repo": "https://github.com/openai/math",
+ "release_date": "6 October 2026",
+ "katex_version": "0.16.11",
+ "fonts_css": "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400..700;1,400..700&family=STIX+Two+Text:ital,wght@0,400..700;1,400..700&display=swap",
+ "issue_templates": {
+  "claim": "claim-an-explanation",
+  "check": "check-a-statement",
+  "problem": "report-a-problem",
+  "credit": "suggest-a-credit",
+  "replay": "share-a-replay"
+ },
+ "issue_prefill": {
+  "claim-an-explanation": {
+   "family": "{family}"
   },
-  "issue_prefill": {
-    "claim-an-explanation": {"family": "{family}"},
-    "check-a-statement": {"statement": "{statement}"},
-    "report-a-problem": {"page": "{page}"},
-    "suggest-a-credit": {"family": "{family}"},
-    "share-a-replay": {"statement": "{statement}"}
+  "check-a-statement": {
+   "statement": "{statement}"
   },
-  "upstream_checkout": "../openai-math-upstream",
-  "contributing_path": "blob/main/CONTRIBUTING.md"
+  "report-a-problem": {
+   "page": "{page}"
+  },
+  "suggest-a-credit": {
+   "family": "{family}"
+  },
+  "share-a-replay": {
+   "statement": "{statement}"
+  }
+ },
+ "upstream_checkout": "../openai-math-upstream",
+ "contributing_path": "blob/main/CONTRIBUTING.md",
+ "related_efforts": [
+  [
+   "Erdős problems in the OpenAI proofs (Thomas Bloom, erdosproblems.com)",
+   "https://www.erdosproblems.com/forum/thread/blog:10",
+   "the Erdős problems this release touches, with notes on what the Lean covers"
+  ],
+  [
+   "Palomar",
+   "https://palomar-registry.org/",
+   "a registry of Lean formalisations checked with Comparator and a fidelity check"
+  ],
+  [
+   "Formal Conjectures (Google DeepMind)",
+   "https://github.com/google-deepmind/formal-conjectures",
+   "Lean statements of open conjectures, including Erdős problems"
+  ],
+  [
+   "ProofForum",
+   "https://www.proofforum.org/",
+   "discussion of AI-generated mathematics led by mathematicians"
+  ],
+  [
+   "citedbyagi",
+   "https://citedbyagi.com/",
+   "tracking where AI-generated results cite and use earlier work"
+  ],
+  [
+   "Responsible release guidance (AGMAI)",
+   "https://agmai.org/general-sep29/",
+   "the IAS-hosted advisory group's recommendations for releasing AI-generated mathematics"
+  ],
+  [
+   "The Leiden Declaration",
+   "https://leidendeclaration.ai/",
+   "community principles for AI in mathematics"
+  ],
+  [
+   "A Severe Misalignment of AI in Mathematics",
+   "https://terrytao.wordpress.com/2026/09/11/a-severe-misalignment-of-ai-in-mathematics/",
+   "the declaration by twenty-five Fields Medallists"
+  ],
+  [
+   "100 reactions to 100 solutions (Proofs and Prompts)",
+   "https://proofsandprompts.com/2026/10/08/100-reactions-to-100-solutions/",
+   "mathematicians' signed reactions to this release"
+  ],
+  [
+   "First Proof",
+   "https://1stproof.org/",
+   "independent, refereed assessments of AI on research problems"
+  ]
+ ]
 }

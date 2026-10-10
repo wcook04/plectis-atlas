@@ -171,7 +171,13 @@
   "contributors_heading": "Contributors",
   "cites_status": "{status}; {lean}",
   "xref_title": "A cross-reference to {label} in the paper",
-  "explain_jump": "Explain this result"
+  "explain_jump": "Explain this result",
+  "reasoning_summary": "OpenAI released an abridged summary of the model's reasoning for this result:",
+  "formulations_heading": "OpenAI's own Lean formulations",
+  "formulations_intro": "How OpenAI's Lean library states this result's claims as Lean propositions, in the project's Model.lean. Comparator checks only the statements above; the formulations here are stated in the library and are listed so a reader can compare them with the paper.",
+  "formulation_checked": "the statement {id} uses this",
+  "formulations_more": "{n} more formulations are in the same file.",
+  "formulations_theorems": "The project also contains {n} theorems named after the manuscript's claims."
  },
  "statement": {
   "trail_label": "Lean statement",
@@ -247,7 +253,16 @@
   },
   "coverage_provenance": "Classified from OpenAI’s note by an AI agent; no person has reviewed it yet.",
   "coverage_check": "Check this classification",
-  "coverage_check_title": "Check the coverage of {id}"
+  "coverage_check_title": "Check the coverage of {id}",
+  "replay_key": "Independent replay",
+  "replay_none": "No independent Comparator replay is recorded yet. The configuration is OpenAI's.",
+  "replay_some": "{n} independent Comparator replay receipts are recorded below.",
+  "nanoda_key": "External kernel check (nanoda)",
+  "nanoda_yes": "Enabled in OpenAI's configuration.",
+  "nanoda_no": "Not enabled in OpenAI's configuration.",
+  "comparator_box_heading": "What a Comparator check establishes",
+  "comparator_box_does": "When Comparator is run and accepts, OpenAI's proof proves exactly the theorem in this file, with exactly the definitions in this file, using only the permitted axioms, and the Lean kernel accepts every step.",
+  "comparator_box_not": "It does not establish that this file says what the paper says, that the paper's other claims are correct, or that the result is new. Those need a reader: a signed statement check, the paper itself, and the literature."
  },
  "paper": {
   "in_result": "Part of result {id}: {title}.",
@@ -470,7 +485,19 @@
   "author_heading": "Author",
   "author": "{author} builds and maintains the atlas. His own work on Erdős problems, with its Lean proofs, is at Plectis.",
   "author_link": "Plectis",
-  "cite_format": "{author}. {name}. {url}. Describing openai/math at commit {commit}."
+  "cite_format": "{author}. {name}. {url}. Describing openai/math at commit {commit}.",
+  "made_heading": "How this atlas was made",
+  "made": "Will Cook built the atlas with AI coding agents (Anthropic's Claude) working under his direction. Every number is computed by the scripts in the repository from OpenAI's files at the pinned commit, and the scripts are the source of truth. Classifications made by an AI agent, such as what each Lean statement covers, are labelled as such and wait for a person to review them. Verdicts on the site come only from named people.",
+  "not_heading": "What the atlas is not",
+  "not": "The atlas is not peer review, not an endorsement of any result, and not affiliated with OpenAI. It records what the release contains, what has been checked and by whom, and what is still open.",
+  "interests_heading": "Interests",
+  "interests": "",
+  "disclosed_heading": "What the release's README says about how it was made",
+  "disclosed_intro": "AGMAI's guidance asks labs to disclose the model, prompts, compute and time, and how many comparable problems were tried. OpenAI's README says, in its own words:",
+  "disclosed_traces": "Abridged reasoning summaries for {n} results, linked from those results' pages here.",
+  "disclosed_not": "The README does not list the prompts, the compute for each result, or which of the problems posed were not solved.",
+  "related_heading": "Related efforts",
+  "related_intro": "Other places where people are examining AI-generated mathematics."
  },
  "notfound": {
   "title": "Page not found",

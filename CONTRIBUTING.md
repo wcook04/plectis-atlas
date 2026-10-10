@@ -63,7 +63,10 @@ You stay responsible for what you submit. Read every line the agent drafts, chec
 
 - **Every contribution is credited by name** on the atlas pages it touches: explanations under their authors' names, checks under the reviewer's name, credits and replays under the contributor's name.
 - **A named person takes responsibility for every contribution.** Each file names that person with their GitHub handle. Agents may draft, check arithmetic, search and run tools; they never sign.
-- **AI assistance is disclosed.** Every Markdown contribution has an `ai_assistance` field holding `none` or a plain sentence saying which tool did what, and it is published with the contribution.
+- **AI assistance is disclosed.** Every Markdown contribution has an `ai_assistance` field holding `none` or a plain sentence saying which tool did what, and it is published with the contribution. Explanations are written in the contributor's own words; any passage a tool drafted is marked.
+- **Agents check and explain; they do not hunt for open problems.** The skills in this repository read, compare, trace and replay. Do not point them at unsolved problems in the release or elsewhere.
+- **Your contribution stays here unless you say otherwise.** The atlas never sends a contribution to OpenAI or to any other lab. If a way to offer checked rows back to a release is added later, it will be opt-in for each contribution.
+- **Declining is respected.** Some mathematicians have chosen not to work on AI-generated releases. Nobody is asked to review anything uninvited, and the atlas keeps no list of people to approach.
 - **Verdicts on the atlas come only from named people.** A statement check is the signed judgement of its reviewer. Several people can check the same statement; the atlas shows each verdict with its author. Maintainers do not change your verdict; if they disagree, they say so in the pull request.
 - **Credit for ideas requires a source.** A credit file names a citable earlier work, and the claim that an idea first appeared somewhere is made only with a source to back it.
 - **Every honest outcome is credited.** A `cannot-tell` check, a replay that ended in `error`, and a credit that settles on `uses` after a long search all record real work and are credited in the same way.

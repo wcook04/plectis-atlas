@@ -29,6 +29,34 @@
    "source": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/README.md",
    "quote": "719 manuscripts organized into 372 families"
   },
+  "model": {
+   "quote": "unreleased internal OpenAI model",
+   "source": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/README.md"
+  },
+  "compute": {
+   "quote": "On average, each result used three hours of ChatGPT Pro thinking compute with that model",
+   "source": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/README.md"
+  },
+  "human_edited": {
+   "quote": "the writeup for the Re(s) > 11/12 zero-free region for the Riemann zeta function was human edited for readability",
+   "source": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/README.md"
+  },
+  "reasoning_summaries": {
+   "count": 10,
+   "families": [
+    "007",
+    "017",
+    "087",
+    "102",
+    "159",
+    "197",
+    "221",
+    "271",
+    "287",
+    "362"
+   ],
+   "source": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/README.md"
+  },
   "problems_posed": {
    "approximately": 4000,
    "source": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/README.md",
