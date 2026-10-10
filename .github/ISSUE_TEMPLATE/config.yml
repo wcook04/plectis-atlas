@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: openai/math, the release the atlas reads
+    url: https://github.com/openai/math
+    about: The atlas is independent of OpenAI and cannot change its files. Report problems in them to the atlas with the form above, and to OpenAI through their repository if you wish.
+  - name: Contributing guide
+    url: https://github.com/wcook04/openai-math-atlas/blob/main/CONTRIBUTING.md
+    about: The five ways to contribute, the file formats, and how credit and AI assistance work.

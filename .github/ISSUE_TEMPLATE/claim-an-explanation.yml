@@ -1,0 +1,63 @@
+name: Claim an explanation
+description: Tell others you are writing an explanation of one result family.
+title: "Claim: explanation of family "
+labels: ["claim", "explanation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Every family in the atlas is an open exposition problem. Claim one here so that two people do not write the same explanation for the same reader. Someone writing for a different reader can still claim a family that is already claimed.
+
+        Next, open a draft pull request that adds `contributions/explanations/<family>/<your-github-handle>/explanation.md` with `status: draft`. Once a maintainer merges it, the atlas shows the family as claimed. A claim with no linked pull request after 30 days may be marked stale; a comment renews it.
+
+        Please read [CONTRIBUTING.md](https://github.com/wcook04/openai-math-atlas/blob/main/CONTRIBUTING.md) and [STYLE.md](https://github.com/wcook04/openai-math-atlas/blob/main/STYLE.md) first.
+  - type: input
+    id: family
+    attributes:
+      label: Family id
+      description: The three digits shown on the atlas, for example 159.
+      placeholder: "159"
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Your name, as it should appear on the atlas
+    validations:
+      required: true
+  - type: textarea
+    id: reader
+    attributes:
+      label: Who you are writing for
+      description: For example, undergraduates who have taken a first course in real analysis.
+    validations:
+      required: true
+  - type: textarea
+    id: background
+    attributes:
+      label: Your background with this mathematics
+      description: One or two lines. It helps reviewers.
+  - type: dropdown
+    id: timeline
+    attributes:
+      label: When you expect to open a draft pull request
+      options:
+        - Within a week
+        - Within a month
+        - Later than a month
+    validations:
+      required: true
+  - type: textarea
+    id: ai_assistance
+    attributes:
+      label: How you plan to use AI tools, if at all
+      placeholder: none
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Before you claim
+      options:
+        - label: I will understand and stand behind every sentence I submit, and I will say in the file how I used AI tools.
+          required: true
+        - label: I agree that my explanation is published on the atlas under CC BY 4.0, credited to me by name.
+          required: true

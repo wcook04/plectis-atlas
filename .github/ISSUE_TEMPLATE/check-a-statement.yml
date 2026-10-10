@@ -1,0 +1,96 @@
+name: Check a statement
+description: Say whether one Lean statement says what the paper's theorem says, without using git.
+title: "Check: "
+labels: ["statement-check"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A statement check compares one Lean challenge file with the paper theorem it formalises and gives one of five verdicts. The procedure, the checklist and a worked example are in [skills/check-a-statement/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/check-a-statement/SKILL.md).
+
+        A maintainer turns this form into `contributions/checks/<statement>/<your-github-handle>.md`, credited to you. If you use git, a pull request with that file is quicker.
+  - type: input
+    id: statement
+    attributes:
+      label: Statement id
+      description: The name of the Lean challenge file, for example ErdosReciprocal.
+    validations:
+      required: true
+  - type: input
+    id: paper_statement
+    attributes:
+      label: Where the paper states it
+      description: The manuscript, then the number, title if any, label and section of the result.
+      placeholder: Quasipolynomial Bounds for Arithmetic Progressions, Corollary 1.2, label ap:reciprocal, Section 1
+    validations:
+      required: true
+  - type: dropdown
+    id: verdict
+    attributes:
+      label: Verdict
+      description: matches, stronger-than-paper, weaker-than-paper, different or cannot-tell. The skill defines each one.
+      options:
+        - matches
+        - stronger-than-paper
+        - weaker-than-paper
+        - different
+        - cannot-tell
+    validations:
+      required: true
+  - type: textarea
+    id: paper
+    attributes:
+      label: What the paper says
+      description: Quote the statement exactly, then say what every symbol ranges over.
+    validations:
+      required: true
+  - type: textarea
+    id: lean
+    attributes:
+      label: What the Lean statement says
+      description: Every definition in the file in words, then the theorem as one plain sentence with its quantifiers in order.
+    validations:
+      required: true
+  - type: textarea
+    id: differences
+    attributes:
+      label: Differences
+      description: Every difference you found and whether it matters, and the checks that found no difference.
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this verdict
+      description: For matches, show that each statement implies the other. Otherwise show which implication holds and why the other fails, or what stopped you.
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Your name, as it should appear on the atlas
+    validations:
+      required: true
+  - type: input
+    id: background
+    attributes:
+      label: Your background, in one line
+      placeholder: PhD student in additive combinatorics; first time reading Lean
+    validations:
+      required: true
+  - type: textarea
+    id: ai_assistance
+    attributes:
+      label: AI assistance
+      description: Write none, or say which tool did what.
+    validations:
+      required: true
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Signature
+      options:
+        - label: I read the whole challenge file and the paper statement myself, and I sign this verdict.
+          required: true
+        - label: I agree that this check is published on the atlas under the licence of the repository (see NOTICE), credited to me by name.
+          required: true

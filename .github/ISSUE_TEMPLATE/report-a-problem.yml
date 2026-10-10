@@ -1,0 +1,75 @@
+name: Report a problem
+description: A mismatch between a paper and its Lean statement, an error in a manuscript, a Comparator failure, a wrong number, a broken link, or a mistake in a contribution.
+title: "Problem: "
+labels: ["problem"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A good report lets someone confirm the problem in two minutes: give the commit or page, and copy the exact lines. The guide is [skills/report-a-problem/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/report-a-problem/SKILL.md).
+
+        The atlas is independent of OpenAI and cannot change OpenAI's manuscripts or Lean files. Problems in them are recorded here, on public record.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of problem
+      options:
+        - Mismatch between a paper and its Lean statement
+        - Error in a manuscript
+        - Problem with a Lean file or a Comparator run
+        - Wrong or missing information on the atlas
+        - Broken link
+        - Mistake in a contribution (explanation, check, credit or replay)
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Where
+      description: The atlas page, or the file path and line numbers with the commit, or the manuscript with the theorem number and page.
+    validations:
+      required: true
+  - type: textarea
+    id: quote
+    attributes:
+      label: The exact text
+      description: Copy the relevant lines. Keep it short.
+      render: text
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: found
+    attributes:
+      label: What you found
+    validations:
+      required: true
+  - type: textarea
+    id: why_it_matters
+    attributes:
+      label: Why it matters
+      description: What the problem changes. For a mismatch, give the smallest example on which the two statements disagree.
+  - type: dropdown
+    id: confidence
+    attributes:
+      label: How sure are you?
+      options:
+        - Certain
+        - Fairly sure
+        - Unsure, please check
+    validations:
+      required: true
+  - type: textarea
+    id: ai_assistance
+    attributes:
+      label: AI assistance
+      description: Write none, or say which tool helped and how.
+  - type: input
+    id: name
+    attributes:
+      label: Name for credit (optional)
+      description: Leave empty to be credited by your GitHub handle.

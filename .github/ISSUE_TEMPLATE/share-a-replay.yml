@@ -1,0 +1,54 @@
+name: Share a replay
+description: Share the receipt from running Comparator on one statement on your own machine.
+title: "Replay: "
+labels: ["replay"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A replay re-runs the Comparator check for one statement and records what happened, whatever the outcome. The steps and the receipt format are in [skills/replay-a-proof/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/replay-a-proof/SKILL.md).
+
+        A maintainer turns this form into a receipt in `contributions/replays/`, credited to you. If you use git, a pull request with the receipt is quicker.
+  - type: input
+    id: statement
+    attributes:
+      label: Statement id
+      description: The name of the Lean challenge file, for example ErdosReciprocal.
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Result
+      options:
+        - accepted
+        - rejected
+        - error
+    validations:
+      required: true
+  - type: textarea
+    id: receipt
+    attributes:
+      label: Receipt
+      description: Paste the receipt JSON, filled in as the skill describes.
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: log_tail
+    attributes:
+      label: The end of comparator.log
+      description: The last 30 lines. Attach the full log as a file if you can.
+      render: text
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything unusual
+      description: For example a change to lake-manifest.json after lake update, a run without the systemd wrapper, or a retry.
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Before you submit
+      options:
+        - label: I ran this myself and the receipt describes that run.
+          required: true

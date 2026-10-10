@@ -1,0 +1,24 @@
+{
+  "kind": "replay",
+  "statement": "ErdosReciprocal",
+  "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+  "lean_toolchain": "leanprover/lean4:v4.34.1",
+  "comparator_commit": "[replace: output of git rev-parse HEAD in your comparator checkout]",
+  "lean4export_commit": "[replace: optional; output of git rev-parse HEAD in your lean4export checkout, or delete this line]",
+  "landrun_commit": "[replace: optional; output of git rev-parse HEAD in your landrun checkout, or delete this line]",
+  "result": "[replace: accepted, rejected or error]",
+  "axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "wall_time_seconds": "[replace: elapsed seconds, as a number without quotes]",
+  "machine": {
+    "os": "[replace: for example Ubuntu 24.04, Linux 6.8]",
+    "cpu": "[replace: for example AMD EPYC 9654, 32 cores]",
+    "ram_gb": "[replace: memory in GB, as a number without quotes]"
+  },
+  "contributor": {
+    "name": "[replace: your full name, as it should appear on the site]",
+    "github": "your-github-handle"
+  },
+  "log_sha256": "[replace: the first field printed by sha256sum comparator.log]",
+  "notes": "[replace: optional; anything unusual, for example a change to lake-manifest.json after lake update, or delete this line]",
+  "date": "2026-10-10"
+}

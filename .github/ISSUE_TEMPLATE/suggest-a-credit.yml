@@ -1,0 +1,81 @@
+name: Suggest a credit
+description: Record where an idea in a manuscript first appeared, or which earlier work a step builds on.
+title: "Credit: family "
+labels: ["credit"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A credit links one place in a manuscript to one earlier work. The guide, with where to search, is [skills/trace-a-credit/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/trace-a-credit/SKILL.md). Cite only a source you have opened, and say that an idea first appeared somewhere only when you can cite where.
+
+        A maintainer turns this form into a file in `contributions/credits/`, credited to you.
+  - type: input
+    id: family
+    attributes:
+      label: Family id
+      description: The three digits shown on the atlas, for example 159.
+    validations:
+      required: true
+  - type: input
+    id: manuscript
+    attributes:
+      label: Manuscript
+      description: Its title, or its folder name under preprints/ in openai/math.
+    validations:
+      required: true
+  - type: input
+    id: where
+    attributes:
+      label: Where in the manuscript
+      placeholder: proof of Lemma 4.2, Section 4
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: The earlier work
+      description: Authors, title, year, and a DOI, arXiv id or stable link if one exists.
+    validations:
+      required: true
+  - type: dropdown
+    id: relation
+    attributes:
+      label: Relation
+      description: How the step in the manuscript relates to the earlier work.
+      options:
+        - first-appeared-in
+        - uses
+        - special-case-of
+        - same-argument-as
+        - generalises
+    validations:
+      required: true
+  - type: textarea
+    id: explanation
+    attributes:
+      label: How they relate
+      description: Quote or paraphrase both sides with their theorem numbers or pages. Say how you checked, and for first-appeared-in, where you searched and how far back.
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: Your name, as it should appear on the atlas
+    validations:
+      required: true
+  - type: textarea
+    id: ai_assistance
+    attributes:
+      label: AI assistance
+      description: Write none, or say which tool did what.
+    validations:
+      required: true
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Before you submit
+      options:
+        - label: I have opened and read the earlier work myself.
+          required: true
+        - label: I agree that this credit is published on the atlas under the licence of the repository (see NOTICE), credited to me by name.
+          required: true
