@@ -364,3 +364,74 @@
   }
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', start); else start();
 })();
+
+/* Glossary previews, after the Plectis term previews: a marked word ([[id|text]] in the
+   copy, rendered as a.term) shows its short definition after a 140 ms dwell, beside the
+   word, and clears 260 ms after the pointer leaves. Focus shows it too; Escape closes it.
+   The definitions load once, on first use, from assets/glossary.json; without them the
+   word is a plain link to the glossary page. */
+(function () {
+  var doc = document, root = (doc.body && doc.body.getAttribute('data-root')) || '';
+  var data = null, loading = null, pop = null, current = null, showTimer = 0, hideTimer = 0;
+  function load() {
+    if (data || loading) return loading;
+    loading = fetch(root + 'assets/glossary.json').then(function (r) { return r.ok ? r.json() : { terms: [] }; })
+      .then(function (j) { data = {}; (j.terms || []).forEach(function (t) { data[t.id] = t; }); return data; })
+      .catch(function () { data = {}; return data; });
+    return loading;
+  }
+  function ensurePop() {
+    if (pop) return pop;
+    pop = doc.createElement('div');
+    pop.className = 'term-pop'; pop.id = 'term-pop'; pop.setAttribute('role', 'tooltip'); pop.hidden = true;
+    pop.addEventListener('mouseenter', function () { clearTimeout(hideTimer); });
+    pop.addEventListener('mouseleave', scheduleHide);
+    doc.body.appendChild(pop);
+    return pop;
+  }
+  function place(a) {
+    var r = a.getBoundingClientRect(), p = ensurePop(), vw = doc.documentElement.clientWidth;
+    p.style.maxWidth = Math.min(340, vw - 24) + 'px';
+    var w = p.offsetWidth, h = p.offsetHeight;
+    var left = Math.max(12, Math.min(r.left + window.scrollX, window.scrollX + vw - w - 12));
+    var below = r.bottom + 8 + h < window.innerHeight;
+    var top = below ? r.bottom + window.scrollY + 8 : r.top + window.scrollY - h - 8;
+    p.style.left = left + 'px'; p.style.top = top + 'px';
+  }
+  function show(a) {
+    load().then(function (d) {
+      var t = d && d[a.getAttribute('data-term')];
+      if (!t || current !== a) return;
+      var p = ensurePop();
+      p.innerHTML = '';
+      var h = doc.createElement('p'); h.className = 'term-pop__h'; h.textContent = t.term;
+      var b = doc.createElement('p'); b.className = 'term-pop__b'; b.textContent = t.short;
+      p.appendChild(h); p.appendChild(b);
+      p.hidden = false; a.setAttribute('aria-describedby', 'term-pop');
+      place(a);
+    });
+  }
+  function hide() {
+    if (pop) pop.hidden = true;
+    if (current) current.removeAttribute('aria-describedby');
+    current = null;
+  }
+  function scheduleHide() { clearTimeout(showTimer); clearTimeout(hideTimer); hideTimer = setTimeout(hide, 260); }
+  function onEnter(e) {
+    var a = e.target.closest && e.target.closest('a.term');
+    if (!a) return;
+    clearTimeout(hideTimer); clearTimeout(showTimer);
+    current = a;
+    showTimer = setTimeout(function () { show(a); }, e.type === 'focusin' ? 0 : 140);
+  }
+  function onLeave(e) {
+    var a = e.target.closest && e.target.closest('a.term');
+    if (a && a === current) scheduleHide();
+  }
+  doc.addEventListener('mouseover', onEnter);
+  doc.addEventListener('mouseout', onLeave);
+  doc.addEventListener('focusin', onEnter);
+  doc.addEventListener('focusout', onLeave);
+  doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && pop && !pop.hidden) hide(); });
+  window.addEventListener('scroll', function () { if (current && pop && !pop.hidden) place(current); }, { passive: true });
+})();

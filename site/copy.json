@@ -28,7 +28,8 @@
   "brand_label": "OpenAI Math Atlas, home",
   "breadcrumb": "Breadcrumb",
   "site_nav": "Site",
-  "sources": "Sources"
+  "sources": "Sources",
+  "glossary": "Glossary"
  },
  "words": {
   "result": "result",
@@ -211,10 +212,20 @@
   "standing_groups_1": "one group",
   "standing_groups_n": "{n} groups",
   "standing_run_none": "none re-run yet",
-  "standing_finite_counts": {"certified": "{n} certified", "needs-data": "{n} need unpublished data", "needs-data_1": "1 needs unpublished data", "refused": "{n} undecided"},
+  "standing_finite_counts": {
+   "certified": "{n} certified",
+   "needs-data": "{n} need unpublished data",
+   "needs-data_1": "1 needs unpublished data",
+   "refused": "{n} undecided"
+  },
   "standing_read_1": "1 paper in the browser",
   "standing_readers_k": "Two independent readers",
-  "standing_readers": {"agree-full": "both find the headline stated", "agree-less": "both find the Lean states less", "disagree": "they disagree", "one": "one reading so far"},
+  "standing_readers": {
+   "agree-full": "both find the headline stated",
+   "agree-less": "both find the Lean states less",
+   "disagree": "they disagree",
+   "one": "one reading so far"
+  },
   "standing_hol_k": "HOL Light",
   "standing_hol_1": "one card",
   "standing_hol_n": "{n} cards",
@@ -224,16 +235,20 @@
   "standing_read_k": "Read in full",
   "standing_read_v": "{n} papers in the browser",
   "readings_heading": "Independent readings of the scope",
-  "readings_intro": "People outside OpenAI have read this family's challenge statements against its headline. Their verdicts, in their own terms and credited, sit beside OpenAI's note. Where they differ, both stand.",
+  "readings_intro": "[[readers|People outside OpenAI]] have read this family's challenge statements against its headline. Their verdicts, in their own terms and credited, sit beside OpenAI's note. Where they differ, both stand.",
   "reading_gap": "What they find missing:",
   "withdrawn_heading": "Withdrawn from this result",
   "withdrawn_intro": "These manuscripts were listed under this result when the release was published (CONTENTS.md at its first commit), when it was titled “{title}”. OpenAI has since withdrawn them; each notice is quoted below.",
   "finite_heading": "Finite parts checked by exact computation",
-  "finite_intro": "Carlos Toledo’s cert-machine decides finite parts of papers with exact code written independently from each paper, reading the release’s files at the pinned commit. Each check says whether it decides the whole headline or one finite component of an argument whose other parts it does not decide.",
-  "finite_words": {"certified": "Certified", "refused": "Not decided (refused)", "needs-data": "Needs data that was not published"},
+  "finite_intro": "Carlos Toledo’s cert-machine decides finite parts of papers with [[exact-check|exact code]] written independently from each paper, reading the release’s files at the pinned commit. Each check says whether it decides the whole headline or one finite component of an argument whose other parts it does not decide.",
+  "finite_words": {
+   "certified": "Certified",
+   "refused": "Not decided (refused)",
+   "needs-data": "Needs data that was not published"
+  },
   "finite_detail": "What was decided, in cert-machine’s words",
   "hol_heading": "Checked in another proof assistant",
-  "hol_intro": "Ben Knill proved selected steps of this family again in HOL Light, independently of Lean, with negative controls that must fail. The author states that no card proves a headline theorem of the release. Quoted under CC BY 4.0.",
+  "hol_intro": "Ben Knill proved selected steps of this family again in [[hol-light|HOL Light]], independently of Lean, with negative controls that must fail. The author states that no card proves a headline theorem of the release. Quoted under CC BY 4.0.",
   "hol_card": "HOL Light card {card}:",
   "hol_relation": "Relation to the release’s Lean:",
   "hol_runs": "Recorded runs: warm {warm}, cold {cold}.",
@@ -321,8 +336,8 @@
   "defs_intro": "Local definitions the statement names, followed through the definitions they name in turn. The match is by name in the source text, so a name reached only through notation can be missed; the full file is below.",
   "defs_more": "{n} more definitions are reached the same way; the full file lists them.",
   "def_show": "Show the full declaration ({n} lines)",
-  "sorry_note": "A Comparator challenge file states the theorem and leaves its proof as `sorry` on purpose. OpenAI’s proof is in the solution module listed here, and Comparator is the tool that checks that proof against this statement.",
-  "sorry_note_axiom": "A Comparator challenge file states the theorem and leaves its proof open. This file writes `axiom mainStatement` where others write `sorry`; OpenAI’s solution module proves `main` directly, and Comparator is the tool that checks that proof against this statement.",
+  "sorry_note": "A [[challenge|Comparator challenge file]] states the theorem and leaves its proof as [[sorry|`sorry`]] on purpose. OpenAI’s proof is in the solution module listed here, and Comparator is the tool that checks that proof against this statement.",
+  "sorry_note_axiom": "A [[challenge|Comparator challenge file]] states the theorem and leaves its proof open. This file writes `axiom mainStatement` where others write `sorry`; OpenAI’s solution module proves `main` directly, and Comparator is the tool that checks that proof against this statement.",
   "main_yes": "OpenAI lists this as a main result in its Lean catalogue.",
   "main_no": "OpenAI’s Lean catalogue leaves this outside its main results; the release’s Lean notes for result {id} link it.",
   "solution": "Solution module",
@@ -373,7 +388,7 @@
   "review_recorded": "Statement review: {items}",
   "replay_none_short": "Independent replay: none recorded",
   "reruns_heading": "What independent re-runs found",
-  "reruns_intro": "Other people have run this challenge through Comparator themselves. Each line is their report, in their terms and credited; the atlas has not repeated their runs.",
+  "reruns_intro": "Other people have [[rerun|run this challenge through Comparator]] themselves. Each line is their report, in their terms and credited; the atlas has not repeated their runs.",
   "rerun_kinds": {
    "accepted": "Re-run accepted",
    "not-decided": "Re-run reached no verdict",
@@ -434,8 +449,8 @@
   "nanoda_yes": "Enabled in OpenAI's configuration.",
   "nanoda_no": "Off in OpenAI's configuration.",
   "comparator_box_heading": "What an accepted Comparator run would establish",
-  "comparator_box_does": "If Comparator is run under this configuration and accepts, the solution proves the configured theorem using only the allowed axioms, and the Lean kernel accepts every step.",
-  "comparator_box_holes": "This configuration lists {n} definition holes: {names}. Comparator compares these by name and type only; their bodies come from the solution.",
+  "comparator_box_does": "If [[comparator|Comparator]] is run under this configuration and accepts, the solution proves the configured theorem using only the [[axioms|allowed axioms]], and the [[kernel|Lean kernel]] accepts every step.",
+  "comparator_box_holes": "This configuration lists {n} [[holes|definition holes]]: {names}. Comparator compares these by name and type only; their bodies come from the solution.",
   "comparator_box_noholes": "This configuration lists no definition holes, so every definition the statement uses is compared as it is written in this file.",
   "comparator_box_axioms": "Allowed axioms:",
   "comparator_box_not": "An accepted run leaves three questions to a reader: whether this file says what the paper says, whether the paper's other claims are correct, and whether the result is new. Those need a signed statement check, the paper itself and the literature."
@@ -867,5 +882,9 @@
   "adopted_kind_idea": "Idea, re-implemented with credit",
   "adopted_kind_code": "Code, reused under its licence",
   "adopted_kind_data": "Data, reused under its licence"
+ },
+ "glossary": {
+  "title": "Glossary",
+  "lede": "The words this atlas uses for what has and has not been checked, in plain terms. Pages show these definitions when you hover a marked word."
  }
 }

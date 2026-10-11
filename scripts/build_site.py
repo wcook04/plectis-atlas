@@ -121,8 +121,21 @@ def C(path: str, **kw) -> str:
 
 
 def ctext(s: str) -> str:
-    """Escape copy text and set `backticked` words as code."""
-    return re.sub(r"`([^`]+)`", r"<code>\1</code>", esc(s))
+    """Escape copy text, set `backticked` words as code, and turn [[id|text]] into a
+    glossary term (its href is completed with the page's root by write_page)."""
+    out = re.sub(r"`([^`]+)`", r"<code>\1</code>", esc(s))
+    return TERM_RE.sub(lambda m: term_link(m.group(1), m.group(2)), out)
+
+
+GLOSSARY = {t_["id"]: t_ for t_ in json.loads((ASSETS / "glossary.json").read_text(encoding="utf-8"))["terms"]}
+TERM_RE = re.compile(r"\[\[([a-z0-9-]+)\|([^\]]+)\]\]")
+
+
+def term_link(tid: str, text_html: str) -> str:
+    if tid not in GLOSSARY:
+        WARN.append(f"unknown glossary term {tid!r}")
+        return text_html
+    return f'<a class="term" href="__ROOT__glossary.html#{tid}" data-term="{tid}">{text_html}</a>'
 
 
 def nword(n: int, sing: str, plur: str) -> str:
@@ -1094,7 +1107,28 @@ def independent_reruns_html(stmt, root):
     if not items:
         return ""
     return (f'<div class="reruns"><h3 class="h3">{esc(C("statement.reruns_heading"))}</h3>'
-            f'<p class="intro small">{esc(C("statement.reruns_intro"))}</p><ul class="cfinds">{"".join(items)}</ul></div>')
+            f'<p class="intro small">{ctext(C("statement.reruns_intro"))}</p><ul class="cfinds">{"".join(items)}</ul></div>')
+
+
+def build_glossary():
+    """The glossary page: every term pages link with [[id|text]], grouped by first letter."""
+    rel = "glossary.html"
+    terms = sorted(GLOSSARY.values(), key=lambda t_: t_["term"].lower())
+    groups = {}
+    for t_ in terms:
+        groups.setdefault(t_["term"][0].upper(), []).append(t_)
+    blocks = "".join(
+        f'<section class="gloss__group" aria-labelledby="g-{L}"><h2 class="h3" id="g-{L}">{L}</h2><dl class="gloss">'
+        + "".join(f'<div class="gloss__row" id="{esc(t_["id"])}"><dt>{esc(t_["term"])}</dt><dd>{esc(t_["short"])}</dd></div>' for t_ in group)
+        + "</dl></section>" for L, group in groups.items())
+    body = f"""<div class="frame page page--narrow">
+<header class="phead">
+ <h1 class="phead__title">{esc(C('glossary.title'))}</h1>
+ <p class="lede">{esc(C('glossary.lede'))}</p>
+</header>
+{blocks}
+</div>"""
+    write_page(rel, page(rel, C("glossary.title"), C("glossary.lede"), body, current="glossary"))
 
 
 def standing_html(f, root):
@@ -1173,7 +1207,7 @@ def finite_checks_html(f, root):
                          f'<a class="ext" href="{esc(c["url"])}" rel="noopener">{esc(C("sources.record_link"))}</a></p></li>')
     if not items:
         return ""
-    return (f'<h3 class="h3" id="h-finite">{esc(C("family.finite_heading"))}</h3><p class="intro small">{esc(C("family.finite_intro"))}</p>'
+    return (f'<h3 class="h3" id="h-finite">{esc(C("family.finite_heading"))}</h3><p class="intro small">{ctext(C("family.finite_intro"))}</p>'
             f'<ul class="cfinds">{"".join(items)}</ul>')
 
 
@@ -1189,7 +1223,7 @@ def other_assistant_html(f, root):
                 f'{source_link(v["source"], root)}. <a class="ext" href="{esc(c["url"])}" rel="noopener">{esc(C("family.hol_card_link"))}</a></p></li>')
     if not items:
         return ""
-    return (f'<h3 class="h3" id="h-hol">{esc(C("family.hol_heading"))}</h3><p class="intro small">{esc(C("family.hol_intro"))}</p>'
+    return (f'<h3 class="h3" id="h-hol">{esc(C("family.hol_heading"))}</h3><p class="intro small">{ctext(C("family.hol_intro"))}</p>'
             f'<ul class="cfinds">{"".join(items)}</ul>')
 
 
@@ -1207,7 +1241,7 @@ def scope_readings_html(f, root):
                      f'<p class="small muted">{source_link(v["source"], root)}. <a class="ext" href="{esc(rv["url"])}" rel="noopener">{esc(C("sources.record_link"))}</a></p></li>')
     if not items:
         return ""
-    return (f'<h3 class="h3" id="h-readings">{esc(C("family.readings_heading"))}</h3><p class="intro small">{esc(C("family.readings_intro"))}</p>'
+    return (f'<h3 class="h3" id="h-readings">{esc(C("family.readings_heading"))}</h3><p class="intro small">{ctext(C("family.readings_intro"))}</p>'
             f'<ul class="cfinds">{"".join(items)}</ul>')
 
 
@@ -1464,8 +1498,8 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 
 
 NAV = [("index.html", "atlas"), ("explain.html", "explain"), ("statements.html", "statements"),
-       ("sources.html", "sources"), ("numbers.html", "numbers"), ("contribute.html", "contribute"),
-       ("about.html", "about")]
+       ("sources.html", "sources"), ("numbers.html", "numbers"), ("glossary.html", "glossary"),
+       ("contribute.html", "contribute"), ("about.html", "about")]
 
 
 def header(rel: str, current: str | None) -> str:
@@ -1525,6 +1559,8 @@ def footer(rel: str) -> str:
 def write_page(rel: str, html_text: str, index=True):
     path = OUT / rel
     path.parent.mkdir(parents=True, exist_ok=True)
+    # glossary links made by ctext() learn the page's depth here
+    html_text = html_text.replace("__ROOT__", "../" * rel.count("/"))
     path.write_text(html_text, encoding="utf-8")
     if index:
         PAGES.append(rel)
@@ -3516,6 +3552,7 @@ def main():
     build_citations_within()
     build_references_outside()
     build_sources()
+    build_glossary()
     build_contribute()
     build_about()
     build_404()

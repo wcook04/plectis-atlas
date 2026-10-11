@@ -821,3 +821,16 @@ body.social { margin: 0; width: 1200px; height: 675px; overflow: hidden; backgro
   .lean--snippet .ln { overflow-wrap: anywhere; }
   .choose__box { position: static; min-width: 0; box-shadow: none; }
 }
+
+/* Glossary terms and their previews (assets/atlas.js), after Plectis. */
+a.term { color: inherit; text-decoration: underline dotted; text-decoration-color: var(--rule-control); text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+a.term:hover, a.term:focus-visible { text-decoration-color: currentColor; }
+.term-pop { position: absolute; z-index: 60; padding: 10px 12px; border: 1px solid var(--rule-strong); border-radius: 10px; background: var(--surface); color: var(--ink); font-family: var(--sans); font-size: 0.9rem; line-height: 1.45; }
+.term-pop__h { margin: 0 0 4px; font-weight: 600; }
+.term-pop__b { margin: 0; color: var(--ink-soft); }
+.gloss { margin: 0; }
+.gloss__row { padding: 12px 0; border-top: 1px solid var(--rule); scroll-margin-top: 90px; }
+.gloss__row:target { background: var(--select); }
+.gloss dt { font-family: var(--serif); font-size: 1.0625rem; font-weight: 600; margin-bottom: 4px; }
+.gloss dd { margin: 0; font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; color: var(--ink-soft); max-width: 40em; }
+.gloss__group + .gloss__group { margin-top: 18px; }
