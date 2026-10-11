@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""List open units of work in the atlas, easiest first.
+"""List candidate contributions using the recorded coverage and source metadata.
 
 Usage (from the repository root):
     python3 skills/start-here/find_work.py --kind check [--discipline "number theory"] [--limit 5]
@@ -9,8 +9,9 @@ Usage (from the repository root):
     python3 skills/start-here/find_work.py --disciplines
 
 It reads data/*.json and the files under contributions/. It cannot see GitHub
-issues, so before you start an explanation, look at the open issues labelled
-"claim" to see whether someone else is already writing one.
+issues. Optional announcements use the "claim" label and reserve nothing.
+The ordering describes source metadata, not mathematical difficulty. A recorded
+check can remain unresolved; this is not the complete review queue.
 
 Standard library only; Python 3.10 or newer.
 """
@@ -46,7 +47,9 @@ def existing(root: Path, folder: str) -> dict[str, int]:
     if base.is_dir():
         for sub in base.iterdir():
             if sub.is_dir() and not sub.name.startswith((".", "_")):
-                counts[sub.name] = sum(1 for p in sub.rglob("*") if p.suffix in (".md", ".json"))
+                count = sum(1 for p in sub.rglob("*") if p.is_file() and p.suffix in (".md", ".json"))
+                if count:
+                    counts[sub.name] = count
     return counts
 
 
@@ -62,7 +65,7 @@ def shorten(text: str, width: int = 96) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="List open units of work in the atlas, easiest first.")
+    parser = argparse.ArgumentParser(description="List candidate contributions using recorded coverage and source metadata.")
     parser.add_argument("--kind", choices=("check", "explanation", "credit", "replay"), default="check")
     parser.add_argument("--discipline", help="part of a discipline name, for example 'number theory'")
     parser.add_argument("--main-results", action="store_true", help="only statements marked as main results")
@@ -156,11 +159,9 @@ def main() -> int:
                   f"{'s' if len(stmts) != 1 else ''} ({checked} with a statement check)")
             print()
         if shown:
-            print("Next: claim the family with the 'Claim an explanation' issue form, then\n"
-                  "      mkdir -p contributions/explanations/<family>/<your-github-handle>\n"
-                  "      cp contributions/_templates/explanation.md "
-                  "contributions/explanations/<family>/<your-github-handle>/explanation.md\n"
-                  "      and follow skills/explain-a-result/SKILL.md")
+            print("Next: follow skills/explain-a-result/SKILL.md. Your file belongs at\n"
+                  "      contributions/explanations/<family>/<your-github-handle>/explanation.md\n"
+                  "      Extend an existing file; never overwrite it. Announcing work is optional.")
         return 0
 
     # credits

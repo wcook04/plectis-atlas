@@ -1,75 +1,49 @@
-name: Report a problem
-description: A mismatch between a paper and its Lean statement, an error in a manuscript, a Comparator failure, a wrong number, a broken link, or a mistake in a contribution.
-title: "Problem: "
+name: Suggest a change or ask a precise question
+description: One source-linked correction, question, example or suggestion for the next reader.
+title: "Note: "
 labels: ["problem"]
 body:
   - type: markdown
     attributes:
       value: |
-        A good report lets someone confirm the problem in two minutes: give the commit or page, and copy the exact lines. The guide is [skills/report-a-problem/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/report-a-problem/SKILL.md).
-
-        The atlas is independent of OpenAI and cannot change OpenAI's manuscripts or Lean files. Problems in them are recorded here, on public record.
-  - type: dropdown
-    id: kind
-    attributes:
-      label: What kind of problem
-      options:
-        - Mismatch between a paper and its Lean statement
-        - Error in a manuscript
-        - Problem with a Lean file or a Comparator run
-        - Wrong or missing information on the atlas
-        - Broken link
-        - Mistake in a contribution (explanation, check, credit or replay)
-        - Something else
-    validations:
-      required: true
+        Pick one passage. Give its location, your note, and what supports it. A precise question is welcome; you do not need a verdict on the whole result. If the note is incorporated, its credit links back here.
   - type: input
     id: page
     attributes:
       label: Where
-      description: The atlas page, or the file path and line numbers with the commit, or the manuscript with the theorem number and page.
+      description: The atlas page or source link, with the statement label or passage and source commit where relevant.
     validations:
       required: true
   - type: textarea
-    id: quote
+    id: note
     attributes:
-      label: The exact text
-      description: Copy the relevant lines. Keep it short.
-      render: text
-  - type: textarea
-    id: expected
-    attributes:
-      label: What you expected
+      label: Your note
+      description: One correction, question, example or suggested explanation. Say what remains uncertain.
     validations:
       required: true
   - type: textarea
-    id: found
+    id: evidence
     attributes:
-      label: What you found
+      label: What you checked
+      description: The exact source passage or small calculation. For a question, say which sources you read and which step you cannot follow.
     validations:
       required: true
-  - type: textarea
-    id: why_it_matters
-    attributes:
-      label: Why it matters
-      description: What the problem changes. For a mismatch, give the smallest example on which the two statements disagree.
-  - type: dropdown
-    id: confidence
-    attributes:
-      label: How sure are you?
-      options:
-        - Certain
-        - Fairly sure
-        - Unsure, please check
-    validations:
-      required: true
-  - type: textarea
+  - type: input
     id: ai_assistance
     attributes:
       label: AI assistance
-      description: Write none, or say which tool helped and how.
+      description: Write none, or state which tools helped and how.
+    validations:
+      required: true
   - type: input
     id: name
     attributes:
-      label: Name for credit (optional)
-      description: Leave empty to be credited by your GitHub handle.
+      label: Public name for credit (optional)
+      description: Leave empty to use your GitHub handle.
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Before submitting
+      options:
+        - label: I understand the note and have made its uncertainty clear. I agree to the repository's contribution terms in CONTRIBUTING.md and NOTICE.
+          required: true

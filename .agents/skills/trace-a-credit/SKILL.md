@@ -15,13 +15,15 @@ The manuscripts cite earlier work, but a bibliography does not always say which 
 
 | Relation | Meaning |
 |---|---|
-| `first-appeared-in` | The idea or result at `where` first appeared in the source, as far as your search could establish. |
+| `first-appeared-in` | The source is the earliest appearance found within the search you describe; the atlas does not certify global priority. |
 | `uses` | The step at `where` uses a result or method from the source. |
 | `special-case-of` | The result at `where` is a special case of a result in the source. |
 | `same-argument-as` | The argument at `where` is essentially the argument in the source. |
 | `generalises` | The result at `where` generalises a result in the source. |
 
 The body has three to six sentences: the step in the manuscript with its locator, the earlier result with its theorem number and page, how they relate, and how you checked.
+
+Use `uses` for an ordinary verified dependency. Searching for the first appearance is optional and may take substantial specialist work. Read both passages and record the source versions.
 
 ## How to search
 
@@ -54,7 +56,7 @@ mkdir -p contributions/credits/<family>
 cp contributions/_templates/credit.md contributions/credits/<family>/<your-github-handle>-<short-slug>.md
 ```
 
-The slug is a few lowercase words that identify the link, such as `erdos-turan-1936` or `lemma-4-2-weyl`. Fill in the frontmatter and the body, then run:
+The slug is a few lowercase words that identify the link, such as `erdos-turan-1936` or `lemma-4-2-weyl`. Fill in the frontmatter and the body, including `upstream_commit` from `upstream.json`, then run:
 
 ```sh
 python3 scripts/check_contributions.py contributions/credits/<family>/<your-github-handle>-<short-slug>.md

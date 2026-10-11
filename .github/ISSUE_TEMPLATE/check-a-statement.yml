@@ -6,7 +6,9 @@ body:
   - type: markdown
     attributes:
       value: |
-        A statement check compares one Lean challenge file with the paper theorem it formalises and gives one of five verdicts. The procedure, the checklist and a worked example are in [skills/check-a-statement/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/check-a-statement/SKILL.md).
+        A statement check compares one Comparator challenge and all its configured theorems with the located paper statements and gives one of five verdicts. The procedure, the checklist and a worked example are in [skills/check-a-statement/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/check-a-statement/SKILL.md).
+
+        For a smaller observation, use the note form. A full verdict concerns correspondence with the specified paper statements; it does not claim that Comparator has been replayed.
 
         A maintainer turns this form into `contributions/checks/<statement>/<your-github-handle>.md`, credited to you. If you use git, a pull request with that file is quicker.
   - type: input
@@ -17,11 +19,18 @@ body:
     validations:
       required: true
   - type: input
+    id: upstream_commit
+    attributes:
+      label: Source commit
+      description: The full 40-character openai/math commit you read, from upstream.json.
+    validations:
+      required: true
+  - type: input
     id: paper_statement
     attributes:
       label: Where the paper states it
       description: The manuscript, then the number, title if any, label and section of the result.
-      placeholder: Quasipolynomial Bounds for Arithmetic Progressions, Corollary 1.2, label ap:reciprocal, Section 1
+      placeholder: Manuscript folder, label, source file and section; add a theorem number only after checking it
     validations:
       required: true
   - type: dropdown
@@ -30,11 +39,11 @@ body:
       label: Verdict
       description: matches, stronger-than-paper, weaker-than-paper, different or cannot-tell. The skill defines each one.
       options:
+        - cannot-tell
         - matches
         - stronger-than-paper
         - weaker-than-paper
         - different
-        - cannot-tell
     validations:
       required: true
   - type: textarea
@@ -62,7 +71,7 @@ body:
     id: why
     attributes:
       label: Why this verdict
-      description: For matches, show that each statement implies the other. Otherwise show which implication holds and why the other fails, or what stopped you.
+      description: For matches, show that each statement implies the other. Otherwise justify the comparison at its stated scope, or say what stopped you. An unproved converse is not automatically false.
     validations:
       required: true
   - type: input

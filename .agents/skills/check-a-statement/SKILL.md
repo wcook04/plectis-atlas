@@ -5,7 +5,7 @@ description: Use when comparing one Lean statement from OpenAI's mathematics rel
 
 # Check a statement
 
-A statement check answers one question: does this Lean statement say what the paper's theorem says? You read both, compare them line by line, choose one of five verdicts and explain it. A first check of a short statement takes about fifteen minutes once you know the steps; a long statement can take an evening.
+A statement check compares one Comparator challenge and all its configured theorems with their located paper statements. You read both, compare them line by line, choose one of five verdicts and explain it. The time depends on the mathematics, prerequisites and number of configured theorems. For a first fifteen-minute task, make one source-linked note through the problem-report form. A complete verdict can follow when a person has read and understood the required sources.
 
 ## What Comparator certifies, and what it leaves to you
 
@@ -23,7 +23,7 @@ Comparator does not check that the challenge file means what the paper means. A 
 
 The verdict belongs to a named person. You must have read the challenge file and the paper statement yourself, and you must agree with every sentence in the file, because your name, GitHub handle and background appear on the atlas beside the verdict.
 
-An AI agent may help you read, may draft every section and may run the checklist. If you are an agent: never write the reviewer's name, handle or background yourself, never choose the verdict on the person's behalf, and say in `ai_assistance` what you drafted. Put your draft in front of the person, point out each step you could not verify, and let them decide.
+An AI agent may help you read, may draft every section and may run the checklist. If you are an agent: never invent a person's name, handle, background or approval. Copy supplied details only after the person confirms this contribution; never choose the verdict on their behalf, and say in `ai_assistance` what you drafted. Keep an unsigned draft private. Show the person the sources and every step not checked, using visible text, and let them decide. If they have not supplied a signature or cannot decide, do not invent one to make validation pass.
 
 ## Before you start
 
@@ -33,7 +33,7 @@ An AI agent may help you read, may draft every section and may run the checklist
    python3 skills/start-here/find_work.py --kind check --discipline "number theory"
    ```
 
-2. Open these files at the commit in `upstream.json`. The atlas page for the statement links the Lean file, the scope note and the paper's statements in its TeX source.
+2. Record the full `upstream_commit` from `upstream.json` in your contribution, then open these files at that commit. The atlas page for the statement links the Lean file, the scope note and the paper's statements in its TeX source.
    - the challenge file `lean/ComparatorChallenges/<Name>.lean` and its `<Name>.json`;
    - the scope note `lean/docs/<family>.md`, which says which paper result the statement formalises and what it leaves out;
    - the paper, `preprints/<manuscript>/` upstream (the TeX source is in its `build/` folder, useful for labels).
@@ -95,13 +95,13 @@ When an implication needs a small translation (removing 0 from a set, shifting a
 
 | Verdict | Lean implies paper | Paper implies Lean | What it tells a reader |
 |---|---|---|---|
-| `matches` | yes | yes | The proof certifies the paper's statement. |
-| `stronger-than-paper` | yes | no | The proof certifies the paper's statement and more. |
-| `weaker-than-paper` | no | yes | The proof certifies part of what the paper claims. |
-| `different` | no | no | The two say different things; the proof does not certify the paper's statement. |
-| `cannot-tell` | ? | ? | You could not decide. Say exactly what stopped you. |
+| `matches` | yes | yes | The compared formulations agree under the stated translation. This records no replay. |
+| `stronger-than-paper` | yes | no | The formal statement has the stronger content described in the check. This records no replay. |
+| `weaker-than-paper` | no | yes | The formal statement has the weaker content described in the check. This records no replay. |
+| `different` | no | no | The stated formulations differ in the ways demonstrated. This records no replay. |
+| `cannot-tell` | yes, no or unresolved | yes, no or unresolved | At least one direction remains unresolved. Say which one and what stopped you. |
 
-"Yes" means you can show the implication. "No" means it fails and you can say why, with an example where possible. If you can show one direction and cannot decide the other, choose `cannot-tell` and say which direction is open. A Lean statement whose hypotheses can never all hold is true for an empty reason; it is `weaker-than-paper`, and the Differences section must say so plainly.
+"Yes" means you can show the implication. "No" means it fails and you can say why, with an example where possible. If you can show one direction and cannot decide the other, choose `cannot-tell` and say which direction is open. If the Lean hypotheses cannot all hold, record the reason for vacuity. The verdict still depends on the actual paper statement; vacuity alone does not determine a stronger or weaker relation. Use `cannot-tell` when the comparison is not settled.
 
 ### Step 8. Write it up and submit
 
@@ -111,7 +111,7 @@ Fill the four sections of the template: "What the paper says", "What the Lean st
 python3 scripts/check_contributions.py contributions/checks/<Name>/<your-github-handle>.md
 ```
 
-Fix every error, then open a pull request with this one file. If you prefer not to use git, the "Check a statement" issue form takes the same content, and a maintainer turns it into a file credited to you.
+Fix the errors supported by available evidence. If a source or signature is missing, retain a private draft or submit a precise question. A person who has confirmed the full check may open a pull request with this one file. If you prefer not to use git, the "Check a statement" issue form takes the same content, and a maintainer turns it into a file credited to you.
 
 ## The checklist
 
@@ -120,9 +120,9 @@ Fix every error, then open a pull request with this one file. If you prefer not 
 3. **Undefined expressions have values.** Lean assigns every expression a value, including those a paper would call undefined: `x / 0 = 0`, `(0 : ℝ)⁻¹ = 0`, `Real.log 0 = 0`, `Real.sqrt x = 0` for `x < 0`, the infinite sum `∑'` of a non-summable sequence is 0, `deriv` of a non-differentiable function is 0, the integral of a non-integrable function is 0, `Nat.card` and `Set.ncard` of an infinite set are 0, and `sSup` of an empty or unbounded set of reals is 0. A statement that uses one of these without a hypothesis excluding the bad case can be true for a meaningless reason.
 4. **Coercions.** Casts such as `(n : ℝ)` or the arrow `↑` move a number between ℕ, ℤ, ℚ, ℝ and ℂ. `((a - b : ℕ) : ℤ)` subtracts in ℕ (truncating) and then casts; `(a : ℤ) - b` casts first. `(n : ℝ)⁻¹` is the real number 1/n; `1 / n` computed in ℕ is 0 for every `n ≥ 2`. Find where each cast happens.
 5. **Quantifier order.** `∀ ε, ∃ N, ...` differs from `∃ N, ∀ ε, ...`. For each `∃`, say what the witness may depend on, and check the paper allows the same. A constant the paper calls uniform must be chosen before the variables it is uniform in.
-6. **Hypotheses added or dropped.** Put the Lean hypotheses and the paper's hypotheses side by side. An extra hypothesis in Lean makes the Lean statement weaker; a missing one makes it stronger, or false if the hypothesis was needed. Hypotheses also hide in `variable` lines, in square-bracket arguments such as `[Fintype α]` or `[Fact p.Prime]`, in the fields of a `structure`, and in types such as `Fin n`, `ℕ+` or a subtype `{x // P x}`.
+6. **Hypotheses added or dropped.** Put the Lean hypotheses and the paper's hypotheses side by side. An additional hypothesis can weaken the formulation; an omitted hypothesis can strengthen it. Check whether hypotheses are equivalent or redundant before choosing a verdict. Hypotheses also hide in `variable` lines, in square-bracket arguments such as `[Fintype α]` or `[Fact p.Prime]`, in the fields of a `structure`, and in types such as `Fin n`, `ℕ+` or a subtype `{x // P x}`.
 7. **Special and edge cases.** Try the smallest values: 0, 1, the empty set, length 0 or 1, the trivial group, the zero function. Check what the Lean statement says there and what the paper says.
-8. **Empty hypotheses and trivial witnesses.** Can all the hypotheses hold at once? Write down one object that satisfies them. If no object does, the theorem says nothing. For an existence statement, check that the witness cannot be something trivial (the empty set, 0, a constant) because a definition is too loose.
+8. **Empty hypotheses and trivial witnesses.** Can all the hypotheses hold at once? Write down one object that satisfies them. Failure to find an example is inconclusive. Report vacuity only when you can demonstrate that the hypotheses cannot jointly hold, and give that argument. For an existence statement, check that the witness cannot be something trivial (the empty set, 0, a constant) because a definition is too loose.
 9. **`Summable` and divergence.** Mathlib's `Summable f` means the series converges unconditionally. For terms that are all at least 0, this is the same as bounded partial sums, so `¬ Summable f` means the series diverges to infinity. For real terms of both signs, `Summable` means absolute convergence: the alternating harmonic series 1 − 1/2 + 1/3 − … converges and is not `Summable`. Check the signs of the terms before you read `Summable` as "converges". If an extra argument names a summation method, as in `Summable f L` or `∑'[L]`, look that method up.
 10. **`Set`, `Finset` and intervals.** A `Finset` is finite by construction; a `Set` may be infinite. `Finset.range n` and `Fin n` both stand for {0, 1, …, n − 1}. `Set.Icc a b` contains both endpoints, `Set.Ico a b` contains `a` and excludes `b`, and so on for `Ioc`, `Ioo`, `Ici`, `Ioi`. Check every endpoint.
 11. **Eventual and asymptotic statements.** `∀ᶠ n in Filter.atTop, P n` means "P n holds for every sufficiently large n"; `∃ᶠ n in Filter.atTop, P n` means "P n holds for infinitely many n". `f =O[atTop] g`, `f =o[atTop] g` and `f ~[atTop] g` are big O, little o and asymptotic equivalence. Check that each implied constant and threshold may depend on exactly what the paper allows.
@@ -181,7 +181,7 @@ theorem manuscriptReciprocalProgressionTheorem : ReciprocalProgressionTheorem :=
 
 **The paper implies Lean.** Let A be any set of natural numbers whose reciprocalTerm function is not summable, and let B = A \ {0}. The term at 0 is 0 for both sets, so reciprocalTerm B equals reciprocalTerm A, and ∑_{b∈B} 1/b = ∞. B is a set of positive integers, so the paper gives, for each k, a nonconstant progression of length k in B. Listing it in increasing order gives a and d > 0 with a + i·d ∈ B ⊆ A for every i < k, which is `HasAP A k`. For k = 0 there is nothing to prove.
 
-**Verdict: `matches`.** The two statements are equivalent. The Lean statement quantifies over more sets, those containing 0, and the convention `(0 : ℝ)⁻¹ = 0` makes 0 contribute nothing, so specialising the Lean statement to sets without 0 gives exactly Erdős's version, and the paper's version implies the general one.
+**Illustrative conclusion: `matches`.** This teaching example is an argument for the displayed formulations and is not a submitted human review or an independent replay. The two statements are equivalent under the conventions discussed above. The Lean statement quantifies over more sets, those containing 0, and the convention `(0 : ℝ)⁻¹ = 0` makes 0 contribute nothing, so specialising the Lean statement to sets without 0 gives exactly Erdős's version, and the paper's version implies the general one.
 
 ## Writing a good check
 

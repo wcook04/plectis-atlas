@@ -1,108 +1,76 @@
 # Contributing to the OpenAI Math Atlas
 
-The atlas sets every Lean statement in OpenAI's mathematics release beside the paper theorems it formalises, and computes what a machine can: how much vocabulary of its own each Lean statement introduces, what each manuscript cites inside the collection, and which earlier works it builds on. The rest needs people. Readers want motivated explanations, credit where ideas first appeared, and a check, statement by statement, that each Lean statement says what the paper says. That is the work this guide describes.
+Help the next reader understand one piece of the mathematics. A useful contribution can be a correction, an example, a precise question, a source for a step, a statement comparison or an explanation. Choose a part you can read and support. Every family remains open to contributions.
 
-You need no knowledge of any other project, and no Lean experience for most tasks. Every contribution is credited by name on the atlas.
+## Start with one note
 
-## Five ways to help
+On the page you are reading, choose **Suggest a change**, or open an issue with the **Suggest a change or ask a precise question** form. Give three things:
 
-| Contribution | What you produce | Time | Where it goes |
-|---|---|---|---|
-| Check a statement | A signed verdict on whether one Lean statement says what the paper's theorem says | 15 minutes to an evening | `contributions/checks/<statement>/<you>.md` |
-| Explain a result | A motivated, first-principles explanation of one result family | Several evenings | `contributions/explanations/<family>/<you>/explanation.md` |
-| Trace a credit | One link from a step in a manuscript to the earlier work it builds on | 30 minutes or more | `contributions/credits/<family>/<you>-<slug>.md` |
-| Replay a proof | A receipt from running Comparator on one statement on your own Linux machine | Hours of machine time | `contributions/replays/<statement>/<you>-<date>.json` |
-| Report a problem | An issue that pins down a mismatch, an error or a broken link | 10 minutes | an issue made with the "Report a problem" form |
+1. The page or source passage you mean.
+2. One correction, question, example or suggested explanation.
+3. What you checked, with the source or calculation that supports it.
 
-Each kind has a guide in `skills/`, written for people and for AI agents alike:
+Say how you used AI, or write `none`. GitHub supplies your handle; a different public display name is optional. You can do this without installing git, Lean or an AI tool.
 
-- `skills/start-here/SKILL.md` helps you choose;
-- `skills/check-a-statement/SKILL.md`, `skills/explain-a-result/SKILL.md`, `skills/trace-a-credit/SKILL.md`, `skills/replay-a-proof/SKILL.md` and `skills/report-a-problem/SKILL.md` cover the five kinds;
-- `skills/improve-the-atlas/SKILL.md` covers changes to the atlas's own scripts and pages.
+For a first visit, spend up to fifteen minutes on one passage. Stop at a precise question if you cannot settle it. This is a suggested time budget for a note; the time needed for a mathematical verdict depends on its scope. Review and publication happen afterwards.
 
-## Your first contribution, in about fifteen minutes
+A maintainer checks the note and either incorporates it, asks a specific question, or explains why it does not help. An incorporated note links to its source issue and credits its contributor beside the changed explanation or reference. Submission history stays visible. Accepted useful work receives durable credit; filing an issue alone does not count as an accepted contribution.
 
-A statement check is the quickest way in.
+## Choose a larger task when it fits
 
-1. **Pick a statement in a field you know.** Browse the atlas, or run this in a clone of the repository:
+| Task | Scope | Guide and destination |
+|---|---|---|
+| Explain something | One definition, example, lemma, proof step or complete argument, for a named reader | `skills/explain-a-result/SKILL.md`; `contributions/explanations/<family>/<handle>/explanation.md` |
+| Check a statement | Compare all theorems listed in one challenge configuration with their precisely located paper statements | `skills/check-a-statement/SKILL.md`; `contributions/checks/<statement>/<handle>.md` |
+| Locate an earlier result | Connect one step to a result or method in a source you opened | `skills/trace-a-credit/SKILL.md`; `contributions/credits/<family>/<handle>-<slug>.md` |
+| Replay a check | Run the specified Comparator configuration and retain the full log | `skills/replay-a-proof/SKILL.md`; `contributions/replays/<statement>/<handle>-<YYYYMMDD>.json` |
 
-   ```sh
-   python3 skills/start-here/find_work.py --kind check --discipline "number theory"
-   ```
+Use the issue forms if you prefer. A maintainer can prepare the repository file and ask you to confirm its contents and credit. For an explanation, GitHub's web editor can create or edit the Markdown file on your fork. An issue announcing work is optional.
 
-   It lists statements nobody has checked yet, with the fewest custom definitions first, and links the Lean file, the scope note and the paper.
+For a repository contribution, copy the relevant template, fill it in, then run:
 
-2. **Fork the repository on GitHub, clone your fork, and copy the template:**
+```sh
+python3 scripts/check_contributions.py <path-to-your-file>
+```
 
-   ```sh
-   mkdir -p contributions/checks/<StatementId>
-   cp contributions/_templates/statement-check.md contributions/checks/<StatementId>/<your-github-handle>.md
-   ```
+The command checks format and available source identifiers. It cannot establish mathematical correctness, a person's identity, or whether a claimed review happened. Keep unrelated work in separate pull requests; a correction and its supporting evidence belong together.
 
-3. **Read the paper's statement and the whole Lean file**, following the procedure and checklist in `skills/check-a-statement/SKILL.md`. Its worked example, `ErdosReciprocal`, shows a complete check.
+## Sources and versions
 
-4. **Fill in the file**: the frontmatter, then the four sections "What the paper says", "What the Lean statement says", "Differences" and "Why this verdict".
+Each incorporated repository contribution records the full `upstream_commit` it used. A page-linked note can arrive first; the maintainer confirms its actual source version before incorporation. Copy it from `upstream.json` after opening that version's sources. Locate the exact paper statement and every relevant definition; a scope note is evidence of the release author's intended coverage. It does not replace reading the paper.
 
-5. **Check the file:**
+An older contribution remains attached to its recorded version. A new upstream release does not renew its review. Maintainers keep it visible as work on an older version until the relevant sources and review have been compared again. Never replace its pin just to remove a warning.
 
-   ```sh
-   python3 scripts/check_contributions.py contributions/checks/<StatementId>/<your-github-handle>.md
-   ```
+## Responsibility and AI assistance
 
-   Fix anything it reports. It needs only Python 3.10 or newer.
+Agents can help locate sources, draft private notes, check examples and run tools. Read and understand the content you submit, open the cited sources, and disclose which tools did what in `ai_assistance`. Write public discussion and review replies in your own words. Explain the reasoning for a mathematical judgement yourself.
 
-6. **Commit, push to your fork, and open a pull request** with this one file.
+An agent must leave an unsigned draft private when a person has not confirmed it. It must list missing sources and unchecked steps visibly. It must never invent an author, a reviewer, expertise, a verdict or a successful run. Templates initially say `none`; replace this whenever any AI assistance occurred.
 
-## With an AI agent
+Keep AI drafts private until you can support the proposed contribution. Human-authored prose with visibly marked, disclosed tool-drafted passages is permitted. The author must still understand and answer for that passage. Source-specific uncertainty belongs in the submitted note; it must not be hidden in an HTML comment.
 
-Open the repository in Claude Code, Codex, Cursor or another coding agent and ask it to begin with the `start-here` skill. The agent reads `AGENTS.md` and the skills (mirrored for Claude Code in `.claude/skills/` and for other agents in `.agents/skills/`). It asks about your background and time, finds a task, drafts with you and runs the checks.
+New contributors should keep one substantive item awaiting review at a time. A maintainer can agree to a small batch after seeing a useful example. Corrective reports about an existing contribution can always be raised. Do not submit generated bulk explanations or send agents to other communities to solicit reviews.
 
-You stay responsible for what you submit. Read every line the agent drafts, check every reference it suggests by opening it, and sign only what you understand.
+## What review means
 
-## Credit and AI assistance
+A statement check records its signer's judgement about correspondence between specified statements. It does not report that a proof was replayed. A replay reports one tool run. An explanation records understanding of its stated scope. These appear separately.
 
-- **Every contribution is credited by name** on the atlas pages it touches: explanations under their authors' names, checks under the reviewer's name, credits and replays under the contributor's name.
-- **A named person takes responsibility for every contribution.** Each file names that person with their GitHub handle. Agents may draft, check arithmetic, search and run tools; they never sign.
-- **AI assistance is disclosed.** Every Markdown contribution has an `ai_assistance` field holding `none` or a plain sentence saying which tool did what, and it is published with the contribution. Explanations are written in the contributor's own words; any passage a tool drafted is marked.
-- **Agents check and explain; they do not hunt for open problems.** The skills in this repository read, compare, trace and replay. Do not point them at unsolved problems in the release or elsewhere.
-- **Your contribution stays here unless you say otherwise.** The atlas never sends a contribution to OpenAI or to any other lab. If a way to offer checked rows back to a release is added later, it will be opt-in for each contribution.
-- **Declining is respected.** Some mathematicians have chosen not to work on AI-generated releases. Nobody is asked to review anything uninvited, and the atlas keeps no list of people to approach.
-- **Verdicts on the atlas come only from named people.** A statement check is the signed judgement of its reviewer. Several people can check the same statement; the atlas shows each verdict with its author. Maintainers do not change your verdict; if they disagree, they say so in the pull request.
-- **Credit for ideas requires a source.** A credit file names a citable earlier work, and the claim that an idea first appeared somewhere is made only with a source to back it.
-- **Every honest outcome is credited.** A `cannot-tell` check, a replay that ended in `error`, and a credit that settles on `uses` after a long search all record real work and are credited in the same way.
-- **Corrections keep the history.** To correct or disagree with someone else's contribution, add your own file (a check with a different verdict, a further credit) or propose a change in a pull request the original authors can see. Earlier contributions stay in the repository's history under their authors' names.
+Before promoting a statement comparison or explanation to a reviewed result on the site, obtain an independent review of the relevant content from a person who can assess it. A short description of relevant experience is useful; a degree is not required. For a disputed comparison, a definition hole, or a prominent full-result claim, obtain a second independent review before promotion. A small source correction needs a maintainer who has checked that source.
 
-## How review works
+The reviewer writes from their own account, identifies the content and commit they read, and explains the scope of their review. A name typed into frontmatter is insufficient. Maintainers check that the recorded approval covers the current version and that the reviewer is not an author. A substantive edit needs a fresh approval. Explanations retain the existing `draft`, `ready-for-review` and `reviewed` values; `ready-for-review` is the authors' request for review.
 
-- **Statement checks** are merged when they follow the format, engage with the actual files, and give legible reasons. A maintainer may ask questions; the verdict stays yours.
-- **Explanations** move from `draft` to `ready-for-review` to `reviewed`. A draft may be merged early, which marks the family as claimed on the atlas. `reviewed` means that a named reviewer, who is not an author, has read the whole explanation and checked its mathematics; the reviewer adds themselves under `reviewers` in a pull request.
-- **Credits** are merged when a maintainer can open the source and see what the credit describes.
-- **Replay receipts** are checked by `scripts/check_contributions.py`, including the log's SHA-256 when the log is in the repository.
+If reasoned reviews disagree, show the disagreement and both reasons. Do not decide it by a vote count. A material, source-specific challenge suspends the affected reviewed summary while it is assessed. Keep unaffected contributions visible. Corrections and withdrawals preserve the earlier version and link the replacement or reason.
 
-## Claiming an explanation
+## Working on an explanation
 
-Claim a family with the "Claim an explanation" issue form before you start, so that two people do not write the same explanation for the same reader. Then open a draft pull request with your `explanation.md` at `status: draft`. Someone writing for a different reader can still claim a family that is already claimed; say so in a comment on the existing claim. A claim with no linked pull request after 30 days may be marked stale, and a comment renews it. `STYLE.md` says what a good explanation contains.
+Announce work if coordination would help: name the passage, your intended reader and a draft link if you have one. This reserves nothing, including against another explanation for the same reader. After a week without a progress link, the announcement may be marked inactive; returning to it is welcome. An announcement does not count as an explanation.
 
-## Without git
-
-Every kind of contribution except an explanation has an issue form: open the Issues tab, choose New issue, and pick "Check a statement", "Suggest a credit", "Share a replay" or "Report a problem". A maintainer turns the form into a file credited to you. An explanation is a long document and needs a pull request, which GitHub's web editor can make without installing anything: on your fork, choose Add file, then Create new file.
+Credit names the original sources, explanation authors, reviewers and contributors to later improvements separately. Record the date and link of a public exposition. The atlas records this history; it does not award mathematical priority or transfer authorship of an upstream result. A contributor may volunteer to maintain an explanation without accepting an indefinite duty.
 
 ## Ground rules
 
-- **One contribution per pull request**, so that each can be reviewed and credited on its own.
-- **Quote briefly and exactly, and say where from.** Material from openai/math is copyright OpenAI and published under the Apache License 2.0; the atlas quotes it with attribution and links to its source at the pinned commit.
-- **The atlas is independent.** It is not affiliated with or endorsed by OpenAI, and it cannot change OpenAI's files. Report problems in them to the atlas, where the report stays on public record.
-- **Licences.** Explanations are published under the Creative Commons Attribution 4.0 International licence. Everything else you contribute is published under the repository's licence, the Apache License 2.0. `NOTICE` has the details. By opening a pull request or submitting an issue form, you agree to publication on these terms.
-- **Conduct.** Criticise mathematics and files freely and precisely; treat people with respect. `CODE_OF_CONDUCT.md` applies everywhere in the project.
+Contributing is voluntary, and declining needs no explanation. The atlas serves its readers independently of OpenAI. It makes no promise of payment or a reply from a lab. It does not send contributions to other organisations on a contributor's behalf; any such action needs that contributor's agreement. Existing public licences still apply to reuse by third parties.
 
-## Files and formats
+Credit sources at the point of use. Describe `first-appeared-in` as the earliest source your stated search found, and leave priority unsettled unless the evidence supports more. `uses` is sufficient for most useful source links.
 
-The exact format of every contribution, field by field, is in `contributions/README.md`. Templates are in `contributions/_templates/`. The checker reports any file that breaks a rule:
-
-```sh
-python3 scripts/check_contributions.py
-```
-
-## Questions
-
-Open an issue (a blank one is fine) or comment on the pull request you are working on.
+Explanations use CC BY 4.0; other contributions use the repository's Apache-2.0 licence. `NOTICE` gives the terms. Keep others' private material private, quote briefly, and respect the rules of communities you visit. `CODE_OF_CONDUCT.md` applies. Formats and templates are in `contributions/README.md`.

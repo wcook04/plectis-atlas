@@ -8,7 +8,7 @@ Usage:
 
 Options:
     --no-data   skip the cross-checks against data/*.json
-    --strict    count warnings as errors
+    --strict    count warnings as errors and require all data checks
     --json      print the findings as JSON
 
 The four file formats (explanation, statement check, credit, replay receipt) are
@@ -17,6 +17,9 @@ Markdown file with a small built-in parser for the simple YAML used there, check
 kinds, required fields, allowed values, dates and identifiers, checks that each
 file sits at the path its frontmatter implies, and, when data/*.json exist, checks
 that every family, statement and manuscript it names exists.
+
+These checks do not establish mathematical correctness, contributor identity,
+consent to review, or that a claimed replay was executed.
 
 Standard library only; Python 3.10 or newer.
 Exit status: 0 when there are no errors, 1 when there are errors, 2 for a usage error.
@@ -28,6 +31,7 @@ import datetime as _dt
 import gzip
 import hashlib
 import json
+import math
 import re
 import sys
 from pathlib import Path
@@ -546,8 +550,12 @@ class Data:
                 commit = json.loads(upstream.read_text(encoding="utf-8")).get("commit")
                 if isinstance(commit, str) and HEX40_RE.match(commit):
                     self.pinned_commit = commit
-            except (OSError, ValueError):
-                pass
+                else:
+                    self.notes.append("upstream.json has no valid full commit, so source versions are not checked")
+            except (OSError, ValueError, AttributeError) as exc:
+                self.notes.append(f"could not read upstream.json ({exc}), so source versions are not checked")
+        else:
+            self.notes.append("upstream.json not found, so source versions are not checked")
 
     @staticmethod
     def _ids(record: dict | None, key: str) -> list[str]:
@@ -760,6 +768,9 @@ def number_field(minimum: float, strictly: bool = False):
             ctx.r.error(f"{label} must be a number written without quotes (found {_describe(value)})",
                         ctx.line(path))
             return
+        if isinstance(value, float) and not math.isfinite(value):
+            ctx.r.error(f"{label} must be a finite number", ctx.line(path))
+            return
         if value < minimum or (strictly and value == minimum):
             word = "greater than" if strictly else "at least"
             ctx.r.error(f"{label} must be {word} {minimum:g}", ctx.line(path))
@@ -863,6 +874,8 @@ MACHINE = {"os": (True, text_field(200)), "cpu": (True, text_field(200)),
 SCHEMAS = {
     "explanation": {
         "kind": (True, kind_field("explanation")),
+        "upstream_commit": (True, hex_field(HEX40_RE, "a full 40-character commit id",
+                                            "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb")),
         "family": (True, family_field),
         "title": (True, text_field(200)),
         "authors": (True, list_field(object_field(AUTHOR), 1, "author")),
@@ -875,6 +888,8 @@ SCHEMAS = {
     },
     "statement-check": {
         "kind": (True, kind_field("statement-check")),
+        "upstream_commit": (True, hex_field(HEX40_RE, "a full 40-character commit id",
+                                            "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb")),
         "statement": (True, statement_field),
         "family": (True, family_field),
         "manuscript": (True, manuscript_field),
@@ -886,6 +901,8 @@ SCHEMAS = {
     },
     "credit": {
         "kind": (True, kind_field("credit")),
+        "upstream_commit": (True, hex_field(HEX40_RE, "a full 40-character commit id",
+                                            "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb")),
         "family": (True, family_field),
         "manuscript": (True, manuscript_field),
         "where": (True, text_field(300)),
@@ -897,6 +914,7 @@ SCHEMAS = {
     },
     "replay": {
         "kind": (True, kind_field("replay")),
+        "ai_assistance": (True, ai_field),
         "statement": (True, statement_field),
         "upstream_commit": (True, hex_field(HEX40_RE, "a full 40-character commit id",
                                             "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb")),
@@ -1116,6 +1134,12 @@ def check_body(kind: str, meta: dict, body: str, body_line: int, ctx: Ctx) -> No
 
 def check_links(kind: str, meta: dict, ctx: Ctx) -> None:
     data, r = ctx.data, ctx.r
+    commit = meta.get("upstream_commit")
+    if data.pinned_commit and isinstance(commit, str) and HEX40_RE.match(commit) \
+            and commit != data.pinned_commit:
+        r.warn(f"upstream_commit differs from the commit the atlas reads ({data.pinned_commit}); "
+               "keep this contribution attached to its source version, not the current version",
+               ctx.line("upstream_commit"))
     family = meta.get("family") if isinstance(meta.get("family"), str) else None
     manuscript = meta.get("manuscript") if isinstance(meta.get("manuscript"), str) else None
     statement = meta.get("statement") if isinstance(meta.get("statement"), str) else None
@@ -1161,20 +1185,19 @@ def check_links(kind: str, meta: dict, ctx: Ctx) -> None:
                 manuscript_family_check(slug, f"manuscripts[{n}]", strict=False)
 
     if kind == "replay" and statement:
-        commit = meta.get("upstream_commit")
-        if data.pinned_commit and isinstance(commit, str) and HEX40_RE.match(commit) \
-                and commit != data.pinned_commit:
-            r.warn(f"upstream_commit differs from the commit the atlas reads ({data.pinned_commit}); "
-                   "say why in notes", ctx.line("upstream_commit"))
         if data.statements and statement in data.statements and commit == data.pinned_commit:
             comparator = data.statements[statement].get("comparator") or {}
             permitted = comparator.get("permitted_axioms") if isinstance(comparator, dict) else None
             axioms = meta.get("axioms")
             if isinstance(permitted, list) and isinstance(axioms, list) and meta.get("result") == "accepted":
                 extra = [a for a in axioms if isinstance(a, str) and a not in permitted]
+                missing = [a for a in permitted if a not in axioms]
                 if extra:
                     r.error(f"axioms lists {', '.join(extra)}, which the challenge's permitted_axioms do not "
                             f"allow ({', '.join(permitted)}); Comparator would not accept that", ctx.line("axioms"))
+                if missing:
+                    r.error(f"axioms must record the full permitted_axioms enforced by Comparator; missing "
+                            f"{', '.join(missing)}", ctx.line("axioms"))
         sha = meta.get("comparator_commit")
         if isinstance(sha, str) and COMMIT_RE.match(sha) and len(sha) < 40:
             r.warn("record the full 40-character Comparator commit", ctx.line("comparator_commit"))
@@ -1242,7 +1265,7 @@ def check_document(kind: str, parts: tuple, text: str, report: Report, data: Dat
             report.error("a replay receipt must be one JSON object { ... }")
             return None
         line_of = _json_key_lines(text)
-        ctx = Ctx(report, line_of, data, template)
+        ctx = Ctx(report, line_of, data_for_source(meta, data), template)
         check_object(meta, SCHEMAS[kind], ctx)
         check_path(kind, parts, meta, ctx)
         check_links(kind, meta, ctx)
@@ -1257,7 +1280,7 @@ def check_document(kind: str, parts: tuple, text: str, report: Report, data: Dat
         return None
     for line, message in warnings:
         report.warn(f"frontmatter: {message}", line)
-    ctx = Ctx(report, line_of, data, template)
+    ctx = Ctx(report, line_of, data_for_source(meta, data), template)
     if "kind" not in meta:
         report.error(f"missing required field 'kind'; add the line: kind: {kind}", yaml_line)
     check_object(meta, SCHEMAS[kind], ctx)
@@ -1266,6 +1289,21 @@ def check_document(kind: str, parts: tuple, text: str, report: Report, data: Dat
     check_links(kind, meta, ctx)
     check_body(kind, meta, body, body_line, ctx)
     return meta
+
+
+def data_for_source(meta: dict, data: Data) -> Data:
+    """Current indexes cannot validate identifiers from another source version.
+
+    Keep the current pin so check_links reports the mismatch. The remaining
+    schema and log checks still run, and --strict treats the warning as a failure.
+    """
+    commit = meta.get("upstream_commit")
+    if data.pinned_commit and isinstance(commit, str) and HEX40_RE.match(commit) \
+            and commit != data.pinned_commit:
+        historical = Data(enabled=False)
+        historical.pinned_commit = data.pinned_commit
+        return historical
+    return data
 
 
 def _json_key_lines(text: str) -> dict[str, int]:
@@ -1295,10 +1333,12 @@ def _json_key_lines(text: str) -> dict[str, int]:
 
 def check_replay_log(parts: tuple, meta: dict, folder: Path, ctx: Ctx) -> None:
     stem = parts[2][: -len(".json")]
+    found = False
     for suffix in (".log", ".log.gz"):
         log = folder / (stem + suffix)
         if not log.is_file():
             continue
+        found = True
         size = log.stat().st_size
         if size > MAX_LOG_BYTES:
             ctx.r.error(f"{log.name} is {size // 1000} kB; logs over {MAX_LOG_BYTES // 1_000_000} MB belong in "
@@ -1316,6 +1356,9 @@ def check_replay_log(parts: tuple, meta: dict, folder: Path, ctx: Ctx) -> None:
         if isinstance(expected, str) and expected != digest:
             ctx.r.error(f"log_sha256 does not match {log.name} (the file's SHA-256 is {digest})",
                         ctx.line("log_sha256"))
+    if not found:
+        ctx.r.warn("no local replay log was supplied; a hash alone cannot be checked or used as replay evidence",
+                   ctx.line("log_sha256"))
 
 
 def check_file(path: Path, data: Data) -> list[Finding]:
@@ -1427,6 +1470,11 @@ def _template_cases(texts: dict[str, str]):
             raise AssertionError(f"self-test: no line starting with {prefix!r}")
         return "\n".join(kept)
 
+    for kind, parts, text in (("explanation", ep, e), ("statement-check", cp, c), ("credit", kp, k)):
+        yield f"{kind} without its source commit", kind, parts, drop_line(text, "upstream_commit:"), True
+        yield f"{kind} with a short source commit", kind, parts, re.sub(
+            r"(?m)^upstream_commit: .*$", "upstream_commit: fd4aeeb", text), True
+
     yield "explanation without ai_assistance", "explanation", ep, drop_line(e, "ai_assistance:"), True
     yield "explanation with an unknown status", "explanation", ep, sub(e, "status: draft", "status: done"), True
     yield "explanation with a two-digit family", "explanation", ep, sub(e, 'family: "159"', 'family: "15"'), True
@@ -1472,6 +1520,8 @@ def _template_cases(texts: dict[str, str]):
         ("replay with a short upstream commit", {"upstream_commit": "fd4aeeb"}),
         ("replay with a malformed log hash", {"log_sha256": "abc"}),
         ("replay with wall time in quotes", {"wall_time_seconds": "120"}),
+        ("replay with NaN wall time", {"wall_time_seconds": float("nan")}),
+        ("replay with infinite memory", {"machine": {"os": "Linux", "cpu": "x86", "ram_gb": float("inf")}}),
         ("replay without machine memory", {"machine": {"os": "Linux", "cpu": "x86"}}),
         ("replay with an extra key", {"wall_time": 5}),
         ("replay with a date that differs from the file name", {"date": "2026-10-11"}),
@@ -1480,6 +1530,9 @@ def _template_cases(texts: dict[str, str]):
         mutated.update(change)
         yield description, "replay", rpp, json.dumps(mutated, indent=2, ensure_ascii=False), True
     yield "replay that is not JSON", "replay", rpp, rp.replace("{", "", 1), True
+    without_ai = dict(replay)
+    without_ai.pop("ai_assistance", None)
+    yield "replay without AI disclosure", "replay", rpp, json.dumps(without_ai), True
 
 
 def _fill(text: str) -> str:
@@ -1556,7 +1609,7 @@ def _log_hash_test() -> list[str]:
     return failures
 
 
-def self_test() -> int:
+def self_test(strict: bool = False) -> int:
     failures: list[str] = []
     passed = 0
 
@@ -1591,6 +1644,8 @@ def self_test() -> int:
     data = Data()
     for note in data.notes:
         print(f"note: {note}")
+        if strict:
+            failures.append("strict data check: " + note)
     texts: dict[str, str] = {}
     canonical = {
         "explanation": lambda m: ("explanations", m.get("family", "000"),
@@ -1710,17 +1765,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("files", nargs="*", type=Path, help="files to check (default: every contribution)")
     parser.add_argument("--self-test", action="store_true", help="check the templates and the checker itself")
     parser.add_argument("--no-data", action="store_true", help="skip the cross-checks against data/*.json")
-    parser.add_argument("--strict", action="store_true", help="count warnings as errors")
+    parser.add_argument("--strict", action="store_true", help="count warnings as errors and require all data checks")
     parser.add_argument("--json", action="store_true", help="print findings as JSON")
     args = parser.parse_args(argv)
 
+    if args.strict and args.no_data:
+        parser.error("--strict requires data checks; do not combine it with --no-data")
     if args.self_test:
-        return self_test()
+        return self_test(strict=args.strict)
 
     data = Data(enabled=not args.no_data)
     paths = [p if p.is_absolute() else Path.cwd() / p for p in args.files] if args.files \
         else list(iter_contributions(CONTRIB))
     findings: list[Finding] = []
+    if args.strict:
+        findings.extend(Finding("error", "data", None, note) for note in data.notes)
     checked = 0
     for path in paths:
         if not path.is_file():

@@ -1,5 +1,6 @@
 ---
 kind: statement-check
+upstream_commit: "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
 # The Comparator challenge name, as in lean/ComparatorChallenges/<name>.lean upstream.
 statement: ErdosReciprocal
 # The family the statement belongs to, in double quotes.
@@ -7,10 +8,10 @@ family: "159"
 # The manuscript you compared against: its folder name under preprints/ upstream.
 manuscript: Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026
 # Where the paper states the result: number, title if any, label, section.
-paper_statement: "[replace: for example Corollary 1.2 (Divergent reciprocal sums), label ap:reciprocal, Section 1]"
+paper_statement: "[replace: exact paper label, file and section; add the theorem number only after reading that version]"
 # One of: matches, stronger-than-paper, weaker-than-paper, different, cannot-tell.
 verdict: cannot-tell
-# You: the person who read both sources and signs this verdict.
+# A person who read the sources and chooses this verdict. Keep an unsigned agent draft private.
 reviewer:
   name: "[replace: your full name, as it should appear on the site]"
   github: your-github-handle
@@ -35,4 +36,4 @@ date: 2026-10-10
 
 ## Why this verdict
 
-[replace: argue the verdict. For matches, show that each statement implies the other. For stronger-than-paper or weaker-than-paper, show the implication that holds and say why the other fails. For different or cannot-tell, say exactly what stops the comparison.]
+[replace: argue the verdict. For matches, show that each statement implies the other. For a stronger or weaker verdict, give the relevant mathematical comparison and its scope; unknown converse reasoning is not a failed implication. For different or cannot-tell, say exactly what stops the comparison.]

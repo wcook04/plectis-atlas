@@ -1,5 +1,6 @@
 ---
 kind: statement-check
+upstream_commit: "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
 statement: ErdosReciprocal
 family: "159"
 manuscript: Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026

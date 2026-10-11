@@ -153,4 +153,8 @@ Open a pull request with the receipt (and the log, if small). Without git, paste
 
 ## What a replay shows
 
-An `accepted` receipt shows that on your machine, with the recorded tool versions, Comparator accepted OpenAI's proof of this statement within the recorded axiom budget. Comparator's README lists the assumptions this rests on: the challenge file, its imports (here Mathlib) and the project's lakefile are trusted; the proof was not compiled before Comparator ran; landrun's sandbox holds; the Lean kernel is correct; and the run was not made by a privileged user. A replay does not show that the statement matches the paper.
+A receipt for an actual `accepted` run records that on your machine, with the recorded tool versions, Comparator accepted OpenAI's proof of this statement within the recorded axiom budget. Comparator's README lists the assumptions this rests on: the challenge file, its imports (here Mathlib) and the project's lakefile are trusted; the proof was not compiled before Comparator ran; landrun's sandbox holds; the Lean kernel is correct; and the run was not made by a privileged user. A replay does not show that the statement matches the paper.
+
+## Evidence and disclosure
+
+Include `ai_assistance` in the receipt, using `none` only when no AI tool assisted the work. Retain the full Comparator log and its exact checksum. A tail or a checksum alone is insufficient for a public accepted or rejected result. An infrastructure error can document a useful diagnostic and leaves the mathematical claim unresolved. Do not change the recorded upstream commit after a release update. The site must display this run separately from any paper-to-Lean statement review.

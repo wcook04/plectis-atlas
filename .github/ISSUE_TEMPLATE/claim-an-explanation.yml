@@ -1,16 +1,14 @@
-name: Claim an explanation
-description: Tell others you are writing an explanation of one result family.
-title: "Claim: explanation of family "
+name: Announce an explanation you are working on
+description: Optionally coordinate work on one passage, lemma or argument, for a named reader.
+title: "Working on: explanation in family "
 labels: ["claim", "explanation"]
 body:
   - type: markdown
     attributes:
       value: |
-        Every family in the atlas is an open exposition problem. Claim one here so that two people do not write the same explanation for the same reader. Someone writing for a different reader can still claim a family that is already claimed.
+        This announcement is optional and reserves nothing. Name the passage and reader you have in mind. Other explanations are welcome, including for the same reader.
 
-        Next, open a draft pull request that adds `contributions/explanations/<family>/<your-github-handle>/explanation.md` with `status: draft`. Once a maintainer merges it, the atlas shows the family as claimed. A claim with no linked pull request after 30 days may be marked stale; a comment renews it.
-
-        Please read [CONTRIBUTING.md](https://github.com/wcook04/openai-math-atlas/blob/main/CONTRIBUTING.md) and [STYLE.md](https://github.com/wcook04/openai-math-atlas/blob/main/STYLE.md) first.
+        Link a draft when you have one. After a week without a progress link, maintainers may mark the announcement inactive. Returning to it is welcome. An announcement does not count as an accepted explanation.
   - type: input
     id: family
     attributes:
@@ -28,8 +26,8 @@ body:
   - type: textarea
     id: reader
     attributes:
-      label: Who you are writing for
-      description: For example, undergraduates who have taken a first course in real analysis.
+      label: The passage and reader you are writing for
+      description: Give the definition, example, lemma or argument you plan to explain, its source version, and the background you expect from a reader.
     validations:
       required: true
   - type: textarea
@@ -37,16 +35,6 @@ body:
     attributes:
       label: Your background with this mathematics
       description: One or two lines. It helps reviewers.
-  - type: dropdown
-    id: timeline
-    attributes:
-      label: When you expect to open a draft pull request
-      options:
-        - Within a week
-        - Within a month
-        - Later than a month
-    validations:
-      required: true
   - type: textarea
     id: ai_assistance
     attributes:
@@ -55,9 +43,9 @@ body:
   - type: checkboxes
     id: agreement
     attributes:
-      label: Before you claim
+      label: Before you announce
       options:
         - label: I will understand and stand behind every sentence I submit, and I will say in the file how I used AI tools.
           required: true
-        - label: I agree that my explanation is published on the atlas under CC BY 4.0, credited to me by name.
+        - label: This announcement may be public. I will agree publication terms when I submit the actual explanation.
           required: true

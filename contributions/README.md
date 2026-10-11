@@ -1,6 +1,6 @@
 # Contributions
 
-Everything people add to the atlas lives in this folder, one file per contribution. The site reads these files and credits each one by name on the pages it touches. `python3 scripts/check_contributions.py` checks every rule on this page.
+Everything people add to the atlas lives in this folder, one file per contribution. The site reads these files and credits each one by name on the pages it touches. `python3 scripts/check_contributions.py` checks file structure and available source identifiers. People check mathematical content and authenticate reviews.
 
 Start from a template in `_templates/`. How to do each kind of work is in `CONTRIBUTING.md` and the skills in `skills/`.
 
@@ -10,7 +10,7 @@ contributions/
   checks/<statement-id>/<github-handle>.md                 a statement check
   credits/<family>/<github-handle>-<short-slug>.md         a credit
   replays/<statement-id>/<github-handle>-<YYYYMMDD>.json   a replay receipt
-  replays/<statement-id>/<github-handle>-<YYYYMMDD>.log    its log (optional; or .log.gz)
+  replays/<statement-id>/<github-handle>-<YYYYMMDD>.log    its log (or .log.gz; see below)
   _templates/                                              one template per kind
 ```
 
@@ -24,13 +24,15 @@ Problem reports and claims of an explanation are GitHub issues, made with the is
 - **GitHub handle**: your GitHub user name, without `@`.
 - **Dates**: `YYYY-MM-DD`.
 
-`data/families.json`, `data/statements.json` and `data/manuscripts.json` list every valid id. The checker rejects an id that is not in them, a statement checked against the wrong family, and a manuscript from another family.
+`data/families.json`, `data/statements.json` and `data/manuscripts.json` list current ids. For the current source version, the checker rejects an id that is not in them, a statement checked against the wrong family, and a manuscript from another family. Historical contributions produce a source-version warning and need checking against that version's sources.
 
 ## Frontmatter
 
 Markdown contributions start with YAML frontmatter between two lines of `---`. Use the simple forms the templates use: `field: value`, indented groups of fields, and lists with one item per line starting with `- `. Put a value in double quotes when it contains `: ` or starts with a symbol. Put comments on their own lines.
 
-`ai_assistance` is required in every Markdown contribution. Write `none`, or one plain sentence saying which tool did what, for example `"Claude drafted the Differences section; I checked every line against the Lean file."`
+`upstream_commit` is required in every contribution: the full 40-character lowercase commit of the sources read. Older source versions remain historical and must not be promoted for the current version without renewed review.
+
+`ai_assistance` is required in every contribution, including replay receipts. Write `none`, or one plain sentence saying which tool did what, for example `"Claude drafted the Differences section; I checked every line against the Lean file."`
 
 ## Explanation
 
@@ -49,7 +51,7 @@ Markdown contributions start with YAML frontmatter between two lines of `---`. U
 | `manuscripts` | no | a list of manuscript ids |
 | `date` | yes | `YYYY-MM-DD` |
 
-`status: reviewed` needs at least one reviewer, and no reviewer may also be an author. The body is free Markdown; `STYLE.md` describes a good one. Template text left in the body of a draft is a warning, so a draft can be merged early to show the family is claimed. Template text in the frontmatter, or in the body at any other status, is an error.
+`status: reviewed` needs at least one reviewer, and no reviewer may also be an author. The body is free Markdown; name its reader and exact scope, which may be one definition, example or lemma. `STYLE.md` describes the reading test. A reviewed status also requires an authenticated approval of the current content, linked in the `## Review record` body section and the pull request and checked by a maintainer. Template text left in a draft body is a warning. An empty scaffold is not an accepted explanation, and an announcement of work reserves no family. Template text in the frontmatter, or in the body at any other status, is an error.
 
 ## Statement check
 
@@ -66,6 +68,8 @@ Markdown contributions start with YAML frontmatter between two lines of `---`. U
 | `reviewer` | yes | `name`, `github` and `background` (one line) |
 | `ai_assistance` | yes | `none`, or a plain disclosure |
 | `date` | yes | `YYYY-MM-DD` |
+
+This is a full comparison of the configured theorem names. A smaller observation belongs in a source-linked issue note. The verdict concerns statement correspondence and does not imply a successful replay.
 
 The body has these four headings, in this order, each followed by text: `## What the paper says`, `## What the Lean statement says`, `## Differences`, `## Why this verdict`.
 
@@ -106,10 +110,11 @@ The body, three to six sentences, says how the two relate, with locators on both
 | `machine` | yes | `{"os": ..., "cpu": ..., "ram_gb": <number>}` |
 | `contributor` | yes | `{"name": ..., "github": ...}` |
 | `log_sha256` | yes | the SHA-256 of the full Comparator log, 64 lowercase hexadecimal characters |
+| `ai_assistance` | yes | `none`, or a plain sentence saying which tools did what |
 | `notes` | no | text |
 | `date` | yes | `"YYYY-MM-DD"` |
 
-A log under 2 MB may sit beside the receipt as `<github-handle>-<YYYYMMDD>.log` or `.log.gz`; the checker then confirms that `log_sha256` matches it.
+Retain the full log. A checksum without a retrievable log does not support a public claim of an accepted or rejected replay. A log under 2 MB may sit beside the receipt as `<github-handle>-<YYYYMMDD>.log` or `.log.gz`; the checker then confirms that `log_sha256` matches it.
 
 ## Checking
 
@@ -119,7 +124,7 @@ python3 scripts/check_contributions.py <file> ...      # only these files
 python3 scripts/check_contributions.py --self-test     # the templates and the checker itself
 ```
 
-Errors must be fixed before a pull request is merged. Warnings point at things worth a second look, such as a style slip in an explanation or a manuscript that has been withdrawn upstream.
+Errors must be fixed before a pull request is merged. Warnings point at things worth a second look, such as a style slip in an explanation, a manuscript withdrawn upstream, an older source pin, or a missing replay log. Use `--strict` for fresh submissions when all required datasets are present. The checker does not fetch external logs; a maintainer must inspect an externally retained log before accepting its evidence. Review historical or editorial warnings explicitly; do not rewrite a source pin to suppress one.
 
 ## Licences
 

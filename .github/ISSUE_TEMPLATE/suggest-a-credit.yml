@@ -1,12 +1,12 @@
 name: Suggest a credit
-description: Record where an idea in a manuscript first appeared, or which earlier work a step builds on.
+description: Link one step in a manuscript to an earlier result or method you have read.
 title: "Credit: family "
 labels: ["credit"]
 body:
   - type: markdown
     attributes:
       value: |
-        A credit links one place in a manuscript to one earlier work. The guide, with where to search, is [skills/trace-a-credit/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/trace-a-credit/SKILL.md). Cite only a source you have opened, and say that an idea first appeared somewhere only when you can cite where.
+        A credit links one place in a manuscript to one earlier work. The guide, with where to search, is [skills/trace-a-credit/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/trace-a-credit/SKILL.md). Cite only sources you have opened. The first-appeared-in key records the earliest source found within a described search; it does not certify global priority.
 
         A maintainer turns this form into a file in `contributions/credits/`, credited to you.
   - type: input
@@ -21,6 +21,13 @@ body:
     attributes:
       label: Manuscript
       description: Its title, or its folder name under preprints/ in openai/math.
+    validations:
+      required: true
+  - type: input
+    id: upstream_commit
+    attributes:
+      label: Source commit
+      description: The full 40-character openai/math commit you read, from upstream.json.
     validations:
       required: true
   - type: input
@@ -43,8 +50,8 @@ body:
       label: Relation
       description: How the step in the manuscript relates to the earlier work.
       options:
-        - first-appeared-in
         - uses
+        - first-appeared-in
         - special-case-of
         - same-argument-as
         - generalises
@@ -54,7 +61,7 @@ body:
     id: explanation
     attributes:
       label: How they relate
-      description: Quote or paraphrase both sides with their theorem numbers or pages. Say how you checked, and for first-appeared-in, where you searched and how far back.
+      description: Quote or paraphrase both sides with their theorem numbers or pages. Say how you checked, and for first-appeared-in, where you searched and how far back; the label records the earliest source found in that search, not global priority.
     validations:
       required: true
   - type: input

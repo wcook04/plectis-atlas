@@ -1,5 +1,6 @@
 ---
 kind: credit
+upstream_commit: "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
 # The family of the manuscript, in double quotes.
 family: "159"
 # The manuscript: its folder name under preprints/ upstream.

@@ -38,8 +38,15 @@ body:
     id: log_tail
     attributes:
       label: The end of comparator.log
-      description: The last 30 lines. Attach the full log as a file if you can.
+      description: The last 30 lines for triage. Also attach or link the full log with its SHA-256; a tail alone cannot support an accepted or rejected replay.
       render: text
+  - type: input
+    id: ai_assistance
+    attributes:
+      label: AI assistance
+      description: Write none, or say which tools helped and how. Include the same disclosure in the receipt JSON.
+    validations:
+      required: true
   - type: textarea
     id: notes
     attributes:

@@ -1,66 +1,20 @@
 ---
 name: start-here
-description: Use when someone wants to contribute to the OpenAI Math Atlas and has not chosen a task, or asks how they can help. Asks about their mathematics, their time and their computer, then hands them one concrete unit of work (a statement to check, a family to explain, a credit to trace, a proof to replay or a problem to report) with the links to open, the template to copy and the next skill to follow.
+description: Help a person contribute one useful source-linked note, or choose a larger task they can support. Prefer a passage already being read; agents prepare private drafts and the person signs.
 ---
 
 # Start here
 
-Aim: within a few minutes, the person has one specific task that fits the time they have, the right files open, and the template copied to the right place. Ask, choose, hand over.
+Start from the page or mathematical question the person brought. Ask only for missing context that changes the task: their relevant background and available time. Ask about Lean or hardware only if they choose statement comparison or replay.
 
-## 1. Ask three questions
+For a first visit or a fifteen-minute budget, suggest one note on a source passage: clarify a definition, identify a missing reason, check an example, locate a cited result, or ask a precise question. Use the **Suggest a change or ask a precise question** issue form. The note needs a location, the observation, and what supports it. A settled verdict is optional work for later.
 
-Ask them in one message, and skip any the person has already answered:
+If no passage is selected, use `python3 skills/start-here/find_work.py --disciplines`, then the relevant `--kind` and `--discipline` query. Treat the output as candidates. Definition counts measure local vocabulary, not mathematical difficulty, review demand or prerequisite knowledge. Inspect the actual sources before suggesting an item. Do not describe the ranking as easiest first.
 
-1. Which mathematics do you know well? A field, a level such as "undergraduate analysis", or "none in particular" are all good answers.
-2. How much time do you have: fifteen minutes, an evening, or a few evenings over several weeks?
-3. Have you read any Lean before? Do you have a Linux computer with plenty of memory and disk that you can leave running for hours?
+Offer one item and one alternative with their source links. Prefer a source-accessible task whose output and stopping point fit the person's background. A source note should answer one question; a full check follows `check-a-statement`; an explanation can cover one lemma or example and follows `explain-a-result`; a literature link follows `trace-a-credit`; a replay follows `replay-a-proof`.
 
-## 2. Choose the kind of work
+Working announcements are optional and nonexclusive. An empty directory, an inconclusive check or someone else's draft is not a reason to prevent useful work. Inspect existing contributions before proposing a duplicate.
 
-| If they have | Suggest | Next skill |
-|---|---|---|
-| A field they know, and fifteen minutes or more | Check one Lean statement in that field, starting with a short one | `check-a-statement` |
-| An evening or more, and they like explaining | Explain one result family, after claiming it | `explain-a-result` |
-| Knowledge of the literature in a field | Trace where an idea in a manuscript first appeared | `trace-a-credit` |
-| A Linux machine they can leave running | Replay a Comparator check and record the receipt | `replay-a-proof` |
-| Something that looks wrong | Report it | `report-a-problem` |
-| An interest in the atlas's code | Improve the scripts, data or skills | `improve-the-atlas` |
+Agents draft privately until the person supplies their identity and confirms the content. Do not invent a signature or verdict to make validation pass. If a source is absent, name it and produce a precise reading note or question. Never copy a teaching example as if a person independently checked it.
 
-A first statement check needs no Lean experience: the checklist and the reading guide in `check-a-statement` cover what a short statement uses. Someone without a particular field can check a short statement in a subject they studied, trace a credit, or report problems.
-
-## 3. Find one concrete item
-
-Run from the repository root:
-
-```sh
-python3 skills/start-here/find_work.py --disciplines
-python3 skills/start-here/find_work.py --kind check --discipline "<their field>"
-python3 skills/start-here/find_work.py --kind explanation --discipline "<their field>"
-python3 skills/start-here/find_work.py --kind credit --discipline "<their field>"
-python3 skills/start-here/find_work.py --kind replay --main-results
-```
-
-The script lists items nobody has done yet, easiest first, with the links to open. Show the person the top two or three, one line each, and let them choose.
-
-- For a first check in fifteen minutes, prefer a statement with three or fewer custom definitions, few lines of Lean, and no definition holes.
-- Before suggesting an explanation, look at the open claims: issues labelled `claim`. With the GitHub command-line tool, run `gh issue list --repo wcook04/openai-math-atlas --label claim --state open`; otherwise open the Issues tab and filter by the `claim` label. A claimed family can still take an explanation for a different reader; suggest the person comments on the claim first.
-
-## 4. Hand over
-
-Give the person, in one message:
-
-1. the item, and one sentence on why it fits them;
-2. the links to open (the script prints them);
-3. the commands that copy the template to the right path, with their GitHub handle filled in once they have told you what it is;
-4. the skill to follow next;
-5. the command that checks their file: `python3 scripts/check_contributions.py <path>`.
-
-Then work through the next skill with them.
-
-## If they do not use git
-
-Every kind of contribution has an issue form (Issues, then New issue): claim an explanation, check a statement, suggest a credit, share a replay, report a problem. A maintainer turns a submitted form into a file credited to its author. An explanation is a long document and needs a pull request; GitHub's web editor can create the file on a fork without installing anything (on the fork, Add file, then Create new file).
-
-## Say this once
-
-The person's name appears on the atlas beside what they submit. They disclose any AI help in `ai_assistance`, and they sign only what they have read and understood. If you are an agent, you draft; they decide and sign.
+For repository files, give the path, copy command and validation command. Read `contributions/README.md`; record `upstream_commit` and truthful `ai_assistance`. End with the particular useful result, the evidence opened, and any question still unresolved. Do not promise acceptance, a fifteen-minute full verdict, or automatic review credit.

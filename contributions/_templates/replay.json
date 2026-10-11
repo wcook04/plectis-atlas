@@ -7,7 +7,11 @@
   "lean4export_commit": "[replace: optional; output of git rev-parse HEAD in your lean4export checkout, or delete this line]",
   "landrun_commit": "[replace: optional; output of git rev-parse HEAD in your landrun checkout, or delete this line]",
   "result": "[replace: accepted, rejected or error]",
-  "axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "axioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+  ],
   "wall_time_seconds": "[replace: elapsed seconds, as a number without quotes]",
   "machine": {
     "os": "[replace: for example Ubuntu 24.04, Linux 6.8]",
@@ -20,5 +24,6 @@
   },
   "log_sha256": "[replace: the first field printed by sha256sum comparator.log]",
   "notes": "[replace: optional; anything unusual, for example a change to lake-manifest.json after lake update, or delete this line]",
-  "date": "2026-10-10"
+  "date": "2026-10-10",
+  "ai_assistance": "none"
 }
