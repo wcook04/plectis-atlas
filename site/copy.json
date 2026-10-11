@@ -1,7 +1,7 @@
 {
  "_note": "Every human-facing sentence on the site lives here so it can be rewritten. Text in {braces} is filled in by scripts/build_site.py from data/summary.json or from the data files; never type a number here.",
  "site": {
-  "name": "OpenAI Math Atlas",
+  "name": "Plectis Atlas",
   "description": "An independent guide to OpenAI’s mathematics release of {release_date}, with its manuscripts, the accompanying Lean statements and links to the source files.",
   "independence": "An independent atlas by {author}. It is not affiliated with or endorsed by OpenAI.",
   "licence": "The mathematics, descriptions, abstracts, statements and Lean files quoted here come from {upstream} at commit {commit_short}, published by OpenAI under the Apache License 2.0.",
@@ -25,7 +25,7 @@
   "theme_dark": "Use the dark theme",
   "theme_light": "Use the light theme",
   "trail_home": "Atlas",
-  "brand_label": "OpenAI Math Atlas, home",
+  "brand_label": "Plectis Atlas, home",
   "breadcrumb": "Breadcrumb",
   "site_nav": "Site",
   "sources": "Sources",
@@ -65,7 +65,7 @@
   "tex_failed": "Shown as TeX source: the renderer could not typeset it."
  },
  "home": {
-  "title": "OpenAI Math Atlas",
+  "title": "Plectis Atlas",
   "lede": "An independent guide to OpenAI’s mathematics release: {manuscripts} manuscripts in {families} families of related papers, grouped into {disciplines} disciplines. The release links {lean} Comparator challenge files to {families_with_lean} families, and each family page quotes OpenAI’s notes on their scope.",
   "cta_browse": "Browse the catalogue",
   "cta_explain": "Explain a result",
@@ -734,7 +734,7 @@
  "about": {
   "title": "About the atlas",
   "what_heading": "What it is",
-  "what": "The OpenAI Math Atlas is an independent guide to OpenAI’s mathematics release of {release_date}. It groups the manuscripts into {families} families of related papers, links the Lean statements accompanying {families_with_lean} families, gives each paper a reading page in the browser, and records citations and reader contributions.",
+  "what": "The Plectis Atlas is an independent guide to OpenAI’s mathematics release of {release_date}. It groups the manuscripts into {families} families of related papers, links the Lean statements accompanying {families_with_lean} families, gives each paper a reading page in the browser, and records citations and reader contributions.",
   "how_heading": "How it is built",
   "how": "Scripts read the release at commit {commit_short} and extract catalogue entries, available manuscript sources, bibliographies, Comparator files and scope notes. The generated pages link back to the source files. Each paper’s reading page is converted from its TeX, with every formula checked by KaTeX; a page that did not convert in full lists what is missing, and the PDF stays the reference. Catalogue counts come from the release; contribution status comes from the atlas’s own records.",
   "independence_heading": "Independence",
@@ -765,7 +765,7 @@
   "text": "There is no page at this address. The catalogue lists every family."
  },
  "social": {
-  "card_title": "OpenAI Math Atlas",
+  "card_title": "Plectis Atlas",
   "card_line": "{families} families, {manuscripts} manuscripts, {lean} Comparator challenge files, mapped from openai/math at {commit_short}.",
   "card_alt": "A map of OpenAI’s mathematics release: families of papers grouped by discipline, coloured by whether a Comparator statement accompanies them."
  },

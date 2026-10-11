@@ -1,4 +1,4 @@
-/* OpenAI Math Atlas: the Lean file view on statement pages (scripts/lean_render.py).
+/* Plectis Atlas: the Lean file view on statement pages (scripts/lean_render.py).
    The whole challenge file beside the "What you must check" panel. Colours come
    from atlas.css: steel marks Lean, ink the text, and every link keeps the token's
    own colour at rest, so the code reads as code.

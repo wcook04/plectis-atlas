@@ -1,4 +1,4 @@
-/* OpenAI Math Atlas: the Lean statement page's file view (statements/<id>.html),
+/* Plectis Atlas: the Lean statement page's file view (statements/<id>.html),
    written by scripts/lean_render.py's file_section. Loaded once, deferred. */
 (function () {
   'use strict';

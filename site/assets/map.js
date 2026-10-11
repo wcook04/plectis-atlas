@@ -1,4 +1,4 @@
-/* OpenAI Math Atlas: the map.
+/* Plectis Atlas: the map.
    Level 0: the release as discipline regions, each tiled by its results, every
    tile sized by its manuscripts (a squarified treemap, so tiles stay near
    square at any window shape). Level 1: one discipline fills the field and its

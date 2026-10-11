@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the OpenAI Math Atlas static site.
+"""Build the Plectis Atlas static site.
 
 Reads data/*.json (produced by scripts/build_data.py), site/copy.json (every
 human-facing sentence) and site/config.json (URLs), and writes static HTML,

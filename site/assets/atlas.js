@@ -1,4 +1,4 @@
-/* OpenAI Math Atlas: shared page behaviour.
+/* Plectis Atlas: shared page behaviour.
    Theme switch, mathematics (KaTeX, with the TeX source kept where it cannot be
    typeset), copy buttons, site search, sortable and filterable tables, and the
    receipt card's fitting. No frameworks. */

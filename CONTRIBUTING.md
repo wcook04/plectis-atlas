@@ -1,4 +1,4 @@
-# Contributing to the OpenAI Math Atlas
+# Contributing to the Plectis Atlas
 
 Help the next reader understand one piece of the mathematics. A useful contribution can be a correction, an example, a precise question, a source for a step, a statement comparison or an explanation. Choose a part you can read and support. Every family remains open to contributions.
 

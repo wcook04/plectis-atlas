@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        A credit links one place in a manuscript to one earlier work. The guide, with where to search, is [skills/trace-a-credit/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/trace-a-credit/SKILL.md). Cite only sources you have opened. The first-appeared-in key records the earliest source found within a described search; it does not certify global priority.
+        A credit links one place in a manuscript to one earlier work. The guide, with where to search, is [skills/trace-a-credit/SKILL.md](https://github.com/wcook04/plectis-atlas/blob/main/skills/trace-a-credit/SKILL.md). Cite only sources you have opened. The first-appeared-in key records the earliest source found within a described search; it does not certify global priority.
 
         A maintainer turns this form into a file in `contributions/credits/`, credited to you.
   - type: input

@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        A replay re-runs the Comparator check for one statement and records what happened, whatever the outcome. The steps and the receipt format are in [skills/replay-a-proof/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/replay-a-proof/SKILL.md).
+        A replay re-runs the Comparator check for one statement and records what happened, whatever the outcome. The steps and the receipt format are in [skills/replay-a-proof/SKILL.md](https://github.com/wcook04/plectis-atlas/blob/main/skills/replay-a-proof/SKILL.md).
 
         A maintainer turns this form into a receipt in `contributions/replays/`, credited to you. If you use git, a pull request with the receipt is quicker.
   - type: input

@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        A statement check compares one Comparator challenge and all its configured theorems with the located paper statements and gives one of five verdicts. The procedure, the checklist and a worked example are in [skills/check-a-statement/SKILL.md](https://github.com/wcook04/openai-math-atlas/blob/main/skills/check-a-statement/SKILL.md).
+        A statement check compares one Comparator challenge and all its configured theorems with the located paper statements and gives one of five verdicts. The procedure, the checklist and a worked example are in [skills/check-a-statement/SKILL.md](https://github.com/wcook04/plectis-atlas/blob/main/skills/check-a-statement/SKILL.md).
 
         For a smaller observation, use the note form. A full verdict concerns correspondence with the specified paper statements; it does not claim that Comparator has been replayed.
 

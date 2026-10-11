@@ -1,8 +1,8 @@
-# OpenAI Math Atlas
+# Plectis Atlas
 
 A reader's atlas to the mathematics OpenAI released on 6 October 2026 in [openai/math](https://github.com/openai/math). For each of the 372 result families it shows the statements from each paper's introduction beside the Lean statements OpenAI set up as Comparator challenges, with OpenAI's own note on what each Lean statement covers, and what each manuscript cites inside and outside the collection. Every family is open for a human explanation, credited by name.
 
-**[Open the atlas](https://wcook04.github.io/openai-math-atlas/)** · [Explain a result](https://wcook04.github.io/openai-math-atlas/explain.html) · [Check a statement](CONTRIBUTING.md) · [The numbers](https://wcook04.github.io/openai-math-atlas/numbers.html)
+**[Open the atlas](https://wcook04.github.io/plectis-atlas/)** · [Explain a result](https://wcook04.github.io/plectis-atlas/explain.html) · [Check a statement](CONTRIBUTING.md) · [The numbers](https://wcook04.github.io/plectis-atlas/numbers.html)
 
 The atlas is independent of OpenAI. It is built from the public collection at a pinned commit, and every number on this page is computed by a script in this repository.
 
@@ -79,8 +79,8 @@ Start with one useful note on a passage you are reading: its location, your corr
 ## Build it yourself
 
 ```sh
-git clone https://github.com/wcook04/openai-math-atlas
-cd openai-math-atlas
+git clone https://github.com/wcook04/plectis-atlas
+cd plectis-atlas
 sh scripts/fetch_upstream.sh            # sparse checkout of openai/math at the pinned commit, without PDFs
 python3 scripts/build_data.py           # writes data/*.json
 python3 scripts/build_site.py           # writes site/_build/

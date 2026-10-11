@@ -4,7 +4,7 @@ This file is for AI coding agents (Claude Code, Codex, Cursor and others) workin
 
 ## What this repository is
 
-The OpenAI Math Atlas is an independent reader's atlas to OpenAI's mathematics release, the repository openai/math, read at the commit pinned in `upstream.json`. Scripts compute the machine-derived layer into `data/*.json` and a static site. People add the human layer as files in `contributions/`: explanations of result families, statement checks comparing a Lean statement with its paper theorem, credits to earlier work, and replay receipts from re-running Comparator.
+The Plectis Atlas is an independent reader's atlas to OpenAI's mathematics release, the repository openai/math, read at the commit pinned in `upstream.json`. Scripts compute the machine-derived layer into `data/*.json` and a static site. People add the human layer as files in `contributions/`: explanations of result families, statement checks comparing a Lean statement with its paper theorem, credits to earlier work, and replay receipts from re-running Comparator.
 
 ## Start
 

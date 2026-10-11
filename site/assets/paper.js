@@ -1,4 +1,4 @@
-/* OpenAI Math Atlas: the reading view of a paper (papers/<slug>.html).
+/* Plectis Atlas: the reading view of a paper (papers/<slug>.html).
    Typesets every formula with KaTeX and the paper's own macros, with the options
    scripts/check_paper_math.mjs used to check it, and marks the passage a link
    lands on. A formula KaTeX cannot typeset keeps its TeX source. No frameworks. */
