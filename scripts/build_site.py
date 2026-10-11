@@ -1021,6 +1021,14 @@ def findings_list(finds, root):
     return '<ul class="cfinds">' + "".join(finding_item(f, root) for f in sorted(finds, key=lambda x: x["date"])) + "</ul>"
 
 
+def adopted_list_html(adopted):
+    """What the atlas took from a source: ideas re-implemented, or code and data reused under licence."""
+    if not adopted:
+        return ""
+    items = "".join(f'<li>{esc(C("sources.adopted_kind_" + a["kind"]))}: {esc(a["what"])} <span class="muted">({esc(a["where"])})</span></li>' for a in adopted)
+    return f'<p class="small"><strong>{esc(C("sources.adopted_heading"))}</strong></p><ul class="small">{items}</ul>'
+
+
 def family_facets_html(f, root):
     parts = []
     ty, tier = sourced(f, "type"), sourced(f, "tier")
@@ -2322,6 +2330,7 @@ def build_sources():
  <p class="muted small">{esc(authors)} · {esc(C('sources.snapshot', date=src.get('snapshot') or ''))} · {esc(C('sources.licence', licence=src.get('licence') or 'n/a'))}</p>
  <p>{esc(src.get('method') or '')}</p>
  <ul class="small">{flist}</ul>
+ {adopted_list_html(src.get('adopted'))}
 </article>""")
     efforts = []
     for e in sorted(COMMUNITY["list"], key=lambda x: (x.get("kind") or "", x.get("date") or "", x["name"])):
@@ -2333,6 +2342,7 @@ def build_sources():
  <p class="muted small">{esc(credit_names(e))}{' · ' if credit_names(e) else ''}{esc(e.get('date') or '')} · {esc(C('community.reuse_' + e.get('reuse', 'link')))} {esc(C('community.licence', licence=e.get('licence') or 'n/a'))}</p>
  <p>{esc(e['summary'])}</p>
  {('<p class="small">' + esc(C('sources.used_on', n=nf)) + ' ' + fam_links + '</p>') if fams else ''}
+ {adopted_list_html(e.get('adopted'))}
 </article>""")
     people = {(a.get("name") or a.get("handle")) for e in COMMUNITY["list"] for a in (e.get("authors") or [])}
     lede = C("sources.lede", sources=2 + len(s.get("sources", [])) + len(COMMUNITY["list"]), people=len(people), findings=len(COMMUNITY["findings"]))

@@ -1197,7 +1197,7 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         src = json.loads(sp.read_text(encoding="utf-8"))
         meta = src.get("source", {})
         sid_ = meta.get("id") or sp.stem
-        sources.append({k: meta.get(k) for k in ("id", "name", "url", "authors", "kind", "licence", "reuse", "snapshot", "method", "fields", "tier_names")})
+        sources.append({k: meta.get(k) for k in ("id", "name", "url", "authors", "kind", "licence", "reuse", "snapshot", "method", "fields", "tier_names", "adopted")})
         for fid, vals in (src.get("families") or {}).items():
             if fid not in fam_by_id:
                 continue

@@ -642,6 +642,10 @@
   "said_heading": "What people have said",
   "followups_heading": "Built on outside the collection",
   "explanations_heading": "Explanations elsewhere",
-  "statement_more": "More about this statement"
+  "statement_more": "More about this statement",
+  "adopted_heading": "Taken into the atlas",
+  "adopted_kind_idea": "Idea, re-implemented with credit",
+  "adopted_kind_code": "Code, reused under its licence",
+  "adopted_kind_data": "Data, reused under its licence"
  }
 }

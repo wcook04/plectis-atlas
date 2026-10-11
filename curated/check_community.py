@@ -71,8 +71,16 @@ def check(doc: dict, families: set, statements: set) -> list[str]:
         for s in e.get("statements") or []:
             if s not in statements:
                 errs.append(f"{where}: unknown statement {s!r}")
-        if "—" in (e.get("summary") or ""):
+        if "\N{EM DASH}" in (e.get("summary") or ""):
             errs.append(f"{where}: summary contains an em dash")
+        for j, a in enumerate(e.get("adopted") or []):
+            w2 = f"{where} adopted[{j}]"
+            if a.get("kind") not in ("idea", "code", "data"):
+                errs.append(f"{w2}: kind must be idea, code or data")
+            if not a.get("what") or not a.get("where"):
+                errs.append(f"{w2}: needs what and where")
+            if a.get("kind") in ("code", "data") and (e.get("licence") or "").lower() in ("", "none stated", "n/a", "unknown", "noassertion"):
+                errs.append(f"{w2}: copying {a.get('kind')} needs a licence that allows it; re-implement the idea and record kind idea")
     for i, f in enumerate(doc.get("findings", [])):
         where = f"findings[{i}]"
         for k in ("effort", "family", "kind", "summary", "url", "date"):
@@ -90,7 +98,7 @@ def check(doc: dict, families: set, statements: set) -> list[str]:
             errs.append(f"{where}: url is not http(s)")
         if f.get("date") and not DATE.match(f["date"]):
             errs.append(f"{where}: date must be YYYY-MM-DD")
-        if "—" in (f.get("summary") or ""):
+        if "\N{EM DASH}" in (f.get("summary") or ""):
             errs.append(f"{where}: summary contains an em dash")
     return errs
 
@@ -110,7 +118,9 @@ def self_test(families, statements) -> int:
         ("finding without effort", {**good, "findings": [{**good["findings"][0], "effort": "nope"}]}),
         ("unknown family", {**good, "findings": [{**good["findings"][0], "family": "999"}]}),
         ("bad date", {**good, "findings": [{**good["findings"][0], "date": "8 Oct"}]}),
-        ("em dash", {**good, "efforts": [{**good["efforts"][0], "summary": "Replays — two."}]}),
+        ("em dash", {**good, "efforts": [{**good["efforts"][0], "summary": "Replays \N{EM DASH} two."}]}),
+        ("code copied without licence", {**good, "efforts": [{**good["efforts"][0], "licence": "none stated", "adopted": [{"kind": "code", "what": "parser", "where": "scripts/x.py"}]}]}),
+        ("adopted without where", {**good, "efforts": [{**good["efforts"][0], "adopted": [{"kind": "idea", "what": "a layout"}]}]}),
     ]
     failures = 0
     if check(good, families, statements):

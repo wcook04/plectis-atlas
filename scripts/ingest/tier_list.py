@@ -64,6 +64,11 @@ def main() -> int:
                 "lean_formalisations": "The page's count of Lean formalisations per family.",
             },
             "tier_names": {str(k): v for k, v in sorted(tiers.items())},
+            "adopted": [
+                {"kind": "idea", "what": "Classifying each result as a proof, counterexample, algorithm or construction, and its labels for all 372 families", "where": "family pages and the 'Proof or counterexample' map overlay"},
+                {"kind": "idea", "what": "Grading results by how significant they would be if they hold up, and its tier for each family", "where": "family pages and the 'Significance if it holds up' map overlay"},
+                {"kind": "idea", "what": "Its count of Lean formalisations per family", "where": "the published-counts reconciliation on the numbers page"},
+            ],
         },
         "families": families,
     }
