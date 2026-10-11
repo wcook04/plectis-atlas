@@ -1,0 +1,166 @@
+{
+ "_note": "Every visible string of the release universe (universe.html, assets/universe.js). Built by scripts/build_universe.py. Plain words; numbers are filled in from the data at build time or in the page.",
+ "page": {
+  "title": "The release universe",
+  "description": "Every family of OpenAI’s mathematics release as its own small map, placed by discipline, with the citations between families drawn as fibres. Drill into a family to see its papers, headline results and Lean statements.",
+  "lede": "Each of the {families} families is a small map of its own papers, headline results and Lean statements, set in its discipline’s sector. Fibres in the middle are the citations between families.",
+  "noscript": "The interactive map needs JavaScript. The list below names every family, paper, headline result and Lean statement, with links."
+ },
+ "levels": {
+  "release": "The release",
+  "trail_label": "Where you are",
+  "back": "Back",
+  "back_to": "Back to {name}",
+  "paper": "Paper"
+ },
+ "switch": {
+  "label": "Show",
+  "map": "Map",
+  "list": "List"
+ },
+ "controls": {
+  "zoom_in": "Zoom in",
+  "zoom_out": "Zoom out",
+  "fit": "Show the whole release",
+  "canvas_label": "Map of the release: {families} families in {disciplines} discipline sectors. Use the list beside it for the same objects as links.",
+  "help": "Select a family to light its citations and fly into its map. Double-click opens a page. Esc goes back. Scroll or pinch over the map to zoom."
+ },
+ "search": {
+  "label": "Find a theorem or a Lean declaration",
+  "placeholder": "Find a theorem or a Lean declaration",
+  "loading": "Loading the search index…",
+  "failed": "The search index could not load. The list below names every object.",
+  "none": "Nothing matches.",
+  "count_one": "1 match. Enter flies to it.",
+  "count": "{n} matches. Enter flies to the first.",
+  "shown": "Showing the first {shown}.",
+  "kind_family": "Family",
+  "kind_paper": "Paper",
+  "kind_result": "Result",
+  "kind_lean": "Lean statement"
+ },
+ "legend": {
+  "heading": "How to read the map",
+  "colour_note": "Colour marks evidence only. Structure stays grey.",
+  "lean_heading": "Lean statements (diamonds)",
+  "lean_3": "Re-run and accepted by three outside groups",
+  "lean_2": "Accepted by two",
+  "lean_1": "Accepted by one",
+  "lean_0": "Not yet accepted by any",
+  "lean_holes": "Has definitions Comparator checks by name and type only (a hole)",
+  "lean_groups": "The groups are {groups}.",
+  "result_heading": "Headline results (dots)",
+  "result_paired": "Paired with a Lean statement",
+  "result_unpaired": "No Lean statement paired",
+  "pair_note": "Pairings are chosen automatically by word overlap and have not been reviewed.",
+  "family_heading": "Families (rings round a map)",
+  "family_hol": "Some steps checked again in HOL Light",
+  "family_finite": "A finite part checked by exact computation",
+  "fibre_heading": "Citations",
+  "fibre_cites": "Cites",
+  "fibre_cited": "Is cited by",
+  "fibre_note": "A fibre joins two families when a manuscript of one cites a manuscript of the other. Its width grows with the number of citing links."
+ },
+ "counts": {
+  "families_one": "1 family",
+  "families": "{n} families",
+  "papers_one": "1 paper",
+  "papers": "{n} papers",
+  "results_one": "1 headline result",
+  "results": "{n} headline results",
+  "lean_one": "1 Lean statement",
+  "lean": "{n} Lean statements",
+  "lean_none": "No Lean statement",
+  "links_one": "1 citing link",
+  "links": "{n} citing links"
+ },
+ "release": {
+  "heading": "The release",
+  "summary": "{families} families in {disciplines} disciplines: {papers} current papers, {results} headline results and {lean} Lean statements.",
+  "disciplines_heading": "Disciplines",
+  "index_heading": "Everything, as a list",
+  "index_intro": "Every family, its papers, their headline results and its Lean statements, by discipline. Each line links to its page."
+ },
+ "discipline": {
+  "kicker": "Discipline",
+  "families_heading": "Families",
+  "connections": "Citing links with families in other disciplines: {out} outward, {in} inward."
+ },
+ "family": {
+  "kicker": "Family {num}",
+  "short": "Family {num}",
+  "page_link": "Open the family page",
+  "papers_heading": "Papers",
+  "lead": "Lead paper",
+  "lean_heading": "Lean statements",
+  "connections_heading": "Connections",
+  "cites": "Cites",
+  "cited_by": "Cited by",
+  "no_connections": "No manuscript in this family cites or is cited by another family’s manuscript.",
+  "readers_heading": "Do the two outside readers agree?",
+  "readers_source": "MathVet and Carlos Toledo’s cert-machine each read the family’s Lean statements against its headline, independently of each other.",
+  "readers_agree-full": "Both find the Lean states the headline.",
+  "readers_agree-less": "Both find the Lean states less than the headline.",
+  "readers_disagree": "The two readers disagree.",
+  "readers_none": "No Lean statement is linked to this family, so there is nothing to read against the headline.",
+  "hol": "Ben Knill checked {n} of its steps again in HOL Light.",
+  "hol_one": "Ben Knill checked one of its steps again in HOL Light.",
+  "finite": "Carlos Toledo’s cert-machine checked {n} finite parts by exact computation.",
+  "finite_one": "Carlos Toledo’s cert-machine checked one finite part by exact computation.",
+  "finite_other": "{n} more finite parts were looked at and not decided.",
+  "findings_heading": "Credited findings",
+  "findings_none": "No credited finding about this family yet.",
+  "follow": "Fly to this family",
+  "source": "Source",
+  "hol_card": "HOL Light card {card}"
+ },
+ "paper": {
+  "kicker": "Paper in family {num}",
+  "read": "Read the paper",
+  "pdf": "PDF",
+  "results_heading": "Headline results",
+  "no_results": "The atlas found no headline statement in this paper’s TeX source."
+ },
+ "result": {
+  "in_paper": "In {paper}",
+  "section": "Section {n}",
+  "appendix": "Appendix",
+  "read": "Read it in the paper",
+  "lean_page": "The Lean statement page",
+  "family_page": "The family page",
+  "evidence_heading": "Evidence",
+  "paired": "Paired with {names}. The pairing was chosen automatically by word overlap and has not been reviewed.",
+  "unpaired": "No Lean statement is paired with this result.",
+  "family_evidence": "Its family:",
+  "loading": "Loading the statement…",
+  "load_failed": "The statement could not load. Read it in the paper instead.",
+  "numbering_note": "Numbers are those of the atlas’s reading page, computed from the TeX source; the PDF is authoritative.",
+  "findings_heading": "Credited findings about its family",
+  "in_paper_lead": "In"
+ },
+ "lean": {
+  "kicker": "Lean statement in family {num}",
+  "page": "Open the Lean statement page",
+  "family_page": "The family page",
+  "reruns_heading": "Re-runs by outside groups",
+  "accepted": "accepted",
+  "not_accepted": "not accepted",
+  "reruns_none": "No outside group has re-run this file yet.",
+  "holes_heading": "Definitions checked by name and type only",
+  "holes_note": "Comparator compares these by name and type; their bodies must be read in OpenAI’s library.",
+  "paired_heading": "Paired paper results",
+  "paired_note": "Chosen automatically by word overlap; not reviewed.",
+  "paired_none": "No paper result is paired with it.",
+  "main": "In OpenAI’s list of main results",
+  "findings_heading": "Credited findings about this statement",
+  "record": "Record"
+ },
+ "plate": {
+  "lean_ring": "Lean statements",
+  "family_short": "Family {num}"
+ },
+ "status": {
+  "load_failed": "The map could not load. Every object is listed below.",
+  "loading": "Drawing the map…"
+ }
+}
