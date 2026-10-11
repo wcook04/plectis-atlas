@@ -6,7 +6,7 @@
   'use strict';
   var doc = document;
   var root = (doc.body && doc.body.getAttribute('data-root')) || '';
-  var STR = { copied: 'Copied' };
+  var STR = { copied: 'Copied', failed: 'Copy failed' };
 
   /* ---- Theme ---------------------------------------------------------- */
   function systemDark() { return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches; }
@@ -108,34 +108,69 @@
     var b = ev.target.closest('[data-copy-next],[data-copy-text]');
     if (!b) return;
     var text = b.hasAttribute('data-copy-text') ? b.getAttribute('data-copy-text') : (b.nextElementSibling ? b.nextElementSibling.textContent : '');
-    var done = function () {
-      var old = b.textContent;
-      b.textContent = b.getAttribute('data-copied') || doc.body.getAttribute('data-copied') || STR.copied;
-      setTimeout(function () { b.textContent = old; }, 1400);
+    if (b._label == null) b._label = b.textContent;
+    var flash = function (msg) {
+      b.textContent = msg;
+      clearTimeout(b._t);
+      b._t = setTimeout(function () { b.textContent = b._label; }, 1600);
     };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, done);
-    else done();
+    /* "Copied" only after the browser confirms the write. Otherwise say so, and put
+       the text in a selected field beside the button so it can be copied by hand. */
+    var ok = function () {
+      var f = b.parentNode && b.parentNode.querySelector('.copy-fallback');
+      if (f) f.remove();
+      flash(b.getAttribute('data-copied') || doc.body.getAttribute('data-copied') || STR.copied);
+    };
+    var failed = function () {
+      flash(doc.body.getAttribute('data-copy-failed') || STR.failed);
+      var f = b.parentNode && b.parentNode.querySelector('.copy-fallback');
+      if (!f) {
+        f = doc.createElement('input');
+        f.type = 'text';
+        f.readOnly = true;
+        f.className = 'copy-fallback';
+        f.setAttribute('aria-label', doc.body.getAttribute('data-copy-failed') || STR.failed);
+        b.insertAdjacentElement('afterend', f);
+      }
+      f.value = text;
+      f.focus();
+      f.select();
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(ok, failed);
+      else failed();
+    } catch (e) { failed(); }
   });
 
   /* ---- Site search ------------------------------------------------------ */
   var dlg = doc.getElementById('search-dialog');
   var index = null;
+  var indexFailed = false;
   var sel = -1;
   function norm(s) { return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
   function loadIndex(cb) {
     if (index) return cb();
-    fetch(root + 'data/search.json').then(function (r) { return r.json(); }).then(function (j) {
+    fetch(root + 'data/search.json').then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }).then(function (j) {
       index = j.map(function (e) { e.n = norm(e.t + ' ' + e.k + ' ' + e.s); return e; });
+      indexFailed = false;
       cb();
-    }).catch(function () { index = []; cb(); });
+    }).catch(function () { index = null; indexFailed = true; cb(); });
   }
   function runSearch() {
     var input = dlg.querySelector('.search__input');
     var list = dlg.querySelector('.search__results');
     var empty = dlg.querySelector('.search__empty');
+    var failedEl = dlg.querySelector('.search__failed');
     var q = norm(input.value).trim();
     list.innerHTML = '';
     sel = -1;
+    input.removeAttribute('aria-activedescendant');
+    /* An index that did not load is not the same as no matches. */
+    if (failedEl) failedEl.hidden = !indexFailed;
+    if (indexFailed || !index) { empty.hidden = true; return; }
     if (!q) { empty.hidden = true; return; }
     var terms = q.split(/\s+/);
     var hits = [];
@@ -170,6 +205,7 @@
     sel = (sel + d + items.length) % items.length;
     items[sel].setAttribute('aria-selected', 'true');
     items[sel].scrollIntoView({ block: 'nearest' });
+    dlg.querySelector('.search__input').setAttribute('aria-activedescendant', items[sel].id);
   }
   function openSearch() {
     if (!dlg || dlg.open) return;
@@ -268,10 +304,18 @@
   });
 
   /* ---- Receipt card fitting ---------------------------------------------- */
+  /* On a narrow screen the inline comparison reflows into stacked, readable text
+     (atlas.css), so it is never shrunk or clipped; only the fixed 16:9 frames are. */
+  var stackedMQ = window.matchMedia ? window.matchMedia('(max-width: 760px)') : null;
   function fitCards() {
     doc.querySelectorAll('.rc__fit').forEach(function (box) {
       var inner = box.firstElementChild;
       if (!inner) return;
+      if (stackedMQ && stackedMQ.matches && !box.closest('.rc-wrap--solo')) {
+        inner.style.removeProperty('--fit');
+        box.classList.remove('is-clipped');
+        return;
+      }
       var f = box.closest('.rc__lean') ? 1.3 : 1.45;
       inner.style.setProperty('--fit', f);
       box.classList.remove('is-clipped');
@@ -290,8 +334,25 @@
     });
   }
 
+  /* ---- Anchors inside collapsed sections ----------------------------------- */
+  /* A link to a line of the full file, or to a section folded into <details>,
+     opens the enclosing sections before the browser scrolls to it. */
+  function revealTarget() {
+    var id = decodeURIComponent(location.hash.replace(/^#/, ''));
+    if (!id) return;
+    var el = doc.getElementById(id);
+    if (!el) return;
+    var opened = false;
+    for (var p = el.parentElement; p; p = p.parentElement) {
+      if (p.tagName === 'DETAILS' && !p.open) { p.open = true; opened = true; }
+    }
+    if (opened) el.scrollIntoView({ block: 'start' });
+  }
+  window.addEventListener('hashchange', revealTarget);
+
   /* ---- Start ----------------------------------------------------------- */
   function start() {
+    revealTarget();
     window.atlasRenderMath(doc);
     if (doc.querySelector('.rc')) {
       fitCards();

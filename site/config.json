@@ -19,13 +19,15 @@
    "family": "{family}"
   },
   "check-a-statement": {
-   "statement": "{statement}"
+   "statement": "{statement}",
+   "upstream_commit": "{upstream_commit}"
   },
   "report-a-problem": {
    "page": "{page}"
   },
   "suggest-a-credit": {
-   "family": "{family}"
+   "family": "{family}",
+   "upstream_commit": "{upstream_commit}"
   },
   "share-a-replay": {
    "statement": "{statement}"
