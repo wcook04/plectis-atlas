@@ -80,9 +80,23 @@
  "families_with_lean": 242,
  "manuscripts_with_lean": 339,
  "lean_statements_pure_mathlib": 10,
+ "lean_statements_no_local_vocabulary": 11,
  "lean_statements_with_custom_vocabulary": 405,
  "lean_statements_importing_non_mathlib": 2,
  "lean_statements_declaring_axioms": 1,
+ "lean_statements_with_definition_holes": [
+  "Brenier",
+  "DefocusingNLS",
+  "ElementaryPositivity",
+  "EuclideanFiveColor",
+  "KServer",
+  "LogspaceEquality",
+  "Naimark",
+  "OccupiedOverlap",
+  "Rokhlin",
+  "SpinAngle"
+ ],
+ "lean_definition_holes": 65,
  "lean_vocabulary_max": 1212,
  "lean_vocabulary_max_statement": "EditApproximation",
  "lean_vocabulary_median": 13,
@@ -121,14 +135,15 @@
  "external_works_cited": 11069,
  "external_citations": 16078,
  "definitions": {
-  "lean_statements_pure_mathlib": "Comparator challenge files that import only Mathlib and introduce no definitions, structures, instances, notation or axioms of their own: a reader checks the theorem statement against Mathlib vocabulary alone.",
-  "lean_vocabulary": "Definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms introduced inside a Comparator challenge file. Comparator certifies the proof against exactly this file, so each item is something a reader must check means what the paper means.",
+  "lean_statements_pure_mathlib": "Comparator challenge files that import only Mathlib and in which a textual scan detects no local vocabulary declarations: a reader checks the theorem statement against Mathlib vocabulary alone. Files with no local vocabulary that import OpenAI's own modules are excluded.",
+  "lean_vocabulary": "Local vocabulary declarations detected by a textual scan of a Comparator challenge file: definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms. Theorem and lemma declarations, including the target theorem, are excluded. A proof that Comparator accepts proves the statement as phrased in this vocabulary, so each item is something a reader checks means what the paper means.",
   "manuscripts_with_lean": "Current manuscripts listed as accompanying papers in a family's Lean scope note (lean/docs/NNN.md) that links at least one Comparator statement.",
   "internal_citation_edges": "Bibliography entries in a manuscript's TeX sources that point to another manuscript in the collection (an openai/math preprint link or an OAI: key), counted once per citing and cited manuscript.",
-  "external_works_cited": "Distinct cited works outside the collection, identified by DOI, then arXiv id, then normalised title.",
+  "external_works_cited": "References outside the collection grouped automatically by DOI, then arXiv id, then the first twelve words of the normalised title. Distinct works with similar titles can merge, and one work cited by DOI in one paper and by title in another can split, so this is an automatic grouping and has not been audited.",
+  "external_citations": "Resolved bibliography keys in current manuscripts' TeX sources that point outside the collection, each manuscript and key counted once.",
   "most_cited_outside_works": "Outside works ranked by how many current manuscripts cite them (each manuscript counted once).",
   "most_cited_inside_collection": "Current manuscripts ranked by how many other current manuscripts in the collection cite them, with whether each has an accompanying Lean statement.",
-  "scope_coverage": "What each Lean statement certifies relative to its paper's headline result (headline, part of the headline, a consequence, a weaker form, a supporting result), classified by an AI agent from OpenAI's own Lean notes with each row quoting the note (curated/scope_coverage.json). No person has reviewed it yet.",
+  "scope_coverage": "A draft classification of how each Comparator challenge file relates to its paper's headline result: it states the headline theorem, part of it, a consequence, a weaker form or a supporting result, or the note leaves it unclear. An AI agent made it from OpenAI's scope note for the family (lean/docs/<family>.md), quoting the note on every row (curated/scope_coverage.json). No person has reviewed it.",
   "lean_count_reconciliation": "Published counts of how much of the release has Lean, side by side: families whose Lean notes link a Comparator statement; families and papers in the sources list of OpenAI's lean/formalization.yaml; OpenAI's own reported share; and counts from other public sources. Each measures a different thing."
  },
  "highlights": {
@@ -476,6 +491,8 @@
   ]
  },
  "scope_coverage": {
+  "stale": false,
+  "status": "draft",
   "classes": {
    "consequence": 28,
    "headline": 307,
@@ -500,6 +517,101 @@
    "277",
    "290",
    "301"
+  ],
+  "families_partial_headline_only": [
+   "009",
+   "033",
+   "206",
+   "229",
+   "230",
+   "261",
+   "280",
+   "323",
+   "337",
+   "367"
+  ],
+  "families_no_full_headline": [
+   "009",
+   "027",
+   "033",
+   "066",
+   "126",
+   "152",
+   "159",
+   "190",
+   "191",
+   "194",
+   "195",
+   "206",
+   "229",
+   "230",
+   "257",
+   "261",
+   "266",
+   "277",
+   "280",
+   "290",
+   "301",
+   "323",
+   "337",
+   "367"
+  ],
+  "families_mixed_classes": [
+   "003",
+   "021",
+   "024",
+   "049",
+   "072",
+   "073",
+   "076",
+   "085",
+   "087",
+   "088",
+   "098",
+   "100",
+   "104",
+   "108",
+   "111",
+   "113",
+   "116",
+   "119",
+   "125",
+   "140",
+   "146",
+   "148",
+   "157",
+   "158",
+   "162",
+   "172",
+   "179",
+   "185",
+   "187",
+   "197",
+   "198",
+   "207",
+   "212",
+   "214",
+   "220",
+   "222",
+   "227",
+   "228",
+   "231",
+   "235",
+   "237",
+   "238",
+   "244",
+   "251",
+   "266",
+   "269",
+   "274",
+   "281",
+   "288",
+   "293",
+   "294",
+   "325",
+   "330",
+   "343",
+   "350"
   ],
   "reviewed_by_people": false,
   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
@@ -561,11 +673,142 @@
   "tier_list_families_with_lean": 127,
   "tier_list_lean_formalisations_total": 162
  },
+ "metric_receipts": [
+  {
+   "key": "families",
+   "value": 372,
+   "unit": "result families",
+   "universe": "openai/math at fd4aeeb2ee4f, overview.tex and CONTENTS.md",
+   "rule": "Each family id in the catalogue. Ids run 001 to 377; five are unused.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "manuscripts_current",
+   "value": 719,
+   "unit": "manuscripts",
+   "universe": "openai/math at fd4aeeb2ee4f, preprints/",
+   "rule": "Manuscript folders listed under a family in overview.tex or CONTENTS.md and not marked withdrawn in their README.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "statements_lean",
+   "value": 416,
+   "unit": "Comparator challenge files",
+   "universe": "openai/math at fd4aeeb2ee4f, lean/ComparatorChallenges/",
+   "rule": "Each <Id>.lean with its <Id>.json configuration. One file can hold several target theorems.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "statements_lean_main_results",
+   "value": 189,
+   "unit": "challenge files",
+   "universe": "openai/math at fd4aeeb2ee4f, lean/formalization.yaml",
+   "rule": "Challenge files named by at least one status.main_results item.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "main_result_declarations",
+   "value": 200,
+   "unit": "declaration records",
+   "universe": "openai/math at fd4aeeb2ee4f, lean/formalization.yaml",
+   "rule": "Items under status.main_results, each naming a configuration, a declaration and a file.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "families_with_lean",
+   "value": 242,
+   "unit": "result families",
+   "universe": "openai/math at fd4aeeb2ee4f, lean/docs/NNN.md",
+   "rule": "Families whose Lean scope note links at least one Comparator challenge file.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "manuscripts_with_lean",
+   "value": 339,
+   "unit": "manuscripts",
+   "universe": "openai/math at fd4aeeb2ee4f, lean/docs/NNN.md headers",
+   "rule": "Current manuscripts named as accompanying papers in a scope note that links a challenge file. This is an association by the note; it does not say which of a paper's claims the Lean states.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "lean_statements_pure_mathlib",
+   "value": 10,
+   "unit": "challenge files",
+   "universe": "openai/math at fd4aeeb2ee4f, lean/ComparatorChallenges/",
+   "rule": "Files that import only Mathlib and in which a textual scan detects no local vocabulary declarations.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "lean_statements_no_local_vocabulary",
+   "value": 11,
+   "unit": "challenge files",
+   "universe": "openai/math at fd4aeeb2ee4f, lean/ComparatorChallenges/",
+   "rule": "Files in which a textual scan detects no local vocabulary declarations, whatever they import.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "lean_vocabulary_median",
+   "value": 13,
+   "unit": "local vocabulary declarations per file",
+   "universe": "openai/math at fd4aeeb2ee4f, all challenge files",
+   "rule": "Conventional median of the detected local vocabulary declarations (definitions, structures, instances, notation, axioms and similar; theorems and lemmas excluded).",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "lean_definition_holes",
+   "value": 65,
+   "unit": "definition holes",
+   "universe": "openai/math at fd4aeeb2ee4f, lean/ComparatorChallenges/*.json",
+   "rule": "Names in a configuration's definition_names, across 10 configurations. Comparator compares these definitions by name and type only; their bodies come from OpenAI's solution, so a reader checks what each body means.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "paper_statement_environments",
+   "value": 21838,
+   "unit": "theorem-like environments",
+   "universe": "openai/math at fd4aeeb2ee4f, current manuscripts' TeX",
+   "rule": "Theorem, lemma, proposition, corollary and similar environments extracted from the TeX, repeated statements included.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "internal_citation_edges",
+   "value": 578,
+   "unit": "citing and cited manuscript pairs",
+   "universe": "openai/math at fd4aeeb2ee4f, current manuscripts' bibliographies",
+   "rule": "Bibliography entries pointing to another manuscript in the collection. A citation records a reference; it does not establish that a proof uses the cited result.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "external_citations",
+   "value": 16078,
+   "unit": "resolved external reference keys",
+   "universe": "openai/math at fd4aeeb2ee4f, current manuscripts' bibliographies",
+   "rule": "Bibliography keys resolved to a reference outside the collection, each manuscript and key counted once.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "external_works_cited",
+   "value": 11069,
+   "unit": "automatically grouped references",
+   "universe": "openai/math at fd4aeeb2ee4f, current manuscripts' bibliographies",
+   "rule": "References grouped by DOI, then arXiv id, then the first twelve words of the title. Unaudited: similar titles can merge and one work can split.",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "scope_coverage",
+   "value": 416,
+   "unit": "challenge files classified",
+   "universe": "openai/math at fd4aeeb2ee4f, curated/scope_coverage.json",
+   "rule": "Draft classification by an AI agent from OpenAI's scope notes, unreviewed: consequence 28, headline 307, headline-part 21, supporting 35, unclear 1, weaker 24.",
+   "source": "scripts/build_data.py"
+  }
+ ],
  "lean_claim_layer": {
   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
   "lean_projects": 559,
   "lean_files": 122458,
-  "projects_with_model_file": 248,
+  "projects_with_model_file": 230,
+  "model_files": 248,
   "model_statement_definitions": 967,
   "manuscript_theorems": 5548,
   "projects_with_manuscript_theorems": 12,
@@ -574,7 +817,8 @@
   "definitions": {
    "model_statement_definitions": "Proposition-valued definitions (def or abbrev ending in `: Prop`) in a project's Model.lean, where projects state their papers' claims as Lean propositions.",
    "manuscript_theorems": "Theorems or lemmas whose name contains 'manuscript', the naming some projects use for proofs of their papers' claims.",
-   "manuscript_theorems_checked_by_comparator": "Manuscript theorems whose full name is one of the theorem names in a Comparator challenge configuration.",
+   "manuscript_theorems_checked_by_comparator": "Manuscript theorems whose full name occurs directly in a Comparator configuration's theorem_names list. A configured proof can use many other theorems, so this is a name match, not a measure of what Comparator checks.",
+   "projects_with_model_file": "Distinct projects OAI/<area>/<project>/ containing at least one file named Model.lean; model_files counts the files.",
    "lean_projects": "Folders OAI/<area>/<project>/ in OpenAI's Lean library that contain Lean files.",
    "scan": "Textual scan of lean/OAI at the pinned commit; nothing is built, so a listed theorem exists in the source but is not thereby checked."
   }

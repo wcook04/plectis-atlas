@@ -29,31 +29,37 @@ def numbers_block(s: dict) -> str:
     rows = [
         f"- **{n(s['families'])} result families** in {s['disciplines']} disciplines, from **{n(s['manuscripts_current'])} current manuscripts** "
         f"({s['manuscripts_withdrawn']} more were withdrawn and {s['manuscripts_previous_editions']} earlier editions remain in the collection).",
-        f"- **{n(s['statements_lean'])} Lean statements** set up as Comparator challenges, {n(s['statements_lean_main_results'])} of them in OpenAI's list of main results. "
-        f"{n(s['manuscripts_with_lean'])} manuscripts are accompanying papers of a family with at least one Lean statement.",
-        f"- **{n(s['lean_statements_pure_mathlib'])} Lean statements** are written in Mathlib's vocabulary alone. The median statement file introduces "
-        f"{s['lean_vocabulary_median']} definitions of its own, and the largest ({s['lean_vocabulary_max_statement']}) introduces {n(s['lean_vocabulary_max'])}. "
-        f"Comparator certifies a proof against exactly this file, so each definition is something a reader checks.",
+        f"- **{n(s['statements_lean'])} Comparator challenge files**, {n(s['statements_lean_main_results'])} of them named in OpenAI's list of main results "
+        f"({n(s['main_result_declarations'])} declarations). {n(s['families_with_lean'])} families have a Lean scope note linking at least one challenge file, "
+        f"and those notes name {n(s['manuscripts_with_lean'])} current manuscripts as accompanying papers.",
+        f"- **{n(s['lean_statements_pure_mathlib'])} challenge files** import only Mathlib and add no local vocabulary. The median file adds "
+        f"{s['lean_vocabulary_median']} local vocabulary declarations (definitions, structures, instances, notation and similar), and the largest "
+        f"({s['lean_vocabulary_max_statement']}) adds {n(s['lean_vocabulary_max'])}. Each one is part of what the statement means, so a reader checks it against the paper.",
         f"- **{n(s['manuscripts_citing_collection'])} manuscripts** cite other manuscripts in the collection ({n(s['internal_citation_edges'])} citation links). "
         f"{n(s['manuscripts_citing_unformalised_collection_results'])} of them cite at least one manuscript with no accompanying Lean statement.",
-        f"- **{n(s['external_citations'])} citations** of earlier work outside the collection, to {n(s['external_works_cited'])} distinct works "
-        f"(matched by DOI, then arXiv identifier, then title).",
-        f"- The TeX sources of the current manuscripts contain {n(env.get('theorem', 0))} theorems, {n(env.get('proposition', 0))} propositions, "
-        f"{n(env.get('corollary', 0))} corollaries and {n(env.get('lemma', 0))} lemmas.",
+        f"- **{n(s['external_citations'])} resolved references** to work outside the collection, which group automatically into {n(s['external_works_cited'])} works "
+        f"(by DOI, then arXiv identifier, then title; the grouping is unaudited).",
+        f"- The TeX sources of the current manuscripts contain {n(env.get('theorem', 0))} theorem, {n(env.get('proposition', 0))} proposition, "
+        f"{n(env.get('corollary', 0))} corollary and {n(env.get('lemma', 0))} lemma environments, repeated statements included.",
     ]
     sc = s.get("scope_coverage")
-    if sc:
+    if sc and sc.get("stale"):
+        rows.append("- **Draft scope reading.** Withheld: it was made for a different upstream commit or set of challenge files "
+                    f"({'; '.join(sc.get('stale_reasons') or [])}).")
+    elif sc:
         k = sc["classes"]
         rows.append(
-            f"- **What the Lean certifies.** Of {n(sc['statements_classified'])} Lean statements, {n(k.get('headline', 0))} certify a paper's headline theorem as stated, "
-            f"{n(k.get('headline-part', 0))} part of one, {n(k.get('consequence', 0))} a consequence, {n(k.get('weaker', 0))} a weaker form and {n(k.get('supporting', 0))} a supporting result. "
-            f"In {n(len(sc['families_with_lean_but_no_headline_coverage']))} families with Lean statements, none certifies the headline result. "
-            "Classified by an AI agent from OpenAI's own Lean notes, quoting each note (`curated/scope_coverage.json`); no person has reviewed it yet."
+            f"- **Draft scope reading.** Of {n(sc['statements_classified'])} challenge files, {n(k.get('headline', 0))} state a paper's headline theorem as stated, "
+            f"{n(k.get('headline-part', 0))} part of one, {n(k.get('consequence', 0))} a consequence, {n(k.get('weaker', 0))} a weaker form and "
+            f"{n(k.get('supporting', 0))} a supporting result; for {n(k.get('unclear', 0))} the note leaves it unclear. "
+            f"In {n(len(sc['families_with_lean_but_no_headline_coverage']))} families with Lean statements, no statement covers the headline result or part of it, "
+            f"and in {n(len(sc.get('families_partial_headline_only') or []))} more only part of it is covered. "
+            "An AI agent classified each file from OpenAI's scope note, quoting the note (`curated/scope_coverage.json`); no person has reviewed it."
         )
     rows += [
         "",
         f"Counted from [openai/math at `{s['upstream']['commit'][:12]}`](https://github.com/openai/math/tree/{s['upstream']['commit']}) by "
-        "`scripts/build_data.py`. Exact definitions are in `data/summary.json`.",
+        "`scripts/build_data.py`. The unit, universe and rule behind each number are in `data/summary.json` under `metric_receipts`.",
     ]
     return "\n".join(rows)
 
@@ -86,14 +92,14 @@ def example_block(families, manuscripts, statements) -> str:
         f"> **Corollary** (label `{cor['label']}`). {paper_text}",
         "",
         f"The Lean statement [`{stmt['id']}`]({stmt['url']}), the fixed statement Comparator checks OpenAI's proof against when it is run "
-        f"({stmt['vocabulary_count']} definitions of its own; permitted axioms {', '.join('`'+a+'`' for a in stmt['comparator']['permitted_axioms'])}):",
+        f"({stmt['vocabulary_count']} local vocabulary declarations; allowed axioms {', '.join('`'+a+'`' for a in stmt['comparator']['permitted_axioms'])}; {'no definition holes' if not stmt['comparator'].get('definition_names') else str(len(stmt['comparator']['definition_names'])) + ' definition holes'}):",
         "",
         "```lean",
         lean_core(stmt["lean"]),
         "```",
         "",
-        f"A Comparator challenge file leaves the proof as `sorry` by design. OpenAI's proof lives in the solution module `{stmt['comparator']['solution_module']}`, "
-        "and Comparator accepts it only if it proves exactly the statement above using the permitted axioms.",
+        f"This challenge file leaves the proof as `sorry` by design. OpenAI's proof lives in the solution module `{stmt['comparator']['solution_module']}`, "
+        "and if Comparator accepts a run, the proof establishes exactly the statement above using only the allowed axioms. No run is recorded in the atlas yet.",
         "",
         "OpenAI's scope note for this family:",
         "",

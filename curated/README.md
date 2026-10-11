@@ -1,18 +1,18 @@
 # Scope coverage of the Lean statements
 
-`scope_coverage.json` records, for each of the 416 Comparator statements in openai/math at the commit pinned in `../upstream.json`, what the statement certifies relative to the headline result of the paper or papers it accompanies.
+`scope_coverage.json` records, for each of the 416 Comparator statements in openai/math at the commit pinned in `../upstream.json`, a draft reading of how much of the headline result of its accompanying paper or papers the statement asserts. An AI agent made it from OpenAI's scope notes, and no person has reviewed it.
 
-One family shows why this needs recording. In family 159 the paper's headline theorem is a quasipolynomial bound for subsets of {1, …, N} with no k-term arithmetic progression. The Lean statement `ErdosReciprocal` certifies a corollary of that theorem, Erdős's reciprocal-sum conjecture, and OpenAI's scope note `lean/docs/159.md` says so: "The selected theorem is the reciprocal-sum consequence." Its row has class `consequence`.
+One family shows why this needs recording. In family 159 the paper's headline theorem is a quasipolynomial bound for subsets of {1, …, N} with no k-term arithmetic progression. The Lean statement `ErdosReciprocal` states a corollary of that theorem, Erdős's reciprocal-sum conjecture, and OpenAI's scope note `lean/docs/159.md` says so: "The selected theorem is the reciprocal-sum consequence." Its row has class `consequence`.
 
 ## The classes
 
-| Class | The Lean statement certifies |
+| Class | The Lean statement states |
 |---|---|
 | `headline` | a headline theorem of an accompanying paper, as stated, allowing harmless formalisation choices |
 | `headline-part` | one part or case of a multi-part headline theorem; the other parts are outside this statement |
 | `consequence` | a corollary or application of the headline theorem rather than the theorem itself |
 | `weaker` | a weaker form of the headline: fewer cases, worse constants, extra hypotheses, or an eventual or qualitative version of a quantitative claim |
-| `supporting` | an auxiliary or supporting result, not a headline result, including the five supporting comparisons named in `lean/ComparatorChallenges/README.md` upstream |
+| `supporting` | an auxiliary or supporting result outside the headline results, including the five supporting comparisons named in `lean/ComparatorChallenges/README.md` upstream |
 | `unclear` | something the materials do not settle; the explanation says what would |
 
 A paper's headline theorem is its main result as the paper states it. A statement the paper derives as a corollary counts as a consequence, even when it appears in the introduction. A few rows carry a second class in `secondary_class` when one statement genuinely does two things, for example supporting estimates bundled with one case of the main theorem.
@@ -25,12 +25,12 @@ A paper's headline theorem is its main result as the paper states it. A statemen
 | `family` | the family id, as in `data/families.json` |
 | `class` | one of the six classes above; `secondary_class` is optional |
 | `scope_quote` | one or more consecutive sentences copied from OpenAI's scope note `lean/docs/<family>.md`, an exact substring of the note |
-| `paper_headline` | the manuscript statement the class is judged against, as `manuscript`, `label`, `file` and `line`; for `headline` and `headline-part` rows it is the statement certified, for `consequence` and `weaker` rows the headline theorem the certified statement follows from or weakens, and for `supporting` rows the headline result supported |
-| `explanation` | one or two plain sentences saying what is certified and what is not |
+| `paper_headline` | the manuscript statement the class is judged against, as `manuscript`, `label`, `file` and `line`; for `headline` and `headline-part` rows it is the paper statement the challenge states, for `consequence` and `weaker` rows the headline theorem the challenge's statement follows from or weakens, and for `supporting` rows the headline result supported |
+| `explanation` | one or two plain sentences saying what the statement asserts and what lies outside it |
 | `confidence` | `high`, `medium` or `low` |
 | `needs_specialist` | `true` when the class depends on mathematics the reading could not settle |
 
-`label` is `null` where the manuscript's TeX gives the statement no label the dataset could read; `file` and `line` still locate it. When one challenge file certifies the headline theorems of several accompanying papers, `paper_headline` names one of them and the explanation names the others.
+`label` is `null` where the manuscript's TeX gives the statement no label the dataset could read; `file` and `line` still locate it. When one challenge file states the headline theorems of several accompanying papers, `paper_headline` names one of them and the explanation names the others.
 
 ## How it was made
 
@@ -42,13 +42,13 @@ No named person has yet reviewed the rows. Read `confidence` and `needs_speciali
 
 ## What it is not
 
-This is a coverage classification, not a fidelity verdict. It says which paper result each Lean statement is aimed at and how much of that result the statement asserts. It does not say that the Lean statement means what the paper's sentence means. Comparator certifies that the proof in OpenAI's library proves exactly the challenge statement, using only the permitted axioms; neither Comparator nor this file checks the formal statement against the paper. That comparison is a statement check (`../skills/check-a-statement/SKILL.md`). A row with class `headline` is a claim about coverage, not a sign that anyone has checked the statement.
+This is a draft coverage classification. It says which paper result each Lean statement is aimed at and how much of that result the statement asserts. Whether the Lean statement means what the paper's sentence means is a separate question, which no row answers. When Comparator accepts a proof under a challenge's configuration, the proof establishes that challenge statement using only the allowed axioms, with any configured definition holes filled from OpenAI's library. Neither Comparator nor this file checks the formal statement against the paper. That comparison is a statement check (`../skills/check-a-statement/SKILL.md`). A row with class `headline` is a claim about coverage; it records no check of the statement.
 
 `data/statements.json` also carries `main_result`, copied from OpenAI's `lean/formalization.yaml`. That list and this classification answer different questions, and they are not expected to agree row by row.
 
 ## Confirming or correcting a row
 
-Reviewers confirm or correct rows through the atlas's check-a-statement contributions. Write a statement check for the statement, following `../skills/check-a-statement/SKILL.md`; if you find that the statement covers more or less of the paper than its row says, say so in the check's Differences section. A maintainer then updates the row, keeps its `scope_quote` an exact quotation of the note, and runs the checker. A mismatch can also be reported with the "Report a problem" issue form.
+Reviewers confirm or correct rows through the atlas's check-a-statement contributions. Write a statement check for the statement, following `../skills/check-a-statement/SKILL.md`; if you find that the statement covers more or less of the paper than its row says, say so in the check's Differences section. A maintainer then updates the row, keeps its `scope_quote` an exact quotation of the note, and runs the checker. A mismatch can also be reported with the "Suggest a change or ask a precise question" issue form.
 
 ## Checking the file
 

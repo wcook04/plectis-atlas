@@ -802,14 +802,66 @@ def parse_lean_doc(path: Path):
     return {"title": title, "scope": scope, "papers": papers, "rows": rows}
 
 
+def yaml_block(text: str, key: str) -> tuple[int, list[str]]:
+    """Indent and body lines of the first `key:` block (a line holding only that key)."""
+    lines = text.splitlines()
+    for i, ln in enumerate(lines):
+        m = re.match(rf"^(\s*){re.escape(key)}:\s*(#.*)?$", ln)
+        if not m:
+            continue
+        base, body = len(m.group(1)), []
+        for ln2 in lines[i + 1:]:
+            if ln2.strip() and not ln2.lstrip().startswith("#") and len(ln2) - len(ln2.lstrip()) <= base:
+                break
+            body.append(ln2)
+        return base, body
+    return -1, []
+
+
+def yaml_flat_items(body: list[str]) -> list[dict]:
+    """Items of a block sequence of flat `key: scalar` mappings, in any key order. This is the
+    only shape formalization.yaml uses for status.main_results; the caller checks the count."""
+    items, cur = [], None
+    for ln in body:
+        s = ln.strip()
+        if not s or s.startswith("#"):
+            continue
+        if s.startswith("- "):
+            cur = {}
+            items.append(cur)
+            s = s[2:].strip()
+        m = re.match(r"([A-Za-z_][\w-]*):\s*(.*)$", s)
+        if cur is None or not m:
+            continue
+        k, v = m.group(1), m.group(2).strip()
+        if len(v) >= 2 and v[0] in "\"'" and v[-1] == v[0]:
+            v = v[1:-1]
+        if k in cur:
+            raise ValueError(f"formalization.yaml: duplicate key {k!r} in one main_results item")
+        cur[k] = v
+    return items
+
+
 def parse_main_results(path: Path):
     s = read(path)
     out = {}
-    for m in re.finditer(r"-\s*comparator_config:\s*ComparatorChallenges/([A-Za-z0-9_]+)\.json\s*\n\s*declaration:\s*(\S+)\s*\n\s*file:\s*(\S+)", s):
-        out.setdefault(m.group(1), []).append({"declaration": m.group(2), "file": m.group(3)})
-    review = re.search(r"^review:\s*\n\s*status:\s*(\S+)", s, flags=re.M)
+    items = yaml_flat_items(yaml_block(s, "main_results")[1])
+    for it in items:
+        m = re.match(r"ComparatorChallenges/([A-Za-z0-9_]+)\.json$", it.get("comparator_config", ""))
+        if not (m and it.get("declaration") and it.get("file")):
+            raise SystemExit(f"formalization.yaml: a main_results item lacks comparator_config, declaration or file: {it}")
+        out.setdefault(m.group(1), []).append({"declaration": it["declaration"], "file": it["file"]})
+    named = len(re.findall(r"^\s*(?:-\s*)?comparator_config:", s, flags=re.M))
+    if named != len(items):
+        raise SystemExit(f"formalization.yaml: read {len(items)} main_results items but the file names {named} comparator configs")
+    review = None
+    for ln in yaml_block(s, "review")[1]:
+        m = re.match(r"^\s+status:\s*(\S+)", ln)
+        if m:
+            review = m.group(1)
+            break
     top = re.findall(r"^([a-z_]+):", s, flags=re.M)
-    return out, (review.group(1) if review else None), top
+    return out, review, top
 
 
 # ------------------------------------------------------------------ build
@@ -1095,7 +1147,16 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         for k, v in m.get("counts", {}).items():
             stmt_counts[k] += v
     pure = [c for c in challenges.values() if not c["non_mathlib_imports"] and c["vocabulary_count"] == 0]
+    no_local = [c for c in challenges.values() if c["vocabulary_count"] == 0]
     vocab = [c for c in challenges.values() if c["vocabulary_count"] > 0]
+
+    def median(xs):
+        xs = sorted(xs)
+        if not xs:
+            return 0
+        mid = len(xs) // 2
+        v = xs[mid] if len(xs) % 2 else (xs[mid - 1] + xs[mid]) / 2
+        return int(v) if float(v).is_integer() else v
     cur_with_internal = [m for m in cur if m["rests_on"]]
     cur_on_withdrawn = [m for m in cur if any(r["status"] == "withdrawn" for r in m["rests_on"])]
     cur_on_unformal = [m for m in cur if any(not r["has_lean"] for r in m["rests_on"])]
@@ -1117,12 +1178,15 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         "families_with_lean": sum(1 for f in families if f["statements"]),
         "manuscripts_with_lean": sum(1 for m in cur if m["has_lean"]),
         "lean_statements_pure_mathlib": len(pure),
+        "lean_statements_no_local_vocabulary": len(no_local),
         "lean_statements_with_custom_vocabulary": len(vocab),
         "lean_statements_importing_non_mathlib": sum(1 for c in challenges.values() if c["non_mathlib_imports"]),
         "lean_statements_declaring_axioms": sum(1 for c in challenges.values() if c["declares_axiom"]),
+        "lean_statements_with_definition_holes": sorted(c["id"] for c in challenges.values() if c["comparator"].get("definition_names")),
+        "lean_definition_holes": sum(len(c["comparator"].get("definition_names") or []) for c in challenges.values()),
         "lean_vocabulary_max": max((c["vocabulary_count"] for c in challenges.values()), default=0),
         "lean_vocabulary_max_statement": max(challenges.values(), key=lambda c: c["vocabulary_count"])["id"] if challenges else None,
-        "lean_vocabulary_median": sorted(c["vocabulary_count"] for c in challenges.values())[len(challenges) // 2] if challenges else 0,
+        "lean_vocabulary_median": median(c["vocabulary_count"] for c in challenges.values()),
         "lean_statements_declaring_axioms_ids": sorted(c["id"] for c in challenges.values() if c["declares_axiom"]),
         "lean_statements_pure_mathlib_ids": sorted(c["id"] for c in pure),
         "lean_vocabulary_total": sum(c["vocabulary_count"] for c in challenges.values()),
@@ -1135,11 +1199,12 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         "external_works_cited": len(distinct_works),
         "external_citations": sum(len(m.get("references", [])) for m in cur),
         "definitions": {
-            "lean_statements_pure_mathlib": "Comparator challenge files that import only Mathlib and introduce no definitions, structures, instances, notation or axioms of their own: a reader checks the theorem statement against Mathlib vocabulary alone.",
-            "lean_vocabulary": "Definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms introduced inside a Comparator challenge file. Comparator certifies the proof against exactly this file, so each item is something a reader must check means what the paper means.",
+            "lean_statements_pure_mathlib": "Comparator challenge files that import only Mathlib and in which a textual scan detects no local vocabulary declarations: a reader checks the theorem statement against Mathlib vocabulary alone. Files with no local vocabulary that import OpenAI's own modules are excluded.",
+            "lean_vocabulary": "Local vocabulary declarations detected by a textual scan of a Comparator challenge file: definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms. Theorem and lemma declarations, including the target theorem, are excluded. A proof that Comparator accepts proves the statement as phrased in this vocabulary, so each item is something a reader checks means what the paper means.",
             "manuscripts_with_lean": "Current manuscripts listed as accompanying papers in a family's Lean scope note (lean/docs/NNN.md) that links at least one Comparator statement.",
             "internal_citation_edges": "Bibliography entries in a manuscript's TeX sources that point to another manuscript in the collection (an openai/math preprint link or an OAI: key), counted once per citing and cited manuscript.",
-            "external_works_cited": "Distinct cited works outside the collection, identified by DOI, then arXiv id, then normalised title.",
+            "external_works_cited": "References outside the collection grouped automatically by DOI, then arXiv id, then the first twelve words of the normalised title. Distinct works with similar titles can merge, and one work cited by DOI in one paper and by title in another can split, so this is an automatic grouping and has not been audited.",
+            "external_citations": "Resolved bibliography keys in current manuscripts' TeX sources that point outside the collection, each manuscript and key counted once.",
         },
     }
 
@@ -1172,25 +1237,47 @@ def build(upstream: Path, out: Path, quiet: bool = False):
     if cov_path.exists():
         cov = json.loads(cov_path.read_text(encoding="utf-8"))
         by_stmt = {r["statement"]: r for r in cov.get("rows", [])}
-        class_counts = Counter(r["class"] for r in cov.get("rows", []))
-        rank = {"headline": 4, "headline-part": 3, "consequence": 2, "weaker": 2, "unclear": 1, "supporting": 1}
-        no_headline = []
-        for f in families:
-            if f["statements"]:
-                best = max(rank.get(by_stmt.get(sid, {}).get("class"), 0) for sid in f["statements"])
-                if best < 3:
-                    no_headline.append(f["id"])
-        summary["scope_coverage"] = {
-            "classes": dict(sorted(class_counts.items())),
-            "statements_classified": len(by_stmt),
-            "families_with_lean_but_no_headline_coverage": sorted(no_headline),
-            "reviewed_by_people": False,
-            "upstream_commit": cov.get("upstream_commit"),
-        }
+        # The classification belongs to one pin and one exact set of challenge files; mixing it with
+        # another release would attach old readings to new files, so a mismatch withholds it entirely.
+        stale = []
+        if cov.get("upstream_commit") != commit:
+            stale.append(f"classified at {str(cov.get('upstream_commit'))[:12]}, data built from {commit[:12]}")
+        if set(by_stmt) != set(challenges):
+            stale.append(f"{len(set(challenges) - set(by_stmt))} challenge files unclassified, "
+                         f"{len(set(by_stmt) - set(challenges))} classified files absent")
+        if stale:
+            log("scope_coverage withheld: " + "; ".join(stale))
+            summary["scope_coverage"] = {"stale": True, "stale_reasons": stale, "reviewed_by_people": False,
+                                         "upstream_commit": cov.get("upstream_commit")}
+        else:
+            class_counts = Counter(r["class"] for r in cov.get("rows", []))
+            neither, partial_only, no_full, mixed = [], [], [], []
+            for f in families:
+                if not f["statements"]:
+                    continue
+                cls = {by_stmt[sid]["class"] for sid in f["statements"] if sid in by_stmt}
+                if "headline" not in cls:
+                    no_full.append(f["id"])
+                    (partial_only if "headline-part" in cls else neither).append(f["id"])
+                if len(cls) > 1:
+                    mixed.append(f["id"])
+            summary["scope_coverage"] = {
+                "stale": False,
+                "status": "draft",
+                "classes": dict(sorted(class_counts.items())),
+                "statements_classified": len(by_stmt),
+                "families_with_lean_but_no_headline_coverage": sorted(neither),
+                "families_partial_headline_only": sorted(partial_only),
+                "families_no_full_headline": sorted(no_full),
+                "families_mixed_classes": sorted(mixed),
+                "reviewed_by_people": False,
+                "upstream_commit": cov.get("upstream_commit"),
+            }
         summary["definitions"]["scope_coverage"] = (
-            "What each Lean statement certifies relative to its paper's headline result (headline, part of the headline, "
-            "a consequence, a weaker form, a supporting result), classified by an AI agent from OpenAI's own Lean notes "
-            "with each row quoting the note (curated/scope_coverage.json). No person has reviewed it yet.")
+            "A draft classification of how each Comparator challenge file relates to its paper's headline result: it states "
+            "the headline theorem, part of it, a consequence, a weaker form or a supporting result, or the note leaves it unclear. "
+            "An AI agent made it from OpenAI's scope note for the family (lean/docs/<family>.md), quoting the note on every row "
+            "(curated/scope_coverage.json). No person has reviewed it.")
     # Fold other people's work into the rows, crediting the source on every value (curated/sources/*.json).
     sources = []
     for sp in sorted((ROOT / "curated" / "sources").glob("*.json")):
@@ -1224,6 +1311,52 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         "Published counts of how much of the release has Lean, side by side: families whose Lean notes link a Comparator "
         "statement; families and papers in the sources list of OpenAI's lean/formalization.yaml; OpenAI's own reported "
         "share; and counts from other public sources. Each measures a different thing.")
+
+    # One receipt per headline number: its unit, the universe it counts over and the rule, so no
+    # figure on the site or in the README stands without a definition (scripts/build_data.py).
+    pin = f"openai/math at {commit[:12]}"
+    sc = summary.get("scope_coverage") or {}
+
+    def receipt(key, value, unit, universe, rule):
+        return {"key": key, "value": value, "unit": unit, "universe": universe, "rule": rule, "source": "scripts/build_data.py"}
+    summary["metric_receipts"] = [
+        receipt("families", summary["families"], "result families", f"{pin}, overview.tex and CONTENTS.md",
+                "Each family id in the catalogue. Ids run 001 to 377; five are unused."),
+        receipt("manuscripts_current", summary["manuscripts_current"], "manuscripts", f"{pin}, preprints/",
+                "Manuscript folders listed under a family in overview.tex or CONTENTS.md and not marked withdrawn in their README."),
+        receipt("statements_lean", summary["statements_lean"], "Comparator challenge files", f"{pin}, lean/ComparatorChallenges/",
+                "Each <Id>.lean with its <Id>.json configuration. One file can hold several target theorems."),
+        receipt("statements_lean_main_results", summary["statements_lean_main_results"], "challenge files", f"{pin}, lean/formalization.yaml",
+                "Challenge files named by at least one status.main_results item."),
+        receipt("main_result_declarations", summary["main_result_declarations"], "declaration records", f"{pin}, lean/formalization.yaml",
+                "Items under status.main_results, each naming a configuration, a declaration and a file."),
+        receipt("families_with_lean", summary["families_with_lean"], "result families", f"{pin}, lean/docs/NNN.md",
+                "Families whose Lean scope note links at least one Comparator challenge file."),
+        receipt("manuscripts_with_lean", summary["manuscripts_with_lean"], "manuscripts", f"{pin}, lean/docs/NNN.md headers",
+                "Current manuscripts named as accompanying papers in a scope note that links a challenge file. This is an association by the note; it does not say which of a paper's claims the Lean states."),
+        receipt("lean_statements_pure_mathlib", summary["lean_statements_pure_mathlib"], "challenge files", f"{pin}, lean/ComparatorChallenges/",
+                "Files that import only Mathlib and in which a textual scan detects no local vocabulary declarations."),
+        receipt("lean_statements_no_local_vocabulary", summary["lean_statements_no_local_vocabulary"], "challenge files", f"{pin}, lean/ComparatorChallenges/",
+                "Files in which a textual scan detects no local vocabulary declarations, whatever they import."),
+        receipt("lean_vocabulary_median", summary["lean_vocabulary_median"], "local vocabulary declarations per file", f"{pin}, all challenge files",
+                "Conventional median of the detected local vocabulary declarations (definitions, structures, instances, notation, axioms and similar; theorems and lemmas excluded)."),
+        receipt("lean_definition_holes", summary["lean_definition_holes"], "definition holes", f"{pin}, lean/ComparatorChallenges/*.json",
+                f"Names in a configuration's definition_names, across {len(summary['lean_statements_with_definition_holes'])} configurations. "
+                "Comparator compares these definitions by name and type only; their bodies come from OpenAI's solution, so a reader checks what each body means."),
+        receipt("paper_statement_environments", sum(summary["paper_statement_environments"].values()), "theorem-like environments", f"{pin}, current manuscripts' TeX",
+                "Theorem, lemma, proposition, corollary and similar environments extracted from the TeX, repeated statements included."),
+        receipt("internal_citation_edges", summary["internal_citation_edges"], "citing and cited manuscript pairs", f"{pin}, current manuscripts' bibliographies",
+                "Bibliography entries pointing to another manuscript in the collection. A citation records a reference; it does not establish that a proof uses the cited result."),
+        receipt("external_citations", summary["external_citations"], "resolved external reference keys", f"{pin}, current manuscripts' bibliographies",
+                "Bibliography keys resolved to a reference outside the collection, each manuscript and key counted once."),
+        receipt("external_works_cited", summary["external_works_cited"], "automatically grouped references", f"{pin}, current manuscripts' bibliographies",
+                "References grouped by DOI, then arXiv id, then the first twelve words of the title. Unaudited: similar titles can merge and one work can split."),
+    ]
+    if sc and not sc.get("stale"):
+        summary["metric_receipts"].append(receipt(
+            "scope_coverage", sc["statements_classified"], "challenge files classified", f"{pin}, curated/scope_coverage.json",
+            "Draft classification by an AI agent from OpenAI's scope notes, unreviewed: "
+            + ", ".join(f"{k} {v}" for k, v in sc["classes"].items()) + "."))
     prior = out / "summary.json"
     if prior.exists():
         # The Lean claim-layer block comes from scripts/build_lean_claims.py; keep it across rebuilds.

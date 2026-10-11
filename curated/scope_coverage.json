@@ -1,13 +1,13 @@
 {
   "schema": "scope_coverage_v1",
   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
-  "method": "Each of the 416 Comparator statements at the pinned commit was classified by reading OpenAI's scope note for its family (lean/docs/<family>.md), the challenge file and its configuration (lean/ComparatorChallenges/<Id>.lean and .json), and the theorem-like statements in the introduction of each accompanying manuscript (data/manuscripts.json, statements with headline true), with the manuscript's TeX source consulted where these were not enough. The reading was done by an AI agent (Claude Code); no named person has yet reviewed the rows. Every row quotes the scope note verbatim in scope_quote. paper_headline names the manuscript statement the class is judged against: the statement certified for headline and headline-part rows, the headline theorem that the certified statement follows from or weakens for consequence and weaker rows, and the headline result supported for supporting rows. A paper's headline theorem is its main result as the paper states it; a statement the paper derives as a corollary counts as a consequence even when it appears in the introduction. Where a scope note and a challenge file differ, the class follows the challenge file and the explanation says so. Comparator definition holes and placeholder axioms are mentioned in the explanation. The classes describe coverage, meaning which paper result a statement is aimed at and how much of it the statement asserts; they are not a verdict that the Lean statement means what the paper means.",
+  "method": "Each of the 416 Comparator statements at the pinned commit was classified by reading OpenAI's scope note for its family (lean/docs/<family>.md), the challenge file and its configuration (lean/ComparatorChallenges/<Id>.lean and .json), and the theorem-like statements in the introduction of each accompanying manuscript (data/manuscripts.json, statements with headline true), with the manuscript's TeX source consulted where these were not enough. The reading was done by an AI agent (Claude Code); no named person has yet reviewed the rows. Every row quotes the scope note verbatim in scope_quote. paper_headline names the manuscript statement the class is judged against: the paper statement the challenge states, for headline and headline-part rows; the headline theorem that the challenge's statement follows from or weakens, for consequence and weaker rows, and the headline result supported for supporting rows. A paper's headline theorem is its main result as the paper states it; a statement the paper derives as a corollary counts as a consequence even when it appears in the introduction. Where a scope note and a challenge file differ, the class follows the challenge file and the explanation says so. Comparator definition holes and placeholder axioms are mentioned in the explanation. The classes describe coverage, meaning which paper result a statement is aimed at and how much of it the statement asserts; they are not a verdict that the Lean statement means what the paper means.",
   "classes": {
-    "headline": "certifies a headline theorem of an accompanying paper as stated, allowing harmless formalisation choices",
-    "headline-part": "certifies one part or case of a multi-part headline theorem; the other parts are outside this statement",
-    "consequence": "certifies a corollary or application of the headline theorem rather than the theorem itself",
-    "weaker": "certifies a weaker form of the headline: fewer cases, worse constants, extra hypotheses, or an eventual or qualitative version of a quantitative claim",
-    "supporting": "certifies an auxiliary or supporting result, not a headline result",
+    "headline": "states a headline theorem of an accompanying paper as stated, allowing harmless formalisation choices",
+    "headline-part": "states one part or case of a multi-part headline theorem; the other parts are outside this statement",
+    "consequence": "states a corollary or application of the headline theorem rather than the theorem itself",
+    "weaker": "states a weaker form of the headline: fewer cases, worse constants, extra hypotheses, or an eventual or qualitative version of a quantitative claim",
+    "supporting": "states an auxiliary or supporting result, not a headline result",
     "unclear": "the materials do not settle the class; the explanation says what would"
   },
   "rows": [
@@ -577,7 +577,7 @@
         "file": "build/sections/00-introduction.tex",
         "line": 9
       },
-      "explanation": "The file certifies the main theorems of both accompanying papers: Koebe's circle-domain theorem for every domain in the Riemann sphere, and conformal rigidity of circle domains with conformally removable boundary.",
+      "explanation": "The file states the main theorems of both accompanying papers: Koebe's circle-domain theorem for every domain in the Riemann sphere, and conformal rigidity of circle domains with conformally removable boundary.",
       "confidence": "high",
       "needs_specialist": false
     },
@@ -1192,7 +1192,7 @@
         "file": "build/sections/introduction.tex",
         "line": 32
       },
-      "explanation": "The aggregate file certifies the main theorems of all four accompanying papers: the explicit angular cover of the tetrahedron with ε ≤ 1/2000 and remainder at most 2ε⁴, the ruled-set approximation, the regular-tetrahedron counterexamples and the radial-sweep approximation. The extension to every nondegenerate tetrahedron is outside it.",
+      "explanation": "The aggregate file states the main theorems of all four accompanying papers: the explicit angular cover of the tetrahedron with ε ≤ 1/2000 and remainder at most 2ε⁴, the ruled-set approximation, the regular-tetrahedron counterexamples and the radial-sweep approximation. The extension to every nondegenerate tetrahedron is outside it.",
       "confidence": "medium",
       "needs_specialist": false
     },
@@ -1327,7 +1327,7 @@
         "file": "build/source/sections/01-introduction.tex",
         "line": 36
       },
-      "explanation": "Certifies the main theorem of the randomised paper: a quasipolynomial randomised algorithm computing the full winning set of every finite mean-payoff game with success probability at least 7/8. The deterministic algorithm of the companion paper is not certified.",
+      "explanation": "Certifies the main theorem of the randomised paper: a quasipolynomial randomised algorithm computing the full winning set of every finite mean-payoff game with success probability at least 7/8. The deterministic algorithm of the companion paper is outside this statement.",
       "confidence": "high",
       "needs_specialist": false
     },
@@ -1627,7 +1627,7 @@
         "file": "build/sections/introduction.tex",
         "line": 18
       },
-      "explanation": "The file certifies the main theorems of both papers: exact uniform sampling of contingency tables with arbitrary margins in polynomial expected bit time with a bounded-time approximate sampler, and the FPRAS for cell-bounded tables.",
+      "explanation": "The file states the main theorems of both papers: exact uniform sampling of contingency tables with arbitrary margins in polynomial expected bit time with a bounded-time approximate sampler, and the FPRAS for cell-bounded tables.",
       "confidence": "high",
       "needs_specialist": false
     },
@@ -3218,7 +3218,7 @@
         "file": "build/paper.tex",
         "line": 54
       },
-      "explanation": "Certifies only that the candidate ring is a three-dimensional complete Noetherian normal local domain over C with residue field C, one of the five supporting comparisons named in the Comparator README. The absence of a small Cohen–Macaulay module, the paper's claim, is not certified.",
+      "explanation": "Certifies only that the candidate ring is a three-dimensional complete Noetherian normal local domain over C with residue field C, one of the five supporting comparisons named in the Comparator README. The absence of a small Cohen–Macaulay module, the paper's claim, is outside this statement.",
       "confidence": "high",
       "needs_specialist": false
     },
@@ -4179,7 +4179,7 @@
         "file": "build/main.tex",
         "line": 53
       },
-      "explanation": "Bundles supporting estimates with full-deck mixing after 32800d steps and mixing time Θ(log 2^d). This certifies the optimal order of the main theorem with a worse constant: the theorem states mixing after 1600d shuffles.",
+      "explanation": "Bundles supporting estimates with full-deck mixing after 32800d steps and mixing time Θ(log 2^d). This states the optimal order of the main theorem with a worse constant: the theorem states mixing after 1600d shuffles.",
       "confidence": "high",
       "needs_specialist": false
     },
@@ -4614,7 +4614,7 @@
         "file": "build/sections/00-introduction.tex",
         "line": 128
       },
-      "explanation": "Certifies the paper's end-replacement theorem (asymptotically flat ends replacing a hyperboloidal end, with masses approaching the Bondi mass and enclosing-area loss tending to zero) and Schwarzschild equality examples. The Bondi–Penrose inequality, which the note calls the paper's main inequality, is not certified.",
+      "explanation": "Certifies the paper's end-replacement theorem (asymptotically flat ends replacing a hyperboloidal end, with masses approaching the Bondi mass and enclosing-area loss tending to zero) and Schwarzschild equality examples. The Bondi–Penrose inequality, which the note calls the paper's main inequality, is outside this statement.",
       "confidence": "medium",
       "needs_specialist": false
     },
@@ -4886,7 +4886,7 @@
         "file": "build/sections/00-introduction.tex",
         "line": 51
       },
-      "explanation": "The file certifies the main theorems of both papers: QMA-hardness of the continuum Coulomb ground energy with binary-encoded nuclear charges and with unit charges.",
+      "explanation": "The file states the main theorems of both papers: QMA-hardness of the continuum Coulomb ground energy with binary-encoded nuclear charges and with unit charges.",
       "confidence": "high",
       "needs_specialist": false
     },

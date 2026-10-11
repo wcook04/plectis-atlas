@@ -1,6 +1,6 @@
 # OpenAI Math Atlas
 
-A reader's atlas to the mathematics OpenAI released on 6 October 2026 in [openai/math](https://github.com/openai/math). For each of the 372 result families it shows the paper's headline theorems beside the Lean statements OpenAI set up for checking with Comparator, what each manuscript cites inside the collection, and whose earlier work each argument uses. Every family is open for a human explanation, credited by name.
+A reader's atlas to the mathematics OpenAI released on 6 October 2026 in [openai/math](https://github.com/openai/math). For each of the 372 result families it shows the statements from each paper's introduction beside the Lean statements OpenAI set up as Comparator challenges, with OpenAI's own note on what each Lean statement covers, and what each manuscript cites inside and outside the collection. Every family is open for a human explanation, credited by name.
 
 **[Open the atlas](https://wcook04.github.io/openai-math-atlas/)** · [Explain a result](https://wcook04.github.io/openai-math-atlas/explain.html) · [Check a statement](CONTRIBUTING.md) · [The numbers](https://wcook04.github.io/openai-math-atlas/numbers.html)
 
@@ -10,14 +10,14 @@ The atlas is independent of OpenAI. It is built from the public collection at a 
 
 <!-- numbers:start -->
 - **372 result families** in 17 disciplines, from **719 current manuscripts** (3 more were withdrawn and 27 earlier editions remain in the collection).
-- **416 Lean statements** set up as Comparator challenges, 189 of them in OpenAI's list of main results. 339 manuscripts are accompanying papers of a family with at least one Lean statement.
-- **10 Lean statements** are written in Mathlib's vocabulary alone. The median statement file introduces 13 definitions of its own, and the largest (EditApproximation) introduces 1,212. Comparator certifies a proof against exactly this file, so each definition is something a reader checks.
+- **416 Comparator challenge files**, 189 of them named in OpenAI's list of main results (200 declarations). 242 families have a Lean scope note linking at least one challenge file, and those notes name 339 current manuscripts as accompanying papers.
+- **10 challenge files** import only Mathlib and add no local vocabulary. The median file adds 13 local vocabulary declarations (definitions, structures, instances, notation and similar), and the largest (EditApproximation) adds 1,212. Each one is part of what the statement means, so a reader checks it against the paper.
 - **380 manuscripts** cite other manuscripts in the collection (578 citation links). 213 of them cite at least one manuscript with no accompanying Lean statement.
-- **16,078 citations** of earlier work outside the collection, to 11,069 distinct works (matched by DOI, then arXiv identifier, then title).
-- The TeX sources of the current manuscripts contain 2,255 theorems, 4,745 propositions, 1,267 corollaries and 12,397 lemmas.
-- **What the Lean certifies.** Of 416 Lean statements, 307 certify a paper's headline theorem as stated, 21 part of one, 28 a consequence, 24 a weaker form and 35 a supporting result. In 14 families with Lean statements, none certifies the headline result. Classified by an AI agent from OpenAI's own Lean notes, quoting each note (`curated/scope_coverage.json`); no person has reviewed it yet.
+- **16,078 resolved references** to work outside the collection, which group automatically into 11,069 works (by DOI, then arXiv identifier, then title; the grouping is unaudited).
+- The TeX sources of the current manuscripts contain 2,255 theorem, 4,745 proposition, 1,267 corollary and 12,397 lemma environments, repeated statements included.
+- **Draft scope reading.** Of 416 challenge files, 307 state a paper's headline theorem as stated, 21 part of one, 28 a consequence, 24 a weaker form and 35 a supporting result; for 1 the note leaves it unclear. In 14 families with Lean statements, no statement covers the headline result or part of it, and in 10 more only part of it is covered. An AI agent classified each file from OpenAI's scope note, quoting the note (`curated/scope_coverage.json`); no person has reviewed it.
 
-Counted from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb) by `scripts/build_data.py`. Exact definitions are in `data/summary.json`.
+Counted from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb) by `scripts/build_data.py`. The unit, universe and rule behind each number are in `data/summary.json` under `metric_receipts`.
 <!-- numbers:end -->
 
 ## One result, side by side
@@ -39,7 +39,7 @@ Counted from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree
 >
 > **Corollary** (label `ap:reciprocal`). Every set $A\subseteq\mathbb N$ with $\sum_{a\in A}a^{-1}=\infty$ contains nonconstant arithmetic progressions of every finite length.
 
-The Lean statement [`ErdosReciprocal`](https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/ErdosReciprocal.lean), the fixed statement Comparator checks OpenAI's proof against when it is run (3 definitions of its own; permitted axioms `propext`, `Quot.sound`, `Classical.choice`):
+The Lean statement [`ErdosReciprocal`](https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/ErdosReciprocal.lean), the fixed statement Comparator checks OpenAI's proof against when it is run (3 local vocabulary declarations; allowed axioms `propext`, `Quot.sound`, `Classical.choice`; no definition holes):
 
 ```lean
 def HasAP (A : Set ℕ) (k : ℕ) : Prop :=
@@ -53,22 +53,22 @@ theorem manuscriptReciprocalProgressionTheorem : ReciprocalProgressionTheorem :=
   sorry
 ```
 
-A Comparator challenge file leaves the proof as `sorry` by design. OpenAI's proof lives in the solution module `OAI.Combinatorics.Progressions.Main`, and Comparator accepts it only if it proves exactly the statement above using the permitted axioms.
+This challenge file leaves the proof as `sorry` by design. OpenAI's proof lives in the solution module `OAI.Combinatorics.Progressions.Main`, and if Comparator accepts a run, the proof establishes exactly the statement above using only the allowed axioms. No run is recorded in the atlas yet.
 
 OpenAI's scope note for this family:
 
 > Erdős's reciprocal-sum conjecture asks whether every set of positive integers with divergent reciprocal sum contains arithmetic progressions of every finite length. The formalization proves this statement: for every requested length, such a set contains a progression with positive common difference. The selected theorem is the reciprocal-sum consequence. The paper's quantitative upper bound for the largest progression-free subset of $\{1,\ldots,N\}$ is outside this statement.
 <!-- example:end -->
 
-## Contribute in fifteen minutes
+## Contribute
 
-Each unit of work is small, credited by name on the site, and reviewed in the open.
+Start with one useful note on a passage you are reading: its location, your correction or question, and what you checked. Use the note issue form without installing anything. Accepted contributions are credited beside the work they improve. A first note can fit a fifteen-minute visit; review and publication follow afterwards.
 
 | If you have | Do this | Guide |
 |---|---|---|
-| Ten minutes and some Lean or mathematics in one field | Check that one Lean statement says what the paper's theorem says | [`check-a-statement`](skills/check-a-statement/SKILL.md) |
-| An evening and a result you understand | Write a motivated explanation of one family, one of 372 open exposition problems | [`explain-a-result`](skills/explain-a-result/SKILL.md) |
-| Knowledge of a field's literature | Record where an idea in a manuscript first appeared | [`trace-a-credit`](skills/trace-a-credit/SKILL.md) |
+| Time to read the relevant sources and compare the mathematics | Check one Lean challenge against its precisely located paper statements | [`check-a-statement`](skills/check-a-statement/SKILL.md) |
+| A definition, example, lemma or argument you understand | Explain that part for a named reader | [`explain-a-result`](skills/explain-a-result/SKILL.md) |
+| Knowledge of a field's literature | Record the earliest source you can find for an idea in a manuscript | [`trace-a-credit`](skills/trace-a-credit/SKILL.md) |
 | A large Linux machine | Replay a Comparator check and publish the receipt | [`replay-a-proof`](skills/replay-a-proof/SKILL.md) |
 | A sharp eye | Report a mismatch, an error or a broken link | [`report-a-problem`](skills/report-a-problem/SKILL.md) |
 
@@ -88,11 +88,15 @@ python3 -m http.server -d site/_build   # then open http://localhost:8000
 Python 3.10 or newer and git are the only requirements. The dataset in `data/` is plain JSON for your own analysis:
 
 - `families.json`: the 372 families, their discipline, OpenAI's description, manuscripts and Lean statements;
-- `manuscripts.json`: abstracts, headline statements with source file and line, references and where each is used;
+- `manuscripts.json`: abstracts, theorem-like statements with source file and line (those in the introduction flagged as candidate headline statements), and references with where each is cited;
 - `statements.json`: every Comparator statement file, its imports and the definitions it introduces;
 - `graph.json`: citations between manuscripts inside the collection;
 - `works.json`: the outside works the collection cites;
 - `summary.json`: every number above, with its definition.
+
+## For producers of formal mathematics
+
+If you release Lean alongside papers, [`ALIGNMENT.md`](ALIGNMENT.md) proposes four optional keys for the `alignment` block of `formalization.yaml` that link each printed claim to the Lean declaration stating it, and describes how checked work comes back to you.
 
 ## Licences and independence
 

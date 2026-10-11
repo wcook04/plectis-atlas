@@ -146,6 +146,7 @@ def main():
 
     claims = []
     model_files = 0
+    model_projects = set()
     projects = set()
     for path in sorted(oai.rglob("*.lean")):
         rel = str(path.relative_to(up))
@@ -154,6 +155,8 @@ def main():
             projects.add("/".join(parts_rel[:3]))
         is_model = path.name == "Model.lean"
         model_files += is_model
+        if is_model and len(parts_rel) >= 4:
+            model_projects.add("/".join(parts_rel[:3]))
         text_has = is_model or "manuscript" in path.read_bytes().decode("utf-8", "replace")
         if not text_has:
             continue
@@ -172,7 +175,8 @@ def main():
         "upstream_commit": commit,
         "lean_projects": len(projects),
         "lean_files": sum(1 for _ in oai.rglob("*.lean")),
-        "projects_with_model_file": model_files,
+        "projects_with_model_file": len(model_projects),
+        "model_files": model_files,
         "model_statement_definitions": len(props),
         "manuscript_theorems": len(ms),
         "projects_with_manuscript_theorems": len({c["project"] for c in ms}),
@@ -181,7 +185,8 @@ def main():
         "definitions": {
             "model_statement_definitions": "Proposition-valued definitions (def or abbrev ending in `: Prop`) in a project's Model.lean, where projects state their papers' claims as Lean propositions.",
             "manuscript_theorems": "Theorems or lemmas whose name contains 'manuscript', the naming some projects use for proofs of their papers' claims.",
-            "manuscript_theorems_checked_by_comparator": "Manuscript theorems whose full name is one of the theorem names in a Comparator challenge configuration.",
+            "manuscript_theorems_checked_by_comparator": "Manuscript theorems whose full name occurs directly in a Comparator configuration's theorem_names list. A configured proof can use many other theorems, so this is a name match, not a measure of what Comparator checks.",
+            "projects_with_model_file": "Distinct projects OAI/<area>/<project>/ containing at least one file named Model.lean; model_files counts the files.",
             "lean_projects": "Folders OAI/<area>/<project>/ in OpenAI's Lean library that contain Lean files.",
             "scan": "Textual scan of lean/OAI at the pinned commit; nothing is built, so a listed theorem exists in the source but is not thereby checked.",
         },
