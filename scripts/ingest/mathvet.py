@@ -30,9 +30,9 @@ VERDICTS = {  # MathVet's rubric (PROTOCOL.md), in plain words
     "weaker-statement": "The challenge statements do not imply the headline claim: they state a nontrivially weaker statement.",
     "supporting-only": "The challenge statements state a lemma or auxiliary result, not the headline.",
 }
-CHECKS = {  # MathVet's own labels for its machine checks
-    "comparator-sandboxed-pass": ("accepted", "Re-run through Comparator in a sandboxed virtual machine: passed."),
-    "comparator-pass": ("accepted", "Re-run through Comparator: passed."),
+CHECKS = {  # MathVet's own labels for its machine checks; its STATUS.md calls a pass "accepted"
+    "comparator-sandboxed-pass": ("accepted", "Re-run through Comparator in a sandboxed virtual machine: accepted."),
+    "comparator-pass": ("accepted", "Re-run through Comparator: accepted."),
     "closure-pass": ("built", "The solution was built and its dependency closure checked; Comparator was not run."),
 }
 

@@ -1,23 +1,95 @@
 {
  "_note": "The atlas glossary. Copy strings mark a term as [[id|text]]; pages show the short definition on hover and link here. Plain words, no em dashes.",
  "terms": [
-  {"id": "family", "term": "Result family", "short": "OpenAI's grouping of related manuscripts around one headline result. The release has 372, numbered 001 to 377 with five numbers unused."},
-  {"id": "headline", "term": "Headline result", "short": "The main claim OpenAI's catalogue gives for a result family. A family's Lean statements may state all of it, part of it, or a supporting step."},
-  {"id": "challenge", "term": "Comparator challenge file", "short": "A Lean file that states one theorem and leaves its proof open, with a configuration naming the theorem, the definitions a solution may supply and the axioms it may use. The release has 416."},
-  {"id": "comparator", "term": "Comparator", "short": "The Lean tool that checks a solution against a challenge file. If it accepts, the solution proves the configured theorem using only the allowed axioms, and the Lean kernel accepts every step."},
-  {"id": "sorry", "term": "sorry", "short": "Lean's placeholder for a missing proof. A challenge file leaves its proof as sorry on purpose; the proof is in OpenAI's separate solution module."},
-  {"id": "axioms", "term": "Permitted axioms", "short": "The axioms a configuration allows a proof to use, here the three standard ones: propext, Classical.choice and Quot.sound. A replay shows which ones a proof actually uses."},
-  {"id": "holes", "term": "Definition hole", "short": "A definition a configuration lists for the solution to supply. Comparator compares it by name and type only, so its body comes from the solution and must be read there."},
-  {"id": "kernel", "term": "Lean kernel", "short": "The small core of Lean that checks every step of a proof. Everything Lean accepts passes through it."},
-  {"id": "nanoda", "term": "nanoda", "short": "An independent type checker for Lean written in Rust. Comparator can run it beside Lean's own kernel as a second check; OpenAI's configurations switch it on for 2 of 416 files."},
-  {"id": "mathlib", "term": "Mathlib", "short": "Lean's community library of formalised mathematics. OpenAI's library pins its own version of it."},
-  {"id": "scope-note", "term": "Scope note", "short": "OpenAI's note on what a family's Lean statements cover, in lean/docs of the release. The atlas quotes it beside other people's readings."},
-  {"id": "rerun", "term": "Re-run", "short": "A run of Comparator on OpenAI's solution by a group outside OpenAI, at the release's pinned commit. The atlas shows each group's verdict, credited and dated."},
-  {"id": "readers", "term": "Independent readers", "short": "MathVet and Carlos Toledo's cert-machine, who each read every family's Lean statements against its headline, independently of OpenAI and of each other, under their own published rules."},
-  {"id": "hol-light", "term": "HOL Light", "short": "A proof assistant independent of Lean. Ben Knill's cards check selected steps of eleven families in it, with negative controls that must fail."},
-  {"id": "exact-check", "term": "Exact check", "short": "A computation that decides a finite claim in a paper exactly, written independently from the paper. Certified means the published object has the claimed property; undecided is no evidence against it."},
-  {"id": "pairing", "term": "Candidate pairing", "short": "A link between a paper's statement and a Lean statement, chosen automatically by the words they share. Nobody has reviewed it; it shows where to read, never that the two say the same thing."},
-  {"id": "reading-page", "term": "Reading page", "short": "The atlas's HTML version of a paper, converted from its TeX at the pinned commit. The PDF stays the reference; a page that did not convert in full lists what is missing."},
-  {"id": "withdrawn", "term": "Withdrawn manuscript", "short": "A manuscript OpenAI removed after the release, with a notice explaining the gap. The atlas keeps it, marked, under the family it was listed in on release day."}
+  {
+   "id": "family",
+   "term": "Result family",
+   "short": "OpenAI’s grouping of related manuscripts around one headline result. The release has 372, numbered 001 to 377 with five numbers unused."
+  },
+  {
+   "id": "headline",
+   "term": "Headline result",
+   "short": "The main claim OpenAI’s catalogue gives for a result family. A family’s Lean statements may state all of it, part of it, or a supporting step."
+  },
+  {
+   "id": "challenge",
+   "term": "Comparator challenge file",
+   "short": "A Lean file that states one theorem and leaves its proof open, with a configuration naming the theorem, the definitions a solution may supply and the axioms it may use. The release has 416."
+  },
+  {
+   "id": "comparator",
+   "term": "Comparator",
+   "short": "The Lean tool that checks a solution against a challenge file. If it accepts, the solution proves the configured theorem using only the allowed axioms, and the Lean kernel accepts every step."
+  },
+  {
+   "id": "sorry",
+   "term": "sorry",
+   "short": "Lean’s placeholder for a missing proof. A challenge file leaves its proof as sorry on purpose; the proof is in OpenAI’s separate solution module."
+  },
+  {
+   "id": "axioms",
+   "term": "Permitted axioms",
+   "short": "The axioms a configuration allows a proof to use, here the three standard ones: propext, Classical.choice and Quot.sound. A replay shows which ones a proof actually uses."
+  },
+  {
+   "id": "holes",
+   "term": "Definition hole",
+   "short": "A definition a configuration lists for the solution to supply. Comparator compares it by name and type only, so its body comes from the solution and must be read there."
+  },
+  {
+   "id": "kernel",
+   "term": "Lean kernel",
+   "short": "The small core of Lean that checks every step of a proof. Everything Lean accepts passes through it."
+  },
+  {
+   "id": "nanoda",
+   "term": "nanoda",
+   "short": "An independent type checker for Lean written in Rust. Comparator can run it beside Lean’s own kernel as a second check; OpenAI’s configurations switch it on for 2 of 416 files."
+  },
+  {
+   "id": "mathlib",
+   "term": "Mathlib",
+   "short": "Lean’s community library of formalised mathematics. OpenAI’s library pins its own version of it."
+  },
+  {
+   "id": "scope-note",
+   "term": "Scope note",
+   "short": "OpenAI’s note on what a family’s Lean statements cover, in lean/docs of the release. The atlas quotes it beside other people’s readings."
+  },
+  {
+   "id": "rerun",
+   "term": "Re-run",
+   "short": "A run of Comparator on OpenAI’s solution by a group outside OpenAI, at the release’s pinned commit. The atlas shows each group’s verdict, credited and dated."
+  },
+  {
+   "id": "readers",
+   "term": "Outside readers",
+   "short": "MathVet and Carlos Toledo’s cert-machine, who each read every family’s Lean statements against its headline, independently of OpenAI and of each other, under their own published rules. Each states its own method; the atlas quotes their verdicts and notes and adds none of its own."
+  },
+  {
+   "id": "hol-light",
+   "term": "HOL Light",
+   "short": "A proof assistant independent of Lean. Ben Knill’s cards check selected steps of eleven families in it, with negative controls that must fail."
+  },
+  {
+   "id": "exact-check",
+   "term": "Exact check",
+   "short": "A computation that decides a finite claim in a paper exactly, written independently from the paper. Certified means the published object has the claimed property; undecided is no evidence against it."
+  },
+  {
+   "id": "pairing",
+   "term": "Candidate pairing",
+   "short": "A link between a paper’s statement and a Lean statement, chosen automatically by the words they share. Nobody has reviewed it; it shows where to read, never that the two say the same thing."
+  },
+  {
+   "id": "reading-page",
+   "term": "Reading page",
+   "short": "The atlas’s HTML version of a paper, converted from its TeX at the pinned commit. The PDF stays the reference; a page that did not convert in full lists what is missing."
+  },
+  {
+   "id": "withdrawn",
+   "term": "Withdrawn manuscript",
+   "short": "A manuscript OpenAI removed after the release, with a notice explaining the gap. The atlas keeps it, marked, under the family it was listed in on release day."
+  }
  ]
 }

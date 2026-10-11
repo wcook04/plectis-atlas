@@ -14,6 +14,7 @@
     if (!paper || !lean) return;
     var pt = paper.firstElementChild, lt = lean.firstElementChild;
     var thread = bench.querySelector('.bench__thread');
+    var pcard = paper.querySelector('.bench__paper') || pt;
     var queued = false;
     function sideBySide() {
       return getComputedStyle(bench).gridTemplateColumns.trim().split(/\s+/).length > 1;
@@ -30,7 +31,7 @@
       lean.classList.toggle('is-travel', travel === lean);
       if (thread) {
         var onLean = travel === lean;
-        var host = onLean ? lt : pt;
+        var host = onLean ? lt : pcard;
         if (thread.parentNode !== host) host.appendChild(thread);
         thread.classList.toggle('bench__thread--onlean', onLean);
       }

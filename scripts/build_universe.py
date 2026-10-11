@@ -643,7 +643,7 @@ def build_detail(model):
                 st = stmts[r["id"]]
                 sec = U("result.appendix") if st.get("appendix") else U("result.section", n=st.get("section") or "?")
                 sh["results"][r["id"]] = {
-                    "html": conv.blocks(st["text"]),
+                    "html": keep_punctuation(conv.blocks(st["text"])),
                     "titleHtml": conv.text(st["title"], inline=True) if st.get("title") else None,
                     "where": sec + (f', {st["section_title"]}' if st.get("section_title") else ""),
                     "paperHtml": S.rich(m["title"]),
@@ -727,6 +727,72 @@ def index_html(model):
     return "".join(out)
 
 
+# Verdicts that would mean an outside group rejected a Lean file's proof. None of the
+# recorded re-runs uses one today ("not-decided" is cert-machine refusing to decide,
+# "built" is MathVet building without a verdict); the words stay ready if one does.
+REJECTED = {"rejected", "failed", "fail"}
+
+
+def rerun_records():
+    """Per group: files re-run and how many of each verdict; per Lean file: accepted and
+    rejected groups. Read from statements.json's sourced replay records."""
+    by_group, by_file = {}, {}
+    for st in S.STATEMENTS:
+        acc, rej, any_run = set(), set(), False
+        for v in S.sourced_all(st, "replay"):
+            any_run = True
+            g = by_group.setdefault(v["source"], {"runs": 0, "verdicts": {}})
+            g["runs"] += 1
+            verdict = v["value"].get("verdict") or "unknown"
+            g["verdicts"][verdict] = g["verdicts"].get(verdict, 0) + 1
+            if verdict == "accepted":
+                acc.add(v["source"])
+            elif verdict in REJECTED:
+                rej.add(v["source"])
+        by_file[st["id"]] = {"run": any_run, "acc": acc, "rej": rej}
+    return by_group, by_file
+
+
+def verdict_phrase(g) -> str:
+    """"398 accepted and 18 not decided", "192 of 192 accepted": a group's verdicts in words."""
+    parts = []
+    order = ["accepted"] + sorted(k for k in g["verdicts"] if k != "accepted")
+    for k in order:
+        n = g["verdicts"].get(k, 0)
+        if not n:
+            continue
+        if k == "accepted" and n == g["runs"]:
+            parts.append(U("bands.verdict_accepted_all", n=n))
+        elif ("verdict_" + k) in COPY_U["bands"]:
+            parts.append(U("bands.verdict_" + k, n=n))
+        else:
+            parts.append(U("bands.verdict_other", n=n, verdict=k.replace("-", " ")))
+    return parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + " and " + parts[-1]
+
+
+def ground_sentence() -> str:
+    """The first screen's grounding of "checked": what the outside groups report, counted."""
+    _, by_file = rerun_records()
+    files = len(by_file)
+    rerun = sum(1 for x in by_file.values() if x["run"])
+    accepted = sum(1 for x in by_file.values() if x["acc"])
+    rejected = sum(1 for x in by_file.values() if x["rej"])
+    if rejected:
+        return U("page.ground_rejected", rerun=rerun, files=files, accepted=accepted, rejected=rejected)
+    if rerun == files:
+        return U("page.ground_all", files=files, accepted=accepted)
+    return U("page.ground_some", rerun=rerun, files=files, accepted=accepted)
+
+
+KEEP_PUNCT = re.compile(r'(<span class="m">[^<]*</span>)([.,;:!?)\]]+)')
+
+
+def keep_punctuation(html_text: str) -> str:
+    """A formula keeps the punctuation that follows it on its own line: a full stop never
+    wraps away from the formula before it."""
+    return KEEP_PUNCT.sub(r'<span class="u-nobr">\1\2</span>', html_text)
+
+
 def linked(template: str, **parts) -> str:
     """A copy sentence with its {placeholders} filled by HTML (each number a link);
     the sentence's own words are escaped."""
@@ -760,18 +826,53 @@ def ways_html(model) -> str:
     return (f'{key}<h2 class="u-h2 u-h2--ways">{esc(U("ways.heading"))}</h2><ul class="u-ways">{"".join(rows)}</ul>')
 
 
+def exact_bench(f) -> bool:
+    """A family whose bench is exact, the rule for the home page's worked example:
+    - its papers have one headline theorem, and the family has one Lean statement;
+    - the atlas pairs that Lean statement with that theorem (a candidate pairing);
+    - both outside readers class the Lean as stating all of the headline (cert-machine
+      "matches", MathVet "full"), and neither names a missing part: cert-machine records
+      no gap, and MathVet's note says "None" or is empty, with no definitions to check."""
+    if f.get("readers_agreement") != "agree-full" or len(f["statements"]) != 1:
+        return False
+    heads = [st for slug in f["manuscripts"] for st in S.headline_statements(S.MS[slug])]
+    if len(heads) != 1:
+        return False
+    m, st, _ = S.pair_statement(S.ST[f["statements"][0]])
+    if not m or st is not heads[0]:
+        return False
+    for v in S.sourced_all(f, "scope_reading"):
+        val = v["value"]
+        if v["source"] == "cert-machine" and (val.get("verdict") != "matches" or (val.get("gap") or "").strip()):
+            return False
+        if v["source"] == "mathvet":
+            note = (val.get("note") or "").strip()
+            defs = (val.get("definitions_to_check") or "").strip()
+            if val.get("verdict") != "full" or not (note == "" or note.lower().startswith("none")) or defs not in ("", "None", "None."):
+                return False
+    return True
+
+
+def example_family() -> str:
+    """The example family: the copy's preferred family when its bench is exact, else the
+    first exact bench in the release's order, else the second way in."""
+    exact = [f["id"] for d in S.DISCIPLINES for f in (S.FAM[x] for x in d["families"]) if exact_bench(f)]
+    preferred = COPY_U["bands"].get("example_family")
+    if preferred in exact:
+        return preferred
+    return exact[0] if exact else COPY_U["ways"]["items"][1]["family"]
+
+
 def example_band(model) -> str:
     """One family read in full: the family desk's claim card when it exists, and
     otherwise the family's title, OpenAI's description and its first headline theorem."""
-    way = COPY_U["ways"]["items"][1]
-    fid = way["family"]
-    example_name = way.get("name") or plain(S.FAM[fid]["title"])
+    fid = example_family()
     f = next(x for x in model["families"] if x["num"] == fid)
     fam = S.FAM[fid]
     card = ""
     if hasattr(S, "family_claim_card"):
         try:
-            card = S.family_claim_card(fid, "")
+            card = keep_punctuation(S.family_claim_card(fid, ""))
         except Exception as e:  # noqa: BLE001  (the other desk's function may be mid-edit)
             print(f"universe: family_claim_card({fid}) failed, using the fallback: {e}", file=sys.stderr)
             card = ""
@@ -795,7 +896,7 @@ def example_band(model) -> str:
   <div class="u-band__head">
    <h2 class="u-band__h" id="h-example">{esc(U('bands.example_heading'))}</h2>
    <p class="u-band__intro">{esc(U('bands.example_intro'))}</p>
-   <p class="u-band__links"><a href="{esc(f['href'])}">{esc(U('bands.example_read', name=example_name))}</a><a href="index.html#o={esc(f['id'])}" data-go="{esc(f['id'])}">{esc(U('bands.example_map'))}</a></p>
+   <p class="u-band__links"><a href="{esc(f['href'])}">{esc(U('bands.example_read'))}</a><a href="index.html#o={esc(f['id'])}" data-go="{esc(f['id'])}">{esc(U('bands.example_map'))}</a></p>
   </div>
   <div class="u-example">{card}</div>
  </div>
@@ -815,6 +916,7 @@ def release_band(model, counts) -> str:
                main=n("statements_lean_main_results")),
         linked(U("bands.release_s3"), lean=n("statements_lean"), acc3=num_link(acc[3], "statements.html"),
                acc0=num_link(acc[0], "statements.html")),
+        esc(runs_sentence()),
         linked(U("bands.release_s4"), pairs=num_link(counts["pairs"], "statements.html")),
         linked(U("bands.release_s5"), edges=n("internal_citation_edges"), works=n("external_works_cited")),
         linked(U("bands.release_s6"), withdrawn=n("manuscripts_withdrawn"), previous=n("manuscripts_previous_editions")),
@@ -829,14 +931,24 @@ def release_band(model, counts) -> str:
 </section>"""
 
 
+def runs_sentence() -> str:
+    """Each group's verdicts, then whether any re-run reports a rejection."""
+    by_group, by_file = rerun_records()
+    parts = [U("bands.run_phrase", who=S.source_credit(g), verdicts=verdict_phrase(by_group[g]))
+             for g in ("cert-machine", "mathvet", "nealmcb-lean-tooling") if g in by_group]
+    parts += [U("bands.run_phrase", who=S.source_credit(g), verdicts=verdict_phrase(v))
+              for g, v in sorted(by_group.items()) if g not in ("cert-machine", "mathvet", "nealmcb-lean-tooling")]
+    joined = "; ".join(parts)
+    joined = joined[:1].upper() + joined[1:]
+    rejected = any(x["rej"] for x in by_file.values())
+    return U("bands.release_runs_rejected" if rejected else "bands.release_runs", runs=joined)
+
+
 def checked_band(model) -> str:
     """Who has checked what, each record credited to the person or group who reports it."""
-    runs, accepted = {}, {}
-    for st in S.STATEMENTS:
-        for v in S.sourced_all(st, "replay"):
-            runs[v["source"]] = runs.get(v["source"], 0) + 1
-            if v["value"].get("verdict") == "accepted":
-                accepted[v["source"]] = accepted.get(v["source"], 0) + 1
+    by_group, by_file = rerun_records()
+    runs = {g: v["runs"] for g, v in by_group.items()}
+    verdicts = {g: verdict_phrase(v) for g, v in by_group.items()}
     scope, finite, hol_fams, erdos_fams = {}, set(), set(), set()
     for f in S.FAMILIES:
         for v in S.sourced_all(f, "scope_reading"):
@@ -854,21 +966,31 @@ def checked_band(model) -> str:
             return
         rows.append(f'<li><a class="u-who__n" href="sources.html#src-{esc(src)}">{esc(S.source_credit(src))}</a> '
                     f'<span class="u-who__w">{esc(sentence)}</span></li>')
-    row("cert-machine", U("bands.checked_cert", runs=runs.get("cert-machine", 0), accepted=accepted.get("cert-machine", 0),
+    row("cert-machine", U("bands.checked_cert", runs=runs.get("cert-machine", 0), verdicts=verdicts.get("cert-machine", ""),
                          finite=len(finite), scope=scope.get("cert-machine", 0)))
-    row("mathvet", U("bands.checked_mathvet", runs=runs.get("mathvet", 0), accepted=accepted.get("mathvet", 0),
+    row("mathvet", U("bands.checked_mathvet", runs=runs.get("mathvet", 0), verdicts=verdicts.get("mathvet", ""),
                     scope=scope.get("mathvet", 0)))
     row("nealmcb-lean-tooling", U("bands.checked_neal", runs=runs.get("nealmcb-lean-tooling", 0),
-                                 accepted=accepted.get("nealmcb-lean-tooling", 0)))
+                                 verdicts=verdicts.get("nealmcb-lean-tooling", "")))
     row("hol-cards", U("bands.checked_hol", families=len(hol_fams)))
-    row("erdos-problems", U("bands.checked_erdos", families=len(erdos_fams)))
-    more = len(S.COMMUNITY["list"])
+    none_rejected = "" if any(x["rej"] for x in by_file.values()) else f'<p class="u-band__note">{esc(U("bands.checked_none_rejected"))}</p>'
+    # A link to the problems a family addresses is not a check of it: Thomas Bloom's
+    # erdosproblems.com stands on its own line after the checks.
+    erdos = ""
+    if "erdos-problems" in S.SOURCES:
+        who = f'<a href="sources.html#src-erdos-problems">{esc(S.source_credit("erdos-problems"))}</a>'
+        erdos = f'<p class="u-band__note">{linked(U("bands.checked_erdos", families=len(erdos_fams), who="{who}"), who=who)}</p>'
+    # The same count and definition as the Sources page's own lede.
+    people = len({(a.get("name") or a.get("handle")) for e in S.COMMUNITY["list"] for a in (e.get("authors") or [])})
+    findings = len(S.COMMUNITY["findings"])
     return f"""<section class="u-band u-band--checked" id="checked" aria-labelledby="h-checked">
  <div class="frame u-band__in">
   <h2 class="u-band__h" id="h-checked">{esc(U('bands.checked_heading'))}</h2>
   <p class="u-band__intro">{esc(U('bands.checked_intro'))}</p>
   <ul class="u-who">{''.join(rows)}</ul>
-  <p class="u-band__links"><span>{esc(U('bands.checked_more', efforts=more))}</span><a href="sources.html">{esc(U('bands.checked_more_link'))}</a></p>
+  {none_rejected}
+  {erdos}
+  <p class="u-band__links"><span>{esc(U('bands.checked_more', people=people, findings=findings))}</span><a href="sources.html">{esc(U('bands.checked_more_link'))}</a></p>
  </div>
 </section>"""
 
@@ -899,6 +1021,8 @@ def legend_html(model, sources) -> str:
     hol = sum(1 for f in model["families"] if f["hol"])
     fin = sum(1 for f in model["families"] if f["fin"])
     groups = [sources[k] for k in sources if any(k in L["acc"] for L in model["lean"])]
+    by_group, _ = rerun_records()
+    coverage = ", ".join(f'{sources.get(g, g)} {v["runs"]}' for g, v in by_group.items())
 
     def lean(n, with_holes=False):
         hole = '<circle cx="7" cy="7" r="1.8" class="u-sw-hole"/>' if with_holes else ""
@@ -924,6 +1048,7 @@ def legend_html(model, sources) -> str:
             + row(lean(1), U("legend.lean_1"), acc[1]) + row(lean(0), U("legend.lean_0"), acc[0])
             + row(lean(2, True), U("legend.lean_holes"), holes) + "</ul>"
             f'<p class="u-note">{esc(U("legend.lean_groups", groups="; ".join(groups)))}</p>'
+            f'<p class="u-note">{esc(U("legend.coverage", runs=coverage))}</p>'
             f'<h3 class="u-h3">{esc(U("legend.result_heading"))}</h3><ul class="u-key">'
             + row(dot(True), U("legend.result_paired"), paired) + row(dot(False), U("legend.result_unpaired"), len(model["results"]) - paired) + "</ul>"
             f'<p class="u-note">{esc(U("legend.pair_note"))}</p>'
@@ -951,6 +1076,7 @@ def page_body(model, gen, counts):
   <div class="u-panel__head">
    <nav class="u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail></nav>
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
+   <p class="u-ground" data-u-ground>{esc(ground_sentence())}</p>
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
     <input id="u-search-in" class="u-search__in" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(U('search.placeholder'))}" data-u-search>

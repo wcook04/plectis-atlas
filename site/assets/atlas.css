@@ -791,6 +791,12 @@ body.social { margin: 0; width: 1200px; height: 675px; overflow: hidden; backgro
 .rq { list-style: none; margin: 10px 0; padding: 0; max-width: 60rem; }
 .rq li { padding: 8px 0; border-top: 1px solid var(--rule); }
 .rq__why { margin: 2px 0 0; padding-left: 1.2em; font-size: var(--fs-meta); color: var(--ink-soft); }
+/* Prose around the Families list and the reading queue keeps a reading measure. */
+.rq__why li, #careful-reading > p, [aria-labelledby="h-list"] > p { max-width: 62ch; }
+#explain-table .btn, #explain-table [class^="rd-"] { white-space: nowrap; }
+/* While no family has an explanation recorded, that status is the quiet default; only
+   work in progress and reviewed explanations carry colour. */
+#explain-table .st--none { box-shadow: none; padding: 0; font-weight: 400; color: var(--muted); }
 
 /* ---- Statement comparison on a narrow screen ---------------------------- */
 /* The inline comparison stops being a 16:9 picture: sections stack, text uses
@@ -834,6 +840,11 @@ a.term:hover, a.term:focus-visible { text-decoration-color: currentColor; }
 .gloss dt { font-family: var(--serif); font-size: 1.0625rem; font-weight: 600; margin-bottom: 4px; }
 .gloss dd { margin: 0; font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; color: var(--ink-soft); max-width: 40em; }
 .gloss__group + .gloss__group { margin-top: 18px; }
+
+/* Lean statement page: the AI draft is one quiet line, never a verdict */
+.scope__draft { font-size: var(--fs-small); color: var(--muted); max-width: 62ch; margin: 10px 0 0; }
+.readers-link, .review-status { max-width: 62ch; }
+.review-status { color: var(--ink-soft); margin: 6px 0 0; }
 
 /* About: each essay's question beside what the atlas does about it */
 .approach { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 20px; }

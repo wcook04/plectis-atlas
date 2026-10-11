@@ -102,6 +102,11 @@ main.u-main { padding: 0; max-width: none; }
 .u-title { font: 500 1.625rem/1.18 var(--serif); letter-spacing: -0.01em; margin: 2px 0 14px; color: var(--ink); text-wrap: balance; }
 .u-title--deep { font-size: 1.25rem; font-weight: 600; letter-spacing: 0; }
 .u-trail[hidden] { display: none; }
+.u-ground { font: 400 var(--fs-small)/1.5 var(--sans); color: var(--ink-soft); margin: -6px 0 14px; max-width: 46ch; text-wrap: pretty; }
+.u-ground[hidden] { display: none; }
+.u-nobr { display: inline-block; } /* whole where it fits, wrapping inside itself where its line is narrower */
+.u-band__note { font: 400 var(--fs-body)/1.6 var(--sans); color: var(--ink-soft); margin: 14px 0 0; max-width: 66ch; }
+.u-band__note a { color: var(--steel-text); font-weight: 600; }
 .u-title--code { font: 600 1.05rem/1.3 var(--mono); overflow-wrap: anywhere; }
 .u-search__in {
   width: 100%; font: 400 var(--fs-body)/1.3 var(--sans); color: var(--ink);

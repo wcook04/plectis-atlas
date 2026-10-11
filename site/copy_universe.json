@@ -3,11 +3,14 @@
  "page": {
   "title": "OpenAI’s mathematics release, read and checked",
   "description": "Every family of OpenAI’s mathematics release drawn as one map: open a family to read what its papers claim, the Lean that states it, and who has checked what.",
-  "lede": "An independent atlas: every family in the release is drawn here as a small map of its papers, theorems and Lean statements, and opens to show what it claims and who has checked it.",
+  "lede": "OpenAI groups related papers into families. Each of its {families} families is drawn here as a small map of its papers, theorems and Lean statements, and opens to show what it claims and who has checked it.",
   "noscript": "The map needs JavaScript. The list of every family, paper, theorem and Lean statement is below the map, with links.",
   "redirect_title": "The map has moved",
   "redirect_text": "The map of the release is now the front page.",
-  "redirect_link": "Open the map"
+  "redirect_link": "Open the map",
+  "ground_all": "Outside groups have re-run all {files} of the release’s Lean files and report accepting {accepted} of them, with no rejection; this independent atlas shows their reports and has not repeated the runs.",
+  "ground_some": "Outside groups have re-run {rerun} of the release’s {files} Lean files and report accepting {accepted} of them, with no rejection; this independent atlas shows their reports and has not repeated the runs.",
+  "ground_rejected": "Outside groups have re-run {rerun} of the release’s {files} Lean files, report accepting {accepted} and rejecting {rejected}; this independent atlas shows their reports and has not repeated the runs."
  },
  "levels": {
   "release": "The release",
@@ -46,7 +49,7 @@
   "heading": "How to read the map",
   "colour_note": "Colour marks evidence, and each colour comes with a shape. Structure stays grey.",
   "lean_heading": "Lean statements (diamonds)",
-  "lean_3": "Three outside groups report accepting its re-run",
+  "lean_3": "Three outside groups report accepting it",
   "lean_2": "Two groups report accepting it",
   "lean_1": "One group reports accepting it",
   "lean_0": "No group reports accepting it yet",
@@ -56,14 +59,15 @@
   "result_paired": "Has a candidate Lean statement, joined by a dashed thread",
   "result_unpaired": "No Lean statement paired",
   "pair_note": "Candidates are found automatically by word overlap, and nobody has reviewed them yet.",
-  "family_heading": "Families (rings round a map)",
-  "family_hol": "A HOL Light check of some of its steps",
-  "family_finite": "An exact computation of a finite part",
+  "family_heading": "Rings around a family: outside checks by other methods",
+  "family_hol": "HOL Light: some of its steps proved again",
+  "family_finite": "Exact computation: a finite part checked",
   "fibre_heading": "Citations",
   "fibre_cites": "Cites",
   "fibre_cited": "Is cited by",
   "fibre_note": "A fibre joins two families when a manuscript of one cites a manuscript of the other. Its width grows with the number of citing links.",
-  "tiles": "Every family as a tile, coloured by the evidence you choose"
+  "tiles": "Every family as a tile, coloured by the evidence you choose",
+  "coverage": "The groups ran different numbers of files ({runs}), so the strength of a diamond counts acceptances and does not measure coverage."
  },
  "counts": {
   "families_one": "1 family",
@@ -166,9 +170,9 @@
   "findings_heading": "Credited findings about this statement",
   "record": "Record",
   "verdicts": {
-   "accepted": "reports it accepted",
-   "not-decided": "reports it not decided",
-   "built": "reports that it builds"
+   "accepted": "accepted",
+   "not-decided": "not decided",
+   "built": "built without a verdict"
   }
  },
  "plate": {
@@ -194,7 +198,7 @@
    },
    {
     "family": "260",
-    "why": "Penrose’s inequality bounds the mass of a spacetime below by the minimum area enclosing its black holes. These papers claim it in every dimension from three up.",
+    "why": "Penrose’s inequality bounds the mass of a spacetime from below in terms of the smallest area that encloses its black holes. These papers claim it in every dimension from three up.",
     "name": "The spacetime Penrose inequality"
    },
    {
@@ -203,21 +207,22 @@
     "name": "Borsuk’s conjecture in dimension nine"
    }
   ],
-  "key_lean": "A Lean statement, darker the more outside groups report accepting its re-run",
+  "key_lean": "A Lean statement, stronger the more outside groups report accepting it",
   "key_result": "A headline theorem, filled when a candidate Lean statement is paired with it",
-  "key_ring": "A brick ring: an outside check of the family by another method",
+  "key_ring": "A ring around a family: an outside check by another method (HOL Light or exact computation)",
   "key_more": "The full key"
  },
  "bands": {
   "example_heading": "One family, read in full",
   "example_intro": "Every family page answers the same questions in the same order: what is claimed, what the Lean states, who has checked it, and where to read it. Here is one.",
-  "example_read": "Read {name} in full",
+  "example_read": "Read the whole family",
+  "example_family": "145",
   "example_map": "Show it on the map",
   "example_theorem": "What the paper states",
   "release_heading": "The release in sentences",
   "release_s1": "OpenAI published {papers} current papers, grouped into {families} families of related results in {disciplines} disciplines.",
   "release_s2": "{lean} Lean statement files come with the release, in {families_with_lean} of those families, and OpenAI lists {main} of them as main results.",
-  "release_s3": "Outside groups report re-running those files: of the {lean} files, all three groups report accepting {acc3}, and {acc0} have no accepted re-run yet.",
+  "release_s3": "Of the {lean} files, three groups report accepting {acc3}, and {acc0} have no accepted re-run yet.",
   "release_s4": "The atlas pairs {pairs} of the Lean files with a theorem in their papers. Each pairing is a candidate found by word overlap, and nobody has reviewed it yet.",
   "release_s5": "Inside the release the papers cite one another {edges} times, and outside it they cite {works} other works.",
   "release_s6": "OpenAI has withdrawn {withdrawn} papers and replaced {previous} with later editions.",
@@ -225,12 +230,12 @@
   "release_tiles": "Every family as a tile, coloured by the evidence you choose",
   "checked_heading": "Who has checked what",
   "checked_intro": "Each check below is reported by the person or group named. The atlas shows their records beside the results they reach and did not repeat them.",
-  "checked_cert": "re-ran {runs} Lean files through Comparator with a second kernel and reports {accepted} accepted. They also checked finite parts of {finite} families by exact computation, and read the Lean of {scope} families against their headlines.",
-  "checked_mathvet": "re-ran {runs} Lean files in a sandbox and reports {accepted} accepted. They also read the Lean of {scope} families against their headlines.",
-  "checked_neal": "re-ran {runs} Lean files with Lean’s kernel and reports {accepted} accepted, with the time and memory each took.",
+  "checked_cert": "re-ran {runs} Lean files through Comparator with a second kernel and reports {verdicts}. They also checked finite parts of {finite} families by exact computation, and read the Lean of {scope} families against their headlines.",
+  "checked_mathvet": "re-ran {runs} Lean files in a sandbox and reports {verdicts}. They also read the Lean of {scope} families against their headlines.",
+  "checked_neal": "re-ran {runs} Lean files with Lean’s kernel and reports {verdicts}, with the time and memory each took.",
   "checked_hol": "proved steps of {families} families again in HOL Light, with negative controls that must fail.",
-  "checked_erdos": "links {families} families to the Erdős problems they address.",
-  "checked_more": "Work by {efforts} other public efforts, from comments and analyses to independent checks, is credited where it is used.",
+  "checked_erdos": "{who} links {families} families to the Erdős problems they address.",
+  "checked_more": "Public work by {people} other people, with {findings} of their findings attached to specific results, is credited where it is used.",
   "checked_more_link": "Every source",
   "help_heading": "How to help",
   "help_intro": "Each contribution is one precise thing, credited by name on the pages it changes.",
@@ -243,6 +248,15 @@
   "help_queue": "Some Lean files have a specific reason to be read first.",
   "help_queue_link": "See which, and why",
   "index_heading": "Every family, paper, theorem and Lean statement",
-  "index_intro": "The same release as the map, as a list by discipline. Each line opens its page."
+  "index_intro": "The same release as the map, as a list by discipline. Each line opens its page.",
+  "release_runs": "{runs}. No re-run reports a rejection.",
+  "release_runs_rejected": "{runs}.",
+  "run_phrase": "{who} reports {verdicts}",
+  "verdict_accepted": "{n} accepted",
+  "verdict_accepted_all": "{n} of {n} accepted",
+  "verdict_not-decided": "{n} not decided",
+  "verdict_built": "{n} built without a verdict",
+  "verdict_other": "{n} {verdict}",
+  "checked_none_rejected": "No re-run by any of them reports a rejection."
  }
 }

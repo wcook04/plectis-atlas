@@ -469,6 +469,12 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
   }
+  // One date format across the site: "8 October 2026".
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  function longDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+    return m ? (+m[3]) + ' ' + MONTHS[+m[2] - 1] + ' ' + m[1] : String(iso || '');
+  }
   function fmtNum(n) { return typeof n === 'number' ? n.toLocaleString('en-GB') : String(n); }
   function fill(template, vars) {
     return String(template).replace(/\{(\w+)\}/g, function (m, k) {
@@ -2036,6 +2042,8 @@
       var o = sel ? obj(sel) : null;
       if (trailEl) trailEl.innerHTML = trailHtml();
       if (trailEl) trailEl.hidden = !o;
+      var groundEl = root.querySelector('[data-u-ground]');
+      if (groundEl) groundEl.hidden = !!o;
       var html = '';
       if (!o) html = releaseHtml();
       else if (o.kind === 'd') html = disciplineHtml(o.i);
@@ -2166,7 +2174,7 @@
       if (!list || !list.length) return '';
       return '<h3 class="u-h3">' + escapeHtml(heading) + '</h3><ul class="u-finds">' + list.map(function (f) {
         return '<li><span class="u-pill">' + escapeHtml(f.kind) + '</span> ' + escapeHtml(f.summary) +
-          ' <span class="u-muted">' + escapeHtml([f.who, f.effort].filter(Boolean).join(', ')) + ', ' + escapeHtml(f.date) + '.</span> ' +
+          ' <span class="u-muted">' + escapeHtml([f.who, f.effort].filter(Boolean).join(', ')) + ', ' + escapeHtml(longDate(f.date)) + '.</span> ' +
           link(f.url, T('family.source')) + '</li>';
       }).join('') + '</ul>';
     }
@@ -2267,7 +2275,7 @@
         else h += '<ul class="u-reruns">' + det.reruns.map(function (x) {
           var ok = x.verdict === 'accepted';
           return '<li class="' + (ok ? 'is-ok' : 'is-not') + '"><strong>' + escapeHtml(D.sources[x.source] || x.source) + '</strong>: ' +
-            escapeHtml((COPY.lean && COPY.lean.verdicts && COPY.lean.verdicts[x.verdict]) || (ok ? T('lean.accepted') : T('lean.not_accepted'))) + (x.date ? ', ' + escapeHtml(x.date) : '') + '. ' +
+            escapeHtml((COPY.lean && COPY.lean.verdicts && COPY.lean.verdicts[x.verdict]) || (ok ? T('lean.accepted') : T('lean.not_accepted'))) + (x.date ? ', ' + escapeHtml(longDate(x.date)) : '') + '. ' +
             '<span class="u-muted">' + escapeHtml(x.text || '') + '</span> ' + link(x.url, T('lean.record')) + '</li>';
         }).join('') + '</ul>';
         if (det.holes.length) h += '<h3 class="u-h3">' + escapeHtml(T('lean.holes_heading')) + '</h3><p class="u-note">' + escapeHtml(T('lean.holes_note')) + '</p><p>' +

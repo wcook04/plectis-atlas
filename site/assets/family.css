@@ -25,14 +25,20 @@
 .fhead__tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
 .fhead__title { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 1.35rem + 1.9vw, 2.875rem); line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 16px; max-width: 24em; text-wrap: balance; }
 .fhead__lede { max-width: 42em; }
-.fhead__lede > p.tex-auto { font-family: var(--serif); font-size: 1.25rem; line-height: 1.5; color: var(--ink-soft); margin: 0; text-wrap: pretty; }
+.fhead__lede { margin: 0; }
+/* OpenAI's catalogue line is a marked quotation, its source first, at body size: the
+   atlas never states a claim in its own voice. */
+.fhead__q { margin: 6px 0 0; padding: 2px 0 2px 16px; border-left: 2px solid var(--rule-strong); }
+.fhead__q p.tex-auto, .fhead__q .tex-auto { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.6; color: var(--ink-soft); margin: 0; text-wrap: pretty; }
+.fhead__q--rest { margin-top: 8px; }
 .fhead__src { display: inline; margin: 0; font-size: var(--fs-small); color: var(--muted); }
 .fhead__src a, .fhead__src a:hover { color: var(--muted); }
 .fhead__lede { display: block; }
-.fhead__lede .fhead__src { display: inline-block; margin: 8px 18px 0 0; }
+.fhead__lede .fhead__src { display: block; margin: 0; font-size: var(--fs-meta); color: var(--muted); }
+.fhead__lede .fhead__src a { color: var(--ink-soft); }
 .fhead__more { display: inline-block; margin-top: 8px; vertical-align: top; }
 .fhead__more[open] { display: block; }
-.fhead__more > .tex-auto { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.6; color: var(--ink-soft); margin-top: 8px; }
+
 .fhead__facts { font-size: var(--fs-body); line-height: 1.65; color: var(--ink-soft); max-width: 46em; margin: 18px 0 0; text-wrap: pretty; }
 .fhead__facts a { color: var(--ink-soft); text-decoration: underline; text-decoration-color: var(--rule-control); text-underline-offset: 0.18em; }
 .fhead__facts a:hover { color: var(--ink); text-decoration-color: currentColor; }
@@ -81,6 +87,23 @@
 .bench > .bench__side--lean { grid-area: lean; align-self: stretch; min-width: 0; }
 .bench > .bench__notes { grid-area: notes; min-width: 0; }
 .bench__travel { position: relative; }
+.bench__paper { position: relative; }
+.bench__cap--side { display: none; }
+@container bench (min-width: 860px) {
+  .bench__cap--side { display: block; max-width: none; }
+  .bench__cap--stack { display: none; }
+}
+/* A formula and its trailing punctuation stay on one line; a long formula still breaks
+   between its own terms, as KaTeX allows. */
+/* Only once KaTeX has rendered: raw TeX held on one line would wrap differently and
+   shift the page when it renders. */
+.m-glue:has(.katex) { white-space: nowrap; }
+.m-glue .katex, .m-glue .katex-html, .m-glue .m { white-space: normal; }
+/* Where the Lean states a supporting step, the headline theorem stands first as the claim. */
+.bench-claim { margin: 0 0 30px; max-width: 58rem; }
+.bench-claim__note { font-size: var(--fs-meta); color: var(--muted); margin: 10px 0 0; max-width: 62ch; }
+.bench__sub { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; line-height: 1.3; margin: 0 0 4px; scroll-margin-top: 16px; }
+.bench__subnote { font-size: var(--fs-meta); color: var(--muted); margin: 0 0 16px; max-width: 62ch; }
 /* The shorter card travels beside the longer one (family.js sets is-travel only when
    it fits the window), so neither column shows a tall empty stretch. */
 .bench__side.is-travel > .bench__travel { position: sticky; top: 16px; }
@@ -96,16 +119,23 @@
 .bp__body em, .bp__body i { font-style: normal; }
 .bp__body p { margin: 0 0 0.55em; }
 .bp__body p:last-child { margin-bottom: 0; }
+/* The theorem keeps a reading measure inside a wide card; display formulas may run wider. */
+.bp__body > p, .bp__body li { max-width: 32em; }
+.fam .stmt__body > p, .fam .stmt__body li { max-width: 36em; }
 .bp__body .m-d { margin: 0.6em 0; }
 .bp__body ol, .bp__body ul { padding-left: 1.4em; margin: 0.3em 0 0.6em; }
 .bp__foot { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: var(--fs-small); color: var(--muted); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; }
-.bp__where { margin: 0; flex-basis: 100%; }
-.bp__where a { color: var(--ink-soft); }
+.bp__src { margin: 0 0 10px; font-size: var(--fs-small); color: var(--muted); line-height: 1.45; }
+.bp__src a { color: var(--ink-soft); }
 .bp__acts { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; }
 .bp__acts a { color: var(--muted); }
 .bp__acts a:hover { color: var(--ink); }
 .bp__acts .bp__go { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--rule-control); text-underline-offset: 0.2em; }
 .bp__acts .bp__go:hover { text-decoration-color: currentColor; }
+/* Hit areas of at least 24px for the bench's small links, the look unchanged: inline
+   padding grows the target without moving the line. */
+.bench-host a:not(.term), .fam a.ext { padding-block: 3px; }
+.bench-host .bp__acts a { display: inline-block; padding-block: 3px; margin-block: -3px; }
 .bp .texsrc { margin-left: auto; }
 .bp .texsrc[open] { margin-left: 0; flex-basis: 100%; }
 .bp--none { padding: 22px 26px; color: var(--muted); font-size: var(--fs-body); }
@@ -120,6 +150,10 @@
 .bl__fname { font-family: var(--fam-lean-mono); font-size: 0.95em; color: var(--ink-soft); }
 .bl__code.lean { font-family: var(--fam-lean-mono); font-size: 0.8rem; line-height: 1.6; font-variant-ligatures: none; padding: 10px 0; }
 .bl__note { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; margin: 10px 0 0; }
+.bl__more { font-size: var(--fs-small); color: var(--ink-soft); line-height: 1.6; margin: 8px 0 0; }
+.bl__more code { font-family: var(--fam-lean-mono); font-size: 0.95em; }
+/* Lean names break only where family.js-free markup allows: after an underscore or a dot. */
+.bl__code .ln { overflow-wrap: normal; word-break: normal; }
 .bl__go { margin: 14px 0 0; font-size: var(--fs-meta); font-weight: 600; }
 .bl__go a { color: var(--steel-text); }
 .runs { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--rule); }
@@ -189,12 +223,18 @@
 .rd__g circle { fill: none; stroke: var(--steel); stroke-width: 1.3; }
 .rd__g .fill { fill: var(--steel); stroke: none; }
 .rd--none .rd__v { color: var(--muted); font-family: var(--sans); font-size: var(--fs-body); }
-.rd__text, .rd__more { font-size: var(--fs-meta); color: var(--ink-soft); line-height: 1.5; margin: 0 0 6px; max-width: 40em; }
+.rd__method { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; margin: 0 0 10px; max-width: 60ch; }
+.rd__gloss { font-family: var(--serif); font-size: 1.125rem; color: var(--ink); }
+.rd__termw { font-size: var(--fs-small); color: var(--muted); white-space: nowrap; }
+.rd__term { font-size: 0.95em; color: var(--ink-soft); }
+.rd__note { font-size: var(--fs-body); color: var(--ink); line-height: 1.55; margin: 0 0 8px; max-width: 60ch; }
+.rd__def { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; margin: 0 0 6px; max-width: 60ch; }
 .rd__k { font-weight: 600; }
 .rd__src { font-size: var(--fs-small); margin: 0; }
 .rd-note { margin-top: 20px; max-width: 46em; }
 .rd-note__h { font-size: var(--fs-small); font-weight: 600; color: var(--muted); margin: 0 0 6px; }
-.rd-note__q { margin: 0; padding-left: 16px; border-left: 2px solid var(--rule-strong); font-family: var(--serif); font-size: 1rem; line-height: 1.6; color: var(--ink-soft); }
+.rd-note__h a { color: var(--ink-soft); }
+.rd-note__q { margin: 0; max-width: 55ch; padding-left: 16px; border-left: 2px solid var(--rule-strong); font-family: var(--serif); font-size: 1rem; line-height: 1.6; color: var(--ink-soft); }
 .rd-note__q p { margin: 0 0 0.5em; }
 .rd-note__q .fam-fold > summary { font-family: var(--sans); }
 .rd-note__src { font-size: var(--fs-small); margin: 6px 0 0; }
@@ -240,7 +280,7 @@
 .fc__src { margin: 4px 0 0; font-size: var(--fs-small); color: var(--muted); }
 .ff { list-style: none; margin: 4px 0 0; padding: 0; }
 .ff__i { padding: 10px 0; border-top: 1px solid var(--rule); }
-.ff__what { margin: 0; font-size: var(--fs-body); line-height: 1.55; max-width: 48em; }
+.ff__what { margin: 0; font-size: var(--fs-body); line-height: 1.55; max-width: 56ch; }
 .ff__who { margin: 3px 0 0; font-size: var(--fs-small); color: var(--muted); }
 .fam-problems .h3 { color: var(--brick-text); }
 .fam-problems .ff__i { border-top-color: color-mix(in oklab, var(--brick) 35%, var(--rule)); }
@@ -282,7 +322,7 @@
   .bp { padding: 20px 18px 14px; }
   .bl { padding: 18px 16px 14px; }
   .bp__body { font-size: 1.0938rem; }
-  .fhead__lede > p.tex-auto { font-size: 1.125rem; }
+  
   .bx__i { grid-template-columns: 26px minmax(0, 1fr); gap: 0 10px; }
   .mthread { width: 26px; }
   .fsec { margin-top: 36px; padding-top: 30px; }
@@ -300,14 +340,14 @@
 .fhead__title--long { font-size: clamp(1.75rem, 1.3rem + 1.3vw, 2.375rem); line-height: 1.16; max-width: 30em; }
 .rd__fold { margin: 0 0 6px; }
 /* Measure: sans prose stays under about 80 characters a line at every width. */
-.bench__cap, .bench__draft, .fhead__facts, .ff__what, .ff__who, .fc__v, .fc__text, .fc__src, .left__list, .fsec__intro, .rds__intro { max-width: 66ch; }
-.rd-note__q { max-width: 40em; }
+.bench__cap, .bench__draft, .fhead__facts, .ff__who, .fc__v, .fc__text, .fc__src, .left__list, .fsec__intro, .rds__intro { max-width: 66ch; }
+.rd-note__q { max-width: 55ch; }
 .bp__body { max-width: 40em; }
 .fhead__lede { max-width: 38em; }
-.fhead__more > .tex-auto { max-width: 36em; }
+.fhead__q--rest .tex-auto { max-width: 38em; }
 .fhead__facts { max-width: 62ch; }
-.rd-note__q { max-width: 34em; }
-.rd__more, .rd__text { max-width: 60ch; }
+.rd-note__q { max-width: 55ch; }
+
 .fam-invite { max-width: 34em; }
 .fsec .intro, .left__list { max-width: 62ch; }
 .wd__note { max-width: 62ch; }
