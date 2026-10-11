@@ -94,6 +94,23 @@ def lean_core(text: str) -> str:
     return "\n".join(keep)
 
 
+def reported_reruns(sid: str) -> str:
+    """Who reports re-running Comparator on this challenge and accepting the proof, from the
+    backend export (backend/), credited by the name each source gives."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import backend
+    b = backend.load()
+    lean = b.lean_statement(sid) if b else None
+    names = []
+    for s in (lean or {}).get("reported_accepted_replay_sources") or []:
+        p = ROOT / "curated" / "sources" / f"{s}.json"
+        names.append(json.loads(p.read_text(encoding="utf-8"))["source"]["credit"].split(",")[0] if p.exists() else s)
+    if not names:
+        return "No outside re-run is recorded yet."
+    who = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+    return f"{who} report re-running Comparator on it and accepting the proof."
+
+
 def example_block(families, manuscripts, statements) -> str:
     fam = next(f for f in families if f["id"] == "159")
     stmt = next(s for s in statements if s["id"] == "ErdosReciprocal")
@@ -119,7 +136,8 @@ def example_block(families, manuscripts, statements) -> str:
         "```",
         "",
         f"This challenge file leaves the proof as `sorry` by design. OpenAI's proof lives in the solution module `{stmt['comparator']['solution_module']}`, "
-        "and if Comparator accepts a run, the proof establishes exactly the statement above using only the allowed axioms. No run is recorded in the atlas yet.",
+        "and if Comparator accepts a run, the proof establishes exactly the statement above using only the allowed axioms. "
+        + reported_reruns(stmt["id"]),
         "",
         "OpenAI's scope note for this family:",
         "",

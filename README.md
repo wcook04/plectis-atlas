@@ -1,8 +1,8 @@
 # Plectis Atlas
 
-A reader's atlas to the mathematics OpenAI released on 6 October 2026 in [openai/math](https://github.com/openai/math). For each of the 372 result families it shows the statements from each paper's introduction beside the Lean statements OpenAI set up as Comparator challenges, with OpenAI's own note on what each Lean statement covers, and what each manuscript cites inside and outside the collection. Every family is open for a human explanation, credited by name.
+OpenAI's mathematics release, read and checked. The atlas sets out every paper of [openai/math](https://github.com/openai/math) by result family, puts each main theorem beside the Lean statement that formalises it, and records what outside groups have checked, each credited where it appears. Every paper has a reading page, and every family is open for a human explanation, credited by name.
 
-**[Open the atlas](https://wcook04.github.io/plectis-atlas/)** · [Explain a result](https://wcook04.github.io/plectis-atlas/explain.html) · [Check a statement](CONTRIBUTING.md) · [The numbers](https://wcook04.github.io/plectis-atlas/numbers.html)
+**[Open the atlas](https://wcook04.github.io/plectis-atlas/)**, a map of the whole release that opens into each family, its papers and its Lean statements. You can also go straight to [every family as a list](https://wcook04.github.io/plectis-atlas/explain.html), [the numbers and how each is counted](https://wcook04.github.io/plectis-atlas/numbers.html), or [how to contribute](CONTRIBUTING.md).
 
 The atlas is independent of OpenAI. It is built from the public collection at a pinned commit, and every number on this page is computed by a script in this repository.
 
@@ -55,7 +55,7 @@ theorem manuscriptReciprocalProgressionTheorem : ReciprocalProgressionTheorem :=
   sorry
 ```
 
-This challenge file leaves the proof as `sorry` by design. OpenAI's proof lives in the solution module `OAI.Combinatorics.Progressions.Main`, and if Comparator accepts a run, the proof establishes exactly the statement above using only the allowed axioms. No run is recorded in the atlas yet.
+This challenge file leaves the proof as `sorry` by design. OpenAI's proof lives in the solution module `OAI.Combinatorics.Progressions.Main`, and if Comparator accepts a run, the proof establishes exactly the statement above using only the allowed axioms. MathVet and Neal McBurnett report re-running Comparator on it and accepting the proof.
 
 OpenAI's scope note for this family:
 
@@ -85,10 +85,15 @@ sh scripts/fetch_upstream.sh            # sparse checkout of openai/math at the 
 python3 scripts/build_data.py           # writes data/*.json
 python3 scripts/build_site.py           # writes site/_build/
 python3 scripts/build_papers.py         # writes each paper's full reading page into site/_build/papers/
+python3 scripts/build_universe.py       # writes the map, site/_build/index.html, and its data
 python3 -m http.server -d site/_build   # then open http://localhost:8000
 ```
 
-Python 3.10 or newer and git are the only requirements. With Node installed, the reading pages check every formula with the KaTeX build the site itself serves (`site/assets/vendor/`); without Node every page is marked partial and links the PDF. The dataset in `data/` is plain JSON for your own analysis:
+Each step writes into `site/_build/`, and `build_site.py` clears it first, so run them in this order. Python 3.10 or newer and git are the only requirements. With Node installed, the reading pages check every formula with the KaTeX build the site itself serves (`site/assets/vendor/`); without Node every page is marked partial and links the PDF.
+
+`backend/` holds a pinned export of Statement Map, the backend that joins the release's statements, Lean challenges, outside readings and contributions into records with a receipt behind every count. The site takes its evidence counts and contribution targets from it, and `scripts/backend.py` checks every file's hash, the release pin and the generation before a page uses it.
+
+The dataset in `data/` is plain JSON for your own analysis:
 
 - `families.json`: the 372 families, their discipline, OpenAI's description, manuscripts and Lean statements;
 - `manuscripts.json`: abstracts, theorem-like statements with source file and line (those in the introduction flagged as candidate headline statements), and references with where each is cited;
@@ -96,6 +101,8 @@ Python 3.10 or newer and git are the only requirements. With Node installed, the
 - `graph.json`: citations between manuscripts inside the collection;
 - `works.json`: the outside works the collection cites;
 - `review_queue.json`: every challenge file in order of where a careful reading is most useful, with the reasons, by a rule stated in `summary.json`;
+- `statement_numbers.json`: what each extracted statement prints on its reading page ("Theorem 1.1"), bound to its source file, line and hash;
+- `lean_xref.json`: each Lean declaration's counterpart in OpenAI's library and Mathlib at the pinned commits;
 - `summary.json`: every number above, with its unit, universe and rule.
 
 ## For producers of formal mathematics
