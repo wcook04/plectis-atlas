@@ -45,6 +45,11 @@ does not give its readers, so it carries the design.
   - in the reading pages' margins;
   - on the Lean page, back to the paper.
 - It never decorates. Where there is no pairing there is no thread, and the page says so in words.
+- Its ends sit on the cards' borders, marked as the map marks them: a dot on the paper card, a diamond on the Lean card.
+  - Side by side, it runs from border to border at the height of the card headings.
+  - Stacked, it is a short vertical connector in the gap.
+  - It never crosses text.
+- When one card is much shorter than the other and fits the window, it can travel beside the longer one as the reader scrolls, taking the thread with it.
 
 ## Inks, type and ground
 
@@ -66,6 +71,7 @@ does not give its readers, so it carries the design.
 **Measure.**
 - 60 to 72 characters for reading text.
 - Wide formulas scroll inside their own box, never the page.
+- Reading containers are capped in `ch`. KaTeX's hidden text inflates the audit's character counts, so judge formula-heavy lines by eye.
 
 ## The scale, made human
 
@@ -76,7 +82,8 @@ does not give its readers, so it carries the design.
 
 **Entering the release.**
 - Start from one thing a person can hold: one family, one theorem, one Lean statement.
-- The map shows the whole release, but the panel beside it always speaks about the one thing under the pointer.
+- The map shows the whole release. The plate speaks for what is under the pointer, and the panel beside it for what is selected; rewriting the panel on every hover made it flicker.
+- A short digest of the key sits on the map's first screen, so the marks can be read before scrolling.
 
 **Disclosure.**
 - Release, then discipline, then family, then result.
@@ -93,6 +100,7 @@ in full, before it shows any totals.
   - A pairing found automatically is a "candidate", and says so.
 - No em dashes. No "not X, Y" framing. No taglines. No middle-dot strings of facts; write a sentence.
 - People whose pronouns no source states are "they".
+- Ways into the release are chosen by how widely the problem is known, never by anything that implies a ranking of the results, and each says in one line why to read it.
 - The atlas shows and does not argue.
   - It never implies that OpenAI or any credited group endorses it.
   - It never characterises anyone's work.
@@ -110,6 +118,9 @@ Each of these states has its own wording. Unknown is neither red nor green.
 | Paper rendered in full | The reading page passed its rendering checks; this says nothing about the mathematics |
 | Unnumbered, or number unavailable | Two different states; neither is replaced by a section number |
 | No card, or zero cards | Missing coverage differs from an observed empty set |
+| An AI agent's draft classification | A quiet line after the outside readings, never styled as a verdict |
+| The two outside readers disagree | One sentence naming both readings leads the section |
+| An exact check that was not decided | Says nothing against the result; drawn in neutral grey |
 
 ## Motion
 

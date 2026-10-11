@@ -1,0 +1,320 @@
+/* Plectis Atlas: the family page (build_family in scripts/build_site.py) and the
+   bench (family_claim_card), which other pages may embed with this sheet.
+
+   The page answers DESIGN.md's questions in order: the claim, the Lean statement
+   beside it, the checks, the reading, the connections, the next step. One drawing
+   carries it, the thread: a dot at the paper's theorem, a diamond at the Lean
+   statement, a steel line between, dashed while the pairing is a candidate. It
+   brightens when either card is pointed at or focused, and nothing else moves.
+   Colours come from atlas.css: steel for Lean and formal checks, brick for other
+   machine checks, low-chroma greys for structure, one flat ground. */
+
+:root {
+  /* The Lean face: lean.css's stack where that sheet is loaded, the same stack otherwise. */
+  --fam-lean-mono: var(--lean-mono, "Atlas Lean Mono", "JuliaMono", "DejaVu Sans Mono", Menlo, "Cascadia Mono", Consolas,
+    "Noto Sans Mono", "Liberation Mono", "Plectis Math", "STIX Two Math", "Cambria Math", "Apple Symbols",
+    "Segoe UI Symbol", monospace);
+  --fam-card-r: 4px;
+  --fam-gap: 64px;
+}
+
+/* ---- The head --------------------------------------------------------- */
+.fhead { margin-bottom: 0; }
+.fhead__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin-bottom: 26px; }
+.fhead__bar .trail { margin: 0; }
+.fhead__tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.fhead__title { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 1.35rem + 1.9vw, 2.875rem); line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 16px; max-width: 24em; text-wrap: balance; }
+.fhead__lede { max-width: 42em; }
+.fhead__lede > p.tex-auto { font-family: var(--serif); font-size: 1.25rem; line-height: 1.5; color: var(--ink-soft); margin: 0; text-wrap: pretty; }
+.fhead__src { display: inline; margin: 0; font-size: var(--fs-small); color: var(--muted); }
+.fhead__src a, .fhead__src a:hover { color: var(--muted); }
+.fhead__lede { display: block; }
+.fhead__lede .fhead__src { display: inline-block; margin: 8px 18px 0 0; }
+.fhead__more { display: inline-block; margin-top: 8px; vertical-align: top; }
+.fhead__more[open] { display: block; }
+.fhead__more > .tex-auto { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.6; color: var(--ink-soft); margin-top: 8px; }
+.fhead__facts { font-size: var(--fs-body); line-height: 1.65; color: var(--ink-soft); max-width: 46em; margin: 18px 0 0; text-wrap: pretty; }
+.fhead__facts a { color: var(--ink-soft); text-decoration: underline; text-decoration-color: var(--rule-control); text-underline-offset: 0.18em; }
+.fhead__facts a:hover { color: var(--ink); text-decoration-color: currentColor; }
+
+/* ---- Sections --------------------------------------------------------- */
+.fsec { padding-top: 40px; margin-top: 48px; border-top: 1px solid var(--rule); }
+.fsec--bench { margin-top: 30px; padding-top: 0; border-top: 0; }
+.fsec--last { padding-bottom: 24px; }
+.fsec__h { font-family: var(--serif); font-weight: 500; font-size: 1.625rem; line-height: 1.25; letter-spacing: -0.008em; margin: 0 0 10px; scroll-margin-top: 16px; }
+.fsec__intro { color: var(--muted); max-width: 46em; font-size: var(--fs-body); margin: 0 0 18px; }
+.fsec .h3 { margin-top: 30px; scroll-margin-top: 16px; }
+.fam-alias { display: block; height: 0; scroll-margin-top: 16px; }
+.fam-tag { font-size: var(--fs-small); color: var(--steel-text); }
+
+/* Folds hold optional depth only: the rest of a description, abstracts, long lists. */
+.fam-fold > summary { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 28px; font-size: var(--fs-meta); font-weight: 600; color: var(--ink-soft); list-style: none; }
+.fam-fold > summary::-webkit-details-marker { display: none; }
+.fam-fold > summary::before { content: ""; width: 0; height: 0; border-left: 5px solid currentColor; border-block: 4px solid transparent; transition: transform 160ms var(--ease-out); }
+.fam-fold[open] > summary::before { transform: rotate(90deg); }
+.fam-fold > summary:hover { color: var(--ink); }
+.fam-fold[open] > summary { margin-bottom: 6px; }
+.fam-fold--section { margin-top: 28px; }
+.fam-fold--section > summary { font-family: var(--serif); font-size: 1.125rem; font-weight: 600; color: var(--ink); }
+@media (forced-colors: active) { .fam-fold > summary::before { content: "\25B8"; border: 0; width: auto; height: auto; } }
+
+/* ---- The bench -------------------------------------------------------- */
+/* The theorem and the notes about the pairing on the left, the Lean card on the
+   right spanning both, so neither column ends in a dead gap. */
+/* The bench lays itself out by its own width (a container query), so it reads the
+   same on the family page and wherever another page embeds it. Narrow: the cards
+   stack, joined by a short vertical thread in the gap. Wide: side by side, the
+   thread running border to border. The notes always run full width below. */
+.bench-host { container: bench / inline-size; }
+.bench { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "thread" "lean" "notes"; align-items: start; }
+@container bench (min-width: 860px) {
+  .bench { grid-template-columns: minmax(0, 3fr) var(--fam-gap) minmax(0, 2fr); grid-template-areas: "paper thread lean" "notes notes notes"; }
+  .bench--nolean { grid-template-columns: minmax(0, 2fr) var(--fam-gap) minmax(0, 1fr); }
+}
+@container bench (min-width: 1180px) {
+  .bench { grid-template-columns: minmax(0, 7fr) var(--fam-gap) minmax(0, 5fr); }
+  .bench--nolean { grid-template-columns: minmax(0, 7fr) var(--fam-gap) minmax(0, 4fr); }
+}
+.bench > .bench__side--paper { grid-area: paper; align-self: stretch; min-width: 0; }
+.bench > .bench__gap { grid-area: thread; height: 36px; }
+.bench > .bench__gap--none { height: 18px; }
+.bench > .bench__side--lean { grid-area: lean; align-self: stretch; min-width: 0; }
+.bench > .bench__notes { grid-area: notes; min-width: 0; }
+.bench__travel { position: relative; }
+/* The shorter card travels beside the longer one (family.js sets is-travel only when
+   it fits the window), so neither column shows a tall empty stretch. */
+.bench__side.is-travel > .bench__travel { position: sticky; top: 16px; }
+@container bench (min-width: 860px) { .bench > .bench__gap { height: auto; } }
+.bp, .bl { background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--fam-card-r); min-width: 0; transition: border-color 160ms var(--ease-out); }
+
+/* The paper card: the theorem as the paper prints it. */
+.bp { padding: 26px 32px 16px; }
+.bp__head { font-family: var(--serif); font-size: 1.125rem; font-weight: 400; line-height: 1.45; margin: 0 0 8px; }
+.bp__kind { font-weight: 700; }
+.bp__title { font-style: normal; color: var(--ink-soft); }
+.bp__body { font-family: var(--serif); font-size: 1.1875rem; line-height: 1.62; font-style: italic; overflow-wrap: anywhere; }
+.bp__body em, .bp__body i { font-style: normal; }
+.bp__body p { margin: 0 0 0.55em; }
+.bp__body p:last-child { margin-bottom: 0; }
+.bp__body .m-d { margin: 0.6em 0; }
+.bp__body ol, .bp__body ul { padding-left: 1.4em; margin: 0.3em 0 0.6em; }
+.bp__foot { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: var(--fs-small); color: var(--muted); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; }
+.bp__where { margin: 0; flex-basis: 100%; }
+.bp__where a { color: var(--ink-soft); }
+.bp__acts { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; }
+.bp__acts a { color: var(--muted); }
+.bp__acts a:hover { color: var(--ink); }
+.bp__acts .bp__go { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--rule-control); text-underline-offset: 0.2em; }
+.bp__acts .bp__go:hover { text-decoration-color: currentColor; }
+.bp .texsrc { margin-left: auto; }
+.bp .texsrc[open] { margin-left: 0; flex-basis: 100%; }
+.bp--none { padding: 22px 26px; color: var(--muted); font-size: var(--fs-body); }
+.fam-numstate { font-weight: 400; font-style: italic; color: var(--muted); font-size: 0.92em; }
+
+/* The Lean card: the statement in Lean's own text, and who has re-run it. */
+.bl { padding: 24px 24px 16px; }
+.bl__title { font-family: var(--serif); font-size: 1.125rem; font-weight: 600; line-height: 1.35; margin: 0 0 4px; }
+.bl__title a { color: var(--ink); text-decoration: none; }
+.bl__title a:hover { color: var(--steel-text); }
+.bl__file { font-size: var(--fs-small); color: var(--muted); margin: 0 0 12px; }
+.bl__fname { font-family: var(--fam-lean-mono); font-size: 0.95em; color: var(--ink-soft); }
+.bl__code.lean { font-family: var(--fam-lean-mono); font-size: 0.8rem; line-height: 1.6; font-variant-ligatures: none; padding: 10px 0; }
+.bl__note { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; margin: 10px 0 0; }
+.bl__go { margin: 14px 0 0; font-size: var(--fs-meta); font-weight: 600; }
+.bl__go a { color: var(--steel-text); }
+.runs { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--rule); }
+.runs__h { font-size: var(--fs-meta); font-weight: 600; color: var(--ink-soft); margin: 0 0 6px; }
+.runs__h a.term { color: inherit; }
+.runs__list { list-style: none; margin: 0; padding: 0; }
+.runs__i { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 0 10px; padding: 6px 0; }
+.runs__i .glyph { margin-top: 5px; }
+.runs__line { margin: 0; font-size: var(--fs-meta); line-height: 1.45; }
+.runs__who a { color: var(--ink); }
+.runs__v { color: var(--ink-soft); }
+.runs__when { color: var(--muted); white-space: nowrap; }
+.runs__rec { font-size: var(--fs-small); color: var(--muted); margin-left: 4px; }
+.runs__fold { margin-top: 6px; }
+.runs__hows { list-style: none; margin: 0; padding: 0; font-size: var(--fs-small); color: var(--muted); line-height: 1.45; }
+.runs__hows li { margin: 0 0 6px; }
+.runs__who2 { color: var(--ink-soft); font-weight: 600; }
+.runs__note, .runs__none { font-size: var(--fs-small); color: var(--muted); margin: 6px 0 0; }
+.bl--none { background: transparent; border-style: solid; border-color: var(--rule); padding: 22px 24px; }
+.bl--none .bl__title { font-family: var(--serif); font-size: 1.125rem; font-weight: 600; color: var(--ink-soft); }
+.bl__none { font-size: var(--fs-body); color: var(--muted); margin: 8px 0 0; max-width: 32em; }
+
+.glyph { width: 12px; height: 12px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+.glyph--ok { stroke: var(--steel); }
+.glyph--brick { stroke: var(--brick); }
+.glyph--open { stroke: var(--faint); stroke-width: 1.4; }
+
+/* The thread. */
+.bench__thread { position: absolute; inset: 0; pointer-events: none; }
+.thread { position: absolute; overflow: visible; pointer-events: none; }
+/* Stacked: the dot's centre sits on the paper card's lower border, the diamond's on
+   the Lean card's upper border, both 28px in from the edge, clear of any text. */
+.thread--v { display: block; top: calc(100% - 4px); left: 22px; width: 14px; height: 44px; }
+.thread--h { display: none; }
+@container bench (min-width: 860px) {
+  .thread--v { display: none; }
+  /* Side by side: centres on the two facing borders, 64px apart, at the height of the cards' headings. */
+  .thread--h { display: block; top: 32px; left: calc(100% - 6px); width: 76px; height: 12px; }
+  /* When the Lean card travels, the thread travels with it, drawn back to the paper card. */
+  .bench__thread--onlean .thread--h { left: auto; right: calc(100% - 6px); }
+}
+.thread__line { fill: none; stroke: var(--steel); stroke-width: 1.5; stroke-dasharray: 5 4; stroke-linecap: round; transition: stroke 160ms var(--ease-out), stroke-width 160ms var(--ease-out); }
+.thread__dot, .thread__end { fill: var(--steel); stroke: var(--page); stroke-width: 1.5; transition: fill 160ms var(--ease-out); }
+.bench:has(.bp:hover, .bl:hover, .bp:focus-within, .bl:focus-within, .bench__cap:hover) .thread__line { stroke: var(--steel-strong); stroke-width: 2.25; }
+.bench:has(.bp:hover, .bl:hover, .bp:focus-within, .bl:focus-within, .bench__cap:hover) :is(.thread__dot, .thread__end) { fill: var(--steel-strong); }
+.bench--paired:has(.bp:hover, .bl:hover, .bp:focus-within, .bl:focus-within, .bench__cap:hover) :is(.bp, .bl) { border-color: color-mix(in oklab, var(--steel) 60%, var(--rule-strong)); }
+.bench__cap { font-size: var(--fs-meta); color: var(--muted); line-height: 1.55; max-width: 52em; margin: 14px 0 0; }
+.bench__cap a.term { color: var(--ink-soft); }
+.bench__draft { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; max-width: 52em; margin: 14px 0 0; }
+
+/* The two outside readings of scope, side by side, then OpenAI's own note. */
+.rds { margin-top: 34px; }
+.rds__h { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; line-height: 1.3; margin: 0 0 6px; scroll-margin-top: 16px; }
+.rds__intro { font-size: var(--fs-body); color: var(--muted); max-width: 46em; margin: 0 0 12px; }
+.rds__pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 32px; border-top: 1px solid var(--rule); }
+.rd { padding: 14px 0 6px; min-width: 0; }
+.rd + .rd { border-top: 1px solid var(--rule); }
+@container bench (min-width: 640px) {
+  .rds__pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .rd + .rd { border-top: 0; border-left: 1px solid var(--rule); padding-left: 32px; }
+}
+.rds__lead { font-family: var(--serif); font-size: 1.125rem; line-height: 1.5; color: var(--ink); max-width: 40em; margin: 0 0 14px; }
+.rd__who { font-size: var(--fs-small); font-weight: 600; color: var(--muted); margin: 0 0 4px; }
+.rd__who a { color: var(--ink-soft); }
+.rd__v { display: flex; align-items: baseline; gap: 8px; font-family: var(--serif); font-size: 1.125rem; line-height: 1.35; color: var(--ink); margin: 0 0 6px; }
+.rd__g { width: 14px; height: 14px; flex: none; transform: translateY(1px); }
+.rd__g circle { fill: none; stroke: var(--steel); stroke-width: 1.3; }
+.rd__g .fill { fill: var(--steel); stroke: none; }
+.rd--none .rd__v { color: var(--muted); font-family: var(--sans); font-size: var(--fs-body); }
+.rd__text, .rd__more { font-size: var(--fs-meta); color: var(--ink-soft); line-height: 1.5; margin: 0 0 6px; max-width: 40em; }
+.rd__k { font-weight: 600; }
+.rd__src { font-size: var(--fs-small); margin: 0; }
+.rd-note { margin-top: 20px; max-width: 46em; }
+.rd-note__h { font-size: var(--fs-small); font-weight: 600; color: var(--muted); margin: 0 0 6px; }
+.rd-note__q { margin: 0; padding-left: 16px; border-left: 2px solid var(--rule-strong); font-family: var(--serif); font-size: 1rem; line-height: 1.6; color: var(--ink-soft); }
+.rd-note__q p { margin: 0 0 0.5em; }
+.rd-note__q .fam-fold > summary { font-family: var(--sans); }
+.rd-note__src { font-size: var(--fs-small); margin: 6px 0 0; }
+.rd-note__src a { color: var(--muted); }
+
+/* Every other theorem and Lean statement, compact. */
+.bx { margin-top: 36px; }
+.bx__h { font-family: var(--serif); font-size: 1.125rem; font-weight: 600; margin: 0 0 8px; scroll-margin-top: 16px; }
+.bx__list { list-style: none; margin: 0; padding: 0; }
+.bx__i { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 0 14px; align-items: start; padding: 10px 0; border-top: 1px solid var(--rule); }
+.bx__i > p { margin: 0; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 2px 28px; font-size: var(--fs-body); line-height: 1.5; }
+.bx__i--same > p, .bx__i--loose > p, .bx__i--rest > p { display: block; }
+.bx__thm { min-width: 0; }
+.bx__in { color: var(--muted); font-size: var(--fs-meta); }
+.bx__in a, .bx__in .tex-auto { color: var(--muted); }
+.bx__to { min-width: 0; }
+.bx__to--none { color: var(--faint); font-size: var(--fs-meta); }
+.bx__runs { color: var(--muted); font-size: var(--fs-small); }
+.mthread { width: 34px; height: 10px; margin-top: 7px; overflow: visible; }
+.mthread circle { fill: var(--steel); }
+.mthread path:not(.mthread__end) { fill: none; stroke: var(--steel); stroke-width: 1.4; stroke-dasharray: 3 2.5; stroke-linecap: round; }
+.mthread .mthread__end { fill: var(--steel); }
+.mthread--none .mthread__end { fill: none; stroke: var(--faint); stroke-width: 1.2; }
+
+/* ---- Checks ------------------------------------------------------------- */
+.rt-wrap { overflow-x: auto; max-width: 100%; margin-top: 8px; }
+.rt { border-collapse: collapse; font-size: var(--fs-meta); min-width: 100%; }
+.rt th, .rt td { text-align: left; vertical-align: top; padding: 9px 22px 9px 0; border-top: 1px solid var(--rule); }
+.rt thead th { border-top: 0; font-weight: 600; color: var(--muted); font-size: var(--fs-small); padding-top: 0; }
+.rt thead th a { color: var(--ink-soft); }
+.rt tbody th { font-weight: 400; font-family: var(--serif); font-size: var(--fs-base); }
+.rt tbody th a { color: var(--ink); }
+.rt__a { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
+.rt__d { display: block; color: var(--muted); font-size: var(--fs-micro); padding-left: 18px; }
+.rt__c--none { color: var(--faint); }
+.fcs { list-style: none; margin: 4px 0 0; padding: 0; }
+.fc { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 0 12px; padding: 12px 0; border-top: 1px solid var(--rule); }
+.fc .glyph { margin-top: 6px; }
+.fc__v { margin: 0; font-size: var(--fs-body); max-width: 48em; }
+.fc__v a { color: var(--ink-soft); }
+.fc__text { margin: 4px 0 0; font-size: var(--fs-meta); color: var(--ink-soft); max-width: 48em; }
+.fc__plain { color: var(--muted); }
+.fc__src { margin: 4px 0 0; font-size: var(--fs-small); color: var(--muted); }
+.ff { list-style: none; margin: 4px 0 0; padding: 0; }
+.ff__i { padding: 10px 0; border-top: 1px solid var(--rule); }
+.ff__what { margin: 0; font-size: var(--fs-body); line-height: 1.55; max-width: 48em; }
+.ff__who { margin: 3px 0 0; font-size: var(--fs-small); color: var(--muted); }
+.fam-problems .h3 { color: var(--brick-text); }
+.fam-problems .ff__i { border-top-color: color-mix(in oklab, var(--brick) 35%, var(--rule)); }
+.left__list { list-style: none; margin: 4px 0 0; padding: 0; max-width: 52em; }
+.left__list > li { position: relative; padding: 9px 0 9px 22px; border-top: 1px solid var(--rule); font-size: var(--fs-body); line-height: 1.55; }
+.left__list > li::before { content: ""; position: absolute; left: 1px; top: 1.05em; width: 7px; height: 7px; border: 1.4px solid var(--faint); border-radius: 50%; }
+
+/* ---- Papers ------------------------------------------------------------- */
+.pps { margin-top: 4px; }
+.pp { padding: 18px 0 16px; border-top: 1px solid var(--rule); scroll-margin-top: 16px; }
+.pp__title { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; line-height: 1.3; margin: 0 0 4px; max-width: 40em; }
+.pp__title a { color: var(--ink); }
+.pp__title a:hover { color: var(--steel-text); }
+.pp__meta { font-size: var(--fs-meta); color: var(--muted); margin: 0; }
+.pp__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0 6px; }
+.pp__prev { font-size: var(--fs-meta); color: var(--muted); margin: 6px 0; }
+.pp__abstract { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.6; color: var(--ink-soft); max-width: 42em; margin: 4px 0 14px; }
+.pp__more .stmts { max-width: 56em; }
+.wds { margin-top: 30px; }
+.wd { padding: 14px 0; border-top: 1px solid color-mix(in oklab, var(--brick) 35%, var(--rule)); scroll-margin-top: 16px; }
+.wd__title { font-family: var(--serif); font-size: 1.125rem; font-weight: 500; margin: 0 0 6px; }
+.wd__title a { color: var(--ink); }
+.wd__note { font-size: var(--fs-meta); color: var(--ink-soft); max-width: 46em; }
+.wd__when { font-size: var(--fs-small); color: var(--muted); margin: 4px 0 0; }
+
+/* ---- Connections and next steps ----------------------------------------- */
+.fam-refs { margin-top: 30px; scroll-margin-top: 16px; }
+.fam-refs .h3 { margin-top: 0; }
+.fam-refs .fam-fold { margin-top: 4px; }
+.fam-invite { font-family: var(--serif); font-size: 1.125rem; line-height: 1.55; color: var(--ink-soft); max-width: 38em; margin: 0; }
+.fam-acts { margin-top: 26px; scroll-margin-top: 16px; }
+.fam-acts .actions { margin-top: 8px; }
+
+/* ---- Narrow screens ----------------------------------------------------- */
+@media (max-width: 900px) {
+  .bx__i > p { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .bp { padding: 20px 18px 14px; }
+  .bl { padding: 18px 16px 14px; }
+  .bp__body { font-size: 1.0938rem; }
+  .fhead__lede > p.tex-auto { font-size: 1.125rem; }
+  .bx__i { grid-template-columns: 26px minmax(0, 1fr); gap: 0 10px; }
+  .mthread { width: 26px; }
+  .fsec { margin-top: 36px; padding-top: 30px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bp, .bl, .thread__line, .thread__dot, .thread__end, .fam-fold > summary::before { transition: none; }
+}
+@media (forced-colors: active) {
+  .thread__line, .mthread path { stroke: CanvasText; }
+  .thread__dot, .thread__end, .mthread circle, .mthread .mthread__end { fill: CanvasText; }
+}
+.bx__list--plain .bx__i { grid-template-columns: minmax(0, 1fr); }
+.bx__list--plain .bx__pad { display: none; }
+.bx__i--plain > p { display: block; }
+.fhead__title--long { font-size: clamp(1.75rem, 1.3rem + 1.3vw, 2.375rem); line-height: 1.16; max-width: 30em; }
+.rd__fold { margin: 0 0 6px; }
+/* Measure: sans prose stays under about 80 characters a line at every width. */
+.bench__cap, .bench__draft, .fhead__facts, .ff__what, .ff__who, .fc__v, .fc__text, .fc__src, .left__list, .fsec__intro, .rds__intro { max-width: 66ch; }
+.rd-note__q { max-width: 40em; }
+.bp__body { max-width: 40em; }
+.fhead__lede { max-width: 38em; }
+.fhead__more > .tex-auto { max-width: 36em; }
+.fhead__facts { max-width: 62ch; }
+.rd-note__q { max-width: 34em; }
+.rd__more, .rd__text { max-width: 60ch; }
+.fam-invite { max-width: 34em; }
+.fsec .intro, .left__list { max-width: 62ch; }
+.wd__note { max-width: 62ch; }
+.rel li { max-width: 70ch; }
+@media (max-width: 640px) {
+  .fhead__title { font-size: 1.875rem; }
+  .fhead__title--long { font-size: 1.5rem; }
+}
+/* The thread's ends sit on the borders: its card column paints above the other, so neither card covers an end. */
+.bench__travel:has(> .bench__thread) { z-index: 1; }

@@ -751,9 +751,13 @@
       if (o.kind === 'd') return D.disciplines[o.i].name;
       if (o.kind === 'f') return D.families[o.i].title;
       if (o.kind === 'p') return D.papers[o.i].title;
-      if (o.kind === 'r') { var r = D.results[o.i]; return (r.num || r.kind) + (r.title ? ' (' + r.title + ')' : ''); }
+      if (o.kind === 'r') { var r = D.results[o.i]; return resultName(r) + (r.title ? ' (' + r.title + ')' : ''); }
       if (o.kind === 'l') return D.lean[o.i].name;
       return '';
+    }
+    function resultName(r) {
+      if (r.num) return r.num;
+      return r.nn ? T('result.unnumbered_label', { kind: r.kind }) : r.kind;
     }
     function resultPos(ri) {
       var r = D.results[ri], f = fams[r.f], p = L.results[ri];
@@ -1569,7 +1573,7 @@
       var name = nameOf(o), sub = '';
       if (o.kind === 'r') sub = D.papers[D.results[o.i].p].title;
       else if (o.kind === 'l') sub = D.lean[o.i].label !== D.lean[o.i].name ? D.lean[o.i].label : '';
-      else if (o.kind === 'f') sub = T('family.short', { num: D.families[o.i].num }) + ' · ' + D.disciplines[fams[o.i].d].name;
+      else if (o.kind === 'f') sub = T('family.plate', { num: D.families[o.i].num, discipline: D.disciplines[fams[o.i].d].name });
       else if (o.kind === 'p') sub = T('family.short', { num: D.families[D.papers[o.i].f].num });
       else if (o.kind === 'd') sub = count('families', D.disciplines[o.i].families.length);
       var maxW = Math.min(340, W - 40);
@@ -1628,7 +1632,7 @@
       var routes;
       if (routeCache.key === sig) {
         routes = routeCache.routes.map(function (r) {
-          return { ink: r.ink, dash: r.dash, w: r.w, end: r.end, pts: r.rel.map(function (p) { return [p[0] + sx, p[1] + sy]; }) };
+          return { ink: r.ink, dash: r.dash, w: r.w, end: r.end, pair: r.pair, pts: r.rel.map(function (p) { return [p[0] + sx, p[1] + sy]; }) };
         });
       } else {
         routes = [];
@@ -1640,7 +1644,7 @@
             var rp = L.results[ri], A = [sx + rp[0] * sr, sy + rp[1] * sr];
             var obs = obstacles.filter(function (o) { return !insideBox(A, o) && !insideBox(B, o); });
             var way = shortestWay(A, B, obs) || [A, B];
-            routes.push({ ink: 'steel', dash: true, w: 1.1, pts: trimEnds(way, dotRadius(sr) * 1.4 + 2, dotRadius(sr) * 1.7 + 2) });
+            routes.push({ ink: 'steel', dash: true, w: 1.1, pair: [D.results[ri].id, D.lean[li].id], pts: trimEnds(way, dotRadius(sr) * 1.4 + 2, dotRadius(sr) * 1.7 + 2) });
           });
         });
         // Fibres: from each citing or cited paper to the end that names the other family.
@@ -1665,20 +1669,25 @@
           });
         });
         routeCache = { key: sig, routes: routes.map(function (r) {
-          return { ink: r.ink, dash: r.dash, w: r.w, end: r.end, rel: r.pts.map(function (p) { return [p[0] - sx, p[1] - sy]; }) };
+          return { ink: r.ink, dash: r.dash, w: r.w, end: r.end, pair: r.pair, rel: r.pts.map(function (p) { return [p[0] - sx, p[1] - sy]; }) };
         }) };
       }
       ctx.save();
-      ctx.globalAlpha = openA;
+      // Pointing at a result or a Lean statement brightens its threads; the rest step back.
+      var lit = [hover, sel].filter(function (k) { return k && /^[rl]:/.test(k); });
+      var anyLit = lit.length && routes.some(function (r) { return r.pair && (lit.indexOf(r.pair[0]) >= 0 || lit.indexOf(r.pair[1]) >= 0); });
       routes.forEach(function (r) {
+        var on = r.pair && (lit.indexOf(r.pair[0]) >= 0 || lit.indexOf(r.pair[1]) >= 0);
+        ctx.globalAlpha = openA * (anyLit && r.pair ? (on ? 1 : 0.4) : 1);
         ctx.strokeStyle = r.ink === 'steel' ? palette.steel : r.ink === 'cites' ? palette.cites : palette.cited;
-        ctx.lineWidth = r.w;
+        ctx.lineWidth = on ? 1.9 : r.w;
         ctx.setLineDash(r.dash ? [3, 3] : []);
         ctx.beginPath();
         r.pts.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
         ctx.stroke();
       });
       ctx.setLineDash([]);
+      ctx.globalAlpha = openA;
       // The fibre's end: a small open ring at the edge.
       (L.fibres[fi] || []).forEach(function (fb) {
         var a = fb[0], ex = sx + 1.24 * sr * Math.cos(a), ey = sy + 1.24 * sr * Math.sin(a);
@@ -2013,11 +2022,12 @@
       var o = sel ? obj(sel) : null, items = [];
       var chain = [];
       for (var c = o; c; c = obj(parentKey(c))) chain.unshift(c);
-      items.push(o ? goBtn('', escapeHtml(T('levels.release')), 'u-crumb') : '<span class="u-crumb is-here">' + escapeHtml(T('levels.release')) + '</span>');
+      if (!o) return '';
+      items.push(goBtn('', escapeHtml(T('levels.release')), 'u-crumb'));
       chain.forEach(function (c, i) {
-        var label = c.kind === 'f' ? T('family.short', { num: D.families[c.i].num }) : c.kind === 'd' ? D.disciplines[c.i].name :
-          c.kind === 'r' ? (D.results[c.i].num || D.results[c.i].kind) : c.kind === 'l' ? D.lean[c.i].name : T('levels.paper');
-        items.push(i === chain.length - 1 ? '<span class="u-crumb is-here">' + escapeHtml(label) + '</span>' : goBtn(c.key, escapeHtml(label), 'u-crumb'));
+        var label = c.kind === 'f' ? D.families[c.i].title : c.kind === 'd' ? D.disciplines[c.i].name :
+          c.kind === 'r' ? resultName(D.results[c.i]) : c.kind === 'l' ? D.lean[c.i].name : T('levels.paper');
+        if (i < chain.length - 1) items.push(goBtn(c.key, escapeHtml(label), 'u-crumb'));
       });
       return items.join('<span class="u-crumb-sep" aria-hidden="true">/</span>');
     }
@@ -2025,7 +2035,7 @@
       if (!viewEl) return;
       var o = sel ? obj(sel) : null;
       if (trailEl) trailEl.innerHTML = trailHtml();
-      if (listSec) listSec.hidden = !!o;
+      if (trailEl) trailEl.hidden = !o;
       var html = '';
       if (!o) html = releaseHtml();
       else if (o.kind === 'd') html = disciplineHtml(o.i);
@@ -2125,13 +2135,13 @@
         return '<li>' + goBtn(d.id, '<span class="u-row__t">' + escapeHtml(d.name) + '</span><span class="u-row__n">' +
           escapeHtml(count('families', d.families.length)) + '</span>', 'u-row') + '</li>';
       }).join('');
-      return restViewHtml + '<h2 class="u-h2">' + escapeHtml(T('release.disciplines_heading')) + '</h2><ul class="u-rows">' + rows + '</ul>';
+      return restViewHtml;
     }
     function famRow(fi) {
       var f = D.families[fi];
-      return '<li>' + goBtn(f.id, '<span class="u-row__num">' + escapeHtml(f.num) + '</span><span class="u-row__t">' + escapeHtml(f.title) +
+      return '<li>' + goBtn(f.id, '<span class="u-row__t">' + escapeHtml(f.title) +
         '</span><span class="u-row__n">' + escapeHtml(count('results', f.papers.reduce(function (s, p) { return s + D.papers[p].results.length; }, 0))) +
-        (f.lean.length ? ' · ' + escapeHtml(count('lean', f.lean.length)) : '') + '</span>', 'u-row') + '</li>';
+        (f.lean.length ? ' and ' + escapeHtml(count('lean', f.lean.length)) : '') + '</span>', 'u-row') + '</li>';
     }
     function disciplineHtml(di) {
       var d = D.disciplines[di];
@@ -2143,7 +2153,7 @@
         if (db === di) { out += row[3]; inn += row[2]; }
       });
       return '<p class="u-kicker">' + escapeHtml(T('discipline.kicker')) + '</p>' +
-        '<p class="u-facts">' + escapeHtml([count('families', d.families.length), count('papers', d.papers), count('results', d.results), count('lean', d.lean)].join(' · ')) + '</p>' +
+        '<p class="u-facts">' + escapeHtml(T('counts.families_in', { families: count('families', d.families.length), papers: count('papers', d.papers), results: count('results', d.results), lean: count('lean', d.lean) })) + '</p>' +
         '<p class="u-note">' + escapeHtml(T('discipline.connections', { out: out, 'in': inn })) + '</p>' +
         '<h2 class="u-h2">' + escapeHtml(T('discipline.families_heading')) + '</h2><ul class="u-rows">' + d.families.map(famRow).join('') + '</ul>';
     }
@@ -2173,8 +2183,8 @@
     function familyHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
       var nRes = f.papers.reduce(function (s, p) { return s + D.papers[p].results.length; }, 0);
-      var h = '<p class="u-kicker">' + escapeHtml(T('family.kicker', { num: f.num })) + ' · ' + escapeHtml(D.disciplines[f.d].name) + '</p>';
-      h += '<p class="u-facts">' + escapeHtml([count('papers', f.papers.length), count('results', nRes), f.lean.length ? count('lean', f.lean.length) : T('counts.lean_none')].join(' · ')) + '</p>';
+      var h = '<p class="u-kicker">' + escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })) + '</p>';
+      h += '<p class="u-facts">' + escapeHtml(T('counts.papers_with', { papers: count('papers', f.papers.length), results: count('results', nRes), lean: f.lean.length ? count('lean', f.lean.length) : T('counts.lean_none') })) + '</p>';
       h += '<p class="u-doors">' + link(f.href, T('family.page_link')) + '</p>';
       if (det) h += '<div class="u-desc tex-auto">' + det.description + '</div>';
       h += familyEvidenceHtml(fi);
@@ -2185,7 +2195,7 @@
         if (p.results.length) {
           h += '<ul class="u-subrows">' + p.results.map(function (ri) {
             var r = D.results[ri];
-            return '<li>' + goBtn(r.id, resultGlyph(r.lean.length > 0) + '<span>' + escapeHtml((r.num || r.kind) + (r.title ? ' (' + r.title + ')' : '')) + '</span>', 'u-sub') + '</li>';
+            return '<li>' + goBtn(r.id, resultGlyph(r.lean.length > 0) + '<span>' + escapeHtml(resultName(r) + (r.title ? ' (' + r.title + ')' : '')) + '</span>', 'u-sub') + '</li>';
           }).join('') + '</ul>';
         }
         h += '</li>';
@@ -2203,8 +2213,7 @@
         if (!part[1].length) return;
         h += '<h3 class="u-h3">' + escapeHtml(T('family.' + part[0])) + '</h3><ul class="u-rows">' + part[1].map(function (c) {
           var g = D.families[c[0]];
-          return '<li>' + goBtn(g.id, '<svg class="u-sw ' + part[2] + '" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 10 C5 10 9 4 13 4"/></svg><span class="u-row__num">' + escapeHtml(g.num) +
-            '</span><span class="u-row__t">' + escapeHtml(g.title) + '</span><span class="u-row__n">' + escapeHtml(count('links', c[1])) + '</span>', 'u-row u-row--link') + '</li>';
+          return '<li>' + goBtn(g.id, '<svg class="u-sw ' + part[2] + '" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 10 C5 10 9 4 13 4"/></svg><span class="u-row__t">' + escapeHtml(g.title) + '</span><span class="u-row__n">' + escapeHtml(count('links', c[1])) + '</span>', 'u-row u-row--link') + '</li>';
         }).join('') + '</ul>';
       });
       if (det) h += findingsHtml(det.findings, T('family.findings_heading'));
@@ -2218,7 +2227,7 @@
       if (!p.results.length) h += '<p class="u-note">' + escapeHtml(T('paper.no_results')) + '</p>';
       else h += '<ul class="u-subrows">' + p.results.map(function (ri) {
         var r = D.results[ri];
-        return '<li>' + goBtn(r.id, resultGlyph(r.lean.length > 0) + '<span>' + escapeHtml((r.num || r.kind) + (r.title ? ' (' + r.title + ')' : '')) + '</span>', 'u-sub') + '</li>';
+        return '<li>' + goBtn(r.id, resultGlyph(r.lean.length > 0) + '<span>' + escapeHtml(resultName(r) + (r.title ? ' (' + r.title + ')' : '')) + '</span>', 'u-sub') + '</li>';
       }).join('') + '</ul>';
       return h;
     }
@@ -2233,7 +2242,7 @@
       h += '<p class="u-doors">' + link(r.href || p.href || p.pdf, T('result.read'));
       r.lean.forEach(function (li) { h += link(D.lean[li].href, T('result.lean_page') + ': ' + D.lean[li].name); });
       h += link(f.href, T('result.family_page')) + '</p>';
-      if (r.num) h += '<p class="u-note">' + escapeHtml(T('result.numbering_note')) + '</p>';
+      h += '<p class="u-note">' + escapeHtml(r.num ? T('result.numbering_note') : r.nn ? T('result.unnumbered') : T('result.number_unavailable')) + '</p>';
       h += '<h2 class="u-h2">' + escapeHtml(T('result.evidence_heading')) + '</h2>';
       if (r.lean.length) {
         h += '<p>' + escapeHtml(T('result.paired', { names: r.lean.map(function (li) { return D.lean[li].name; }).join(', ') })) + '</p><ul class="u-subrows">' +
@@ -2258,7 +2267,7 @@
         else h += '<ul class="u-reruns">' + det.reruns.map(function (x) {
           var ok = x.verdict === 'accepted';
           return '<li class="' + (ok ? 'is-ok' : 'is-not') + '"><strong>' + escapeHtml(D.sources[x.source] || x.source) + '</strong>: ' +
-            escapeHtml(ok ? T('lean.accepted') : T('lean.not_accepted')) + (x.date ? ', ' + escapeHtml(x.date) : '') + '. ' +
+            escapeHtml((COPY.lean && COPY.lean.verdicts && COPY.lean.verdicts[x.verdict]) || (ok ? T('lean.accepted') : T('lean.not_accepted'))) + (x.date ? ', ' + escapeHtml(x.date) : '') + '. ' +
             '<span class="u-muted">' + escapeHtml(x.text || '') + '</span> ' + link(x.url, T('lean.record')) + '</li>';
         }).join('') + '</ul>';
         if (det.holes.length) h += '<h3 class="u-h3">' + escapeHtml(T('lean.holes_heading')) + '</h3><p class="u-note">' + escapeHtml(T('lean.holes_note')) + '</p><p>' +
@@ -2270,7 +2279,7 @@
       if (l.results.length) {
         h += '<p class="u-note">' + escapeHtml(T('lean.paired_note')) + '</p><ul class="u-subrows">' + l.results.map(function (ri) {
           var r = D.results[ri];
-          return '<li>' + goBtn(r.id, resultGlyph(true) + '<span>' + escapeHtml((r.num || r.kind) + ', ' + D.papers[r.p].title) + '</span>', 'u-sub') + '</li>';
+          return '<li>' + goBtn(r.id, resultGlyph(true) + '<span>' + escapeHtml(resultName(r) + ', ' + D.papers[r.p].title) + '</span>', 'u-sub') + '</li>';
         }).join('') + '</ul>';
       } else h += '<p class="u-note">' + escapeHtml(T('lean.paired_none')) + '</p>';
       if (det) h += findingsHtml(det.findings, T('lean.findings_heading'));
@@ -2450,15 +2459,21 @@
         if (o && o.kind === 'd' && view.k < fitK * 1.25) select(null, { fly: false });
       }, 160);
     }
-    root.addEventListener('click', function (e) {
+    document.addEventListener('click', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
-      if (!go || !root.contains(go)) return;
-      e.preventDefault();
+      if (!go || !D) return;
+      if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       var key = go.getAttribute('data-go');
+      if (key && !obj(key)) return;
+      e.preventDefault();
+      var outside = !root.contains(go);
+      var narrow = window.matchMedia && window.matchMedia('(max-width: 899px)').matches;
+      // A way in chosen from beside or below the map brings the map into view: the
+      // map's own side of the switch on a phone, the top of the page elsewhere.
+      if (key && (outside || go.classList.contains('u-way')) && narrow) showView('map');
+      // The map is the page's first screen: going back up to it shows the header too.
+      if (outside) window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
       select(key || null, { trail: true });
-      if (root.getAttribute('data-view') === 'list' && window.matchMedia && window.matchMedia('(max-width: 899px)').matches && key) {
-        // On a phone the list stays; the map shows the same choice when switched to.
-      }
     });
     // A row under the pointer in the panel lights its place on the map.
     root.addEventListener('pointerover', function (e) {
@@ -2480,13 +2495,13 @@
         setTimeout(function () { settleZoom(W / 2, H / 2); }, 700);
       });
     });
+    function showView(v) {
+      root.setAttribute('data-view', v);
+      root.querySelectorAll('[data-u-show]').forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-u-show') === v ? 'true' : 'false'); });
+      if (v === 'map') { resize(); draw(); }
+    }
     root.querySelectorAll('[data-u-show]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        var v = b.getAttribute('data-u-show');
-        root.setAttribute('data-view', v);
-        root.querySelectorAll('[data-u-show]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-        if (v === 'map') { resize(); draw(); }
-      });
+      b.addEventListener('click', function () { showView(b.getAttribute('data-u-show')); });
     });
     if (searchIn) {
       var t = 0;
@@ -2534,11 +2549,30 @@
       if (key !== sel) select(key, {});
     });
     function readHash() {
-      var m = /^#o=(.+)$/.exec(window.location.hash || '');
-      if (!m) return null;
-      var key;
-      try { key = decodeURIComponent(m[1]); } catch (e) { return null; }
-      return obj(key) ? key : null;
+      var hash = window.location.hash || '';
+      var m = /^#o=(.+)$/.exec(hash);
+      if (m) {
+        var key;
+        try { key = decodeURIComponent(m[1]); } catch (e) { key = null; }
+        if (key && obj(key)) return key;
+      }
+      return oldHash(hash);
+    }
+    /* The treemap that stood here before (now tiles.html) kept its place as
+       #d=<discipline slug>&f=<family id>&o=<lens>. Such a link opens the same
+       family, or the discipline, and the address takes the map's own form. */
+    function oldHash(hash) {
+      if (!/^#(?:[^=&]+=[^&]*&)*(?:d|f)=/.test(hash)) return null;
+      var params = {};
+      hash.slice(1).split('&').forEach(function (kv) {
+        var i = kv.indexOf('='), k = i < 0 ? kv : kv.slice(0, i), v = i < 0 ? '' : kv.slice(i + 1);
+        try { params[k] = decodeURIComponent(v.replace(/\+/g, ' ')); } catch (e) { params[k] = v; }
+      });
+      var key = params.f && obj('f:' + params.f) ? 'f:' + params.f : params.d && obj('d:' + params.d) ? 'd:' + params.d : null;
+      if (key && window.history && window.history.replaceState) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search + '#o=' + encodeURIComponent(key));
+      }
+      return key;
     }
     function onTheme() { parsedColors = {}; readPalette(); draw(); }
     window.addEventListener('atlas-theme', onTheme);
@@ -2569,7 +2603,7 @@
         W = H = 0;
         resize();
         computeFit();
-        if (legendBody) legendBody.innerHTML = legendHtml();
+        if (legendBody && !legendBody.querySelector('.u-key')) legendBody.innerHTML = legendHtml();
         var start = readHash();
         sel = start;
         if (start) {

@@ -4600,7 +4600,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
         di = S.DISC_OF.get(fam["id"])
         crumbs = []
         if di is not None:
-            crumbs.append((esc(S.DISCIPLINES[di]["name"]), f"{root}index.html#d={S.DISC_SLUG[di]}"))
+            crumbs.append((esc(S.DISCIPLINES[di]["name"]), f"{root}index.html#o=d:{S.DISC_SLUG[di]}"))
         crumbs.append((S.fam_title_html(fam), f"{root}families/{fam['id']}.html"))
         crumbs.append((S.ms_title_html(m), None))
         trail = S.trail(root, crumbs)

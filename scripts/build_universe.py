@@ -5,9 +5,11 @@ the citations between families drawn as fibres. A family opens into its own map:
 its papers as rings, each headline result a dot, its Lean statements, threads from
 each paired result to its Lean statement and fibres out to the families it cites.
 
-Writes, after scripts/build_site.py and scripts/build_papers.py have run:
+Writes, after scripts/build_site.py and scripts/build_papers.py have run (into the
+same --out, default site/_build):
 
-    site/_build/universe.html                     the page (site header, nav and theme)
+    index.html                                    the front page: the map, then its bands
+    universe.html                                 a redirect to index.html, kept for old links
     site/_build/data/universe-data.json           what is drawn: ids, names, evidence
     site/_build/data/universe-layout.json         where it is drawn (same generation id)
     site/_build/data/universe-detail-<n>.json     the panel's statements, one file per discipline
@@ -33,6 +35,7 @@ Standard library only.
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import html
 import importlib
@@ -216,26 +219,32 @@ def result_id(slug: str, st: dict) -> str:
     return "r:" + slug + ":" + (st.get("label") or f'L-{st.get("file")}-{st.get("line")}')
 
 
-PR_THM = re.compile(r'<div class="pr-thm[^"]*"[^>]*?data-src="([^"]+):(\d+)"[^>]*>')
-PR_NUM = re.compile(r'<span class="pr-thm-n">([^<]*)</span>')
+NUMBERS = ROOT / "data" / "statement_numbers.json"
 
 
-def printed_numbers(slug: str) -> dict:
-    """(file, line) -> the statement's printed head on the reading page ("Theorem 1.1")."""
-    p = OUT / "papers" / f"{slug}.html"
-    if not p.exists():
+def load_printed_numbers() -> dict:
+    """(manuscript, file, line) -> (kind, number or None) from data/statement_numbers.json,
+    the number each statement prints on its reading page (build_papers.py writes it). A
+    row is used only while its statement_sha256 matches the statement in manuscripts.json,
+    so a changed statement never borrows an old number. A row whose number is null is an
+    unnumbered statement; a statement with no row has no number available."""
+    if not NUMBERS.exists():
         return {}
-    t = p.read_text(encoding="utf-8")
-    out = {}
-    for m in PR_THM.finditer(t):
-        window = t[m.end():m.end() + 900]
-        nxt = window.find('<div class="pr-thm')
-        if nxt >= 0:
-            window = window[:nxt]
-        n = PR_NUM.search(window)
-        if n:
-            out[(m.group(1), int(m.group(2)))] = html.unescape(n.group(1)).strip()
-    return out
+    raw = json.loads(NUMBERS.read_text(encoding="utf-8"))
+    return {(r["manuscript"], r["file"], r["line"]): r for r in raw.get("rows") or []}
+
+
+PRINTED = {}
+
+
+def printed_head(slug: str, st: dict):
+    """("Theorem 1.1", False), (None, True) for an unnumbered statement, or (None, False)."""
+    r = PRINTED.get((slug, st.get("file"), st.get("line")))
+    if not r or (r.get("statement_sha256") and st.get("sha256") and r["statement_sha256"] != st["sha256"]):
+        return None, False
+    if r.get("number") is None:
+        return None, True
+    return f'{r.get("kind") or st.get("display") or ""} {r["number"]}'.strip(), False
 
 
 def build_model():
@@ -269,7 +278,6 @@ def build_model():
                      "hol": hol, "fin": fin_c, "finOther": fin_o, "readers": f.get("readers_agreement") or "none",
                      "href": f"families/{fid}.html",
                      "findings": len(S.COMMUNITY["by_family"].get(fid, []))})
-    numbers_cache = {}
     for fid in order:
         f, fi = S.FAM[fid], fi_of[fid]
         for k, slug in enumerate(f["manuscripts"]):
@@ -280,14 +288,16 @@ def build_model():
             href = f"papers/{quote(slug)}.html" if slug in S.PAPER_READING else None
             papers.append({"id": "p:" + slug, "f": fi, "title": plain(m["title"]), "lead": k == 0, "results": [],
                            "href": href, "pdf": m["pdf_url"]})
-            nums = numbers_cache.setdefault(slug, printed_numbers(slug))
             for st in S.headline_statements(m):
                 ri = len(results)
                 papers[pi]["results"].append(ri)
-                head = nums.get((st.get("file"), st.get("line")))
-                results.append({"id": result_id(slug, st), "p": pi, "f": fi, "kind": st.get("display") or st.get("kind", "").title(),
-                                "num": head, "title": plain(st["title"]) if st.get("title") else None, "lean": [],
-                                "href": S.paper_statement_href(slug, st, "")})
+                head, unnumbered = printed_head(slug, st)
+                row = {"id": result_id(slug, st), "p": pi, "f": fi, "kind": st.get("display") or st.get("kind", "").title(),
+                       "num": head, "title": plain(st["title"]) if st.get("title") else None, "lean": [],
+                       "href": S.paper_statement_href(slug, st, "")}
+                if unnumbered:
+                    row["nn"] = 1
+                results.append(row)
         for sid in f["statements"]:
             s = S.ST[sid]
             assert s["families"] == [fid], sid
@@ -681,7 +691,7 @@ def index_html(model):
     """The no-JavaScript map: every family to its results, with links."""
     out = ['<div class="u-index">']
     for d in model["disciplines"]:
-        out.append(f'<details class="u-index__d"><summary><span class="u-index__dn">{esc(d["name"])}</span> '
+        out.append(f'<details class="u-index__d" id="idx-{esc(d["id"][2:])}"><summary><span class="u-index__dn">{esc(d["name"])}</span> '
                    f'<span class="u-index__dc">{esc(U("counts.families", n=len(d["families"])))}</span></summary><ul class="u-index__fams">')
         for fi in d["families"]:
             f = model["families"][fi]
@@ -717,10 +727,216 @@ def index_html(model):
     return "".join(out)
 
 
+def linked(template: str, **parts) -> str:
+    """A copy sentence with its {placeholders} filled by HTML (each number a link);
+    the sentence's own words are escaped."""
+    out = esc(template)
+    for k, v in parts.items():
+        out = out.replace("{" + k + "}", v)
+    return out
+
+
+def num_link(n, href: str) -> str:
+    return f'<a class="u-num" href="{esc(href)}">{n:,}</a>' if isinstance(n, int) else f'<a class="u-num" href="{esc(href)}">{esc(n)}</a>'
+
+
+def ways_html(model) -> str:
+    """Four ways in, chosen by how widely the problem is known, each a link to its
+    family page that the map turns into a flight."""
+    fam_by = {f["num"]: f for f in model["families"]}
+    rows = []
+    for w in COPY_U["ways"]["items"]:
+        f = fam_by.get(w["family"])
+        if not f:
+            continue
+        rows.append(f'<li><a class="u-way" href="{esc(f["href"])}" data-go="{esc(f["id"])}">'
+                    f'<span class="u-way__t">{esc(w.get("name") or f["title"])}</span>'
+                    f'<span class="u-way__w">{esc(w["why"])}</span></a></li>')
+    key = (f'<ul class="u-keyline" aria-label="{esc(U("legend.heading"))}">'
+           f'<li><svg class="u-sw u-sw-lean3" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.6 12.4 7 7 12.4 1.6 7Z"/></svg>{esc(U("ways.key_lean"))}</li>'
+           f'<li><svg class="u-sw u-sw-paired" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="4"/></svg>{esc(U("ways.key_result"))}</li>'
+           f'<li><svg class="u-sw u-sw-hol" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.4"/></svg>{esc(U("ways.key_ring"))}</li>'
+           f'<li class="u-keyline__more"><a href="#u-legend-h">{esc(U("ways.key_more"))}</a></li></ul>')
+    return (f'{key}<h2 class="u-h2 u-h2--ways">{esc(U("ways.heading"))}</h2><ul class="u-ways">{"".join(rows)}</ul>')
+
+
+def example_band(model) -> str:
+    """One family read in full: the family desk's claim card when it exists, and
+    otherwise the family's title, OpenAI's description and its first headline theorem."""
+    way = COPY_U["ways"]["items"][1]
+    fid = way["family"]
+    example_name = way.get("name") or plain(S.FAM[fid]["title"])
+    f = next(x for x in model["families"] if x["num"] == fid)
+    fam = S.FAM[fid]
+    card = ""
+    if hasattr(S, "family_claim_card"):
+        try:
+            card = S.family_claim_card(fid, "")
+        except Exception as e:  # noqa: BLE001  (the other desk's function may be mid-edit)
+            print(f"universe: family_claim_card({fid}) failed, using the fallback: {e}", file=sys.stderr)
+            card = ""
+    macros = ""
+    stacked = bool(card)
+    if card and hasattr(S, "family_claim_macro_ids"):
+        macros = S.macros_script(S.family_claim_macro_ids(fid))
+    if not card:
+        lead = S.MS[fam["manuscripts"][0]]
+        heads = S.headline_statements(lead)
+        theorem = ""
+        if heads:
+            theorem = (f'<h3 class="u-h3">{esc(U("bands.example_theorem"))}</h3>'
+                       + S.render_paper_statement(lead, heads[0], "", S.TexConv(lead, "")))
+            macros = S.macros_script([lead["id"]])
+        card = (f'<div class="u-example__card"><p class="u-example__num">{esc(U("family.short", num=fid))}</p>'
+                f'<h3 class="u-example__title tex-auto">{S.rich(fam["title"])}</h3>'
+                f'<div class="u-example__desc tex-auto">{S.rich(fam["description"])}</div>{theorem}</div>')
+    return f"""<section class="u-band u-band--example{' u-band--bench' if stacked else ''}" id="example" aria-labelledby="h-example">
+ <div class="frame u-band__in">
+  <div class="u-band__head">
+   <h2 class="u-band__h" id="h-example">{esc(U('bands.example_heading'))}</h2>
+   <p class="u-band__intro">{esc(U('bands.example_intro'))}</p>
+   <p class="u-band__links"><a href="{esc(f['href'])}">{esc(U('bands.example_read', name=example_name))}</a><a href="index.html#o={esc(f['id'])}" data-go="{esc(f['id'])}">{esc(U('bands.example_map'))}</a></p>
+  </div>
+  <div class="u-example">{card}</div>
+ </div>
+ {macros}
+</section>"""
+
+
+def release_band(model, counts) -> str:
+    s = S.SUMMARY
+    acc = [0, 0, 0, 0]
+    for L in model["lean"]:
+        acc[min(3, len(L["acc"]))] += 1
+    n = lambda key: num_link(s[key], f"numbers.html#{key}")
+    sentences = [
+        linked(U("bands.release_s1"), papers=n("manuscripts_current"), families=n("families"), disciplines=n("disciplines")),
+        linked(U("bands.release_s2"), lean=n("statements_lean"), families_with_lean=n("families_with_lean"),
+               main=n("statements_lean_main_results")),
+        linked(U("bands.release_s3"), lean=n("statements_lean"), acc3=num_link(acc[3], "statements.html"),
+               acc0=num_link(acc[0], "statements.html")),
+        linked(U("bands.release_s4"), pairs=num_link(counts["pairs"], "statements.html")),
+        linked(U("bands.release_s5"), edges=n("internal_citation_edges"), works=n("external_works_cited")),
+        linked(U("bands.release_s6"), withdrawn=n("manuscripts_withdrawn"), previous=n("manuscripts_previous_editions")),
+    ]
+    return f"""<section class="u-band u-band--release" id="release" aria-labelledby="h-release">
+ <div class="frame u-band__in u-band__in--split">
+  <h2 class="u-band__h" id="h-release">{esc(U('bands.release_heading'))}</h2>
+  <div class="u-sentences">{''.join(f'<p>{x}</p>' for x in sentences)}
+   <p class="u-band__links"><a href="numbers.html">{esc(U('bands.release_numbers'))}</a><a href="tiles.html">{esc(U('bands.release_tiles'))}</a></p>
+  </div>
+ </div>
+</section>"""
+
+
+def checked_band(model) -> str:
+    """Who has checked what, each record credited to the person or group who reports it."""
+    runs, accepted = {}, {}
+    for st in S.STATEMENTS:
+        for v in S.sourced_all(st, "replay"):
+            runs[v["source"]] = runs.get(v["source"], 0) + 1
+            if v["value"].get("verdict") == "accepted":
+                accepted[v["source"]] = accepted.get(v["source"], 0) + 1
+    scope, finite, hol_fams, erdos_fams = {}, set(), set(), set()
+    for f in S.FAMILIES:
+        for v in S.sourced_all(f, "scope_reading"):
+            scope[v["source"]] = scope.get(v["source"], 0) + 1
+        if any(x.get("verdict") == "certified" for v in S.sourced_all(f, "finite_checks") for x in v["value"]):
+            finite.add(f["id"])
+        if S.sourced_all(f, "hol_checks"):
+            hol_fams.add(f["id"])
+        if S.sourced_all(f, "erdos_problems"):
+            erdos_fams.add(f["id"])
+    rows = []
+
+    def row(src, sentence):
+        if src not in S.SOURCES:
+            return
+        rows.append(f'<li><a class="u-who__n" href="sources.html#src-{esc(src)}">{esc(S.source_credit(src))}</a> '
+                    f'<span class="u-who__w">{esc(sentence)}</span></li>')
+    row("cert-machine", U("bands.checked_cert", runs=runs.get("cert-machine", 0), accepted=accepted.get("cert-machine", 0),
+                         finite=len(finite), scope=scope.get("cert-machine", 0)))
+    row("mathvet", U("bands.checked_mathvet", runs=runs.get("mathvet", 0), accepted=accepted.get("mathvet", 0),
+                    scope=scope.get("mathvet", 0)))
+    row("nealmcb-lean-tooling", U("bands.checked_neal", runs=runs.get("nealmcb-lean-tooling", 0),
+                                 accepted=accepted.get("nealmcb-lean-tooling", 0)))
+    row("hol-cards", U("bands.checked_hol", families=len(hol_fams)))
+    row("erdos-problems", U("bands.checked_erdos", families=len(erdos_fams)))
+    more = len(S.COMMUNITY["list"])
+    return f"""<section class="u-band u-band--checked" id="checked" aria-labelledby="h-checked">
+ <div class="frame u-band__in">
+  <h2 class="u-band__h" id="h-checked">{esc(U('bands.checked_heading'))}</h2>
+  <p class="u-band__intro">{esc(U('bands.checked_intro'))}</p>
+  <ul class="u-who">{''.join(rows)}</ul>
+  <p class="u-band__links"><span>{esc(U('bands.checked_more', efforts=more))}</span><a href="sources.html">{esc(U('bands.checked_more_link'))}</a></p>
+ </div>
+</section>"""
+
+
+def help_band() -> str:
+    start_here = S.REPO + "/tree/main/skills/start-here"
+    return f"""<section class="u-band u-band--help" id="help" aria-labelledby="h-help">
+ <div class="frame u-band__in">
+  <h2 class="u-band__h" id="h-help">{esc(U('bands.help_heading'))}</h2>
+  <p class="u-band__intro">{esc(U('bands.help_intro'))}</p>
+  <div class="u-help2">
+   <div><h3 class="u-h3">{esc(U('bands.help_without_heading'))}</h3><p>{esc(U('bands.help_without'))}</p><p><a href="contribute.html">{esc(U('bands.help_without_link'))}</a></p></div>
+   <div><h3 class="u-h3">{esc(U('bands.help_with_heading'))}</h3><p>{esc(U('bands.help_with'))}</p><p><a class="ext" href="{esc(start_here)}" rel="noopener">{esc(U('bands.help_with_link'))}</a></p></div>
+  </div>
+  <p class="u-band__links"><span>{esc(U('bands.help_queue'))}</span><a href="explain.html#careful-reading">{esc(U('bands.help_queue_link'))}</a></p>
+ </div>
+</section>"""
+
+
+def legend_html(model, sources) -> str:
+    """The map's key, the same marks the canvas draws (universe.js keeps the glyph
+    shapes in step), each with its count across the release."""
+    acc, holes = [0, 0, 0, 0], 0
+    for L in model["lean"]:
+        acc[min(3, len(L["acc"]))] += 1
+        holes += 1 if L["holes"] else 0
+    paired = sum(1 for r in model["results"] if r["lean"])
+    hol = sum(1 for f in model["families"] if f["hol"])
+    fin = sum(1 for f in model["families"] if f["fin"])
+    groups = [sources[k] for k in sources if any(k in L["acc"] for L in model["lean"])]
+
+    def lean(n, with_holes=False):
+        hole = '<circle cx="7" cy="7" r="1.8" class="u-sw-hole"/>' if with_holes else ""
+        return (f'<svg class="u-sw u-sw-lean{n}{" u-sw-holes" if with_holes else ""}" viewBox="0 0 14 14" aria-hidden="true">'
+                f'<path d="M7 1.6 12.4 7 7 12.4 1.6 7Z"/>{hole}</svg>')
+
+    def dot(paired_):
+        return f'<svg class="u-sw {"u-sw-paired" if paired_ else "u-sw-unpaired"}" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="4"/></svg>'
+
+    def ring(cls):
+        return f'<svg class="u-sw {cls}" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.4"/></svg>'
+
+    def fib(cls):
+        return f'<svg class="u-sw {cls}" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 10 C5 10 9 4 13 4"/></svg>'
+
+    def row(glyph, text, n=None):
+        num = "" if n is None else f'<span class="u-key__n">{n:,}</span>'
+        return f'<li><span class="u-key__g">{glyph}</span><span class="u-key__t">{esc(text)}</span>{num}</li>'
+
+    return (f'<p class="u-note">{esc(U("legend.colour_note"))}</p>'
+            f'<h3 class="u-h3">{esc(U("legend.lean_heading"))}</h3><ul class="u-key">'
+            + row(lean(3), U("legend.lean_3"), acc[3]) + row(lean(2), U("legend.lean_2"), acc[2])
+            + row(lean(1), U("legend.lean_1"), acc[1]) + row(lean(0), U("legend.lean_0"), acc[0])
+            + row(lean(2, True), U("legend.lean_holes"), holes) + "</ul>"
+            f'<p class="u-note">{esc(U("legend.lean_groups", groups="; ".join(groups)))}</p>'
+            f'<h3 class="u-h3">{esc(U("legend.result_heading"))}</h3><ul class="u-key">'
+            + row(dot(True), U("legend.result_paired"), paired) + row(dot(False), U("legend.result_unpaired"), len(model["results"]) - paired) + "</ul>"
+            f'<p class="u-note">{esc(U("legend.pair_note"))}</p>'
+            f'<h3 class="u-h3">{esc(U("legend.family_heading"))}</h3><ul class="u-key">'
+            + row(ring("u-sw-hol"), U("legend.family_hol"), hol) + row(ring("u-sw-fin"), U("legend.family_finite"), fin) + "</ul>"
+            f'<h3 class="u-h3">{esc(U("legend.fibre_heading"))}</h3><ul class="u-key">'
+            + row(fib("u-sw-cites"), U("legend.fibre_cites")) + row(fib("u-sw-cited"), U("legend.fibre_cited")) + "</ul>"
+            f'<p class="u-note">{esc(U("legend.fibre_note"))}</p>')
+
+
 def page_body(model, gen, counts):
     data_v = gen[:12]
     lede = U("page.lede", families=counts["families"])
-    summary = U("release.summary", **{k: counts[k] for k in ("families", "disciplines", "papers", "results", "lean")})
     canvas_label = U("controls.canvas_label", families=counts["families"], disciplines=counts["disciplines"])
     copy_json = json.dumps(COPY_U, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     return f"""<div class="u-explorer" data-universe data-view="list"
@@ -744,18 +960,14 @@ def page_body(model, gen, counts):
    <div class="u-results" data-u-results hidden></div>
    <div class="u-view" data-u-view>
     <p class="u-lede">{esc(lede)}</p>
-    <p class="u-summary">{esc(summary)}</p>
-    <p class="u-note">{esc(U('controls.help'))}</p>
+    {ways_html(model)}
    </div>
    <section class="u-legend" aria-labelledby="u-legend-h" data-u-legend>
     <h2 class="u-h2" id="u-legend-h">{esc(U('legend.heading'))}</h2>
-    <div data-u-legend-body></div>
-   </section>
-   <section class="u-listsec" aria-labelledby="u-index-h">
-    <h2 class="u-h2" id="u-index-h">{esc(U('release.index_heading'))}</h2>
-    <p class="u-note">{esc(U('release.index_intro'))}</p>
-    <noscript><p class="u-note">{esc(U('page.noscript'))}</p></noscript>
-    {index_html(model)}
+    <noscript><p class="u-note">{esc(U('page.noscript'))} <a href="#catalogue">{esc(U('bands.index_heading'))}</a></p></noscript>
+    <div data-u-legend-body>{legend_html(model, source_names())}</div>
+    <p class="u-note">{esc(U('controls.help'))}</p>
+    <p class="u-note"><a href="tiles.html">{esc(U('legend.tiles'))}</a></p>
    </section>
   </div>
  </aside>
@@ -770,7 +982,39 @@ def page_body(model, gen, counts):
   <p class="u-status" data-u-status>{esc(U('status.loading'))}</p>
  </div>
  <script type="application/json" id="universe-copy">{copy_json}</script>
-</div>"""
+</div>
+{example_band(model)}
+{release_band(model, counts)}
+{checked_band(model)}
+{help_band()}
+<section class="u-band u-band--index" id="catalogue" aria-labelledby="h-index" tabindex="-1">
+ <div class="frame u-band__in">
+  <h2 class="u-band__h" id="h-index">{esc(U('bands.index_heading'))}</h2>
+  <p class="u-band__intro">{esc(U('bands.index_intro'))}</p>
+  {index_html(model)}
+ </div>
+</section>"""
+
+
+def redirect_stub() -> str:
+    """universe.html, kept for old links: the map moved to the front page, deep link and all."""
+    return f"""<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>{esc(U('page.redirect_title'))} | {esc(S.C('site.name'))}</title>
+<link rel="canonical" href="{esc(S.BASE_URL)}">
+<meta name="color-scheme" content="light dark">
+<script>location.replace('index.html' + location.hash);</script>
+<meta http-equiv="refresh" content="0; url=index.html">
+</head>
+<body>
+<p>{esc(U('page.redirect_text'))} <a href="index.html">{esc(U('page.redirect_link'))}</a></p>
+</body>
+</html>
+"""
 
 
 def canonical(obj) -> bytes:
@@ -778,9 +1022,16 @@ def canonical(obj) -> bytes:
 
 
 def main():
+    global OUT, PRINTED
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--out", help="the built site to add the front page to (default site/_build)")
+    args = ap.parse_args()
+    if args.out:
+        OUT = Path(args.out).resolve()
     import_site()
-    if not (OUT / "index.html").exists():
-        raise SystemExit("site/_build is missing: run scripts/build_site.py (and build_papers.py) first")
+    if not (OUT / "tiles.html").exists() or not (OUT / "families").is_dir():
+        raise SystemExit(f"{OUT} is not a built site: run scripts/build_site.py (and build_papers.py) with the same --out first")
+    PRINTED = load_printed_numbers()
     model = build_model()
     layout = build_layout(model)
     detail = build_detail(model)
@@ -799,6 +1050,7 @@ def main():
     h.update(canonical(layout))
     for sh in detail:
         h.update(canonical(sh))
+    h.update(canonical(search))
     gen = h.hexdigest()[:20]
     contract = [{"generation_id": gen, "upstream_commit": S.COMMIT, "counts": counts,
                  "ids": "f:<family id>, d:<discipline slug>, p:<manuscript slug>, r:<manuscript slug>:<TeX label or L-<file>-<line>>, l:<Lean statement id>",
@@ -822,9 +1074,12 @@ def main():
              '<meta name="format-detection" content="telephone=no">\n'
              '<script defer src="assets/universe.js"></script>')
     body = page_body(model, gen, counts)
-    html_text = S.page("universe.html", U("page.title"), U("page.description"), body, current="atlas",
+    if hasattr(S, "family_claim_card") and hasattr(S, "family_head"):
+        extra = S.family_head("") + "\n" + extra
+    html_text = S.page("index.html", U("page.title"), U("page.description"), body, current="map",
                        extra_head=extra, main_class="u-main")
-    (OUT / "universe.html").write_text(html_text, encoding="utf-8")
+    (OUT / "index.html").write_text(html_text, encoding="utf-8")
+    (OUT / "universe.html").write_text(redirect_stub(), encoding="utf-8")
     sizes = {p.name: p.stat().st_size for p in sorted(ddir.glob("universe-*.json"))}
     total_detail = sum(v for k, v in sizes.items() if "detail" in k)
     print(f"universe: generation {gen}; {counts['families']} families, {counts['papers']} papers, "
@@ -832,7 +1087,8 @@ def main():
           f"{counts['familyPairs']} family pairs from {counts['links']} citing links")
     print(f"universe: data {sizes['universe-data.json']:,} B, layout {sizes['universe-layout.json']:,} B, "
           f"search {sizes['universe-search.json']:,} B, detail {total_detail:,} B in {len(detail)} files; "
-          f"page {(OUT / 'universe.html').stat().st_size:,} B")
+          f"page {(OUT / 'index.html').stat().st_size:,} B; numbered {sum(1 for r in model['results'] if r['num'])}, "
+          f"unnumbered {sum(1 for r in model['results'] if r.get('nn'))}, of {len(model['results'])}")
 
 
 if __name__ == "__main__":

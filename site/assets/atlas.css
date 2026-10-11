@@ -834,3 +834,12 @@ a.term:hover, a.term:focus-visible { text-decoration-color: currentColor; }
 .gloss dt { font-family: var(--serif); font-size: 1.0625rem; font-weight: 600; margin-bottom: 4px; }
 .gloss dd { margin: 0; font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; color: var(--ink-soft); max-width: 40em; }
 .gloss__group + .gloss__group { margin-top: 18px; }
+
+/* About: each essay's question beside what the atlas does about it */
+.approach { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 20px; }
+.approach__item { border-left: 2px solid var(--rule); padding-left: 16px; }
+.approach__item p { margin: 0; }
+.approach__who { font-weight: 600; }
+.approach__item .approach__so { margin-top: 6px; color: var(--ink-soft); }
+.adds { margin-top: 10px; }
+.adds li + li { margin-top: 4px; }

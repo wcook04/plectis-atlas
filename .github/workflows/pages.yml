@@ -26,6 +26,8 @@ jobs:
         run: sh scripts/fetch_upstream.sh
       - name: Build the papers' reading pages (formulas checked with the site's own KaTeX)
         run: python3 scripts/build_papers.py
+      - name: The front door, the release universe (index.html), drawn from the built site's data
+        run: python3 scripts/build_universe.py
       - name: Statement pages and reading pages link each other both ways
         run: python3 scripts/check_paper_links.py
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5

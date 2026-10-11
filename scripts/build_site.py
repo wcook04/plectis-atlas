@@ -1082,120 +1082,6 @@ def build_glossary():
     write_page(rel, page(rel, C("glossary.title"), C("glossary.lede"), body, current="glossary"))
 
 
-def standing_html(f, root):
-    """Where this result stands: one line per kind of check, each linking to its section below."""
-    fid = f["id"]
-    items = []
-    stmts = [ST[s] for s in f.get("statements") or [] if s in ST]
-    if stmts:
-        items.append(("lean", "#h-lean", C("family.standing_lean_k"),
-                      C("family.standing_lean_1") if len(stmts) == 1 else C("family.standing_lean_n", n=len(stmts))))
-        runs = [{v["source"] for v in sourced_all(s, "replay") if (v.get("value") or {}).get("verdict") == "accepted"} for s in stmts]
-        rerun = sum(1 for r in runs if r)
-        most = max((len(r) for r in runs), default=0)
-        groups = C("family.standing_groups_1") if most == 1 else C("family.standing_groups_n", n=most)
-        if not rerun:
-            run_text = C("family.standing_run_none")
-        elif len(stmts) == 1:
-            run_text = C("family.standing_run_one", groups=groups)
-        else:
-            run_text = C("family.standing_run_v", k=rerun, n=len(stmts), groups=groups)
-        items.append(("run", "#h-lean", C("family.standing_run_k"), run_text))
-        verdict = C("family.standing_readers").get(f.get("readers_agreement") or "", "")
-        if verdict:
-            items.append(("readers", "#h-readings", C("family.standing_readers_k"), verdict))
-    else:
-        items.append(("none", "#h-lean", C("family.standing_lean_k"), C("family.standing_lean_none")))
-    cards = sum(len(v["value"]) for v in sourced_all(f, "hol_checks"))
-    if cards:
-        items.append(("hol", "#h-hol", C("family.standing_hol_k"), C("family.standing_hol_1") if cards == 1 else C("family.standing_hol_n", n=cards)))
-    fin = Counter(c["verdict"] for v in sourced_all(f, "finite_checks") for c in v["value"])
-    if fin:
-        counts = C("family.standing_finite_counts")
-        order = ["certified", "needs-data", "refused"]
-        items.append(("finite", "#h-finite", C("family.standing_finite_k"),
-                      ", ".join(counts.get(k + "_1" if fin[k] == 1 else k, counts[k]).format(n=fin[k]) for k in order if fin.get(k))))
-    nf = len(COMMUNITY["by_family"].get(fid, []))
-    if nf:
-        items.append(("finds", "#h-desc", C("family.standing_finds_k"), C("family.standing_finds_v", n=nf)))
-    reading = [m for m in f.get("manuscripts") or [] if m in PAPER_READING]
-    if reading:
-        items.append(("read", "#h-ms", C("family.standing_read_k"),
-                      C("family.standing_read_1") if len(reading) == 1 else C("family.standing_read_v", n=len(reading))))
-    lis = "".join(f'<li class="standing__item standing__item--{k}"><a href="{href}"><span class="standing__k">{esc(key)}</span>'
-                  f'<span class="standing__v">{esc(val)}</span></a></li>' for k, href, key, val in items)
-    return (f'<section class="band band--tight standing" aria-labelledby="h-standing"><h2 class="h3" id="h-standing">'
-            f'{esc(C("family.standing_heading"))}</h2><ul class="standing__list">{lis}</ul></section>')
-
-
-def withdrawn_from_family_html(fid, root):
-    """Manuscripts listed under this family when the release was published and withdrawn since."""
-    wd = [m for m in MANUSCRIPTS if m["status"] == "withdrawn" and m.get("family") == fid]
-    if not wd:
-        return ""
-    arts = "".join(
-        f'<article class="note note--warn" id="{esc(m["id"])}"><h4 class="h4"><a href="{root}papers/{esc(m["id"])}.html">{ms_title_html(m)}</a></h4>'
-        f'<div class="md-math">{md_paragraphs(m.get("withdrawal_note") or "")}</div>'
-        f'<p class="muted small">{esc(C("paper.withdrawn_on", date=m.get("withdrawn_on") or ""))}</p></article>' for m in wd)
-    then = tex_plain(wd[0].get("family_title_on_release_day") or FAM[fid]["title"])
-    return f'<h3 class="h3">{esc(C("family.withdrawn_heading"))}</h3><p class="intro small">{esc(C("family.withdrawn_intro", title=then))}</p>{arts}'
-
-
-def finite_checks_html(f, root):
-    """Finite parts of this family's papers decided by exact code, each in the checker's own terms."""
-    words = C("family.finite_words")
-    items = []
-    for v in sourced_all(f, "finite_checks"):
-        for c in v["value"]:
-            m = MS.get(c.get("manuscript") or "")
-            paper = f'<a href="{root}papers/{esc(m["id"])}.html">{ms_title_html(m)}</a>' if m else ""
-            scope = f' <span class="muted">({esc(c["scope"])})</span>' if c.get("scope") else ""
-            detail = (f'<details class="more"><summary>{esc(C("family.finite_detail"))}</summary>'
-                      f'<p class="small">{esc(c["detail"])}</p></details>') if c.get("detail") else ""
-            items.append(f'<li><p><strong>{esc(words.get(c["verdict"], c["code"]) if isinstance(words, dict) else c["code"])}</strong>{scope}. {paper}</p>'
-                         f'<p class="small">{esc(c.get("text") or "")}</p>{detail}'
-                         f'<p class="small muted">{source_link(v["source"], root)}, {esc(c["id"])}. '
-                         f'<a class="ext" href="{esc(c["url"])}" rel="noopener">{esc(C("sources.record_link"))}</a></p></li>')
-    if not items:
-        return ""
-    return (f'<h3 class="h3" id="h-finite">{esc(C("family.finite_heading"))}</h3><p class="intro small">{ctext(C("family.finite_intro"))}</p>'
-            f'<ul class="cfinds">{"".join(items)}</ul>')
-
-
-def other_assistant_html(f, root):
-    """Checks of this family's steps in another proof assistant, quoted with attribution."""
-    items = []
-    for v in sourced_all(f, "hol_checks"):
-        for c in v["value"]:
-            items.append(
-                f'<li><p><strong>{esc(C("family.hol_card", card=c["card"]))}</strong> {esc(c["certifies"])}</p>'
-                f'<p class="small">{esc(C("family.hol_relation"))} {esc(c["relation"])}</p>'
-                f'<p class="small muted">{esc(C("family.hol_runs", warm=c["warm"], cold=c["cold"]))} '
-                f'{source_link(v["source"], root)}. <a class="ext" href="{esc(c["url"])}" rel="noopener">{esc(C("family.hol_card_link"))}</a></p></li>')
-    if not items:
-        return ""
-    return (f'<h3 class="h3" id="h-hol">{esc(C("family.hol_heading"))}</h3><p class="intro small">{ctext(C("family.hol_intro"))}</p>'
-            f'<ul class="cfinds">{"".join(items)}</ul>')
-
-
-def scope_readings_html(f, root):
-    """Independent readers' verdicts on whether the family's challenges state its headline, beside OpenAI's note."""
-    items = []
-    for v in sourced_all(f, "scope_reading"):
-        rv = v["value"]
-        extra = ""
-        if rv.get("gap"):
-            extra += f'<p class="small">{esc(C("family.reading_gap"))} <span class="md-math">{ctext(rv["gap"])}</span></p>'
-        if rv.get("note"):
-            extra += f'<p class="small md-math">{ctext(rv["note"])}</p>'
-        items.append(f'<li><p><strong>{esc(source_credit(v["source"]))}:</strong> {esc(rv.get("text") or rv.get("code") or "")}</p>{extra}'
-                     f'<p class="small muted">{source_link(v["source"], root)}. <a class="ext" href="{esc(rv["url"])}" rel="noopener">{esc(C("sources.record_link"))}</a></p></li>')
-    if not items:
-        return ""
-    return (f'<h3 class="h3" id="h-readings">{esc(C("family.readings_heading"))}</h3><p class="intro small">{ctext(C("family.readings_intro"))}</p>'
-            f'<ul class="cfinds">{"".join(items)}</ul>')
-
-
 def source_link(source_id, root):
     src = SOURCES.get(source_id) or COMMUNITY["efforts"].get(source_id) or {}
     name = src.get("name") or source_id
@@ -1219,27 +1105,6 @@ def adopted_list_html(adopted):
         return ""
     items = "".join(f'<li>{esc(C("sources.adopted_kind_" + a["kind"]))}: {esc(a["what"])} <span class="muted">({esc(a["where"])})</span></li>' for a in adopted)
     return f'<p class="small"><strong>{esc(C("sources.adopted_heading"))}</strong></p><ul class="small">{items}</ul>'
-
-
-def family_facets_html(f, root):
-    parts = []
-    ty, tier = sourced(f, "type"), sourced(f, "tier")
-    if ty:
-        also = sourced(f, "also")
-        label = C("sources.type_words").get(ty["value"], ty["value"]).capitalize()
-        if also:
-            label += C("sources.also_word", what=C("sources.type_words").get(also["value"], also["value"]))
-        parts.append(f'<span>{esc(label)} <span class="muted small">({source_link(ty["source"], root)})</span></span>')
-    if tier is not None and tier.get("value") is not None:
-        names = (SOURCES.get(tier["source"]) or {}).get("tier_names") or {}
-        parts.append(f'<span>{esc(C("sources.tier_label", name=names.get(str(tier["value"]), str(tier["value"]))))} <span class="muted small">({source_link(tier["source"], root)})</span></span>')
-    erd = sourced(f, "erdos_problems")
-    if erd and erd.get("value"):
-        probs = ", ".join(f'<a class="ext" href="{esc(p["url"])}" rel="noopener">{esc(C("sources.erdos_number", n=p["number"]))}</a>'
-                          + (f' <span class="muted">({esc(p["title"])})</span>' if p.get("title") else "") for p in erd["value"])
-        credit = f'<a href="{root}sources.html#src-{esc(erd["source"])}">{esc(source_credit(erd["source"]))}</a>'
-        parts.append(f'<span>{probs} <span class="muted small">({credit})</span></span>')
-    return ('<p class="phead__facets">' + ' <span class="sep" aria-hidden="true">·</span> '.join(parts) + "</p>") if parts else ""
 
 
 def cover_class(sid):
@@ -1364,9 +1229,24 @@ def fam_has_main(f):
     return any(ST[s]["main_result"] for s in f["statements"] if s in ST)
 
 
+def backend_target(alias: str) -> dict | None:
+    """Statement Map's contribution target for a reader id ("f:159", "l:ErdosReciprocal"):
+    the exact content a contribution concerns, with a fingerprint of its text."""
+    import backend
+    b = backend.load()
+    return b.target(alias) if b else None
+
+
 def issue_url(template_key: str, title: str, **fields) -> str:
     name = CFG["issue_templates"][template_key]
     params = {"template": f"{name}.yml", "title": title}
+    if "target" not in fields:
+        # The form records the exact version of what the reader saw, so a review stays
+        # tied to that text if the release changes it.
+        alias = ("f:" + fields["family"]) if fields.get("family") else (("l:" + fields["statement"]) if fields.get("statement") else None)
+        t = backend_target(alias) if alias else None
+        if t:
+            fields = {**fields, "target": f'{t["id"]} {t["fingerprint"]}'}
     for k, v in CFG.get("issue_prefill", {}).get(name, {}).items():
         try:
             val = v.format(**fields)
@@ -1448,8 +1328,10 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 </head>"""
 
 
-NAV = [("index.html", "atlas"), ("explain.html", "explain"), ("statements.html", "statements"),
-       ("sources.html", "sources"), ("numbers.html", "numbers"), ("glossary.html", "glossary"),
+# The front door is the release universe (scripts/build_universe.py writes index.html).
+# Numbers lives in the footer and in the home page's bands.
+NAV = [("index.html", "map"), ("explain.html", "explain"), ("statements.html", "statements"),
+       ("sources.html", "sources"), ("glossary.html", "glossary"),
        ("contribute.html", "contribute"), ("about.html", "about")]
 
 
@@ -1734,22 +1616,6 @@ def vocab_text(s) -> str:
     return C("statement.card_vocab_one") if v == 1 else C("statement.card_vocab", count=v)
 
 
-def lean_card_small(sid, root):
-    s = ST[sid]
-    label = (s.get("labels") or [sid])[0]
-    main = C("words.main_result") if s["main_result"] else C("words.supporting_result")
-    vtext = vocab_text(s)
-    snippet = lean_snippet_html(s, max_lines=12)
-    return f"""<article class="leanc">
- <h3 class="leanc__title"><a href="{root}statements/{esc(sid)}.html"><span class="md-math">{esc(label)}</span></a></h3>
- <p class="leanc__meta"><span class="pill {'pill--main' if s['main_result'] else 'pill--support'}">{esc(main)}</span> <span>{esc(vtext)}</span> <code class="leanc__file">{esc(sid)}.lean</code></p>
- <pre class="lean lean--snippet"><code>{snippet}</code></pre>
- {coverage_html(sid, compact=True)}
- <p class="leanc__note">{ctext(C('statement.sorry_note_axiom') if s['declares_axiom'] else C('statement.sorry_note'))}</p>{('<p class="leanc__note">' + ctext(C('statement.card_holes_one', name=s['comparator']['definition_names'][0].split('.')[-1]) if len(s['comparator']['definition_names']) == 1 else C('statement.card_holes_many', n=len(s['comparator']['definition_names']), name=s['comparator']['definition_names'][0].split('.')[-1])) + '</p>') if s['comparator'].get('definition_names') else ''}
- <p class="leanc__go"><a href="{root}statements/{esc(sid)}.html">{esc(C('words.open_statement'))}</a></p>
-</article>"""
-
-
 def related_list(items, root, fam_self=None):
     """items: list of (slug) manuscripts with statuses."""
     out = []
@@ -1806,32 +1672,6 @@ def ref_entry(r):
             uses.append(d)
     use_html = f'<span class="ref__use">{esc(C("family.used_in", where="; ".join(uses[:4])))}</span>' if uses else ""
     return f'<li class="ref">{main} {" ".join(links)}{use_html}</li>'
-
-
-def manuscript_block(m, root, conv, lean_ids):
-    status = m["status"]
-    notes = ""
-    if m.get("version_note"):
-        notes += f'<div class="note"><p class="note__h">{esc(C("family.version_note"))}</p><div class="md-math">{md_paragraphs(m["version_note"], "preprints/" + m["id"] + "/")}</div></div>'
-    prev = ""
-    if m.get("previous_versions"):
-        lst = ", ".join(f'<a href="{root}papers/{esc(p)}.html">{esc(MS[p]["date"] or p) if p in MS else esc(p)}</a>' for p in m["previous_versions"])
-        prev = f'<p class="ms__prev">{esc(C("family.previous_editions"))}: {lst}</p>'
-    heads = headline_statements(m)
-    if heads:
-        stm = "".join(render_paper_statement(m, st, root, conv) for st in heads)
-    else:
-        stm = f'<p class="muted">{esc(C("family.no_headline"))}</p>'
-    counts = m.get("counts") or {}
-    return f"""<article class="ms" id="{esc(m['id'])}">
- <h3 class="ms__title"><a href="{root}papers/{esc(m['id'])}.html">{ms_title_html(m)}</a></h3>
- <p class="ms__meta"><span>{esc(m.get('date') or '')}</span><span class="ms__status">{esc(status_label(status))}</span>{pdf_button(m, 'pdflink ext')}</p>
- {notes}
- <div class="ms__abstract tex-auto">{rich(m.get('abstract') or '')}</div>
- {prev}
- <h4 class="ms__sub">{esc(C('family.headline_heading'))}</h4>
- <div class="stmts">{stm}</div>
-</article>"""
 
 
 # ------------------------------------------------- contributed Markdown, safely
@@ -2042,7 +1882,7 @@ def build_explanation(f, e):
     page_url = BASE_URL + rel
     suggest = suggest_url(page_url, title)
     body = f"""<div class="frame page page--narrow">
-{trail(root, [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#d={DISC_SLUG[di]}'), (fam_title_html(f), f'{root}families/{fid}.html'), (f'<span class="md-math">{esc(title)}</span>', None)])}
+{trail(root, [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d:{DISC_SLUG[di]}'), (fam_title_html(f), f'{root}families/{fid}.html'), (f'<span class="md-math">{esc(title)}</span>', None)])}
 <header class="phead">
  <p class="phead__kicker">{esc(C('explanation.kicker', id=fid))}</p>
  <h1 class="phead__title md-math">{esc(title)}</h1>
@@ -2084,14 +1924,463 @@ def check_choice_html(sids, root):
     return f'<details class="choose"><summary class="btn btn--ghost">{esc(C("family.check_choose", n=len(sids)))}</summary><div class="choose__box"><p class="small muted">{esc(C("family.check_choose_intro"))}</p><ul class="choose__list">{items}</ul></div></details>'
 
 
-def split_description(desc: str, limit: int = 600):
-    """(lead, rest): a long description is cut after its first sentence that ends
-    outside mathematics, so the rest can sit in a collapsed section."""
-    if len(desc) <= limit:
-        return desc, ""
+# ------------------------------------------------------------ the family page
+# DESIGN.md, "What a reader can do for any result": a family page answers, in this
+# order, what is claimed, what states it formally, what has been checked, where to
+# read it, what it connects to, and what a reader can do next. The bench carries the
+# first two: the paper's theorem and the Lean statement, joined by the thread.
+
+try:
+    _SN = load("statement_numbers.json")
+    # A row binds a printed number to the exact statement text at the pinned commit.
+    STATEMENT_NUMBERS = ({(r["manuscript"], r["file"], r["line"]): r for r in _SN.get("rows", [])}
+                         if _SN.get("upstream_commit") == COMMIT else {})
+except (FileNotFoundError, ValueError):
+    STATEMENT_NUMBERS = {}
+
+MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September",
+          "October", "November", "December"]
+
+
+def date_words(s) -> str:
+    """'2026-10-10' or 'October 10, 2026' as '10 October 2026'; anything else unchanged."""
+    s = (s or "").strip()
+    m = re.match(r"^(\d{4})-(\d{2})-(\d{2})", s)
+    if m:
+        return f"{int(m.group(3))} {MONTHS[int(m.group(2)) - 1]} {m.group(1)}"
+    m = re.match(r"^([A-Z][a-z]+) (\d{1,2}), (\d{4})$", s)
+    if m and m.group(1) in MONTHS:
+        return f"{int(m.group(2))} {m.group(1)} {m.group(3)}"
+    return s
+
+
+def curly(s) -> str:
+    """Typographic apostrophes in recorded prose (a word's ' becomes ’); code spans keep theirs."""
+    parts = re.split(r"(`[^`]*`)", s or "")
+    return "".join(p if p.startswith("`") else re.sub(r"(?<=[A-Za-z0-9])'(?=[A-Za-z])", "\u2019", p) for p in parts)
+
+
+def say(n: int) -> str:
+    """A small count as a word a person would say aloud; larger counts as figures."""
+    words = C("family.numbers")
+    return words[n] if 0 <= n < len(words) else num(n)
+
+
+def count_words(n: int, key: str) -> str:
+    """'one paper', 'three papers': family.count.<key> holds the singular and plural."""
+    sing, plur = C("family.count")[key]
+    return f"{say(n)} {sing if n == 1 else plur}"
+
+
+def printed_name(m, st):
+    """(kind, number, state) for a statement as its reading page prints it. The state is
+    'numbered'; 'unnumbered' when the paper prints no number; or 'unavailable' when no
+    row is bound to this exact statement text. Neither of the last two borrows a
+    section number."""
+    r = STATEMENT_NUMBERS.get((m["id"], st.get("file"), st.get("line")))
+    if not r or (st.get("sha256") and r.get("statement_sha256") != st["sha256"]):
+        return st["display"], None, "unavailable"
+    kind = r.get("kind") or st["display"]
+    if r.get("number") in (None, ""):
+        return kind, None, "unnumbered"
+    return kind, str(r["number"]), "numbered"
+
+
+def printed_html(m, st) -> str:
+    kind, number, state = printed_name(m, st)
+    if number:
+        return f"{esc(kind)}&nbsp;{esc(number)}"
+    return f'{esc(kind)} <span class="fam-numstate">({esc(C("family.num_" + state))})</span>'
+
+
+def printed_plain(m, st) -> str:
+    kind, number, _ = printed_name(m, st)
+    return f"{kind} {number}" if number else kind
+
+
+def credit_link(source_id, root) -> str:
+    """A credited source by the name of the people behind it, linked to its row on the sources page."""
+    return f'<a href="{root}sources.html#src-{esc(source_id)}">{esc(source_credit(source_id))}</a>'
+
+
+_PAIRS: dict = {}
+
+
+def family_pair(sid):
+    """pair_statement for one Lean statement, computed once. The build's pairing counts
+    stay those of the statement pages, which make the same choice."""
+    if sid not in _PAIRS:
+        keys = ("pairing_candidate", "pairing_abstained_weak", "pairing_abstained_tie")
+        before = {k: STATS[k] for k in keys}
+        _PAIRS[sid] = pair_statement(ST[sid])
+        for k in keys:
+            STATS[k] = before[k]
+    return _PAIRS[sid]
+
+
+def pair_words(stmt, st, limit=4):
+    """The words a candidate pairing rests on: those the paper statement shares with the
+    Lean labels, names and docstrings (or, failing those, with OpenAI's scope note), the
+    same sets pair_statement scores. Longest first, since they are the most specific."""
+    fam = FAM.get(stmt["families"][0]) if stmt.get("families") else None
+    lean_words = words_of(" ".join(stmt.get("labels") or []) + " " + " ".join(stmt.get("docstrings") or []) + " " + stmt["id"]
+                          + " " + " ".join(n.split(".")[-1] for n in stmt["comparator"]["theorem_names"]))
+    scope_words = words_of(((fam or {}).get("lean_doc") or {}).get("scope", ""))
+    w = words_of((st.get("title") or "") + " " + st["text"])
+    shared = sorted(w & lean_words, key=lambda x: (-len(x), x)) + sorted((w & scope_words) - lean_words, key=lambda x: (-len(x), x))
+    return shared[:limit]
+
+
+def first_headline(f):
+    """(manuscript, statement) the page shows when no Lean statement chose one: the first
+    headline theorem of the first current paper, else its first headline statement."""
+    heads = [(MS[s], st) for s in f["manuscripts"] if s in MS and MS[s]["status"] == "current" for st in headline_statements(MS[s])]
+    if not heads:
+        heads = [(MS[s], st) for s in f["manuscripts"] if s in MS for st in headline_statements(MS[s])]
+    return next(((m, st) for m, st in heads if st["kind"] == "theorem"), heads[0] if heads else (None, None))
+
+
+def bench_choice(f):
+    """(main, (manuscript, statement), pairs). pairs lists (sid, manuscript, statement, why)
+    for every Lean statement; main is the one drawn large: a main result with a candidate
+    pairing, else any candidate, else the first statement."""
+    pairs = [(sid, *family_pair(sid)) for sid in f["statements"] if sid in ST]
+    cands = [p for p in pairs if p[3] == "candidate"]
+    main = next((p for p in cands if ST[p[0]]["main_result"]), None) or (cands[0] if cands else None) or (pairs[0] if pairs else None)
+    if main and main[3] == "candidate":
+        return main, (main[1], main[2]), pairs
+    return main, first_headline(f), pairs
+
+
+def same_statement(a, b) -> bool:
+    return bool(a and b) and a[0]["id"] == b[0]["id"] and a[1].get("file") == b[1].get("file") and a[1].get("line") == b[1].get("line")
+
+
+def runs_of(sid):
+    return sourced_all(ST[sid], "replay")
+
+
+def run_groups(sid) -> int:
+    return len({v["source"] for v in runs_of(sid) if (v.get("value") or {}).get("verdict") == "accepted"})
+
+
+GLYPH_RUN = {"ok": '<svg class="glyph glyph--ok" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.2 6.4 4.9 9 9.8 3.2"/></svg>',
+             "open": '<svg class="glyph glyph--open" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="3.6"/></svg>'}
+
+
+def thread_svg(vertical=False) -> str:
+    """The thread: a dot at the paper's theorem, a diamond at the Lean statement, a dashed
+    steel line between (dashed while the pairing is a candidate). Each end's centre sits
+    on a card's border (family.css places it), so the line never crosses a word.
+    Decorative: the caption beside it says the same in words."""
+    if vertical:
+        return ('<svg class="thread thread--v" viewBox="0 0 14 44" width="14" height="44" aria-hidden="true" focusable="false">'
+                '<circle class="thread__dot" cx="7" cy="4" r="3.5"/><path class="thread__line" d="M7 9V34.5"/>'
+                '<path class="thread__end" d="M7 35.5l4.5 4.5-4.5 4.5-4.5-4.5z"/></svg>')
+    return ('<svg class="thread thread--h" viewBox="0 0 76 12" width="76" height="12" aria-hidden="true" focusable="false">'
+            '<circle class="thread__dot" cx="5.5" cy="6" r="4"/><path class="thread__line" d="M11 6H65"/>'
+            '<path class="thread__end" d="M66 6l4.5-4.5L75 6l-4.5 4.5z"/></svg>')
+
+
+def mini_thread(paired: bool) -> str:
+    if paired:
+        return ('<svg class="mthread" viewBox="0 0 34 10" width="34" height="10" aria-hidden="true">'
+                '<circle cx="4" cy="5" r="3"/><path d="M8.5 5H25"/><path class="mthread__end" d="M26 5l3.5-3.5L33 5l-3.5 3.5z"/></svg>')
+    return ('<svg class="mthread mthread--none" viewBox="0 0 34 10" width="34" height="10" aria-hidden="true">'
+            '<path class="mthread__end" d="M26 5l3.5-3.5L33 5l-3.5 3.5z"/></svg>')
+
+
+def bench_paper_card(m, st, root, conv, aid="bench-theorem") -> str:
+    """The paper's theorem as printed: its number, its exact TeX, where it sits, and the
+    passage on the reading page."""
+    title = f' <span class="bp__title">({conv.text(st["title"], inline=True)})</span>' if st.get("title") else ""
+    where = C("family.where_appendix") if st.get("appendix") else (
+        C("family.where_section_titled", n=st["section"], title=tex_plain(st["section_title"])) if st.get("section_title")
+        else C("family.where_section", n=st["section"]))
+    passage = paper_statement_href(m["id"], st, root)
+    src_url = f'{BASE_BLOB}preprints/{m["id"]}/{st["file"]}#L{st["line"]}'
+    if passage:
+        go = f'<a class="bp__go" href="{esc(passage)}">{esc(C("family.read_passage"))}</a>'
+    else:
+        go = f'<a class="bp__go ext" href="{esc(m["pdf_url"])}" rel="noopener">{esc(C("family.read_pdf"))}</a>'
+    return f"""<article class="bp" id="{aid}" data-macros="{esc(m['id'])}" aria-labelledby="{aid}-h">
+ <h3 class="bp__head" id="{aid}-h"><span class="bp__kind">{printed_html(m, st)}.</span>{title}</h3>
+ <div class="bp__body">{conv.blocks(st["text"])}</div>
+ <footer class="bp__foot">
+  <p class="bp__where">{C("family.paper_in", paper=f'<a href="{root}papers/{esc(m["id"])}.html">{ms_title_html(m)}</a>', where=esc(where))}</p>
+  <p class="bp__acts">{go}<a class="ext" href="{esc(src_url)}" rel="noopener">{esc(C('words.source_line', line=st['line']))}</a></p>
+  <details class="texsrc"><summary>{esc(C('words.tex_source'))}</summary><div class="texsrc__box"><button class="copy" type="button" data-copy-next>{esc(C('words.copy'))}</button><pre><code>{esc(st["text"])}</code></pre></div></details>
+ </footer>
+</article>"""
+
+
+def runs_html(sid, root) -> str:
+    """Outside re-runs through Comparator, one line per group; each group's own account folded."""
+    items, hows = [], []
+    for v in runs_of(sid):
+        rv = v.get("value") or {}
+        verdict = rv.get("verdict") or ""
+        word = C("family.run_verdict").get(verdict, verdict)
+        state = "ok" if verdict == "accepted" else "open"
+        when = f' <span class="runs__when">{esc(date_words(rv.get("date")))}</span>' if rv.get("date") else ""
+        items.append(f'<li class="runs__i runs__i--{state}">{GLYPH_RUN[state]}<p class="runs__line"><span class="runs__who">{credit_link(v["source"], root)}</span> '
+                     f'<span class="runs__v">{esc(word)}</span>{when} <a class="ext runs__rec" href="{esc(rv.get("url") or "")}" rel="noopener" '
+                     f'aria-label="{esc(C("family.run_record_label", who=source_credit(v["source"])))}">{esc(C("family.run_record"))}</a></p></li>')
+        hows.append(f'<li><span class="runs__who2">{esc(source_credit(v["source"]))}:</span> {ctext(curly(rv.get("text")))}</li>')
+    if not items:
+        return f'<div class="runs"><p class="runs__h">{ctext(C("family.runs_heading"))}</p><p class="runs__none">{esc(C("family.runs_none"))}</p></div>'
+    return (f'<div class="runs"><p class="runs__h">{ctext(C("family.runs_heading"))}</p><ul class="runs__list">{"".join(items)}</ul>'
+            f'<details class="fam-fold runs__fold"><summary>{esc(C("family.runs_how"))}</summary><ul class="runs__hows">{"".join(hows)}</ul>'
+            f'<p class="runs__note">{esc(C("family.runs_note"))}</p></details></div>')
+
+
+def bench_lean_card(sid, root) -> str:
+    """The Lean statement that states the theorem, in Lean's own text, with who has re-run it."""
+    s = ST[sid]
+    label = (s.get("labels") or [sid])[0]
+    where = C("family.lean_main") if s["main_result"] else C("family.lean_support")
+    holes = s["comparator"].get("definition_names") or []
+    holes_html = ""
+    if holes:
+        holes_html = '<p class="bl__note">' + ctext(C("statement.card_holes_one", name=holes[0].split(".")[-1]) if len(holes) == 1
+                                                     else C("statement.card_holes_many", n=len(holes), name=holes[0].split(".")[-1])) + "</p>"
+    note = C("family.lean_note_axiom") if s["declares_axiom"] else C("family.lean_note")
+    return f"""<article class="bl" id="bench-lean" aria-labelledby="bench-lean-h">
+ <h3 class="bl__title" id="bench-lean-h"><a href="{root}statements/{esc(sid)}.html"><span class="md-math">{esc(label)}</span></a></h3>
+ <p class="bl__file"><code class="bl__fname" translate="no">{esc(sid)}.lean</code>, {esc(where)}</p>
+ <pre class="lean lean--snippet bl__code"><code>{lean_snippet_html(s, max_lines=14)}</code></pre>
+ <p class="bl__note">{ctext(note)}</p>{holes_html}
+ {runs_html(sid, root)}
+ <p class="bl__go"><a href="{root}statements/{esc(sid)}.html">{esc(C('words.open_statement'))}</a></p>
+</article>"""
+
+
+READING_GRADE = {"matches": "all", "full": "all", "partial": "part", "narrower-declared": "less",
+                 "narrower-undeclared": "less", "narrower-unlinked": "less", "weaker-statement": "less",
+                 "different": "other", "supporting-only": "other"}
+READERS = ["mathvet", "cert-machine"]
+GLYPH_READING = {
+    "all": '<circle cx="7" cy="7" r="5.5"/><circle class="fill" cx="7" cy="7" r="5.5"/>',
+    "part": '<circle cx="7" cy="7" r="5.5"/><path class="fill" d="M7 1.5a5.5 5.5 0 0 1 0 11z"/>',
+    "less": '<circle cx="7" cy="7" r="5.5"/><path class="fill" d="M7 1.5a5.5 5.5 0 0 1 5.5 5.5H7z"/>',
+    "other": '<circle cx="7" cy="7" r="5.5"/>',
+}
+
+
+def readings_html(f, root, draft="") -> str:
+    """The two outside readings of whether the family's Lean statements state its headline,
+    side by side and each in its reader's terms, then OpenAI's own note."""
+    vals = {v["source"]: v["value"] for v in sourced_all(f, "scope_reading")}
+    if not vals and not f["statements"]:
+        return ""
+    cols = []
+    for src in READERS + [s for s in vals if s not in READERS]:
+        rv = vals.get(src)
+        if not rv:
+            cols.append(f'<div class="rd rd--none"><p class="rd__who">{credit_link(src, root)}</p>'
+                        f'<p class="rd__v">{esc(C("family.reading_none"))}</p></div>')
+            continue
+        grade = READING_GRADE.get(rv.get("verdict"), "other")
+        words = C("family.reading_v").get(rv.get("verdict")) or rv.get("text") or ""
+        extra = ""
+        if rv.get("gap"):
+            extra += f'<p class="rd__more"><span class="rd__k">{esc(C("family.reading_gap"))}</span> <span class="md-math">{ctext(curly(rv["gap"]))}</span></p>'
+        if rv.get("note") and len(rv["note"]) > 280:
+            extra += (f'<details class="fam-fold rd__fold"><summary>{esc(C("family.reading_note"))}</summary>'
+                      f'<p class="rd__more md-math">{ctext(curly(rv["note"]))}</p></details>')
+        elif rv.get("note"):
+            extra += f'<p class="rd__more md-math">{ctext(curly(rv["note"]))}</p>'
+        cols.append(f'<div class="rd rd--{grade}"><p class="rd__who">{credit_link(src, root)}</p>'
+                    f'<p class="rd__v"><svg class="rd__g" viewBox="0 0 14 14" aria-hidden="true">{GLYPH_READING[grade]}</svg>{esc(words)}</p>'
+                    f'<p class="rd__text">{ctext(curly(rv.get("text")))}</p>{extra}'
+                    f'<p class="rd__src"><a class="ext" href="{esc(rv.get("url") or "")}" rel="noopener">{esc(C("sources.record_link"))}</a></p></div>')
+    agree = C("family.agree").get(f.get("readers_agreement") or "", "")
+    note = ""
+    doc = f.get("lean_doc") or {}
+    if doc.get("scope"):
+        paras = [p for p in re.split(r"\n\s*\n", doc["scope"].strip()) if p.strip()]
+        first = md_paragraphs(paras[0])
+        rest = ""
+        if len(paras) > 1:
+            rest = f'<details class="fam-fold"><summary>{esc(C("family.note_rest"))}</summary>{md_paragraphs(chr(10) + chr(10).join(paras[1:]))}</details>'
+        note = (f'<div class="rd-note"><p class="rd-note__h">{esc(C("family.note_heading"))}</p>'
+                f'<blockquote class="rd-note__q md-math">{first}{rest}</blockquote>'
+                f'<p class="rd-note__src"><a class="ext" href="{esc(doc.get("url") or "")}" rel="noopener">{esc(C("family.lean_scope_source"))}</a></p></div>')
+    lead = ""
+    if f.get("readers_agreement") == "disagree":
+        said = [(src, READING_GRADE.get((vals.get(src) or {}).get("verdict"), "other")) for src in READERS if vals.get(src)]
+        if len(said) == 2:
+            names, grades = C("family.reader_names"), C("family.grade_words")
+            lead = (f'<p class="rds__lead">' + esc(C("family.disagree_lead", a=names.get(said[0][0], source_credit(said[0][0])), ga=grades[said[0][1]],
+                                                       b=names.get(said[1][0], source_credit(said[1][0])), gb=grades[said[1][1]])) + "</p>")
+            agree = ""
+    return (f'<section class="rds" aria-labelledby="h-readings"><h3 class="rds__h" id="h-readings">{esc(C("family.readings_heading"))}</h3>'
+            f'<p class="rds__intro">{ctext(C("family.readings_intro"))}{(" " + esc(agree)) if agree else ""}</p>{lead}'
+            f'<div class="rds__pair">{"".join(cols)}</div>{note}{draft}</section>')
+
+
+def draft_scope_line(sid, root) -> str:
+    """The AI agent's draft classification of one statement, as a draft, with its check link."""
+    if COVER_STALE:
+        return f'<p class="bench__draft">{esc(C("statement.coverage_stale"))}</p>'
+    cls = cover_class(sid)
+    label = cover_label(cls)
+    label = label[:1].lower() + label[1:]
+    key = "family.draft_scope" if cls and label.startswith("states") else ("family.draft_scope_unclear" if cls == "unclear" else "family.draft_scope_none")
+    check = issue_url("check", C("statement.coverage_check_title", id=sid), statement=sid, upstream_commit=COMMIT)
+    return (f'<p class="bench__draft">{esc(C(key, label=label) if key == "family.draft_scope" else C(key))} '
+            f'<a class="ext" href="{esc(check)}" rel="noopener">{esc(C("statement.coverage_check"))}</a></p>')
+
+
+def family_claim_card(fid, root) -> str:
+    """The bench for one family: the paper's theorem in a paper card, the Lean statement
+    that states it in a Lean card, the thread between them, and the two outside readings
+    of scope. Self-contained for embedding: the page needs family.css (family_head) and
+    the KaTeX macros of family_claim_macro_ids(fid)."""
+    f = FAM[fid]
+    main, (m, st), pairs = bench_choice(f)
+    if m and st:
+        paper = bench_paper_card(m, st, root, TexConv(m, root))
+    else:
+        paper = f'<article class="bp bp--none" id="bench-theorem"><p>{esc(C("family.no_headline_any"))}</p></article>'
+    caption = ""
+    if main:
+        sid, _, _, why = main
+        lean = bench_lean_card(sid, root)
+        label = (ST[sid].get("labels") or [sid])[0]
+        if why == "candidate":
+            words = pair_words(ST[sid], st)
+            cap = C("family.thread_caption", theorem=printed_plain(m, st), words=", ".join(words))
+            caption = (f'<p class="bench__cap" id="thread-{esc(fid)}">{ctext(cap)} '
+                       f'<a class="ext" href="{esc(check_url(sid))}" rel="noopener">{esc(C("family.thread_check"))}</a></p>')
+            joint = (f'<div class="bench__thread" role="img" aria-label="{esc(C("family.thread_label", theorem=printed_plain(m, st), label=tex_plain(label)))}" '
+                     f'aria-describedby="thread-{esc(fid)}">{thread_svg()}{thread_svg(vertical=True)}</div>')
+            kind = "paired"
+        else:
+            caption = f'<p class="bench__cap bench__cap--none">{ctext(C("family.nothread_" + why))}</p>'
+            joint = ""
+            kind = "unpaired"
+        draft = draft_scope_line(sid, root)
+    else:
+        lean = (f'<div class="bl bl--none"><p class="bl__title">{esc(C("family.nolean_h"))}</p>'
+                f'<p class="bl__none">{esc(C("family.nolean_text"))}</p>'
+                f'<p class="bl__none">{esc(C("family.nolean_invite"))} '
+                f'<a class="ext" href="{esc(suggest_url(BASE_URL + "families/" + fid + ".html", C("issues.family_name", id=fid, title=tex_plain(f["title"]))))}" rel="noopener">{esc(C("words.suggest_change"))}</a>.</p></div>')
+        joint = ""
+        kind = "nolean"
+        draft = ""
+    # Each card sits in a side column; the shorter one may travel (stick) beside the
+    # longer as the reader scrolls (family.js decides), carrying the thread with it.
+    gap = "bench__gap" + ("" if kind == "paired" else " bench__gap--none")
+    return (f'<div class="bench-host"><div class="bench bench--{kind}" data-bench>'
+            f'<div class="bench__side bench__side--paper"><div class="bench__travel">{paper}{joint}</div></div>'
+            f'<div class="{gap}" aria-hidden="true"></div>'
+            f'<div class="bench__side bench__side--lean"><div class="bench__travel">{lean}</div></div>'
+            f'<div class="bench__notes">{caption}{readings_html(f, root, draft) if (f["statements"] or sourced_all(f, "scope_reading")) else draft}</div></div></div>')
+
+
+def family_claim_macro_ids(fid) -> list:
+    """Manuscript ids whose KaTeX macros the bench needs (for macros_script)."""
+    _, (m, _), _ = bench_choice(FAM[fid])
+    return [m["id"]] if m else []
+
+
+def family_head(root) -> str:
+    """The stylesheet and the small script a page needs to show a bench."""
+    return f'<link rel="stylesheet" href="{root}assets/family.css">\n<script defer src="{root}assets/family.js"></script>'
+
+
+def bench_index_html(f, root) -> str:
+    """Every other theorem and Lean statement, compact: which theorem each Lean statement
+    is paired with, and which theorems have none. The bench above is the large case."""
+    main, theorem, pairs = bench_choice(f)
+    if not pairs and not theorem[0]:
+        return ""
+    rows = []
+    # Lean statements paired with the bench theorem itself.
+    same = [p for p in pairs if p is not main and p[3] == "candidate" and same_statement((p[1], p[2]), theorem)]
+    if same:
+        items = ", ".join(f'<a href="{root}statements/{esc(p[0])}.html"><span class="md-math">{esc((ST[p[0]].get("labels") or [p[0]])[0])}</span></a>' for p in same)
+        rows.append(f'<li class="bx__i bx__i--same">{mini_thread(True)}<p>{C("family.index_same", items=items)}</p></li>')
+    # Other theorems: those a Lean statement pairs with first, then the rest.
+    paired_to = {}
+    for p in pairs:
+        if p[3] == "candidate" and not same_statement((p[1], p[2]), theorem):
+            paired_to.setdefault((p[1]["id"], p[2]["file"], p[2]["line"]), []).append(p)
+    heads = [(MS[s], st) for s in f["manuscripts"] if s in MS for st in headline_statements(MS[s])]
+    for key, ps in paired_to.items():
+        if not any((m["id"], st["file"], st["line"]) == key for m, st in heads):
+            heads.append((ps[0][1], ps[0][2]))
+    others = [(m, st) for m, st in heads if not same_statement((m, st), theorem)]
+    others.sort(key=lambda x: 0 if (x[0]["id"], x[1]["file"], x[1]["line"]) in paired_to else 1)
+    shown = 0
+    rest = 0
+    for m, st in others:
+        ps = paired_to.get((m["id"], st["file"], st["line"]), [])
+        if not ps and shown >= 4:
+            rest += 1
+            continue
+        href = paper_statement_href(m["id"], st, root) or f"{root}papers/{esc(m['id'])}.html"
+        thm = f'<span class="bx__thm"><a href="{esc(href)}">{printed_html(m, st)}</a> <span class="bx__in">{C("family.index_in", paper=ms_title_html(m))}</span></span>'
+        if ps:
+            lean = ", ".join(f'<a href="{root}statements/{esc(p[0])}.html"><span class="md-math">{esc((ST[p[0]].get("labels") or [p[0]])[0])}</span></a> <span class="bx__runs">{esc(runs_phrase(p[0]))}</span>' for p in ps)
+            rows.append(f'<li class="bx__i">{mini_thread(True)}<p>{thm}<span class="bx__to">{lean}</span></p></li>')
+        elif pairs:
+            rows.append(f'<li class="bx__i bx__i--bare"><span class="bx__pad" aria-hidden="true"></span><p>{thm}<span class="bx__to bx__to--none">{esc(C("family.index_no_lean"))}</span></p></li>')
+        else:
+            rows.append(f'<li class="bx__i bx__i--bare bx__i--plain"><span class="bx__pad" aria-hidden="true"></span><p>{thm}</p></li>')
+        shown += 1
+    for p in pairs:
+        if p is not main and p[3] != "candidate":
+            lean = f'<a href="{root}statements/{esc(p[0])}.html"><span class="md-math">{esc((ST[p[0]].get("labels") or [p[0]])[0])}</span></a>'
+            rows.append(f'<li class="bx__i bx__i--loose">{mini_thread(False)}<p>{C("family.index_unpaired", lean=lean, why=esc(C("family.index_why_" + p[3])))} <span class="bx__runs">{esc(runs_phrase(p[0]))}</span></p></li>')
+    if rest:
+        rest_key = "family.index_rest" if pairs else "family.index_rest_nolean"
+        rows.append(f'<li class="bx__i bx__i--rest"><span class="bx__pad" aria-hidden="true"></span><p>{C(rest_key, n=say(rest))[:1].upper() + C(rest_key, n=say(rest))[1:]} <a href="#h-ms">{esc(C("family.index_rest_link"))}</a>.</p></li>')
+    if not rows:
+        return ""
+    return (f'<div class="bx"><h3 class="bx__h" id="h-index">{esc(C("family.index_heading" if pairs else "family.index_heading_nolean"))}</h3>'
+            f'<ul class="bx__list{"" if pairs else " bx__list--plain"}">{"".join(rows)}</ul></div>')
+
+
+def runs_phrase(sid) -> str:
+    n = run_groups(sid)
+    if n == 0:
+        return C("family.runs_phrase_none")
+    return C("family.runs_phrase_1") if n == 1 else C("family.runs_phrase_n", n=say(n))
+
+
+def fam_finds(finds, root, cls="ff") -> str:
+    """Outside findings, each credited where it sits: what they found, who, where, when."""
+    out = []
+    for f_ in finds:
+        e = COMMUNITY["efforts"].get(f_["effort"], {})
+        who = credit_names(e)
+        credit = ", ".join(x for x in [who, e.get("name", "")] if x)
+        out.append(f'<li class="{cls}__i"><p class="{cls}__what">{esc(curly(f_["summary"]))}</p>'
+                   f'<p class="{cls}__who">{esc(credit)}, {esc(date_words(f_["date"]))}. '
+                   f'<a class="ext" href="{esc(f_["url"])}" rel="noopener">{esc(C("community.source"))}</a></p></li>')
+    return f'<ul class="{cls}">' + "".join(out) + "</ul>"
+
+
+def finds_block(finds, root, heading, hid, keep=3) -> str:
+    """A credited list that shows its first few and folds the rest, so it filters rather than dumps."""
+    if not finds:
+        return ""
+    finds = sorted(finds, key=lambda x: x["date"], reverse=True)
+    head = f'<h3 class="h3" id="{hid}">{esc(heading)}</h3>'
+    if len(finds) <= keep + 1:
+        return head + fam_finds(finds, root)
+    return (head + fam_finds(finds[:keep], root)
+            + f'<details class="fam-fold"><summary>{esc(C("family.show_all", n=len(finds)))}</summary>{fam_finds(finds[keep:], root)}</details>')
+
+
+def head_lede(desc: str):
+    """(first sentence, rest) of OpenAI's catalogue description: the first full stop
+    outside mathematics after the sentence has begun."""
     depth = 0
     i = 0
-    while i < len(desc) - 2:
+    while i < len(desc) - 1:
         two = desc[i:i + 2]
         if two in ("\\(", "\\["):
             depth += 1
@@ -2101,10 +2390,181 @@ def split_description(desc: str, limit: int = 600):
             depth = max(0, depth - 1)
             i += 2
             continue
-        if desc[i] == "." and desc[i + 1] == " " and depth == 0 and i > 120:
+        if desc[i] == "." and desc[i + 1] == " " and depth == 0 and i > 40:
             return desc[:i + 1], desc[i + 2:]
         i += 1
     return desc, ""
+
+
+def head_facts_html(f, root, mss, problems) -> str:
+    """The family's facts as sentences a person could say aloud, each linked to the rows behind it."""
+    fid = f["id"]
+    n = len(mss)
+    reading = sum(1 for m in mss if m["id"] in PAPER_READING)
+    papers = count_words(n, "paper")
+    if reading and reading == n:
+        papers += ", " + (C("family.facts_read_all") if n > 1 else C("family.facts_read_one"))
+    elif reading:
+        papers += ", " + C("family.facts_read_some", k=say(reading))
+    stmts = [s for s in f["statements"] if s in ST]
+    if stmts:
+        runs = sum(1 for s in stmts if run_groups(s))
+        lean = f'<a href="#h-bench">{esc(count_words(len(stmts), "lean"))}</a>'
+        if runs == len(stmts):
+            lean += ", " + esc(C("family.facts_run_all") if len(stmts) > 1 else C("family.facts_run_one"))
+        elif runs:
+            lean += ", " + esc(C("family.facts_run_some", k=say(runs)))
+        else:
+            lean += ", " + esc(C("family.facts_run_none") if len(stmts) > 1 else C("family.facts_run_none_one"))
+    else:
+        lean = esc(C("family.facts_lean_none"))
+    sents = [C("family.facts", id=esc(fid), papers=f'<a href="#h-ms">{esc(papers)}</a>', lean=lean)]
+    wd = [m for m in MANUSCRIPTS if m["status"] == "withdrawn" and m.get("family") == fid]
+    if wd:
+        sents.append(f'<a href="#h-withdrawn">{esc(C("family.facts_withdrawn_1") if len(wd) == 1 else C("family.facts_withdrawn_n", n=say(len(wd)).capitalize()))}</a>')
+    if problems:
+        sents.append(f'<a href="#h-problems">{esc(C("family.facts_problems_1") if len(problems) == 1 else C("family.facts_problems_n", n=say(len(problems)).capitalize()))}</a>')
+    ty, tier = sourced(f, "type"), sourced(f, "tier")
+    if ty:
+        what = C("sources.type_words").get(ty["value"], ty["value"])
+        also = sourced(f, "also")
+        if also:
+            what += C("sources.also_word", what=C("sources.type_words").get(also["value"], also["value"]))
+        src = f'<a href="{root}sources.html#src-{esc(ty["source"])}">{esc((SOURCES.get(ty["source"]) or {}).get("name") or ty["source"])}</a>'
+        names = (SOURCES.get(tier["source"]) or {}).get("tier_names") or {} if tier else {}
+        tname = names.get(str(tier["value"])) if tier and tier.get("value") is not None else None
+        if tname:
+            sents.append(C("family.facts_tier", source=src, type=esc(what), tier=esc(tname)))
+        else:
+            sents.append(C("family.facts_type", source=src, type=esc(what)))
+    erd = sourced(f, "erdos_problems")
+    if erd and erd.get("value"):
+        probs = [f'<a class="ext" href="{esc(p["url"])}" rel="noopener">{esc(C("sources.erdos_number", n=p["number"]))}</a>' for p in erd["value"]]
+        joined = probs[0] if len(probs) == 1 else ", ".join(probs[:-1]) + " " + C("family.and") + " " + probs[-1]
+        sents.append(C("family.facts_erdos", problems=joined, source=credit_link(erd["source"], root)))
+    return '<p class="fhead__facts" id="h-standing">' + " ".join(sents) + "</p>"
+
+
+def checks_html(f, root, problems) -> str:
+    """What has been checked, by whom, and what is left for a reader to check."""
+    fid = f["id"]
+    stmts = [s for s in f["statements"] if s in ST]
+    parts = []
+    # Re-runs, statement by statement, when there is more than the bench's one statement.
+    if len(stmts) > 1:
+        groups = []
+        for s in stmts:
+            for v in runs_of(s):
+                if v["source"] not in groups:
+                    groups.append(v["source"])
+        if groups:
+            head = "".join(f'<th scope="col">{credit_link(g, root)}</th>' for g in groups)
+            body = []
+            for s in stmts:
+                by = {v["source"]: v["value"] for v in runs_of(s)}
+                cells = []
+                for g in groups:
+                    rv = by.get(g)
+                    if not rv:
+                        cells.append(f'<td class="rt__c rt__c--none">{esc(C("family.rt_none"))}</td>')
+                        continue
+                    state = "ok" if rv.get("verdict") == "accepted" else "open"
+                    cells.append(f'<td class="rt__c rt__c--{state}"><a href="{esc(rv.get("url") or "")}" rel="noopener" class="rt__a">{GLYPH_RUN[state]}{esc(C("family.run_verdict").get(rv.get("verdict"), rv.get("verdict") or ""))}</a>'
+                                 f'<span class="rt__d">{esc(date_words(rv.get("date")))}</span></td>')
+                label = (ST[s].get("labels") or [s])[0]
+                body.append(f'<tr><th scope="row"><a href="{root}statements/{esc(s)}.html"><span class="md-math">{esc(label)}</span></a></th>{"".join(cells)}</tr>')
+            parts.append(f'<h3 class="h3" id="h-reruns">{esc(C("family.rt_heading"))}</h3><p class="intro">{ctext(C("family.rt_intro"))}</p>'
+                         f'<div class="rt-wrap" tabindex="0" role="region" aria-labelledby="h-reruns"><table class="rt"><thead><tr><th scope="col">{esc(C("family.rt_lean"))}</th>{head}</tr></thead><tbody>{"".join(body)}</tbody></table></div>')
+    parts.append(other_assistant_html(f, root))
+    parts.append(finite_checks_html(f, root))
+    elsewhere = findings_for(fid, kinds={"replay-pass", "replay-fail"})
+    parts.append(finds_block(elsewhere, root, C("family.reported_heading"), "h-reported"))
+    if problems:
+        parts.append(f'<div class="fam-problems"><h3 class="h3" id="h-problems">{esc(C("sources.problems_heading"))}</h3>{fam_finds(sorted(problems, key=lambda x: x["date"]), root)}</div>')
+    parts.append(left_to_check_html(f, root))
+    return "".join(p for p in parts if p)
+
+
+def left_to_check_html(f, root) -> str:
+    """What nobody has yet checked, each item with the place to check it."""
+    stmts = [s for s in f["statements"] if s in ST]
+    items = []
+    if not stmts:
+        items.append(esc(C("family.left_nolean")))
+    else:
+        cands = [s for s in stmts if family_pair(s)[2] == "candidate"]
+        if cands:
+            items.append(ctext(C("family.left_pairing_1") if len(cands) == 1 else C("family.left_pairing_n", n=say(len(cands))))
+                         + f' <a href="#h-contrib">{esc(C("family.left_pairing_link"))}</a>')
+        for s in stmts:
+            holes = ST[s]["comparator"].get("definition_names") or []
+            label = (ST[s].get("labels") or [s])[0]
+            if holes:
+                items.append(f'<a href="{root}statements/{esc(s)}.html#h-holes"><span class="md-math">{esc(label)}</span></a>: ' + ctext(C("family.left_holes_1") if len(holes) == 1 else C("family.left_holes_n", n=say(len(holes)))))
+        unrun = [s for s in stmts if not run_groups(s)]
+        for s in unrun:
+            label = (ST[s].get("labels") or [s])[0]
+            items.append(f'<a href="{root}statements/{esc(s)}.html"><span class="md-math">{esc(label)}</span></a>: ' + esc(C("family.left_unrun")))
+        if not COVER_STALE and any(COVERAGE.get(s) for s in stmts):
+            items.append(esc(C("family.left_scope")))
+        for v in sourced_all(f, "scope_reading"):
+            d = (v.get("value") or {}).get("definitions_to_check")
+            if d:
+                items.append(C("family.left_defs", source=credit_link(v["source"], root)) + f' <span class="md-math">{ctext(d)}</span>')
+    fin = Counter(c["verdict"] for v in sourced_all(f, "finite_checks") for c in v["value"])
+    if fin.get("refused"):
+        items.append(esc(C("family.left_finite_1") if fin["refused"] == 1 else C("family.left_finite_n", n=say(fin["refused"]))))
+    if fin.get("needs-data"):
+        items.append(esc(C("family.left_data_1") if fin["needs-data"] == 1 else C("family.left_data_n", n=say(fin["needs-data"]))))
+    if not items:
+        return ""
+    return (f'<div class="left"><h3 class="h3" id="h-left">{esc(C("family.left_heading"))}</h3>'
+            f'<ul class="left__list">{"".join("<li>" + i + "</li>" for i in items)}</ul></div>')
+
+
+def paper_row(m, root, conv, seen) -> str:
+    """One paper: where to read it, its edition, and (folded) its abstract and the statements it opens with."""
+    heads = headline_statements(m)
+    reading = m["id"] in PAPER_READING
+    notes = ""
+    if m.get("version_note"):
+        notes += (f'<details class="fam-fold"><summary>{esc(C("family.version_note"))}</summary>'
+                  f'<div class="md-math">{md_paragraphs(m["version_note"], "preprints/" + m["id"] + "/")}</div></details>')
+    prev = ""
+    if m.get("previous_versions"):
+        lst = ", ".join(f'<a href="{root}papers/{esc(p)}.html">{esc(date_words(MS[p]["date"]) or p) if p in MS else esc(p)}</a>' for p in m["previous_versions"])
+        prev = f'<p class="pp__prev">{esc(C("family.previous_editions"))}: {lst}</p>'
+    figs = []
+    for st in heads:
+        fig = render_paper_statement(m, st, root, conv)
+        aid = re.search(r'id="([^"]+)"', fig).group(1)
+        if aid in seen:  # two editions whose slugs share their first 40 characters
+            k = 2
+            while f"{aid}-{k}" in seen:
+                k += 1
+            fig = fig.replace(f'id="{aid}"', f'id="{aid}-{k}"', 1)
+            aid = f"{aid}-{k}"
+        seen.add(aid)
+        figs.append(fig)
+    stm = "".join(figs) if heads else f'<p class="muted">{esc(C("family.no_headline"))}</p>'
+    abstract = f'<div class="pp__abstract tex-auto">{rich(m.get("abstract") or "")}</div>' if m.get("abstract") else ""
+    fold = C("family.paper_fold", n=say(len(heads))) if heads else C("family.paper_fold_none")
+    meta = C("family.paper_meta", date=date_words(m.get("date")) or C("family.undated"), status=status_label(m["status"]).lower())
+    read = (f'<a class="btn btn--ghost" href="{root}papers/{esc(m["id"])}.html">{esc(C("family.read_here"))}</a>' if reading
+            else f'<a class="btn btn--ghost" href="{root}papers/{esc(m["id"])}.html">{esc(C("family.open_page"))}</a>')
+    # Earlier editions link to their result at their own slug: keep that anchor here.
+    aliases = ""
+    for p in m.get("previous_versions") or []:
+        if p not in seen and p not in FAM.get(m.get("family") or "", {}).get("manuscripts", []):
+            seen.add(p)
+            aliases += f'<span class="fam-alias" id="{esc(p)}"></span>'
+    return f"""<article class="pp" id="{esc(m['id'])}">{aliases}
+ <h3 class="pp__title"><a href="{root}papers/{esc(m['id'])}.html">{ms_title_html(m)}</a></h3>
+ <p class="pp__meta">{esc(meta)}</p>
+ <p class="pp__acts">{read}{pdf_button(m, 'btn btn--quiet')}</p>
+ {notes}{prev}
+ <details class="fam-fold pp__more"><summary>{esc(fold)}</summary>{abstract}<div class="stmts">{stm}</div></details>
+</article>"""
 
 
 def explanation_section_html(f, root):
@@ -2125,10 +2585,8 @@ def explanation_section_html(f, root):
         items = "".join(f'<li><span class="md-math">{esc(e.get("title") or C("explanation.untitled"))}</span>, {esc(people(e["names"]))} <span class="muted small">({esc(C("family.explain_status_" + ("ready" if e["status"] == "ready-for-review" else "draft")))})</span> <a class="ext small" href="{esc(REPO + "/blob/main/" + e["path"])}" rel="noopener">{esc(C("family.explain_draft_source"))}</a></li>' for e in drafts)
         parts.append(f'<h3 class="h3">{esc(C("family.explain_progress_heading"))}</h3><p class="intro">{esc(C("family.explain_progress_intro"))}</p><ul class="exdrafts">{items}</ul>')
     if not rev:
-        parts.insert(0, f'<p class="explain-box__text">{esc(C("family.explain_none"))}</p>')
-    elsewhere = findings_for(fid, kinds={"explanation"})
-    if elsewhere:
-        parts.append('<h3 class="h3">' + esc(C("sources.explanations_heading")) + "</h3>" + findings_list(elsewhere, root))
+        parts.insert(0, f'<p class="fam-invite">{esc(C("family.explain_none"))}</p>')
+    parts.append(finds_block(findings_for(fid, kinds={"explanation"}), root, C("sources.explanations_heading"), "h-elsewhere"))
     return "".join(parts)
 
 
@@ -2143,19 +2601,76 @@ def build_family(f):
     status, ex = family_exposition_status(fid)
     for e in reviewed_explanations(fid):
         build_explanation(f, e)
-    blocks = []
-    for m in mss:
-        conv = TexConv(m, root)
-        blocks.append(manuscript_block(m, root, conv, f["statements"]))
-    # Lean column
-    if f["statements"]:
-        lean_html = "".join(lean_card_small(s, root) for s in f["statements"] if s in ST)
-    else:
-        lean_html = f'<p class="muted">{esc(C("family.no_lean"))}</p>'
-    scope = ""
-    if f.get("lean_doc") and f["lean_doc"].get("scope"):
-        scope = f"""<blockquote class="quote md-math">{md_paragraphs(f['lean_doc']['scope'])}<footer><a class="ext" href="{esc(f['lean_doc']['url'])}" rel="noopener">{esc(C('family.lean_scope_source'))}</a></footer></blockquote>"""
-    # citations within the release, both directions
+    page_url = BASE_URL + rel
+    claim = issue_url("claim", C("issues.claim", id=fid, title=title_plain), family=fid)
+    credit = issue_url("credit", C("issues.credit", id=fid, title=title_plain), family=fid, upstream_commit=COMMIT)
+    suggest = suggest_url(page_url, C("issues.family_name", id=fid, title=title_plain))
+    problems = findings_for(fid, kinds={"error-reported", "correction", "replay-fail"})
+
+    # 1. The head: trail, title, OpenAI's first sentence, the facts.
+    map_f = f"{root}index.html#o=f%3A{fid}"
+    trail_html = (f'<nav class="trail fhead__trail" aria-label="{esc(C("nav.breadcrumb"))}"><a href="{root}index.html">{esc(C("family.trail_map"))}</a>'
+                  f'<span class="trail__sep" aria-hidden="true">/</span><a href="{root}index.html#o=d%3A{DISC_SLUG[di]}">{esc(disc)}</a>'
+                  f'<span class="trail__sep" aria-hidden="true">/</span><span aria-current="page">{fam_title_html(f)}</span></nav>')
+    lead, rest = head_lede(f["description"])
+    more = (f'<details class="fam-fold fhead__more"><summary>{esc(C("family.description_more"))}</summary>'
+            f'<div class="tex-auto">{rich(rest, "", root, link_results=True)}</div></details>') if rest else ""
+    rev = reviewed_explanations(fid)
+    read_btn = f'<a class="btn btn--primary" href="{root}{explanation_rel(rev[0], fid)}">{esc(C("family.read_explanation"))}</a>' if rev else ""
+    head_html = f"""<header class="fhead">
+ <div class="fhead__bar">{trail_html}<p class="fhead__tools">{read_btn}<a class="btn btn--ghost" href="{map_f}">{esc(C('words.show_on_map'))}</a></p></div>
+ <h1 class="fhead__title{' fhead__title--long' if len(title_plain) > 64 else ''}">{fam_title_html(f)}</h1>
+ <div class="fhead__lede" id="h-desc"><p class="tex-auto">{rich(lead, "", root, link_results=True)}</p>
+  <p class="fhead__src"><a class="ext" href="{BASE_BLOB}CONTENTS.md" rel="noopener">{esc(C('family.description_source'))}</a></p>{more}</div>
+ {head_facts_html(f, root, mss, problems)}
+</header>"""
+
+    # 2. The bench.
+    bench_h = C("family.bench_heading") if f["statements"] else C("family.bench_heading_nolean")
+    bench = f"""<section class="fsec fsec--bench" aria-labelledby="h-bench">
+ <span class="fam-alias" id="h-lean"></span>
+ <h2 class="fsec__h" id="h-bench">{esc(bench_h)}</h2>
+ {family_claim_card(fid, root)}
+ {bench_index_html(f, root)}
+</section>"""
+
+    # 3. What has been checked, and what is left to check.
+    fam_claims = CLAIMS_BY_FAMILY.get(fid, [])
+    formulations_html = ""
+    stmts_c = [c for c in fam_claims if c["kind"] == "statement"]
+    thms_c = [c for c in fam_claims if c["kind"] in ("theorem", "lemma")]
+    if stmts_c:
+        items = []
+        for c in stmts_c[:12]:
+            head_lines = lean_lines("\n".join((c.get("text") or c["head"]).split("\n")[:14]))
+            cmp_note = f' <span class="fam-tag">{esc(C("family.formulation_checked", id=c["comparator_statement"]))}</span>' if c.get("comparator_statement") else ""
+            items.append(f'<li><p><code>{esc(c["name"].split(".")[-1])}</code>{cmp_note} <a class="ext small" href="{esc(BASE_BLOB + c["file"] + "#L" + str(c["line"]))}" rel="noopener">{esc(c["file"].split("/")[-1])}:{c["line"]}</a></p><pre class="lean lean--snippet"><code>{"".join(chr(10) + l for l in head_lines).lstrip(chr(10))}</code></pre></li>')
+        more_f = f'<p class="muted small">{esc(C("family.formulations_more", n=len(stmts_c) - 12))}</p>' if len(stmts_c) > 12 else ""
+        thm_line = f'<p class="muted small">{esc(C("family.formulations_theorems", n=len(thms_c)))}</p>' if thms_c else ""
+        formulations_html = (f'<details class="fam-fold fam-fold--section" id="h-form"><summary>{esc(C("family.formulations_heading"))}</summary>'
+                             f'<p class="intro">{esc(C("family.formulations_intro"))}</p><ol class="formulations">{"".join(items)}</ol>{more_f}{thm_line}</details>')
+    checks = f"""<section class="fsec" aria-labelledby="h-checks">
+ <h2 class="fsec__h" id="h-checks">{esc(C('family.checks_heading'))}</h2>
+ <p class="fsec__intro">{ctext(C('family.checks_intro'))}</p>
+ {checks_html(f, root, problems)}
+ {formulations_html}
+</section>"""
+
+    # 4. Read the papers.
+    seen_ids: set = set()
+    rows = "".join(paper_row(m, root, TexConv(m, root), seen_ids) for m in mss)
+    rs = f.get("reasoning_summary")
+    reasoning_html = (f'<details class="fam-fold"><summary>{esc(C("family.method_notes"))}</summary><p class="small">{esc(C("family.reasoning_summary"))} '
+                      f'<a class="ext" href="{esc(rs["url"])}" rel="noopener">{esc(rs["title"])}</a></p></details>') if rs else ""
+    papers = f"""<section class="fsec" aria-labelledby="h-ms">
+ <h2 class="fsec__h" id="h-ms">{esc(C('family.papers_heading'))}</h2>
+ <p class="fsec__intro">{ctext(C('family.papers_intro'))}</p>
+ <div class="pps">{rows}</div>
+ {reasoning_html}
+ {withdrawn_from_family_html(fid, root)}
+</section>"""
+
+    # 5. Connections: what it cites inside the release, what cites it, what others said.
     cites_items, seen = [], set()
     for m in mss:
         for r in m.get("rests_on") or []:
@@ -2171,112 +2686,109 @@ def build_family(f):
                 cited_items.append((c, cm.get("status", "current"), cm.get("has_lean", False)))
     cites = related_list(cites_items, root, fid) if cites_items else f'<p class="muted">{esc(C("family.cites_none"))}</p>'
     cited = related_list(cited_items, root, fid) if cited_items else f'<p class="muted">{esc(C("family.cited_none"))}</p>'
-    # references outside the release
     refs_html = []
     for m in mss:
         refs = m.get("references") or []
         if refs:
             items = "".join(ref_entry(r) for r in refs)
-            refs_html.append(f'<details class="builds"><summary>{esc(C("family.refs_summary", count=len(refs), title=tex_plain(m["title"])))}</summary><ol class="refs">{items}</ol></details>')
+            refs_html.append(f'<details class="fam-fold"><summary>{esc(C("family.refs_summary", count=len(refs), title=tex_plain(m["title"])))}</summary><ol class="refs">{items}</ol></details>')
         else:
-            refs_html.append(f'<p class="muted">{esc(C("family.refs_none"))} ({esc(tex_plain(m["title"]))})</p>')
-    page_url = BASE_URL + rel
-    claim = issue_url("claim", C("issues.claim", id=fid, title=title_plain), family=fid)
-    credit = issue_url("credit", C("issues.credit", id=fid, title=title_plain), family=fid, upstream_commit=COMMIT)
-    suggest = suggest_url(page_url, C("issues.family_name", id=fid, title=title_plain))
-    credits = CONTRIB["credits"].get(fid, [])
-    contributors = ""
-    names = [n_ for e in ex for n_ in e["names"]] + [n_ for c_ in credits for n_ in c_["names"]]
-    if names:
-        contributors = f'<h3 class="h3">{esc(C("family.contributors_heading"))}</h3><p>{esc(", ".join(dict.fromkeys(names)))}</p>'
-    facts = C("family.facts", manuscripts=n_ms(len(mss)), discipline=disc, lean=(n_lean(len(f["statements"])) if f["statements"] else C("words.no_lean").capitalize()))
-    rs = f.get("reasoning_summary")
-    reasoning_html = (f'<details class="more"><summary>{esc(C("family.method_notes"))}</summary><p class="muted small">{esc(C("family.reasoning_summary"))} <a class="ext" href="{esc(rs["url"])}" rel="noopener">{esc(rs["title"])}</a></p></details>') if rs else ""
-    fam_claims = CLAIMS_BY_FAMILY.get(fid, [])
-    formulations_html = ""
-    stmts_c = [c for c in fam_claims if c["kind"] == "statement"]
-    thms_c = [c for c in fam_claims if c["kind"] in ("theorem", "lemma")]
-    if stmts_c:
-        items = []
-        for c in stmts_c[:12]:
-            head_lines = lean_lines("\n".join((c.get("text") or c["head"]).split("\n")[:14]))
-            cmp_note = f' <span class="pill pill--support">{esc(C("family.formulation_checked", id=c["comparator_statement"]))}</span>' if c.get("comparator_statement") else ""
-            items.append(f'<li><p><code>{esc(c["name"].split(".")[-1])}</code>{cmp_note} <a class="ext small" href="{esc(BASE_BLOB + c["file"] + "#L" + str(c["line"]))}" rel="noopener">{esc(c["file"].split("/")[-1])}:{c["line"]}</a></p><pre class="lean lean--snippet"><code>{"".join(chr(10) + l for l in head_lines).lstrip(chr(10))}</code></pre></li>')
-        more = f'<p class="muted small">{esc(C("family.formulations_more", n=len(stmts_c) - 12))}</p>' if len(stmts_c) > 12 else ""
-        thm_line = f'<p class="muted small">{esc(C("family.formulations_theorems", n=len(thms_c)))}</p>' if thms_c else ""
-        formulations_html = f'<section class="band band--tight" aria-labelledby="h-form"><details class="more"><summary><h2 class="h2 h2--inline" id="h-form">{esc(C("family.formulations_heading"))}</h2></summary><p class="intro">{esc(C("family.formulations_intro"))}</p><ol class="formulations">{"".join(items)}</ol>{more}{thm_line}</details></section>'
-
-    lead, rest = split_description(f["description"])
-    desc_html = f'<div class="tex-auto">{rich(lead, "", root, link_results=True)}</div>'
-    if rest:
-        desc_html += f'<details class="more more--inline"><summary>{esc(C("family.description_more"))}</summary><div class="tex-auto">{rich(rest, "", root, link_results=True)}</div></details>'
-    rev = reviewed_explanations(fid)
-    read_btn = f'<a class="btn btn--primary" href="{root}{explanation_rel(rev[0], fid)}">{esc(C("family.read_explanation"))}</a>' if rev else ""
-    problems = findings_for(fid, kinds={'error-reported', 'correction', 'replay-fail'})
-    body = f"""<div class="frame page">
-{trail(root, [(esc(disc), f'{root}index.html#d={DISC_SLUG[di]}'), (fam_title_html(f), None)])}
-<header class="phead">
- <p class="phead__kicker">{esc(C('family.trail_label', id=fid))}</p>
- <h1 class="phead__title">{fam_title_html(f)}</h1>
- <p class="phead__facts">{esc(facts)}</p>
- {family_facets_html(f, root)}
- <p class="actions">{read_btn}<a class="btn btn--ghost" href="{root}index.html#d={DISC_SLUG[di]}&amp;f={fid}">{esc(C('words.show_on_map'))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p>
-</header>
-{standing_html(f, root)}
-{('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}
-<section class="band band--tight" aria-labelledby="h-desc">
- <h2 class="h2" id="h-desc">{esc(C('family.description_heading'))}</h2>
- <blockquote class="quote quote--lead">{desc_html}<footer><a class="ext" href="{BASE_BLOB}CONTENTS.md" rel="noopener">{esc(C('family.description_source'))}</a></footer></blockquote>
- {('<h3 class="h3">' + esc(C('sources.said_heading')) + '</h3>' + findings_list(findings_for(fid, kinds={'commentary'}), root)) if findings_for(fid, kinds={'commentary'}) else ''}
-</section>
-<section class="band band--tight explain-box" aria-labelledby="h-explain">
- <h2 class="h2" id="h-explain">{esc(C('family.explain_heading'))}</h2>
- {explanation_section_html(f, root)}
- <p class="actions"><a class="btn btn--ghost ext" href="{esc(claim)}" rel="noopener">{esc(C('family.claim_button'))}</a></p>
-</section>
-<div class="split">
- <section class="split__main" aria-labelledby="h-ms">
-  <h2 class="h2" id="h-ms">{esc(C('family.manuscripts_heading'))}</h2>
-  <p class="intro">{esc(C('family.headline_note'))}</p>
-  {''.join(blocks)}
-  {withdrawn_from_family_html(fid, root)}
- </section>
- <aside class="split__side" aria-labelledby="h-lean">
-  <div>
-   <h2 class="h2" id="h-lean">{esc(C('family.lean_heading'))}</h2>
-   {lean_html}
-   {('<h3 class="h3">' + esc(C('family.lean_scope_heading')) + '</h3>' + scope) if scope else ''}
-   {scope_readings_html(f, root)}
-   {other_assistant_html(f, root)}
-   {finite_checks_html(f, root)}
-   {reasoning_html}
-  </div>
- </aside>
-</div>
-{formulations_html}
-<section class="band" aria-labelledby="h-cites">
- <h2 class="h2" id="h-cites">{esc(C('family.citations_heading'))}</h2>
- <p class="intro">{esc(C('family.citations_intro'))}</p>
+            refs_html.append(f'<p class="muted small">{esc(C("family.refs_none"))} ({esc(tex_plain(m["title"]))})</p>')
+    connections = f"""<section class="fsec" aria-labelledby="h-cites">
+ <h2 class="fsec__h" id="h-cites">{esc(C('family.citations_heading'))}</h2>
+ <p class="fsec__intro">{esc(C('family.citations_intro'))}</p>
  <div class="cols2">
-  <div><h3 class="h3">{esc(C('family.cites_heading'))}</h3><p class="intro">{esc(C('family.cites_intro'))}</p>{cites}</div>
-  <div><h3 class="h3">{esc(C('family.cited_heading'))}</h3><p class="intro">{esc(C('family.cited_intro'))}</p>{cited}{('<h3 class="h3">' + esc(C('sources.followups_heading')) + '</h3>' + findings_list(findings_for(fid, kinds={'follow-up-result'}), root)) if findings_for(fid, kinds={'follow-up-result'}) else ''}</div>
+  <div><h3 class="h3">{esc(C('family.cites_heading'))}</h3>{cites}</div>
+  <div><h3 class="h3">{esc(C('family.cited_heading'))}</h3>{cited}</div>
  </div>
-</section>
-<section class="band" aria-labelledby="h-refs">
- <h2 class="h2" id="h-refs">{esc(C('family.refs_heading'))}</h2>
- <p class="intro">{esc(C('family.refs_intro'))}</p>
- {''.join(refs_html)}
-</section>
-<section class="band" aria-labelledby="h-contrib">
- <h2 class="h2" id="h-contrib">{esc(C('family.contribute_heading'))}</h2>
- <p class="intro">{esc(C('family.contribute_intro'))}</p>
- <p class="actions">{check_choice_html(f["statements"], root)}<a class="btn btn--ghost ext" href="{esc(credit)}" rel="noopener">{esc(C('family.credit_button'))}</a><a class="btn btn--ghost ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p>
+ {finds_block(findings_for(fid, kinds={'follow-up-result'}), root, C('sources.followups_heading'), 'h-followups')}
+ {finds_block(findings_for(fid, kinds={'commentary'}), root, C('sources.said_heading'), 'h-said')}
+ <div class="fam-refs" id="h-refs"><h3 class="h3">{esc(C('family.refs_heading'))}</h3><p class="intro">{esc(C('family.refs_intro'))}</p>{''.join(refs_html)}</div>
+</section>"""
+
+    # 6. Explain it, check it or correct it.
+    credits = CONTRIB["credits"].get(fid, [])
+    names = [n_ for e in ex for n_ in e["names"]] + [n_ for c_ in credits for n_ in c_["names"]]
+    contributors = f'<h3 class="h3">{esc(C("family.contributors_heading"))}</h3><p>{esc(", ".join(dict.fromkeys(names)))}</p>' if names else ""
+    explain = f"""<section class="fsec fsec--last" aria-labelledby="h-explain">
+ <h2 class="fsec__h" id="h-explain">{esc(C('family.explain_heading'))}</h2>
+ {explanation_section_html(f, root)}
+ <div class="fam-acts" id="h-contrib">
+  <p class="fsec__intro">{esc(C('family.contribute_intro'))}</p>
+  <p class="actions"><a class="btn btn--ghost ext" href="{esc(claim)}" rel="noopener">{esc(C('family.claim_button'))}</a>{check_choice_html(f["statements"], root)}<a class="btn btn--ghost ext" href="{esc(credit)}" rel="noopener">{esc(C('family.credit_button'))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p>
+ </div>
  {contributors}
-</section>
+</section>"""
+
+    body = f"""<div class="frame page fam">
+{head_html}
+{bench}
+{checks}
+{papers}
+{connections}
+{explain}
 </div>
-{macros_script([m['id'] for m in mss])}"""
+{macros_script(list(dict.fromkeys([m['id'] for m in mss] + [p[1]['id'] for p in bench_choice(f)[2] if p[1]])))}"""
     desc = tex_plain(f["description"])
-    write_page(rel, page(rel, title_plain, desc, body, page_type="article"))
+    write_page(rel, page(rel, title_plain, desc, body, page_type="article", extra_head=family_head(root)))
+
+
+GLYPH_MACHINE = {"ok": '<svg class="glyph glyph--brick" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.2 6.4 4.9 9 9.8 3.2"/></svg>',
+                 "open": '<svg class="glyph glyph--open" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="3.6"/></svg>'}
+
+
+def withdrawn_from_family_html(fid, root):
+    """Manuscripts listed under this family when the release was published and withdrawn since."""
+    wd = [m for m in MANUSCRIPTS if m["status"] == "withdrawn" and m.get("family") == fid]
+    if not wd:
+        return ""
+    arts = "".join(
+        f'<article class="wd" id="{esc(m["id"])}"><h4 class="wd__title"><a href="{root}papers/{esc(m["id"])}.html">{ms_title_html(m)}</a></h4>'
+        f'<div class="wd__note md-math">{md_paragraphs(m.get("withdrawal_note") or "")}</div>'
+        f'<p class="wd__when">{esc(C("paper.withdrawn_on", date=date_words(m.get("withdrawn_on")) or ""))}</p></article>' for m in wd)
+    then = tex_plain(wd[0].get("family_title_on_release_day") or FAM[fid]["title"])
+    return (f'<div class="wds"><h3 class="h3" id="h-withdrawn">{esc(C("family.withdrawn_heading"))}</h3>'
+            f'<p class="intro small">{esc(C("family.withdrawn_intro", title=then))}</p>{arts}</div>')
+
+
+def finite_checks_html(f, root):
+    """Finite parts of this family's papers decided by exact code, each in the checker's own
+    terms. A check that does not decide says nothing against the result."""
+    words = C("family.finite_words")
+    items = []
+    for v in sourced_all(f, "finite_checks"):
+        for c in v["value"]:
+            m = MS.get(c.get("manuscript") or "")
+            paper = f' <a href="{root}papers/{esc(m["id"])}.html">{ms_title_html(m)}</a>' if m else ""
+            scope = f', {esc(c["scope"])}' if c.get("scope") else ""
+            state = "ok" if c["verdict"] == "certified" else "open"
+            detail = (f'<details class="fam-fold"><summary>{esc(C("family.finite_detail"))}</summary>'
+                      f'<p class="small">{esc(c["detail"])}</p></details>') if c.get("detail") else ""
+            undecided = f' <span class="fc__plain">{esc(C("family.finite_undecided_note"))}</span>' if c["verdict"] == "refused" else ""
+            items.append(f'<li class="fc fc--{state}">{GLYPH_MACHINE[state]}<div><p class="fc__v"><strong>{esc(words.get(c["verdict"], c["code"]))}</strong>{scope}.{paper}</p>'
+                         f'<p class="fc__text">{esc(c.get("text") or "")}{undecided}</p>{detail}'
+                         f'<p class="fc__src">{esc(C("family.finite_their_word", code=c["code"]))} {credit_link(v["source"], root)}, {esc(c["id"])}. '
+                         f'<a class="ext" href="{esc(c["url"])}" rel="noopener">{esc(C("sources.record_link"))}</a></p></div></li>')
+    if not items:
+        return ""
+    return (f'<h3 class="h3" id="h-finite">{esc(C("family.finite_heading"))}</h3><p class="intro small">{ctext(C("family.finite_intro"))}</p>'
+            f'<ul class="fcs">{"".join(items)}</ul>')
+
+
+def other_assistant_html(f, root):
+    """Checks of this family's steps in another proof assistant, quoted with attribution."""
+    items = []
+    for v in sourced_all(f, "hol_checks"):
+        for c in v["value"]:
+            items.append(
+                f'<li class="fc fc--ok">{GLYPH_MACHINE["ok"]}<div><p class="fc__v"><strong>{esc(C("family.hol_card", card=c["card"]))}</strong> {esc(c["certifies"])}</p>'
+                f'<p class="fc__text">{esc(C("family.hol_relation"))} {esc(c["relation"])}</p>'
+                f'<p class="fc__src">{esc(C("family.hol_runs", warm=c["warm"], cold=c["cold"]))} '
+                f'{credit_link(v["source"], root)}. <a class="ext" href="{esc(c["url"])}" rel="noopener">{esc(C("family.hol_card_link"))}</a></p></div></li>')
+    if not items:
+        return ""
+    return (f'<h3 class="h3" id="h-hol">{esc(C("family.hol_heading"))}</h3><p class="intro small">{ctext(C("family.hol_intro"))}</p>'
+            f'<ul class="fcs">{"".join(items)}</ul>')
 
 
 def build_paper(m):
@@ -2288,7 +2800,7 @@ def build_paper(m):
     items = []
     if fam:
         di = DISC_OF[fam["id"]]
-        tr = trail(root, [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#d={DISC_SLUG[di]}'),
+        tr = trail(root, [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d:{DISC_SLUG[di]}'),
                           (fam_title_html(fam), f'{root}families/{fam["id"]}.html'), (ms_title_html(m), None)])
         if m.get("family_on_release_day"):
             then = tex_plain(m.get("family_title_on_release_day") or fam["title"])
@@ -2581,18 +3093,8 @@ def build_statement(stmt):
         (C("statement.nanoda_key"), esc(C("statement.nanoda_yes") if stmt["comparator"].get("enable_nanoda") else C("statement.nanoda_no"))),
     ]
     dl = "".join(f"<div><dt>{esc(k)}</dt><dd>{v}</dd></div>" for k, v in facts)
-    decl_doc = {d["name"]: d.get("doc") for d in stmt["declarations"]}
-    if stmt["vocabulary"]:
-        rows = []
-        for v in stmt["vocabulary"]:
-            nm_full = v["name"] or ""
-            parts = nm_full.rsplit(".", 1)
-            ns_ = f'<span class="vocab__ns">{esc(parts[0])}.</span>' if len(parts) == 2 else ""
-            doc = decl_doc.get(nm_full)
-            rows.append(f'<li><a href="#L{v["line"]}"><span class="vocab__kind">{esc(kind_word(v["kind"]))}</span> <code>{ns_}{esc(parts[-1])}</code> <span class="vocab__line">{esc(C("statement.line", line=v["line"]))}</span></a>{f"<span class=\"vocab__doc\">{esc(doc)}</span>" if doc else ""}</li>')
-        vocab = f'<p class="intro">{esc(C("statement.vocab_intro"))}</p><ol class="vocab">{"".join(rows)}</ol>'
-    else:
-        vocab = f'<p class="intro">{esc(C("statement.vocab_pure") if sid in PURE_MATHLIB else C("statement.vocab_none"))}</p>'
+    # The file view's "What you must check" panel lists every local declaration, in the order
+    # the theorem reaches them, so the page no longer repeats them in a separate fold.
     paper_cols = []
     for slug in stmt.get("papers") or []:
         m = MS.get(slug)
@@ -2613,12 +3115,13 @@ def build_statement(stmt):
     trail_items = []
     if fam:
         di = DISC_OF[fam["id"]]
-        trail_items = [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#d={DISC_SLUG[di]}'), (fam_title_html(fam), f'{root}families/{fam["id"]}.html')]
+        trail_items = [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d:{DISC_SLUG[di]}'), (fam_title_html(fam), f'{root}families/{fam["id"]}.html')]
     trail_items.append((f'<span class="md-math">{esc(label)}</span>', None))
     where = ""
     if fam:
         where = f'{esc(C("statement.in_result"))} <a href="{root}families/{fam["id"]}.html">{esc(C("words.result").capitalize())} {esc(fam["id"])}: {fam_title_html(fam)}</a>. '
     where += f'{esc(C("statement.file_label"))} <a class="ext" href="{esc(stmt["url"])}" rel="noopener"><code>{esc(stmt["file"])}</code></a>.'
+    where += f' <a href="{root}index.html#o=l:{quote(sid)}">{esc(C("words.show_on_map"))}</a>'
     reasons = REVIEW_REASONS.get(sid) or []
     reasons_html = (f'<div class="note"><p class="note__h">{esc(C("statement.reasons_heading"))}</p><ul class="rq__why">' + "".join(f'<li class="md-math">{ctext(t)}</li>' for t in reasons) + '</ul></div>') if reasons else ""
     problems = findings_for(sid=sid, kinds={'error-reported', 'correction', 'replay-fail'})
@@ -2664,7 +3167,6 @@ def build_statement(stmt):
  <h2 class="h2" id="h-support">{esc(C('statement.support_heading'))}</h2>
  <details class="more" id="sbs"><summary><span class="h3" id="h-sbs">{esc(C('statement.paper_heading'))}</span></summary><p class="intro">{esc(C('statement.paper_intro'))}</p><div class="sbs__all">{''.join(paper_cols)}</div></details>
  <details class="more"><summary><span class="h3">{esc(C('statement.facts_heading'))}</span></summary><dl class="dl">{dl}</dl></details>
- <details class="more"><summary><span class="h3">{esc(C('statement.vocab_heading'))} <span class="count">{num(stmt['vocabulary_count'])}</span></span></summary>{vocab}</details>
  {file_section}
 </section>
 <section class="band explain-box" aria-labelledby="h-checks">
@@ -2777,7 +3279,11 @@ def work_name(i):
 
 
 def build_home(md):
-    rel = "index.html"
+    """The treemap with its colour-by lenses, at tiles.html ("Every family as a tile").
+    index.html is the release universe, written by scripts/build_universe.py; it is
+    registered here because the sitemap is written before that script runs."""
+    rel = "tiles.html"
+    PAGES.append("index.html")
     root = ""
     s = SUMMARY
     lede = C("home.lede", families=s["families"], disciplines=s["disciplines"], manuscripts=s["manuscripts_current"],
@@ -2804,7 +3310,7 @@ def build_home(md):
   <div class="atlas__intro">
    <h1 class="atlas__title" id="h-atlas">{esc(C('home.title'))}</h1>
    <p class="atlas__lede">{esc(lede)}</p>
-   <p class="actions"><a class="btn btn--primary" href="#catalogue">{esc(C('home.cta_browse'))}</a><a class="btn btn--ghost" href="statements.html">{esc(C('home.cta_check'))}</a><a class="btn btn--quiet" href="explain.html">{esc(C('home.cta_explain'))}</a></p>
+   <p class="actions"><a class="btn btn--primary" href="index.html">{esc(C('home.cta_map'))}</a><a class="btn btn--ghost" href="#catalogue">{esc(C('home.cta_browse'))}</a></p>
   </div>
   <div class="atlas__controls">
    <div class="msearch">
@@ -2846,7 +3352,7 @@ def build_home(md):
 </section>
 {json_script('map-strings', strings)}"""
     extra = '<link rel="preload" href="data/atlas-map.json" as="fetch" crossorigin>\n<script defer src="assets/map.js"></script>'
-    write_page(rel, page(rel, C("site.name"), C("site.description", release_date=CFG["release_date"]), body, current="atlas", extra_head=extra, main_class="main--home"))
+    write_page(rel, page(rel, C("home.title"), C("home.description"), body, current=None, extra_head=extra, main_class="main--home"))
 
 
 def review_queue_html(root):
@@ -3293,15 +3799,30 @@ def build_about():
         disclosed.append(f'<li>{esc(C("about.disclosed_traces", n=ur["reasoning_summaries"]["count"]))}</li>')
     disclosed_items = "".join(disclosed)
     related_items = "".join(f'<li><a class="ext" href="{esc(u)}" rel="noopener">{esc(t)}</a>: {esc(d)}</li>' for t, u, d in CFG.get("related_efforts", []))
+    # Built for how mathematicians read: each essay's question, paraphrased and linked, then what the atlas does.
+    approach = "".join(
+        f'<li class="approach__item"><p><span class="approach__who">{esc(a["who"])}</span>, in '
+        f'<a class="ext" href="{esc(a["url"])}" rel="noopener">{esc(a["title"])}</a>, {esc(a["argues"])}</p>'
+        f'<p class="approach__so">{esc(a["so"])}</p></li>' for a in COPY["about"]["approach_items"])
+    reading = list(PAPER_READING.values())
+    groups = len({v["source"] for s_ in STATEMENTS for v in sourced_all(s_, "replay")})
+    adds_fill = dict(manuscripts=num(s["manuscripts_current"]), lean=num(s["statements_lean"]), families=num(s["families"]),
+                     accepted=num(reading.count("accepted")), partial=num(reading.count("partial")), groups=num(groups))
+    adds = "".join(f"<li>{esc(t.format(**adds_fill))}</li>" for t in COPY["about"]["adds_items"])
+    import backend
+    b = backend.load()
+    backend_p = f'<p>{esc(C("about.backend", generation=b.generation.split(":")[-1][:12]))}</p>' if b else ""
     body = f"""<div class="frame page page--narrow prose-page">
 <header class="phead"><h1 class="phead__title">{esc(C('about.title'))}</h1></header>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.what_heading'))}</h2><p>{esc(C('about.what', **fill))}</p></section>
-<section class="band band--tight"><h2 class="h2">{esc(C('about.how_heading'))}</h2><p>{esc(C('about.how', **fill))}</p></section>
+<section class="band band--tight" id="approach" aria-labelledby="h-approach"><h2 class="h2" id="h-approach">{esc(C('about.approach_heading'))}</h2><p>{esc(C('about.approach_intro'))}</p><ul class="approach">{approach}</ul></section>
+<section class="band band--tight" id="adds" aria-labelledby="h-adds"><h2 class="h2" id="h-adds">{esc(C('about.adds_heading'))}</h2><p>{esc(C('about.adds_intro', **adds_fill))}</p><ul class="adds">{adds}</ul></section>
+<section class="band band--tight"><h2 class="h2">{esc(C('about.how_heading'))}</h2><p>{esc(C('about.how', **fill))}</p>{backend_p}</section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.independence_heading'))}</h2><p>{esc(C('about.independence'))}</p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.made_heading'))}</h2><p>{esc(C('about.made'))}</p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.not_heading'))}</h2><p>{esc(C('about.not'))}</p></section>
 {('<section class="band band--tight"><h2 class="h2">' + esc(C('about.interests_heading')) + '</h2><p>' + esc(C('about.interests')) + '</p></section>') if C('about.interests') else ''}
-<section class="band band--tight"><h2 class="h2">{esc(C('about.disclosed_heading'))}</h2><p>{esc(C('about.disclosed_intro'))}</p><ul>{disclosed_items}</ul><p class="muted small">{esc(C('about.disclosed_not'))}</p></section>
+<section class="band band--tight"><h2 class="h2">{esc(C('about.disclosed_heading'))}</h2><p>{esc(C('about.disclosed_intro'))}</p><ul>{disclosed_items}</ul></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.related_heading'))}</h2><p>{esc(C('about.related_intro'))}</p><ul>{related_items}</ul></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.licence_heading'))}</h2><p>{esc(C('about.licence'))} <a class="ext" href="{CFG['upstream_repo']}/blob/{COMMIT}/LICENSE" rel="noopener">LICENSE</a></p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.cite_heading'))}</h2><p>{esc(C('about.cite'))}</p><div class="texsrc__box texsrc__box--open"><button class="copy" type="button" data-copy-next>{esc(C('words.copy'))}</button><pre><code>{esc(cite)}</code></pre></div></section>
