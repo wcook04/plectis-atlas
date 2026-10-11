@@ -682,9 +682,9 @@
  "about": {
   "title": "About the atlas",
   "what_heading": "What it is",
-  "what": "The OpenAI Math Atlas is an independent guide to OpenAI’s mathematics release of {release_date}. It groups the manuscripts into {families} families of related papers, links the Lean statements accompanying {families_with_lean} families, and records citations and reader contributions.",
+  "what": "The OpenAI Math Atlas is an independent guide to OpenAI’s mathematics release of {release_date}. It groups the manuscripts into {families} families of related papers, links the Lean statements accompanying {families_with_lean} families, gives each paper a reading page in the browser, and records citations and reader contributions.",
   "how_heading": "How it is built",
-  "how": "Scripts read the release at commit {commit_short} and extract catalogue entries, available manuscript sources, bibliographies, Comparator files and scope notes. The generated pages link back to the source files. Catalogue counts come from the release; contribution status comes from the atlas’s own records.",
+  "how": "Scripts read the release at commit {commit_short} and extract catalogue entries, available manuscript sources, bibliographies, Comparator files and scope notes. The generated pages link back to the source files. Each paper’s reading page is converted from its TeX, with every formula checked by KaTeX; a page that did not convert in full lists what is missing, and the PDF stays the reference. Catalogue counts come from the release; contribution status comes from the atlas’s own records.",
   "independence_heading": "Independence",
   "independence": "The atlas is an independent project. It is not affiliated with or endorsed by OpenAI. It describes what is in the release and what has been checked, and quotes OpenAI’s own words where it describes the results.",
   "licence_heading": "Licence and attribution",
