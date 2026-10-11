@@ -30,6 +30,9 @@ FINDING_KINDS = {"replay-pass", "replay-fail", "error-reported", "correction", "
 REUSE = {"link", "cite", "import", "adopt"}
 DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 URL = re.compile(r"^https?://\S+$")
+GENDERED = re.compile(r"\b(he|she|his|her|hers|him|himself|herself)\b", re.I)
+# A summary cut off at a length limit ends on a word that cannot end a sentence.
+TRUNCATED = re.compile(r"\b(and|or|then|but|with|of|to|the|a|an|in|on|for|by|as|that|which|while|because)\.\s*$", re.I)
 
 
 def load_ids():
@@ -73,6 +76,10 @@ def check(doc: dict, families: set, statements: set) -> list[str]:
                 errs.append(f"{where}: unknown statement {s!r}")
         if "\N{EM DASH}" in (e.get("summary") or ""):
             errs.append(f"{where}: summary contains an em dash")
+        if GENDERED.search(e.get("summary") or ""):
+            errs.append(f"{where}: summary uses a gendered pronoun; a name does not tell anyone's pronouns, so write they/them or the name")
+        if TRUNCATED.search(e.get("summary") or ""):
+            errs.append(f"{where}: summary stops mid-sentence")
         for j, a in enumerate(e.get("adopted") or []):
             w2 = f"{where} adopted[{j}]"
             if a.get("kind") not in ("idea", "code", "data"):
@@ -100,6 +107,10 @@ def check(doc: dict, families: set, statements: set) -> list[str]:
             errs.append(f"{where}: date must be YYYY-MM-DD")
         if "\N{EM DASH}" in (f.get("summary") or ""):
             errs.append(f"{where}: summary contains an em dash")
+        if GENDERED.search(f.get("summary") or ""):
+            errs.append(f"{where}: summary uses a gendered pronoun; a name does not tell anyone's pronouns, so write they/them or the name")
+        if TRUNCATED.search(f.get("summary") or ""):
+            errs.append(f"{where}: summary stops mid-sentence")
     return errs
 
 
@@ -119,6 +130,8 @@ def self_test(families, statements) -> int:
         ("unknown family", {**good, "findings": [{**good["findings"][0], "family": "999"}]}),
         ("bad date", {**good, "findings": [{**good["findings"][0], "date": "8 Oct"}]}),
         ("em dash", {**good, "efforts": [{**good["efforts"][0], "summary": "Replays \N{EM DASH} two."}]}),
+        ("gendered pronoun", {**good, "findings": [{**good["findings"][0], "summary": "The author says he re-ran it."}]}),
+        ("summary cut off", {**good, "efforts": [{**good["efforts"][0], "summary": "Replays two statements and."}]}),
         ("code copied without licence", {**good, "efforts": [{**good["efforts"][0], "licence": "none stated", "adopted": [{"kind": "code", "what": "parser", "where": "scripts/x.py"}]}]}),
         ("adopted without where", {**good, "efforts": [{**good["efforts"][0], "adopted": [{"kind": "idea", "what": "a layout"}]}]}),
     ]

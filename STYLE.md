@@ -38,4 +38,6 @@ State the scope and unresolved dependencies of the explanation. Include a strong
 
 Use human-authored prose and understand each sentence you sign. Visibly marked, disclosed tool-drafted passages are permitted. Explain the reasoning in public discussion yourself. A reviewer checks the mathematics and the fit for the named reader; a short reader response can reveal a missing explanation.
 
+Refer to other people by name or as they/them unless they have stated their pronouns; a name does not tell you them. The same holds for findings recorded in `curated/community.json`, whose checker rejects gendered pronouns and summaries cut off mid-sentence.
+
 Use the template and existing contribution path. Keep figures beside the Markdown file, describe them in the text, and cite their source or generation code. Run the contribution checker. A style warning prompts judgement; it does not automatically override a mathematically appropriate presentation.
