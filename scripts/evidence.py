@@ -11,6 +11,7 @@ an unknown into a zero. scripts/glyphs.py draws what this module describes.
 from __future__ import annotations
 
 import json
+from collections import Counter
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -75,6 +76,13 @@ class FamilyEvidence:
     community_findings: int = 0
     contributions: int = 0
     comparison: str = "unavailable"   # the backend's finer reader_comparison.state
+    community: tuple = ()             # (kind, count) of attributed community findings, e.g. ("explanation", 2)
+
+    def community_count(self, kind: str) -> int:
+        """How many attributed community findings of this kind the family has
+        ("explanation", "error-reported", "correction", "replay-pass", "replay-fail",
+        "follow-up-result", "commentary")."""
+        return dict(self.community).get(kind, 0)
 
     def agreement_sentence(self) -> str:
         """The backend's comparison of the two readings, in one sentence."""
@@ -164,6 +172,7 @@ def family_evidence(r, family_id: str, discipline: str | None = None) -> FamilyE
         community_findings=len(comm.get("findings") or []),
         contributions=len(doc.get("contributions") or []),
         comparison=cmp.get("state") or "unavailable",
+        community=tuple(sorted(Counter(f.get("kind") for f in comm.get("findings") or [] if f.get("kind")).items())),
     )
 
 
@@ -210,4 +219,8 @@ def legend_counts(families) -> dict:
                 out["thread_cited"] += 1
         if ev.checks:
             out["ring"] += 1
+        if ev.community_count("explanation"):
+            out["explained_by_others"] = out.get("explained_by_others", 0) + 1
+        if ev.community_count("error-reported") or ev.community_count("correction"):
+            out["problems_reported"] = out.get("problems_reported", 0) + 1
     return out
