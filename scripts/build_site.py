@@ -3947,7 +3947,7 @@ def build_explain():
     body = f"""<div class="frame page page--families">
 <header class="phead">
  <h1 class="phead__title">{esc(C('explain.title'))}</h1>
- <p class="lede">{esc(C('explain.lede', families=num(len(evs))))}</p>
+ <p class="lede">{esc(C('explain.lede', families=NUM('families')))}</p>
  <p class="phead__facts">{esc(readers_note)}</p>
 </header>
 <section class="band band--tight" aria-labelledby="h-list">
@@ -3967,7 +3967,7 @@ def build_explain():
 </section>
 {review_queue_html("")}
 </div>"""
-    write_page(rel, page(rel, C("explain.title"), C("explain.lede", families=num(len(evs))), body, current="explain"))
+    write_page(rel, page(rel, C("explain.title"), C("explain.lede", families=NUM("families")), body, current="explain"))
 
 
 def build_statements_table():
@@ -3994,7 +3994,7 @@ def build_statements_table():
     body = f"""<div class="frame page">
 <header class="phead">
  <h1 class="phead__title">{esc(C('statements.title'))}</h1>
- <p class="lede">{esc(C('statements.lede', lean=SUMMARY['statements_lean'], main=SUMMARY['statements_lean_main_results']))}</p>
+ <p class="lede">{esc(C('statements.lede', lean=NUM('statements_lean'), main=NUM('statements_lean_main_results')))}</p>
 </header>
 <div class="filters"><label class="vh" for="tbl-filter">{esc(C('statements.filter'))}</label><input id="tbl-filter" class="filter-input" type="search" placeholder="{esc(C('statements.filter'))}" data-filter-rows="stmt-table"><p class="filters__n muted" aria-live="polite" data-shown-template="{esc(C('statements.shown', n='{n}'))}">{esc(C('statements.shown', n=len(STATEMENTS)))}</p></div>
 <div class="table-wrap"><table class="tbl tbl--sortable" id="stmt-table">
@@ -4002,7 +4002,7 @@ def build_statements_table():
  <tbody>{''.join(rows)}</tbody>
 </table></div>
 </div>"""
-    write_page(rel, page(rel, C("statements.title"), C("statements.lede", lean=SUMMARY["statements_lean"], main=SUMMARY["statements_lean_main_results"]), body, current="statements"))
+    write_page(rel, page(rel, C("statements.title"), C("statements.lede", lean=NUM("statements_lean"), main=NUM("statements_lean_main_results")), body, current="statements"))
 
 
 NUMBER_PACKETS = ("number-receipt", "number-members")
@@ -4188,13 +4188,13 @@ def build_references_outside():
     body = f"""<div class="frame page">
 <header class="phead">
  <h1 class="phead__title">{esc(C('references_outside.title'))}</h1>
- <p class="lede">{esc(C('references_outside.lede', works=SUMMARY['external_works_cited'], citations=SUMMARY['external_citations'], n=len(hl)))}</p>
+ <p class="lede">{esc(C('references_outside.lede', works=NUM('external_works_cited'), citations=NUM('external_citations'), n=len(hl)))}</p>
  <p>{esc(C('references_outside.credit'))}</p>
  <p class="muted small">{esc(C('references_outside.how'))}</p>
 </header>
 <section class="band band--tight">{''.join(rows)}</section>
 </div>"""
-    write_page(rel, page(rel, C("references_outside.title"), C("references_outside.lede", works=SUMMARY["external_works_cited"], citations=SUMMARY["external_citations"], n=len(hl)), body))
+    write_page(rel, page(rel, C("references_outside.title"), C("references_outside.lede", works=NUM("external_works_cited"), citations=NUM("external_citations"), n=len(hl)), body))
 
 
 def build_sources():
@@ -4204,7 +4204,7 @@ def build_sources():
     up = f"""<article class="ceff" id="src-openai-math">
  <h3 class="h3"><a class="ext" href="{esc(CFG['upstream_repo'])}/tree/{COMMIT}" rel="noopener">openai/math</a></h3>
  <p class="muted small">OpenAI, {esc(C('sources.pinned', commit=COMMIT_SHORT))}, Apache-2.0</p>
- <p>{esc(C('sources.openai_uses', families=s['families'], manuscripts=s['manuscripts_current'], lean=s['statements_lean']))}</p>
+ <p>{esc(C('sources.openai_uses', families=NUM('families'), manuscripts=NUM('manuscripts_current'), lean=NUM('statements_lean')))}</p>
 </article>"""
     own = f"""<article class="ceff" id="src-atlas">
  <h3 class="h3"><a class="ext" href="{esc(REPO)}" rel="noopener">{esc(C('site.name'))}</a></h3>
@@ -4236,7 +4236,7 @@ def build_sources():
  {adopted_list_html(e.get('adopted'))}
 </article>""")
     people = {(a.get("name") or a.get("handle")) for e in COMMUNITY["list"] for a in (e.get("authors") or [])}
-    lede = C("sources.lede", sources=2 + len(s.get("sources", [])) + len(COMMUNITY["list"]), people=len(people), findings=len(COMMUNITY["findings"]))
+    lede = C("sources.lede", sources=num(2 + len(s.get("sources", [])) + (NUMV("community_efforts") or len(COMMUNITY["list"]))), people=NUM("community_people"), findings=NUM("community_findings"))
     body = f"""<div class="frame page">
 <header class="phead">
  <h1 class="phead__title">{esc(C('sources.title'))}</h1>
@@ -4273,12 +4273,12 @@ def build_citations_within():
     body = f"""<div class="frame page">
 <header class="phead">
  <h1 class="phead__title">{esc(C('citations_within.title'))}</h1>
- <p class="lede">{esc(C('citations_within.lede', edges=SUMMARY['internal_citation_edges'], n=len(hl)))}</p>
+ <p class="lede">{esc(C('citations_within.lede', edges=NUM('internal_citation_edges'), n=len(hl)))}</p>
  <p class="muted small">{esc(C('citations_within.how'))}</p>
 </header>
 <section class="band band--tight">{''.join(rows)}</section>
 </div>"""
-    write_page(rel, page(rel, C("citations_within.title"), C("citations_within.lede", edges=SUMMARY["internal_citation_edges"], n=len(hl)), body))
+    write_page(rel, page(rel, C("citations_within.title"), C("citations_within.lede", edges=NUM("internal_citation_edges"), n=len(hl)), body))
 
 
 def contributor_names():
@@ -4492,7 +4492,7 @@ def social_card_html():
         for f, (a, b, c, e) in zip(fams, inner):
             cls = "sc-main" if fam_has_main(FAM[f]) else ("sc-sup" if FAM[f]["statements"] else "sc-none")
             svg.append(f'<rect x="{a + 1:.1f}" y="{b + 1:.1f}" width="{max(c - 2, 0):.1f}" height="{max(e - 2, 0):.1f}" class="{cls}"/>')
-    line = C("social.card_line", families=s["families"], manuscripts=s["manuscripts_current"], lean=s["statements_lean"], commit_short=COMMIT_SHORT)
+    line = C("social.card_line", families=NUM("families"), manuscripts=NUM("manuscripts_current"), lean=NUM("statements_lean"), commit_short=COMMIT_SHORT)
     return f"""<!doctype html><html lang="en-GB" data-theme="dark"><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/atlas.css"></head>
 <body class="social"><div class="social__card"><div class="social__text"><p class="social__brand">{MARK_SVG}</p><h1>{esc(C('social.card_title'))}</h1><p>{esc(line)}</p><p class="social__key"><span class="k"><span class="sw sw--main"></span><span>{esc(C('home.legend_lean_main'))}</span></span><span class="k"><span class="sw sw--sup"></span><span>{esc(C('home.legend_lean_support'))}</span></span><span class="k"><span class="sw sw--none"></span><span>{esc(C('home.legend_lean_none'))}</span></span></p></div>
 <svg class="social__map" viewBox="0 0 {W} {H}" width="{W}" height="{H}">{''.join(svg)}</svg></div></body></html>"""
