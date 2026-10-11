@@ -4259,9 +4259,12 @@ HANDLER_NAMES = set(HANDLERS)
 # ------------------------------------------------------------ formula checking
 
 def katex_js() -> str | None:
+    """The KaTeX build that checks formulas: KATEX_JS if set, otherwise the copy the site
+    itself serves (site/assets/vendor/katex-<version>), so the check and the page agree."""
     p = os.environ.get("KATEX_JS")
     if not p:
-        return None
+        own = SITE / "assets" / "vendor" / f"katex-{CFG.get('katex_version')}" / "katex.min.js"
+        return str(own) if own.exists() else None
     return p if Path(p).exists() else None
 
 

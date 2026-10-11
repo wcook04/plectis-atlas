@@ -88,7 +88,9 @@ BASE_BLOB = f"https://github.com/openai/math/blob/{COMMIT}/"
 BASE_URL = CFG["base_url"].rstrip("/") + "/"
 REPO = CFG["repo"].rstrip("/")
 KATEX = CFG["katex_version"]
-KATEX_CDN = f"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/{KATEX}"
+# KaTeX is served from the site itself (site/assets/vendor/katex-<version>, MIT), the
+# same build the paper checker runs, so pages make no third-party requests.
+KATEX_DIR = f"assets/vendor/katex-{KATEX}"
 DISC_OF = {fid: i for i, d in enumerate(DISCIPLINES) for fid in d["families"]}
 WARN: list[str] = []
 STATS = Counter()
@@ -1403,14 +1405,13 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 <meta name="twitter:title" content="{esc(title)}">
 <meta name="twitter:description" content="{desc}">
 <link rel="icon" href="{root}assets/favicon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="{esc(CFG['fonts_css'])}">
-<link rel="stylesheet" href="{KATEX_CDN}/katex.min.css" crossorigin="anonymous">
+<link rel="preload" href="{root}assets/fonts/plectis-serif.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{root}assets/fonts/plectis-sans.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{root}{KATEX_DIR}/katex.min.css">
 <link rel="stylesheet" href="{root}assets/atlas.css">
 <script>(function(){{try{{var t=localStorage.getItem('atlas-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}}catch(e){{}}}})();</script>
-<script defer src="{KATEX_CDN}/katex.min.js" crossorigin="anonymous"></script>
-<script defer src="{KATEX_CDN}/contrib/auto-render.min.js" crossorigin="anonymous"></script>
+<script defer src="{root}{KATEX_DIR}/katex.min.js"></script>
+<script defer src="{root}{KATEX_DIR}/contrib/auto-render.min.js"></script>
 <script defer src="{root}assets/atlas.js"></script>
 {extra_head}
 </head>"""
@@ -3329,7 +3330,7 @@ def social_card_html():
             cls = "sc-main" if fam_has_main(FAM[f]) else ("sc-sup" if FAM[f]["statements"] else "sc-none")
             svg.append(f'<rect x="{a + 1:.1f}" y="{b + 1:.1f}" width="{max(c - 2, 0):.1f}" height="{max(e - 2, 0):.1f}" class="{cls}"/>')
     line = C("social.card_line", families=s["families"], manuscripts=s["manuscripts_current"], lean=s["statements_lean"], commit_short=COMMIT_SHORT)
-    return f"""<!doctype html><html lang="en-GB" data-theme="dark"><head><meta charset="utf-8"><link rel="stylesheet" href="{esc(CFG['fonts_css'])}"><link rel="stylesheet" href="../assets/atlas.css"></head>
+    return f"""<!doctype html><html lang="en-GB" data-theme="dark"><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/atlas.css"></head>
 <body class="social"><div class="social__card"><div class="social__text"><p class="social__brand">{MARK_SVG}</p><h1>{esc(C('social.card_title'))}</h1><p>{esc(line)}</p><p class="social__key"><span class="k"><span class="sw sw--main"></span><span>{esc(C('home.legend_lean_main'))}</span></span><span class="k"><span class="sw sw--sup"></span><span>{esc(C('home.legend_lean_support'))}</span></span><span class="k"><span class="sw sw--none"></span><span>{esc(C('home.legend_lean_none'))}</span></span></p></div>
 <svg class="social__map" viewBox="0 0 {W} {H}" width="{W}" height="{H}">{''.join(svg)}</svg></div></body></html>"""
 

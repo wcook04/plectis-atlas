@@ -88,7 +88,7 @@ python3 scripts/build_papers.py         # writes each paper's full reading page 
 python3 -m http.server -d site/_build   # then open http://localhost:8000
 ```
 
-Python 3.10 or newer and git are the only requirements. The reading pages check every formula with KaTeX when Node and the KaTeX version in `site/config.json` are available (`KATEX_JS=path/to/node_modules/katex`); without them every page is marked partial and links the PDF. The dataset in `data/` is plain JSON for your own analysis:
+Python 3.10 or newer and git are the only requirements. With Node installed, the reading pages check every formula with the KaTeX build the site itself serves (`site/assets/vendor/`); without Node every page is marked partial and links the PDF. The dataset in `data/` is plain JSON for your own analysis:
 
 - `families.json`: the 372 families, their discipline, OpenAI's description, manuscripts and Lean statements;
 - `manuscripts.json`: abstracts, theorem-like statements with source file and line (those in the introduction flagged as candidate headline statements), and references with where each is cited;

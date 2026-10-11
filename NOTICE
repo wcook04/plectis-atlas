@@ -37,3 +37,14 @@ each value appears:
 
 Findings recorded in curated/community.json are short paraphrases of other
 people's public work, each linked to its source and credited by name.
+
+Type and mathematics served with the site:
+
+- site/assets/fonts/: subsets of STIX Two Text and Source Sans 3, copied from
+  Will Cook's Plectis site, under the SIL Open Font License 1.1
+  (LICENSES/OFL-STIX-Two.txt, LICENSES/OFL-Source-Sans-3.txt); the faces are
+  renamed Plectis Serif, Plectis Sans and Plectis Math as the Reserved Font
+  Name rules require.
+- site/assets/vendor/katex-0.18.9/: KaTeX 0.18.9, Copyright (c) 2013-2020
+  Khan Academy and other contributors, MIT License (LICENSES/MIT-KaTeX.txt);
+  only the minified build, its auto-render extension and its WOFF2 fonts.
