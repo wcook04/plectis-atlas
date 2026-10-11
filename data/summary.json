@@ -753,6 +753,40 @@
    }
   },
   {
+   "id": "nealmcb-lean-tooling",
+   "name": "Comparator runs of openai/math with build and memory measurements",
+   "url": "https://github.com/nealmcb/openai-math-lean-tooling",
+   "authors": [
+    {
+     "name": "Neal McBurnett",
+     "handle": "nealmcb"
+    }
+   ],
+   "kind": "replay",
+   "licence": "MIT",
+   "reuse": "import",
+   "snapshot": "2026-10-10",
+   "method": "Each challenge's solution is built and checked by Comparator at the pinned release, on Lean leanprover/lean4:v4.34.1, recording the verdict, the check time and the peak memory; the run was still in progress at this snapshot (192 accepted, 224 pending).",
+   "fields": {
+    "replay": "Per challenge: its Comparator verdict, check time and peak memory in this run."
+   },
+   "tier_names": null,
+   "adopted": [
+    {
+     "kind": "data",
+     "what": "Its Comparator verdict for each challenge it has finished, with the check time and peak memory",
+     "where": "the Independent replay line on statement pages"
+    }
+   ],
+   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "credit": "Neal McBurnett, openai-math-lean-tooling",
+   "repository": "https://github.com/nealmcb/openai-math-lean-tooling",
+   "counts": {
+    "accepted": 192,
+    "pending": 224
+   }
+  },
+  {
    "id": "tier-list",
    "name": "OpenAI Math Tier List",
    "url": "https://claude.ai/artifact/JSqNXXfsvRntB6cqoEENaN",

@@ -1,0 +1,1767 @@
+{
+ "schema": "atlas_source_v1",
+ "source": {
+  "id": "nealmcb-lean-tooling",
+  "credit": "Neal McBurnett, openai-math-lean-tooling",
+  "name": "Comparator runs of openai/math with build and memory measurements",
+  "url": "https://github.com/nealmcb/openai-math-lean-tooling",
+  "repository": "https://github.com/nealmcb/openai-math-lean-tooling",
+  "authors": [
+   {
+    "name": "Neal McBurnett",
+    "handle": "nealmcb"
+   }
+  ],
+  "kind": "replay",
+  "licence": "MIT",
+  "reuse": "import",
+  "snapshot": "2026-10-10",
+  "snapshot_commit": "824beb05b35eb09eeb8c8571be7dbb61975c2e46",
+  "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+  "method": "Each challenge's solution is built and checked by Comparator at the pinned release, on Lean leanprover/lean4:v4.34.1, recording the verdict, the check time and the peak memory; the run was still in progress at this snapshot (192 accepted, 224 pending).",
+  "counts": {
+   "accepted": 192,
+   "pending": 224
+  },
+  "fields": {
+   "replay": "Per challenge: its Comparator verdict, check time and peak memory in this run."
+  },
+  "adopted": [
+   {
+    "kind": "data",
+    "what": "Its Comparator verdict for each challenge it has finished, with the check time and peak memory",
+    "where": "the Independent replay line on statement pages"
+   }
+  ]
+ },
+ "statements": {
+  "CommonBasesFPRAS": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 79 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "HoneycombFreeEnergy": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 40 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "LogBrunnMinkowski": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 630 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "PlanarAndersonSpectrum": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 228 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "FiniteCongruenceGraph": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 31 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TruffetCounterexample": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 83 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SpinAngle": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 439 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TraceIdealTransportSupport": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with the nanoda kernel as well as Lean's: accepted (the check took 147 s; peak memory 6.5 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "BogomolovPopInjectivity": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 110 s; peak memory 6.5 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "FourRowPermanent": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 55 s; peak memory 6.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "HadamardCubeFiber": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 54 s; peak memory 6.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "BalancedBoxRouting": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 125 s; peak memory 6.2 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "HilbertCrouzeix": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 151 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "PlaneColoring": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 54 s; peak memory 6.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TriangularCovering": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 272 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "MidpointLenses": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 229 s; peak memory 6.2 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SurfaceConeCandidateSupport": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 282 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DoublingHilbert": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 239 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "RecursivePotentials": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 176 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CartierChartCompactnessSupport": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 123 s; peak memory 3.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "Rokhlin": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 405 s; peak memory 6.9 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "LogKodairaFiberNegative": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 264 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "AbhyankarSathaye": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 30 s; peak memory 2.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "BufferedIsing": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 76 s; peak memory 6.2 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CHObstruction": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 51 s; peak memory 6.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "FixedClauseThreshold": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 57 s; peak memory 6.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "GaussianFiniteEntropy": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 228 s; peak memory 6.2 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SplitTangentIntegrability": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 471 s; peak memory 6.5 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "EuclideanRamseyNine": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 162 s; peak memory 6.2 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "Naimark": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 400 s; peak memory 6.5 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "OneWayLiveness": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 76 s; peak memory 6.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SmoothInitialForm": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 186 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "GrahamSpherical": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 76 s; peak memory 3.0 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "MatchingEntropy": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 110 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ConjugatePoints": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 288 s; peak memory 6.6 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TwoWayComplementation": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 52 s; peak memory 6.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ArtinCAT0": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 72 s; peak memory 6.2 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ForestSpace": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 102 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DeligneDrinfeld": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 488 s; peak memory 6.5 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "QACParity": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 383 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SquareRootDegree": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 423 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "GotsmanLinial": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 143 s; peak memory 3.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "IndependentProducts": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 235 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "NoiselessRegression": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 221 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ParityLifts": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 45 s; peak memory 6.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "RegularParity": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 136 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TreeEdit": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 108 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "BackwardIntertwiners": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 165 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "AsymptoticallyMinimalLittlewood": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 172 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "FormulaHitting": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 40 s; peak memory 2.5 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "IndividualStrongInfiniteness": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 364 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "InfiniteMatroid": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 48 s; peak memory 6.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SubsphereCurrent": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 470 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ChoicelessPolynomialTime": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 302 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "EntropyPhotonNumber": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 381 s; peak memory 6.6 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SATSharpness": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 140 s; peak memory 6.2 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SolenoidalSheetPrograms": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 162 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "BoundedRecovery": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 216 s; peak memory 6.5 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ThreeStateSupercritical": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 67 s; peak memory 6.2 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "WitnessedChoice": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 184 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CompactBanach": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 252 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CoordinateTrace": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 650 s; peak memory 6.5 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DaugavetModuli": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 401 s; peak memory 6.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "EuclideanRamsey": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 490 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "LittlewoodFiniteFlatness": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 395 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SingleFold": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 321 s; peak memory 6.5 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "EuclideanRamseyQuadratic": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 264 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "EuclideanRamseyTransitive": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 187 s; peak memory 6.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ProjectionVolume": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 142 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SteinitzBergstrom": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 232 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TorsionFreeHyperbolic": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 109 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DiskMaximal": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 277 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "EntangledGames": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 169 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "RuledCovering": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 471 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "BarnetteHamiltonian": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 349 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CliqueFreeLog": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 358 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "EuclideanRamseySpherical": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 194 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "HotSpots": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 416 s; peak memory 6.9 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "Tachikawa": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 432 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ThreeStateTreeClauses": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 126 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TraceReconstruction": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 123 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CommutingDerivations": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 35 s; peak memory 2.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DiamondDistortion": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 73 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DiscreteLipschitzFree": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 86 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "Dixmier": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 74 s; peak memory 3.1 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "BoundedTreewidthL1": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 108 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "InfiniteMatroidCorollaries": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 51 s; peak memory 6.1 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "PettyProjectionVolume": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 494 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "RealL1Renorming": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 81 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TypeSystemNormalization": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 45 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "C0Absorption": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 309 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CoordinateSweeps": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 618 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CriticalZ3": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 92 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CycleDecomposition": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 85 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "KLInvariance": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 178 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "QuadricBundles": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 372 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ThorpWeightedCompatibility": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 93 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "AmplitudeDamping": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 612 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CriticalSK": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 575 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "EuclideanRamseyCircle": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 637 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "GaussianReplacement": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 570 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "MatchingEntropyBounds": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 429 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SATVariance": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 251 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SidorenkoCounterexample": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 349 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ArnoldCounterexample": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 751 s; peak memory 10.0 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CoboundaryExpanders": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 183 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "FiniteCircle": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 114 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "HarmonicGrowth": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1096 s; peak memory 7.0 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TalagrandDiscreteConvexity": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 29 s; peak memory 2.1 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "GeneralizedStarHeight": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 123 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "KServer": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 624 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SecondKahnKalai": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 179 s; peak memory 3.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ThreeTorus": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 605 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TriangleFace": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 135 s; peak memory 6.1 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "Brennan": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 517 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "LiebThirring": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 456 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "Saxl": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 272 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DixmierAllDiscrete": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 122 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "IrrationalTriangleBilliard": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 185 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "LogspaceEquality": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 348 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "NuclearUltrapower": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1817 s; peak memory 19.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SignedFiniteBand": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 612 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "EilenbergGanea": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1996 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "PlanarUnitDistances": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 447 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "WeightedSweepMoments": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 183 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "GaussianMoat": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 180 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "NavierStokesAlternating": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 131 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ProjectionCounterexample": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 110 s; peak memory 3.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SingleLatticeCovering": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 227 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TwoWayDeterminization": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 54 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DirectCrouzeix": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 213 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ElasticityUniqueness": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 597 s; peak memory 6.9 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SensitivitySeparation": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 45 s; peak memory 6.1 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CourtadeKumar": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 341 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "HoneycombBridgeFiniteness": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 211 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SeymourSecondNeighborhood": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 123 s; peak memory 2.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "WeisfeilerLeman": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 238 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SubpolynomialLp": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 561 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "IsingFiniteness": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 505 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "BoundedTreePotentials": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 253 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "EditDistance": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 69 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "KahlerSplitting": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 216 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ProjectionMoments": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 202 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SymmetricPolar": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 202 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "BooneHigman": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 113 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "BrennanSharp": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 229 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "GaussianPropeller": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 660 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "HalvingLines": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 600 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "Kervaire": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 719 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "PinnedDistances": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 376 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "TalagrandExpectationThreshold": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 68 s; peak memory 2.1 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CompleteCrouzeix": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 433 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "OneTapeSpace": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 91 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "UniversalFInfinity": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 147 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ContinuousCircleWeight": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 207 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ExactFourier": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 195 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "PermanentCubic": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 476 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SeparableQuotientNegative": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 348 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SnakyCertificate": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1093 s; peak memory 8.7 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "Superstring": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 159 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ThorpFirstReciprocal": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 458 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "UniformGamma": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 544 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "MetricEntropyDuality": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 105 s; peak memory 2.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ListHadwiger": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 165 s; peak memory 6.3 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "MatchingPSD": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 142 s; peak memory 6.4 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "RationalHitting": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 188 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "SmoothObstruction": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 238 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ThreeMachine": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 68 s; peak memory 6.2 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ComplexCancellation": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 386 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "UniformSparsestCut": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 399 s; peak memory 6.5 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "OccupiedOverlap": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 744 s; peak memory 6.6 GiB).",
+    "date": "2026-10-11",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DyadicAvoidance": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 136 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "PartitionConsistency": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 54 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "InterpolatedFactors": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 287 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "VertexAlgebraNet": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 177 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CayleyPercolation": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 170 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CannonGeometricAction": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 218 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "CompleteCrossing": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 64 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "InvariantIsing": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 580 s; peak memory 7.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "FalconerAllDimensions": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 658 s; peak memory 7.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DefocusingNLS": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1174 s; peak memory 7.6 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "StrongKadisonKastler": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 5351 s; peak memory 8.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "PolycyclicRecognition": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1804 s; peak memory 8.5 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "KoebeCircleDomains": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 783 s; peak memory 7.4 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "DirichletSevenEighths": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 3839 s; peak memory 6.6 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "QuasiRiemannHypothesis": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 555 s; peak memory 6.6 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "HeckeSevenEighths": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 564 s; peak memory 6.6 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "OstmannComplete": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 307 s; peak memory 7.6 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "MUBSix": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 16981 s; peak memory 26.1 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "PattersonFirstMoment": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 488 s).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "OstmannPrimes": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 2045 s; peak memory 8.8 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  },
+  "ErdosReciprocal": {
+   "replay": {
+    "verdict": "accepted",
+    "code": "accepted",
+    "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 2472 s; peak memory 14.3 GiB).",
+    "date": "2026-10-10",
+    "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+   }
+  }
+ }
+}

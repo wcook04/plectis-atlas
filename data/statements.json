@@ -81,6 +81,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 30 s; peak memory 2.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -1102,6 +1112,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 612 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -1403,6 +1423,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 751 s; peak memory 10.0 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -1630,6 +1660,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 72 s; peak memory 6.2 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -2031,6 +2071,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 172 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -3131,6 +3181,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 165 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -3473,6 +3533,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 125 s; peak memory 6.2 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -4738,6 +4808,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 349 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -8730,6 +8810,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 110 s; peak memory 6.5 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -9344,6 +9434,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 113 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -9706,6 +9806,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 216 s; peak memory 6.5 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -10091,6 +10201,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 253 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -10232,6 +10352,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 108 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -10638,6 +10768,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 517 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -10809,6 +10949,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 229 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -11070,6 +11220,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 76 s; peak memory 6.2 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -11208,6 +11368,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 309 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -11651,6 +11821,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 51 s; peak memory 6.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -15401,6 +15581,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 218 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -15498,6 +15688,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 123 s; peak memory 3.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -15834,6 +16034,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 170 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -18601,6 +18811,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 302 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -19045,6 +19265,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 358 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -21748,6 +21978,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 183 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -21995,6 +22235,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 79 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -22270,6 +22520,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 35 s; peak memory 2.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -22374,6 +22634,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 252 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -22593,6 +22863,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 64 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -22731,6 +23011,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 433 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -22923,6 +23213,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 386 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -23538,6 +23838,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 288 s; peak memory 6.6 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -24204,6 +24514,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 207 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -26304,6 +26624,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 618 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -27058,6 +27388,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 650 s; peak memory 6.5 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -28402,6 +28742,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 341 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -29339,6 +29689,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 575 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -30245,6 +30605,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 92 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -31068,6 +31438,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 85 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -32604,6 +32984,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 401 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -33109,6 +33499,16 @@
       }
      },
      "source": "cert-machine"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1174 s; peak memory 7.6 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -33779,6 +34179,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 488 s; peak memory 6.5 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -34877,6 +35287,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 73 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -35890,6 +36310,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 213 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -36804,6 +37234,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 3839 s; peak memory 6.6 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -37088,6 +37528,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 86 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -37272,6 +37722,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 277 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -37409,6 +37869,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 74 s; peak memory 3.1 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -37548,6 +38018,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 122 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -37667,6 +38147,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 239 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -38408,6 +38898,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 136 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -52033,6 +52533,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 69 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -52665,6 +53175,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1996 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -53432,6 +53952,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 597 s; peak memory 6.9 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -53830,6 +54360,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 169 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -54109,6 +54649,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 381 s; peak memory 6.6 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -54217,6 +54767,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 2472 s; peak memory 14.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -54511,6 +55071,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 490 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -54621,6 +55191,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 637 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -54742,6 +55322,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 162 s; peak memory 6.2 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -54894,6 +55484,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 264 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -55002,6 +55602,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 194 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -55110,6 +55720,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 187 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -55416,6 +56036,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 195 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -56814,6 +57444,16 @@
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
      "source": "cert-machine"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 658 s; peak memory 7.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -57681,6 +58321,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 114 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -57871,6 +58521,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 31 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -58572,6 +59232,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 57 s; peak memory 6.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -59789,6 +60459,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 102 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -59976,6 +60656,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 40 s; peak memory 2.5 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -60307,6 +60997,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 55 s; peak memory 6.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -61937,6 +62637,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 228 s; peak memory 6.2 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -62761,6 +63471,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 180 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -62931,6 +63651,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 660 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -63835,6 +64565,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 570 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -64071,6 +64811,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 123 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -64267,6 +65017,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 143 s; peak memory 3.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -64482,6 +65242,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 76 s; peak memory 3.0 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -65722,6 +66492,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 54 s; peak memory 6.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -66031,6 +66811,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 600 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -66981,6 +67771,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1096 s; peak memory 7.0 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -67370,6 +68170,16 @@
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
      "source": "cert-machine"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 564 s; peak memory 6.6 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -68502,6 +69312,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 151 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -68723,6 +69543,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 211 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -69225,6 +70055,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 40 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -69388,6 +70228,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 416 s; peak memory 6.9 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -70421,6 +71271,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 235 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -71337,6 +72197,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 364 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -71463,6 +72333,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 48 s; peak memory 6.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -71755,6 +72635,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 51 s; peak memory 6.1 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -72281,6 +73171,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 287 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -73173,6 +74073,16 @@
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
      "source": "cert-machine"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 580 s; peak memory 7.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -74859,6 +75769,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 185 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -75078,6 +75998,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 505 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -75741,6 +76671,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 178 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -76885,6 +77825,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 624 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -77568,6 +78518,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 216 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -78457,6 +79417,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 719 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -78675,6 +79645,16 @@
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
      "source": "cert-machine"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 783 s; peak memory 7.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -79827,6 +80807,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 456 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -80274,6 +81264,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 165 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -80483,6 +81483,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 395 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -80631,6 +81641,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 630 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -81374,6 +82394,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 264 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -81759,6 +82789,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 348 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -82014,6 +83054,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 16981 s; peak memory 26.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -82834,6 +83884,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 110 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -83064,6 +84124,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 429 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -83551,6 +84621,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 142 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -86626,6 +87706,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 105 s; peak memory 2.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -87274,6 +88364,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 229 s; peak memory 6.2 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -88271,6 +89371,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 400 s; peak memory 6.5 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -88965,6 +90075,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 131 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -91688,6 +92808,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 221 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -92101,6 +93231,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1817 s; peak memory 19.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -92634,6 +93774,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 744 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -93440,6 +94590,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 91 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -93769,6 +94929,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 76 s; peak memory 6.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -94581,6 +95751,16 @@
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
      "source": "cert-machine"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 307 s; peak memory 7.6 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -94645,6 +95825,16 @@
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
      "source": "cert-machine"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 2045 s; peak memory 8.8 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -95130,6 +96320,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 45 s; peak memory 6.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -96030,6 +97230,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 54 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -96968,6 +98178,16 @@
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
      "source": "cert-machine"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 488 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -98282,6 +99502,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 476 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -98479,6 +99709,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 494 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -99207,6 +100447,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 376 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -99348,6 +100598,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 228 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -100107,6 +101367,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 447 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -100211,6 +101481,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 54 s; peak memory 6.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -100534,6 +101814,16 @@
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
      "source": "cert-machine"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1804 s; peak memory 8.5 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -102848,6 +104138,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 110 s; peak memory 3.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -103925,6 +105225,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 202 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -104129,6 +105439,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 142 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -104397,6 +105717,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 383 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -104853,6 +106183,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 372 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -105064,6 +106404,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 555 s; peak memory 6.6 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -106435,6 +107785,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 188 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -106578,6 +107938,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 81 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -108415,6 +109785,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 176 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -108768,6 +110148,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 136 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -109270,6 +110660,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 405 s; peak memory 6.9 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -109858,6 +111258,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 471 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -110673,6 +112083,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 140 s; peak memory 6.2 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -110926,6 +112346,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 251 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -112927,6 +114357,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 272 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -113151,6 +114591,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 179 s; peak memory 3.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -113695,6 +115145,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 45 s; peak memory 6.1 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -113807,6 +115267,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 348 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -113934,6 +115404,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 123 s; peak memory 2.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -114866,6 +116346,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 349 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -115121,6 +116611,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 612 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -115915,6 +117415,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 321 s; peak memory 6.5 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -116031,6 +117541,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 227 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -116510,6 +118030,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 186 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -116695,6 +118225,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 238 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -124445,6 +125985,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 1093 s; peak memory 8.7 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -125776,6 +127326,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 162 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -127577,6 +129137,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 439 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -127873,6 +129443,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 471 s; peak memory 6.5 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -128168,6 +129748,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 423 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -129332,6 +130922,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 232 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -129623,6 +131223,16 @@
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
      "source": "cert-machine"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 5351 s; peak memory 8.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -130531,6 +132141,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 561 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -131289,6 +132909,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 470 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -131487,6 +133117,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 159 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -131570,6 +133210,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 282 s; peak memory 6.4 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -132594,6 +134244,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 202 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -132710,6 +134370,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 432 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -132893,6 +134563,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 29 s; peak memory 2.1 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -133113,6 +134793,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 68 s; peak memory 2.1 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -135306,6 +136996,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 458 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -140978,6 +142678,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 93 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -141251,6 +142961,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 68 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -141535,6 +143255,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 67 s; peak memory 6.2 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -141800,6 +143530,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 126 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -142010,6 +143750,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 605 s; peak memory 6.6 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -142248,6 +143998,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 109 s; peak memory 6.3 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -143667,6 +145427,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with the nanoda kernel as well as Lean's: accepted (the check took 147 s; peak memory 6.5 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -143911,6 +145681,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 123 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -144073,6 +145853,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 108 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -144420,6 +146210,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 135 s; peak memory 6.1 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -144870,6 +146670,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 272 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -146635,6 +148445,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 83 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -146773,6 +148593,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 52 s; peak memory 6.1 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -146954,6 +148784,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 54 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -147230,6 +149070,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 45 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -148875,6 +150725,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 544 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -149460,6 +151320,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 399 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -149992,6 +151862,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 147 s; peak memory 6.4 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -151922,6 +153802,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 177 s).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -154547,6 +156437,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 183 s; peak memory 6.5 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -155197,6 +157097,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 238 s; peak memory 6.2 GiB).",
+      "date": "2026-10-11",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }
@@ -155955,6 +157865,16 @@
       "url": "https://github.com/mathvet/mathvet/blob/14c7f918cd336d0da03a02aae5a0eed4a429d4db/reviews/openai-math/challenge-status.csv"
      },
      "source": "mathvet"
+    },
+    {
+     "value": {
+      "verdict": "accepted",
+      "code": "accepted",
+      "text": "Re-run through Comparator with Lean's kernel: accepted (the check took 184 s; peak memory 6.3 GiB).",
+      "date": "2026-10-10",
+      "url": "https://github.com/nealmcb/openai-math-lean-tooling/blob/824beb05b35eb09eeb8c8571be7dbb61975c2e46/results/cmp-all/configs.csv"
+     },
+     "source": "nealmcb-lean-tooling"
     }
    ]
   }

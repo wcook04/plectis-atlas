@@ -21,6 +21,10 @@ each value appears:
 - curated/sources/cert-machine.json: verdicts from Carlos Toledo's audit of
   openai/math in cert-machine, https://github.com/carlostoledo1891/cert-machine,
   Copyright (c) 2026 Carlos Toledo, MIT License (LICENSES/MIT-cert-machine.txt).
+- curated/sources/nealmcb-lean-tooling.json: Comparator verdicts from Neal
+  McBurnett's openai-math-lean-tooling,
+  https://github.com/nealmcb/openai-math-lean-tooling, Copyright (c) 2026 Neal
+  McBurnett, MIT License (LICENSES/MIT-openai-math-lean-tooling.txt).
 - curated/sources/mathvet.json: verdicts and checks from MathVet's review of
   openai/math, https://github.com/mathvet/mathvet, licensed under the Apache
   License, Version 2.0 (LICENSES/Apache-2.0.txt). The atlas changed their
