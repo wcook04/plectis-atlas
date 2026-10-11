@@ -1095,6 +1095,22 @@ def independent_reruns_html(stmt, root):
             f'<p class="intro small">{esc(C("statement.reruns_intro"))}</p><ul class="cfinds">{"".join(items)}</ul></div>')
 
 
+def other_assistant_html(f, root):
+    """Checks of this family's steps in another proof assistant, quoted with attribution."""
+    items = []
+    for v in sourced_all(f, "hol_checks"):
+        for c in v["value"]:
+            items.append(
+                f'<li><p><strong>{esc(C("family.hol_card", card=c["card"]))}</strong> {esc(c["certifies"])}</p>'
+                f'<p class="small">{esc(C("family.hol_relation"))} {esc(c["relation"])}</p>'
+                f'<p class="small muted">{esc(C("family.hol_runs", warm=c["warm"], cold=c["cold"]))} '
+                f'{source_link(v["source"], root)}. <a class="ext" href="{esc(c["url"])}" rel="noopener">{esc(C("family.hol_card_link"))}</a></p></li>')
+    if not items:
+        return ""
+    return (f'<h3 class="h3">{esc(C("family.hol_heading"))}</h3><p class="intro small">{esc(C("family.hol_intro"))}</p>'
+            f'<ul class="cfinds">{"".join(items)}</ul>')
+
+
 def scope_readings_html(f, root):
     """Independent readers' verdicts on whether the family's challenges state its headline, beside OpenAI's note."""
     items = []
@@ -2161,6 +2177,7 @@ def build_family(f):
    {lean_html}
    {('<h3 class="h3">' + esc(C('family.lean_scope_heading')) + '</h3>' + scope) if scope else ''}
    {scope_readings_html(f, root)}
+   {other_assistant_html(f, root)}
    {reasoning_html}
   </div>
  </aside>

@@ -25,6 +25,11 @@ each value appears:
   McBurnett's openai-math-lean-tooling,
   https://github.com/nealmcb/openai-math-lean-tooling, Copyright (c) 2026 Neal
   McBurnett, MIT License (LICENSES/MIT-openai-math-lean-tooling.txt).
+- curated/sources/hol-cards.json: for each HOL Light card, what it certifies
+  and its relation to the release's Lean, quoted from the README of Ben
+  Knill's openai-math-hol-cards, https://github.com/BenKnill/openai-math-hol-cards,
+  under Creative Commons Attribution 4.0 (LICENSES/CC-BY-4.0.txt). Changed:
+  table cells only, with Markdown links and code marks removed.
 - curated/sources/mathvet.json: verdicts and checks from MathVet's review of
   openai/math, https://github.com/mathvet/mathvet, licensed under the Apache
   License, Version 2.0 (LICENSES/Apache-2.0.txt). The atlas changed their

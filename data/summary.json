@@ -704,6 +704,40 @@
    "counts": null
   },
   {
+   "id": "hol-cards",
+   "name": "HOL Light proof cards for openai/math",
+   "url": "https://github.com/BenKnill/openai-math-hol-cards",
+   "authors": [
+    {
+     "name": "Ben Knill",
+     "handle": "BenKnill"
+    }
+   ],
+   "kind": "replay",
+   "licence": "MIT (code); CC BY 4.0 (explanatory prose)",
+   "reuse": "import",
+   "snapshot": "2026-10-08",
+   "method": "Selected steps of eleven families proved again in HOL Light, independently of Lean, each card with negative controls that must fail; warm and cold runs recorded on 8 October. The author states that no card proves a headline theorem of the release. Compared first at release commit adc7f124 and updated by the author for fd4aeeb2.",
+   "fields": {
+    "hol_checks": "Per family: what each HOL Light card certifies and how it relates to the release's Lean, in the author's words."
+   },
+   "tier_names": null,
+   "adopted": [
+    {
+     "kind": "data",
+     "what": "What each card certifies and its relation to the release's Lean, quoted under CC BY 4.0",
+     "where": "family pages, under checks in another proof assistant"
+    }
+   ],
+   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "credit": "Ben Knill, openai-math-hol-cards",
+   "repository": "https://github.com/BenKnill/openai-math-hol-cards",
+   "counts": {
+    "cards": 12,
+    "families": 11
+   }
+  },
+  {
    "id": "mathvet",
    "name": "MathVet fidelity review of openai/math",
    "url": "https://math.vet",
