@@ -1,0 +1,4032 @@
+[
+ {
+  "statement": "ElementaryPositivity",
+  "families": [
+   "169"
+  ],
+  "priority": 191,
+  "reasons": [
+   {
+    "kind": "definition-only",
+    "text": "The configuration names no theorem: it checks a definition whose type carries the claim, so read that definition's type and body."
+   },
+   {
+    "kind": "definition-holes",
+    "text": "1 definition hole: Comparator compares it by name and type only, so a reader checks what each solution body means."
+   }
+  ],
+  "order": 1
+ },
+ {
+  "statement": "ThorpRouting",
+  "families": [
+   "238"
+  ],
+  "priority": 188,
+  "reasons": [
+   {
+    "kind": "unclear-scope",
+    "text": "The draft scope reading could not tell from OpenAI's note how much of the paper's headline result this file states."
+   },
+   {
+    "kind": "needs-specialist",
+    "text": "The draft scope reading depends on mathematics a specialist should settle."
+   },
+   {
+    "kind": "large",
+    "text": "357 local vocabulary declarations to read."
+   }
+  ],
+  "order": 2
+ },
+ {
+  "statement": "LogspaceEquality",
+  "families": [
+   "103"
+  ],
+  "priority": 110,
+  "reasons": [
+   {
+    "kind": "definition-holes",
+    "text": "20 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+   }
+  ],
+  "order": 3
+ },
+ {
+  "statement": "Brenier",
+  "families": [
+   "374"
+  ],
+  "priority": 102,
+  "reasons": [
+   {
+    "kind": "definition-holes",
+    "text": "12 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+   }
+  ],
+  "order": 4
+ },
+ {
+  "statement": "KServer",
+  "families": [
+   "110"
+  ],
+  "priority": 99,
+  "reasons": [
+   {
+    "kind": "definition-holes",
+    "text": "9 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+   }
+  ],
+  "order": 5
+ },
+ {
+  "statement": "Naimark",
+  "families": [
+   "297"
+  ],
+  "priority": 97,
+  "reasons": [
+   {
+    "kind": "definition-holes",
+    "text": "7 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+   }
+  ],
+  "order": 6
+ },
+ {
+  "statement": "OccupiedOverlap",
+  "families": [
+   "238"
+  ],
+  "priority": 95,
+  "reasons": [
+   {
+    "kind": "definition-holes",
+    "text": "5 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+   }
+  ],
+  "order": 7
+ },
+ {
+  "statement": "Rokhlin",
+  "families": [
+   "145"
+  ],
+  "priority": 94,
+  "reasons": [
+   {
+    "kind": "definition-holes",
+    "text": "4 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+   }
+  ],
+  "order": 8
+ },
+ {
+  "statement": "DefocusingNLS",
+  "families": [
+   "371"
+  ],
+  "priority": 93,
+  "reasons": [
+   {
+    "kind": "definition-holes",
+    "text": "3 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+   }
+  ],
+  "order": 9
+ },
+ {
+  "statement": "SpinAngle",
+  "families": [
+   "238"
+  ],
+  "priority": 93,
+  "reasons": [
+   {
+    "kind": "definition-holes",
+    "text": "3 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+   }
+  ],
+  "order": 10
+ },
+ {
+  "statement": "EuclideanFiveColor",
+  "families": [
+   "158"
+  ],
+  "priority": 91,
+  "reasons": [
+   {
+    "kind": "definition-holes",
+    "text": "1 definition hole: Comparator compares it by name and type only, so a reader checks what each solution body means."
+   }
+  ],
+  "order": 11
+ },
+ {
+  "statement": "MatchingEntropy",
+  "families": [
+   "113"
+  ],
+  "priority": 80,
+  "reasons": [
+   {
+    "kind": "needs-specialist",
+    "text": "The draft scope reading depends on mathematics a specialist should settle."
+   }
+  ],
+  "order": 12
+ },
+ {
+  "statement": "MemoryPrecision",
+  "families": [
+   "140"
+  ],
+  "priority": 80,
+  "reasons": [
+   {
+    "kind": "needs-specialist",
+    "text": "The draft scope reading depends on mathematics a specialist should settle."
+   }
+  ],
+  "order": 13
+ },
+ {
+  "statement": "BalancedThreeStack",
+  "families": [
+   "376"
+  ],
+  "priority": 70,
+  "reasons": [
+   {
+    "kind": "shared-target",
+    "text": "Checks the same target theorem as ForcedNavierStokesComputation; compare the two files before counting them as separate results."
+   }
+  ],
+  "order": 14
+ },
+ {
+  "statement": "ForcedNavierStokesComputation",
+  "families": [
+   "376"
+  ],
+  "priority": 70,
+  "reasons": [
+   {
+    "kind": "shared-target",
+    "text": "Checks the same target theorem as BalancedThreeStack; compare the two files before counting them as separate results."
+   }
+  ],
+  "order": 15
+ },
+ {
+  "statement": "HarmonicGrowth",
+  "families": [
+   "361"
+  ],
+  "priority": 60,
+  "reasons": [
+   {
+    "kind": "axiom",
+    "text": "States its claim through an axiom in the challenge file; check what the configuration compares."
+   }
+  ],
+  "order": 16
+ },
+ {
+  "statement": "CharacterVarietiesAllSeamsSupport",
+  "families": [
+   "027"
+  ],
+  "priority": 55,
+  "reasons": [
+   {
+    "kind": "imported-vocabulary",
+    "text": "Adds no local vocabulary but imports OpenAI modules, so its meaning lives in those imported definitions."
+   },
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 17
+ },
+ {
+  "statement": "EditApproximation",
+  "families": [
+   "121"
+  ],
+  "priority": 32,
+  "reasons": [
+   {
+    "kind": "large",
+    "text": "1,212 local vocabulary declarations to read."
+   }
+  ],
+  "order": 18
+ },
+ {
+  "statement": "SnakyCertificate",
+  "families": [
+   "187"
+  ],
+  "priority": 26,
+  "reasons": [
+   {
+    "kind": "large",
+    "text": "670 local vocabulary declarations to read."
+   }
+  ],
+  "order": 19
+ },
+ {
+  "statement": "CKSBondiPenrose",
+  "families": [
+   "260"
+  ],
+  "priority": 23,
+  "reasons": [
+   {
+    "kind": "large",
+    "text": "310 local vocabulary declarations to read."
+   }
+  ],
+  "order": 20
+ },
+ {
+  "statement": "CoarseAssembly",
+  "families": [
+   "307"
+  ],
+  "priority": 22,
+  "reasons": [
+   {
+    "kind": "large",
+    "text": "216 local vocabulary declarations to read."
+   }
+  ],
+  "order": 21
+ },
+ {
+  "statement": "CharacterCriterion",
+  "families": [
+   "299"
+  ],
+  "priority": 21,
+  "reasons": [
+   {
+    "kind": "large",
+    "text": "146 local vocabulary declarations to read."
+   }
+  ],
+  "order": 22
+ },
+ {
+  "statement": "CylinderCovering",
+  "families": [
+   "100"
+  ],
+  "priority": 21,
+  "reasons": [
+   {
+    "kind": "large",
+    "text": "108 local vocabulary declarations to read."
+   }
+  ],
+  "order": 23
+ },
+ {
+  "statement": "IrrationalRotation",
+  "families": [
+   "293"
+  ],
+  "priority": 21,
+  "reasons": [
+   {
+    "kind": "large",
+    "text": "114 local vocabulary declarations to read."
+   }
+  ],
+  "order": 24
+ },
+ {
+  "statement": "NavierStokesVelocity",
+  "families": [
+   "376"
+  ],
+  "priority": 21,
+  "reasons": [
+   {
+    "kind": "large",
+    "text": "196 local vocabulary declarations to read."
+   }
+  ],
+  "order": 25
+ },
+ {
+  "statement": "RecursivePotentials",
+  "families": [
+   "331"
+  ],
+  "priority": 21,
+  "reasons": [
+   {
+    "kind": "large",
+    "text": "159 local vocabulary declarations to read."
+   }
+  ],
+  "order": 26
+ },
+ {
+  "statement": "ThomasonModelStructures",
+  "families": [
+   "317"
+  ],
+  "priority": 21,
+  "reasons": [
+   {
+    "kind": "large",
+    "text": "110 local vocabulary declarations to read."
+   }
+  ],
+  "order": 27
+ },
+ {
+  "statement": "BernoulliNonflatInSeven",
+  "families": [
+   "367"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 28
+ },
+ {
+  "statement": "BogomolovPopInjectivity",
+  "families": [
+   "009"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 29
+ },
+ {
+  "statement": "BoundedRecovery",
+  "families": [
+   "290"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 30
+ },
+ {
+  "statement": "CartierChartCompactnessSupport",
+  "families": [
+   "066"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 31
+ },
+ {
+  "statement": "DuttaDomain",
+  "families": [
+   "194"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 32
+ },
+ {
+  "statement": "EntangledGames",
+  "families": [
+   "277"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 33
+ },
+ {
+  "statement": "ErdosReciprocal",
+  "families": [
+   "159"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 34
+ },
+ {
+  "statement": "FillingCoefficient",
+  "families": [
+   "337"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 35
+ },
+ {
+  "statement": "FiniteCongruenceGraph",
+  "families": [
+   "206"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 36
+ },
+ {
+  "statement": "HadamardCubeFiber",
+  "families": [
+   "266"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 37
+ },
+ {
+  "statement": "HeilbronnTriangle",
+  "families": [
+   "191"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 38
+ },
+ {
+  "statement": "HyperbolicObstruction",
+  "families": [
+   "257"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 39
+ },
+ {
+  "statement": "LogKodairaFiberNegative",
+  "families": [
+   "033"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 40
+ },
+ {
+  "statement": "MUBSix",
+  "families": [
+   "266"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 41
+ },
+ {
+  "statement": "MatchingAffineLift",
+  "families": [
+   "126"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 42
+ },
+ {
+  "statement": "MatchingPSD",
+  "families": [
+   "126"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 43
+ },
+ {
+  "statement": "MatrixRemoval",
+  "families": [
+   "190"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 44
+ },
+ {
+  "statement": "PlanarAndersonSpectrum",
+  "families": [
+   "261"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 45
+ },
+ {
+  "statement": "SLELowerPositivity",
+  "families": [
+   "230"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 46
+ },
+ {
+  "statement": "SeparableQuotientNegative",
+  "families": [
+   "323"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 47
+ },
+ {
+  "statement": "SharpCAT0Filling",
+  "families": [
+   "337"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 48
+ },
+ {
+  "statement": "SmoothObstruction",
+  "families": [
+   "152"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 49
+ },
+ {
+  "statement": "SurfaceConeCandidateSupport",
+  "families": [
+   "195"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 50
+ },
+ {
+  "statement": "ThreeStateSupercritical",
+  "families": [
+   "229"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 51
+ },
+ {
+  "statement": "ThreeStateTreeClauses",
+  "families": [
+   "229"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 52
+ },
+ {
+  "statement": "TraceIdealTransportSupport",
+  "families": [
+   "301"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 53
+ },
+ {
+  "statement": "VertexAlgebraNet",
+  "families": [
+   "280"
+  ],
+  "priority": 5,
+  "reasons": [
+   {
+    "kind": "family-without-full-headline",
+    "text": "No Lean statement in its family states the paper's full headline theorem."
+   }
+  ],
+  "order": 54
+ },
+ {
+  "statement": "AbhyankarSathaye",
+  "families": [
+   "049"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 55
+ },
+ {
+  "statement": "AffineBernstein",
+  "families": [
+   "353"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 56
+ },
+ {
+  "statement": "AlgorithmicThinTrees",
+  "families": [
+   "174"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 57
+ },
+ {
+  "statement": "AmplitudeDamping",
+  "families": [
+   "276"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 58
+ },
+ {
+  "statement": "ArnoldCounterexample",
+  "families": [
+   "347"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 59
+ },
+ {
+  "statement": "ArtinCAT0",
+  "families": [
+   "254"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 60
+ },
+ {
+  "statement": "ArtinParabolicIntersections",
+  "families": [
+   "254"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 61
+ },
+ {
+  "statement": "AsymptoticallyMinimalLittlewood",
+  "families": [
+   "076"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 62
+ },
+ {
+  "statement": "AtomicGaussian",
+  "families": [
+   "090"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 63
+ },
+ {
+  "statement": "AuslanderReiten",
+  "families": [
+   "199"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 64
+ },
+ {
+  "statement": "BackwardIntertwiners",
+  "families": [
+   "293"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 65
+ },
+ {
+  "statement": "BalancedBoxRouting",
+  "families": [
+   "376"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 66
+ },
+ {
+  "statement": "BalancedRyser",
+  "families": [
+   "162"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 67
+ },
+ {
+  "statement": "BallPacking",
+  "families": [
+   "343"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 68
+ },
+ {
+  "statement": "BallPackingNecessity",
+  "families": [
+   "343"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 69
+ },
+ {
+  "statement": "BarnetteHamiltonian",
+  "families": [
+   "180"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 70
+ },
+ {
+  "statement": "BassTorsionFree",
+  "families": [
+   "207"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 71
+ },
+ {
+  "statement": "BassTrace",
+  "families": [
+   "207"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 72
+ },
+ {
+  "statement": "BenjaminiSchramm",
+  "families": [
+   "214"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 73
+ },
+ {
+  "statement": "BiholderTransport",
+  "families": [
+   "360"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 74
+ },
+ {
+  "statement": "BinPackingGap",
+  "families": [
+   "118"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 75
+ },
+ {
+  "statement": "BinaryEditLower",
+  "families": [
+   "099"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 76
+ },
+ {
+  "statement": "BinaryMatching",
+  "families": [
+   "113"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 77
+ },
+ {
+  "statement": "BinarySweep",
+  "families": [
+   "238"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 78
+ },
+ {
+  "statement": "BipartiteCrossing",
+  "families": [
+   "165"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 79
+ },
+ {
+  "statement": "BoltzmannNonuniqueness",
+  "families": [
+   "363"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 80
+ },
+ {
+  "statement": "BooneHigman",
+  "families": [
+   "250"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 81
+ },
+ {
+  "statement": "BorsukNine",
+  "families": [
+   "156"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 82
+ },
+ {
+  "statement": "BoundedTreePotentials",
+  "families": [
+   "331"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 83
+ },
+ {
+  "statement": "BoundedTreewidthL1",
+  "families": [
+   "089"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 84
+ },
+ {
+  "statement": "Brennan",
+  "families": [
+   "072"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 85
+ },
+ {
+  "statement": "BrennanSharp",
+  "families": [
+   "072"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 86
+ },
+ {
+  "statement": "BufferedIsing",
+  "families": [
+   "218"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 87
+ },
+ {
+  "statement": "C0Absorption",
+  "families": [
+   "324"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 88
+ },
+ {
+  "statement": "C1EntropyCounterexample",
+  "families": [
+   "151"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 89
+ },
+ {
+  "statement": "CHObstruction",
+  "families": [
+   "240"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 90
+ },
+ {
+  "statement": "CannonGeometricAction",
+  "families": [
+   "246"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 91
+ },
+ {
+  "statement": "Catalan",
+  "families": [
+   "005"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 92
+ },
+ {
+  "statement": "CayleyPercolation",
+  "families": [
+   "214"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 93
+ },
+ {
+  "statement": "ChoicelessPolynomialTime",
+  "families": [
+   "243"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 94
+ },
+ {
+  "statement": "CirculantHadamard",
+  "families": [
+   "179"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 95
+ },
+ {
+  "statement": "ClassicalON",
+  "families": [
+   "215"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 96
+ },
+ {
+  "statement": "CliqueFreeLog",
+  "families": [
+   "184"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 97
+ },
+ {
+  "statement": "CoboundaryExpanders",
+  "families": [
+   "177"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 98
+ },
+ {
+  "statement": "CommonBasesFPRAS",
+  "families": [
+   "114"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 99
+ },
+ {
+  "statement": "CommutingDerivations",
+  "families": [
+   "049"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 100
+ },
+ {
+  "statement": "CompactBanach",
+  "families": [
+   "098"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 101
+ },
+ {
+  "statement": "CompleteCrossing",
+  "families": [
+   "165"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 102
+ },
+ {
+  "statement": "CompleteCrouzeix",
+  "families": [
+   "325"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 103
+ },
+ {
+  "statement": "ComplexCancellation",
+  "families": [
+   "047"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 104
+ },
+ {
+  "statement": "Conductivity",
+  "families": [
+   "365"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 105
+ },
+ {
+  "statement": "ConjugatePoints",
+  "families": [
+   "358"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 106
+ },
+ {
+  "statement": "ContingencyTables",
+  "families": [
+   "115"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 107
+ },
+ {
+  "statement": "ContinuousCircleWeight",
+  "families": [
+   "293"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 108
+ },
+ {
+  "statement": "ContinuumCoulombHardness",
+  "families": [
+   "275"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 109
+ },
+ {
+  "statement": "ContinuumTransition",
+  "families": [
+   "228"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 110
+ },
+ {
+  "statement": "CoordinateSweeps",
+  "families": [
+   "238"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 111
+ },
+ {
+  "statement": "CoordinateTrace",
+  "families": [
+   "238"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 112
+ },
+ {
+  "statement": "Cotype",
+  "families": [
+   "326"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 113
+ },
+ {
+  "statement": "CoulombCounterexample",
+  "families": [
+   "373"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 114
+ },
+ {
+  "statement": "CoulombIonization",
+  "families": [
+   "263"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 115
+ },
+ {
+  "statement": "CoulombRadii",
+  "families": [
+   "263"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 116
+ },
+ {
+  "statement": "CourtadeKumar",
+  "families": [
+   "119"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 117
+ },
+ {
+  "statement": "CoveringDensity",
+  "families": [
+   "092"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 118
+ },
+ {
+  "statement": "CriticalPercolation",
+  "families": [
+   "213"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 119
+ },
+ {
+  "statement": "CriticalSK",
+  "families": [
+   "227"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 120
+ },
+ {
+  "statement": "CriticalSKMixing",
+  "families": [
+   "227"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 121
+ },
+ {
+  "statement": "CriticalStripMass",
+  "families": [
+   "237"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 122
+ },
+ {
+  "statement": "CriticalZ3",
+  "families": [
+   "213"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 123
+ },
+ {
+  "statement": "CrouzeixHilbert",
+  "families": [
+   "325"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 124
+ },
+ {
+  "statement": "CubicTorus",
+  "families": [
+   "354"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 125
+ },
+ {
+  "statement": "CycleCliqueRamsey",
+  "families": [
+   "189"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 126
+ },
+ {
+  "statement": "CycleDecomposition",
+  "families": [
+   "181"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 127
+ },
+ {
+  "statement": "DaugavetModuli",
+  "families": [
+   "331"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 128
+ },
+ {
+  "statement": "DegreeRigidity",
+  "families": [
+   "241"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 129
+ },
+ {
+  "statement": "DeligneDrinfeld",
+  "families": [
+   "008"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 130
+ },
+ {
+  "statement": "DepthFive",
+  "families": [
+   "135"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 131
+ },
+ {
+  "statement": "DepthThree",
+  "families": [
+   "112"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 132
+ },
+ {
+  "statement": "DiamondDistortion",
+  "families": [
+   "331"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 133
+ },
+ {
+  "statement": "DilutedSpin",
+  "families": [
+   "221"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 134
+ },
+ {
+  "statement": "DimensionTenChannel",
+  "families": [
+   "272"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 135
+ },
+ {
+  "statement": "DimensionTenPair",
+  "families": [
+   "272"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 136
+ },
+ {
+  "statement": "DirectCrouzeix",
+  "families": [
+   "325"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 137
+ },
+ {
+  "statement": "DirectedFeedback",
+  "families": [
+   "102"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 138
+ },
+ {
+  "statement": "DirectionalBallisticity",
+  "families": [
+   "220"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 139
+ },
+ {
+  "statement": "DirectionalWalk",
+  "families": [
+   "220"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 140
+ },
+ {
+  "statement": "DirichletSevenEighths",
+  "families": [
+   "003"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 141
+ },
+ {
+  "statement": "DiscreteLipschitzFree",
+  "families": [
+   "330"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 142
+ },
+ {
+  "statement": "DiskMaximal",
+  "families": [
+   "085"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 143
+ },
+ {
+  "statement": "Dixmier",
+  "families": [
+   "251"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 144
+ },
+ {
+  "statement": "DixmierAllDiscrete",
+  "families": [
+   "251"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 145
+ },
+ {
+  "statement": "DoublingHilbert",
+  "families": [
+   "098"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 146
+ },
+ {
+  "statement": "DukePrimeDegree",
+  "families": [
+   "015"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 147
+ },
+ {
+  "statement": "DyadicAvoidance",
+  "families": [
+   "084"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 148
+ },
+ {
+  "statement": "EditDistance",
+  "families": [
+   "099"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 149
+ },
+ {
+  "statement": "EgyptianFractions",
+  "families": [
+   "025"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 150
+ },
+ {
+  "statement": "EilenbergGanea",
+  "families": [
+   "249"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 151
+ },
+ {
+  "statement": "EinsteinFour",
+  "families": [
+   "348"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 152
+ },
+ {
+  "statement": "ElasticityUniqueness",
+  "families": [
+   "372"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 153
+ },
+ {
+  "statement": "EntropyPhotonNumber",
+  "families": [
+   "273"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 154
+ },
+ {
+  "statement": "EuclideanRamsey",
+  "families": [
+   "172"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 155
+ },
+ {
+  "statement": "EuclideanRamseyCircle",
+  "families": [
+   "172"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 156
+ },
+ {
+  "statement": "EuclideanRamseyNine",
+  "families": [
+   "172"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 157
+ },
+ {
+  "statement": "EuclideanRamseyQuadratic",
+  "families": [
+   "172"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 158
+ },
+ {
+  "statement": "EuclideanRamseySpherical",
+  "families": [
+   "172"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 159
+ },
+ {
+  "statement": "EuclideanRamseyTransitive",
+  "families": [
+   "172"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 160
+ },
+ {
+  "statement": "EvenBarker",
+  "families": [
+   "179"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 161
+ },
+ {
+  "statement": "ExactFourier",
+  "families": [
+   "130"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 162
+ },
+ {
+  "statement": "ExactInfiniteness",
+  "families": [
+   "303"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 163
+ },
+ {
+  "statement": "ExactQuantumFactoring",
+  "families": [
+   "279"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 164
+ },
+ {
+  "statement": "FKCRT",
+  "families": [
+   "211"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 165
+ },
+ {
+  "statement": "FactorGeneration",
+  "families": [
+   "296"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 166
+ },
+ {
+  "statement": "FalconerAllDimensions",
+  "families": [
+   "073"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 167
+ },
+ {
+  "statement": "FiniteCircle",
+  "families": [
+   "099"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 168
+ },
+ {
+  "statement": "FiniteEntropySeparation",
+  "families": [
+   "298"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 169
+ },
+ {
+  "statement": "FiniteFactor",
+  "families": [
+   "293"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 170
+ },
+ {
+  "statement": "FinitisticAsymmetry",
+  "families": [
+   "198"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 171
+ },
+ {
+  "statement": "FixedClauseThreshold",
+  "families": [
+   "235"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 172
+ },
+ {
+  "statement": "ForestSpace",
+  "families": [
+   "331"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 173
+ },
+ {
+  "statement": "FormulaHitting",
+  "families": [
+   "116"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 174
+ },
+ {
+  "statement": "FoulkesHowe",
+  "families": [
+   "210"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 175
+ },
+ {
+  "statement": "FourRowPermanent",
+  "families": [
+   "238"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 176
+ },
+ {
+  "statement": "FourierLLogL",
+  "families": [
+   "075"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 177
+ },
+ {
+  "statement": "FreeIsing",
+  "families": [
+   "236"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 178
+ },
+ {
+  "statement": "FreeUniformSpanningForest",
+  "families": [
+   "231"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 179
+ },
+ {
+  "statement": "GammaPassage",
+  "families": [
+   "212"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 180
+ },
+ {
+  "statement": "GaussianFiniteEntropy",
+  "families": [
+   "140"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 181
+ },
+ {
+  "statement": "GaussianInformation",
+  "families": [
+   "140"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 182
+ },
+ {
+  "statement": "GaussianMoat",
+  "families": [
+   "028"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 183
+ },
+ {
+  "statement": "GaussianPropeller",
+  "families": [
+   "096"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 184
+ },
+ {
+  "statement": "GaussianReplacement",
+  "families": [
+   "140"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 185
+ },
+ {
+  "statement": "GeneralMahler",
+  "families": [
+   "087"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 186
+ },
+ {
+  "statement": "GeneralizedStarHeight",
+  "families": [
+   "134"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 187
+ },
+ {
+  "statement": "GotsmanLinial",
+  "families": [
+   "127"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 188
+ },
+ {
+  "statement": "GrahamSpherical",
+  "families": [
+   "172"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 189
+ },
+ {
+  "statement": "GrothendieckElementaryExpansion",
+  "families": [
+   "312"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 190
+ },
+ {
+  "statement": "GroupRingDeterminant",
+  "families": [
+   "197"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 191
+ },
+ {
+  "statement": "HadwigerCounterexample",
+  "families": [
+   "157"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 192
+ },
+ {
+  "statement": "HalvingLines",
+  "families": [
+   "183"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 193
+ },
+ {
+  "statement": "HardSphere",
+  "families": [
+   "267"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 194
+ },
+ {
+  "statement": "HarmonicArtin",
+  "families": [
+   "254"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 195
+ },
+ {
+  "statement": "HeckeSevenEighths",
+  "families": [
+   "003"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 196
+ },
+ {
+  "statement": "Heisenberg",
+  "families": [
+   "271"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 197
+ },
+ {
+  "statement": "HenonEmden",
+  "families": [
+   "370"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 198
+ },
+ {
+  "statement": "HilbertCrouzeix",
+  "families": [
+   "325"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 199
+ },
+ {
+  "statement": "HoneycombBridgeFiniteness",
+  "families": [
+   "237"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 200
+ },
+ {
+  "statement": "HoneycombBridgeMassSupport",
+  "families": [
+   "237"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 201
+ },
+ {
+  "statement": "HoneycombFreeEnergy",
+  "families": [
+   "237"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 202
+ },
+ {
+  "statement": "HotSpots",
+  "families": [
+   "369"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 203
+ },
+ {
+  "statement": "HyperbolicCones",
+  "families": [
+   "095"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 204
+ },
+ {
+  "statement": "HyperinvariantSubspaces",
+  "families": [
+   "293"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 205
+ },
+ {
+  "statement": "IndependentProducts",
+  "families": [
+   "331"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 206
+ },
+ {
+  "statement": "IndependentSets",
+  "families": [
+   "106"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 207
+ },
+ {
+  "statement": "IndividualStrongInfiniteness",
+  "families": [
+   "303"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 208
+ },
+ {
+  "statement": "InfiniteMatroid",
+  "families": [
+   "185"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 209
+ },
+ {
+  "statement": "InfiniteMatroidCorollaries",
+  "families": [
+   "185"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 210
+ },
+ {
+  "statement": "InterpolatedFactors",
+  "families": [
+   "287"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 211
+ },
+ {
+  "statement": "InvariantIsing",
+  "families": [
+   "234"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 212
+ },
+ {
+  "statement": "IrrationalTriangleBilliard",
+  "families": [
+   "150"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 213
+ },
+ {
+  "statement": "IsingFiniteness",
+  "families": [
+   "222"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 214
+ },
+ {
+  "statement": "IsometricImmersion",
+  "families": [
+   "334"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 215
+ },
+ {
+  "statement": "Jacobsthal",
+  "families": [
+   "021"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 216
+ },
+ {
+  "statement": "JacobsthalImproved",
+  "families": [
+   "021"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 217
+ },
+ {
+  "statement": "JointDickman",
+  "families": [
+   "012"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 218
+ },
+ {
+  "statement": "KLInvariance",
+  "families": [
+   "168"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 219
+ },
+ {
+  "statement": "KMedianRecovery",
+  "families": [
+   "125"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 220
+ },
+ {
+  "statement": "KMedianRefinedRecovery",
+  "families": [
+   "125"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 221
+ },
+ {
+  "statement": "KMedianThreshold",
+  "families": [
+   "125"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 222
+ },
+ {
+  "statement": "KadisonRingrose",
+  "families": [
+   "295"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 223
+ },
+ {
+  "statement": "KadisonSimilarity",
+  "families": [
+   "288"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 224
+ },
+ {
+  "statement": "KahlerSplitting",
+  "families": [
+   "052"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 225
+ },
+ {
+  "statement": "KaplanskyDirectFiniteness",
+  "families": [
+   "197"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 226
+ },
+ {
+  "statement": "KaplanskyFinitelyPresented",
+  "families": [
+   "197"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 227
+ },
+ {
+  "statement": "KaplanskyQuasitrace",
+  "families": [
+   "294"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 228
+ },
+ {
+  "statement": "KaplanskyStableFiniteness",
+  "families": [
+   "294"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 229
+ },
+ {
+  "statement": "Kervaire",
+  "families": [
+   "256"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 230
+ },
+ {
+  "statement": "KoebeCircleDomains",
+  "families": [
+   "071"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 231
+ },
+ {
+  "statement": "Laughlin",
+  "families": [
+   "269"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 232
+ },
+ {
+  "statement": "LaughlinFock",
+  "families": [
+   "269"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 233
+ },
+ {
+  "statement": "LaughlinGap",
+  "families": [
+   "269"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 234
+ },
+ {
+  "statement": "LaughlinPlanar",
+  "families": [
+   "269"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 235
+ },
+ {
+  "statement": "LiebThirring",
+  "families": [
+   "262"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 236
+ },
+ {
+  "statement": "LipschitzEquivalence",
+  "families": [
+   "324"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 237
+ },
+ {
+  "statement": "LipschitzHilbert",
+  "families": [
+   "083"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 238
+ },
+ {
+  "statement": "ListHadwiger",
+  "families": [
+   "157"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 239
+ },
+ {
+  "statement": "LittleFinitistic",
+  "families": [
+   "198"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 240
+ },
+ {
+  "statement": "LittlewoodFiniteFlatness",
+  "families": [
+   "076"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 241
+ },
+ {
+  "statement": "LogBrunnMinkowski",
+  "families": [
+   "091"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 242
+ },
+ {
+  "statement": "LogConcaveQuery",
+  "families": [
+   "139"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 243
+ },
+ {
+  "statement": "MahlerConjecture",
+  "families": [
+   "087"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 244
+ },
+ {
+  "statement": "MarkovType",
+  "families": [
+   "327"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 245
+ },
+ {
+  "statement": "MassAction",
+  "families": [
+   "149"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 246
+ },
+ {
+  "statement": "MatchingEntropyBounds",
+  "families": [
+   "113"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 247
+ },
+ {
+  "statement": "MatchingFPRAS",
+  "families": [
+   "113"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 248
+ },
+ {
+  "statement": "MatrixFields",
+  "families": [
+   "107"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 249
+ },
+ {
+  "statement": "MatrixMultiplication",
+  "families": [
+   "107"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 250
+ },
+ {
+  "statement": "MatroidProphet",
+  "families": [
+   "111"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 251
+ },
+ {
+  "statement": "MatroidSecretary",
+  "families": [
+   "111"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 252
+ },
+ {
+  "statement": "MaximalSeshadriConstants",
+  "families": [
+   "039"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 253
+ },
+ {
+  "statement": "MetricEntropyDuality",
+  "families": [
+   "329"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 254
+ },
+ {
+  "statement": "MetricKMedian",
+  "families": [
+   "125"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 255
+ },
+ {
+  "statement": "MidpointLenses",
+  "families": [
+   "331"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 256
+ },
+ {
+  "statement": "MinUncut",
+  "families": [
+   "102"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 257
+ },
+ {
+  "statement": "Nagata",
+  "families": [
+   "039"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 258
+ },
+ {
+  "statement": "NavierStokesAlternating",
+  "families": [
+   "376"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 259
+ },
+ {
+  "statement": "NodalLength",
+  "families": [
+   "350"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 260
+ },
+ {
+  "statement": "NoiselessRegression",
+  "families": [
+   "140"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 261
+ },
+ {
+  "statement": "NuclearUltrapower",
+  "families": [
+   "292"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 262
+ },
+ {
+  "statement": "OddKaplansky",
+  "families": [
+   "197"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 263
+ },
+ {
+  "statement": "OneTapeSpace",
+  "families": [
+   "137"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 264
+ },
+ {
+  "statement": "OneWayLiveness",
+  "families": [
+   "129"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 265
+ },
+ {
+  "statement": "OptimalMaxCut",
+  "families": [
+   "102"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 266
+ },
+ {
+  "statement": "OrdinaryElliott",
+  "families": [
+   "007"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 267
+ },
+ {
+  "statement": "OrdinaryTwoPointCorrelations",
+  "families": [
+   "007"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 268
+ },
+ {
+  "statement": "OstmannComplete",
+  "families": [
+   "013"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 269
+ },
+ {
+  "statement": "OstmannPrimes",
+  "families": [
+   "013"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 270
+ },
+ {
+  "statement": "ParityLifts",
+  "families": [
+   "133"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 271
+ },
+ {
+  "statement": "PartialPermutation",
+  "families": [
+   "238"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 272
+ },
+ {
+  "statement": "PartitionConsistency",
+  "families": [
+   "244"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 273
+ },
+ {
+  "statement": "PartitionPrinciple",
+  "families": [
+   "244"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 274
+ },
+ {
+  "statement": "PattersonFirstMoment",
+  "families": [
+   "023"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 275
+ },
+ {
+  "statement": "PerceptronFreeEnergy",
+  "families": [
+   "222"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 276
+ },
+ {
+  "statement": "PerfectCompleteness",
+  "families": [
+   "105"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 277
+ },
+ {
+  "statement": "PeriodicGroup",
+  "families": [
+   "247"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 278
+ },
+ {
+  "statement": "PeriodicTilingThree",
+  "families": [
+   "155"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 279
+ },
+ {
+  "statement": "PermanentCubic",
+  "families": [
+   "108"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 280
+ },
+ {
+  "statement": "PettyProjectionVolume",
+  "families": [
+   "088"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 281
+ },
+ {
+  "statement": "PiExponent",
+  "families": [
+   "017"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 282
+ },
+ {
+  "statement": "PinchedKahler",
+  "families": [
+   "359"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 283
+ },
+ {
+  "statement": "PinnedDistances",
+  "families": [
+   "167"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 284
+ },
+ {
+  "statement": "PlanarFalconer",
+  "families": [
+   "073"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 285
+ },
+ {
+  "statement": "PlanarFirstPassage",
+  "families": [
+   "212"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 286
+ },
+ {
+  "statement": "PlanarL1",
+  "families": [
+   "089"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 287
+ },
+ {
+  "statement": "PlanarPacking",
+  "families": [
+   "090"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 288
+ },
+ {
+  "statement": "PlanarUnitDistances",
+  "families": [
+   "167"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 289
+ },
+ {
+  "statement": "PlaneColoring",
+  "families": [
+   "158"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 290
+ },
+ {
+  "statement": "PolycyclicRecognition",
+  "families": [
+   "255"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 291
+ },
+ {
+  "statement": "PosteriorReplicas",
+  "families": [
+   "140"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 292
+ },
+ {
+  "statement": "PowerFreeValues",
+  "families": [
+   "020"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 293
+ },
+ {
+  "statement": "PrimeGaps",
+  "families": [
+   "026"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 294
+ },
+ {
+  "statement": "ProductBrown",
+  "families": [
+   "293"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 295
+ },
+ {
+  "statement": "ProjectionCounterexample",
+  "families": [
+   "088"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 296
+ },
+ {
+  "statement": "ProjectionMoments",
+  "families": [
+   "140"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 297
+ },
+ {
+  "statement": "ProjectionVolume",
+  "families": [
+   "088"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 298
+ },
+ {
+  "statement": "QACParity",
+  "families": [
+   "274"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 299
+ },
+ {
+  "statement": "QuadricBundles",
+  "families": [
+   "050"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 300
+ },
+ {
+  "statement": "QuantitativeVanDerWaerden",
+  "families": [
+   "160"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 301
+ },
+ {
+  "statement": "QuasiRiemannHypothesis",
+  "families": [
+   "003"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 302
+ },
+ {
+  "statement": "QuinticLienard",
+  "families": [
+   "143"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 303
+ },
+ {
+  "statement": "RadialDensityInterval",
+  "families": [
+   "228"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 304
+ },
+ {
+  "statement": "RadialTransition",
+  "families": [
+   "228"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 305
+ },
+ {
+  "statement": "RamseyFive",
+  "families": [
+   "170"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 306
+ },
+ {
+  "statement": "RandomizedMeanPayoff",
+  "families": [
+   "104"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 307
+ },
+ {
+  "statement": "RationalHitting",
+  "families": [
+   "116"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 308
+ },
+ {
+  "statement": "RealL1Renorming",
+  "families": [
+   "330"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 309
+ },
+ {
+  "statement": "ReflexiveFixedPoints",
+  "families": [
+   "328"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 310
+ },
+ {
+  "statement": "RegularParity",
+  "families": [
+   "274"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 311
+ },
+ {
+  "statement": "RelativeGeneration",
+  "families": [
+   "296"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 312
+ },
+ {
+  "statement": "RieszQuantitative",
+  "families": [
+   "081"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 313
+ },
+ {
+  "statement": "RuledCovering",
+  "families": [
+   "100"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 314
+ },
+ {
+  "statement": "RyserCovering",
+  "families": [
+   "162"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 315
+ },
+ {
+  "statement": "RyserOddExtensions",
+  "families": [
+   "162"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 316
+ },
+ {
+  "statement": "SATComputability",
+  "families": [
+   "235"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 317
+ },
+ {
+  "statement": "SATSharpness",
+  "families": [
+   "235"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 318
+ },
+ {
+  "statement": "SATVariance",
+  "families": [
+   "235"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 319
+ },
+ {
+  "statement": "SKBarriers",
+  "families": [
+   "227"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 320
+ },
+ {
+  "statement": "SKFullSupport",
+  "families": [
+   "281"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 321
+ },
+ {
+  "statement": "SKHighTemperature",
+  "families": [
+   "227"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 322
+ },
+ {
+  "statement": "SKRatio",
+  "families": [
+   "227"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 323
+ },
+ {
+  "statement": "SKValue",
+  "families": [
+   "281"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 324
+ },
+ {
+  "statement": "Saxl",
+  "families": [
+   "205"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 325
+ },
+ {
+  "statement": "SecondKahnKalai",
+  "families": [
+   "176"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 326
+ },
+ {
+  "statement": "SelfSimilar",
+  "families": [
+   "148"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 327
+ },
+ {
+  "statement": "SelfSimilarCorollaries",
+  "families": [
+   "148"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 328
+ },
+ {
+  "statement": "SensitivitySeparation",
+  "families": [
+   "132"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 329
+ },
+ {
+  "statement": "SeymourSecondNeighborhood",
+  "families": [
+   "173"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 330
+ },
+ {
+  "statement": "SharpLogRamsey",
+  "families": [
+   "170"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 331
+ },
+ {
+  "statement": "SharpThreshold",
+  "families": [
+   "186"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 332
+ },
+ {
+  "statement": "ShortEgyptianFractions",
+  "families": [
+   "025"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 333
+ },
+ {
+  "statement": "SidorenkoCounterexample",
+  "families": [
+   "161"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 334
+ },
+ {
+  "statement": "SiegelZeros",
+  "families": [
+   "003"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 335
+ },
+ {
+  "statement": "SignedFiniteBand",
+  "families": [
+   "085"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 336
+ },
+ {
+  "statement": "SignedSweepMoment",
+  "families": [
+   "238"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 337
+ },
+ {
+  "statement": "SimpleAmenable",
+  "families": [
+   "253"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 338
+ },
+ {
+  "statement": "SimpleOvergroups",
+  "families": [
+   "250"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 339
+ },
+ {
+  "statement": "SingleFold",
+  "families": [
+   "242"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 340
+ },
+ {
+  "statement": "SingleLatticeCovering",
+  "families": [
+   "092"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 341
+ },
+ {
+  "statement": "SingletonLoopMatching",
+  "families": [
+   "113"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 342
+ },
+ {
+  "statement": "SmoothInitialForm",
+  "families": [
+   "108"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 343
+ },
+ {
+  "statement": "SmoothYau",
+  "families": [
+   "350"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 344
+ },
+ {
+  "statement": "SnakyConditional",
+  "families": [
+   "187"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 345
+ },
+ {
+  "statement": "SnakyTwentyOne",
+  "families": [
+   "187"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 346
+ },
+ {
+  "statement": "SoftChannel204",
+  "families": [
+   "119"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 347
+ },
+ {
+  "statement": "SolenoidalSheetPrograms",
+  "families": [
+   "376"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 348
+ },
+ {
+  "statement": "SphericalField",
+  "families": [
+   "222"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 349
+ },
+ {
+  "statement": "SplitTangentIntegrability",
+  "families": [
+   "052"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 350
+ },
+ {
+  "statement": "SquareDifference",
+  "families": [
+   "182"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 351
+ },
+ {
+  "statement": "SquareRootDegree",
+  "families": [
+   "192"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 352
+ },
+ {
+  "statement": "StableCoordinateFour",
+  "families": [
+   "049"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 353
+ },
+ {
+  "statement": "StandardMapComponents",
+  "families": [
+   "146"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 354
+ },
+ {
+  "statement": "StandardMapEntropy",
+  "families": [
+   "146"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 355
+ },
+ {
+  "statement": "StandardMapLyapunov",
+  "families": [
+   "146"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 356
+ },
+ {
+  "statement": "SteinitzBergstrom",
+  "families": [
+   "097"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 357
+ },
+ {
+  "statement": "StrictMeans",
+  "families": [
+   "072"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 358
+ },
+ {
+  "statement": "StrongKadisonKastler",
+  "families": [
+   "289"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 359
+ },
+ {
+  "statement": "StrongThinTree",
+  "families": [
+   "174"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 360
+ },
+ {
+  "statement": "StronglyRayleighDPP",
+  "families": [
+   "231"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 361
+ },
+ {
+  "statement": "StructuralCrouzeix",
+  "families": [
+   "325"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 362
+ },
+ {
+  "statement": "SubpolynomialLp",
+  "families": [
+   "094"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 363
+ },
+ {
+  "statement": "SubsphereCurrent",
+  "families": [
+   "140"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 364
+ },
+ {
+  "statement": "Superstring",
+  "families": [
+   "128"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 365
+ },
+ {
+  "statement": "SurfaceImmersion",
+  "families": [
+   "333"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 366
+ },
+ {
+  "statement": "SwitchChain",
+  "families": [
+   "131"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 367
+ },
+ {
+  "statement": "SymmetricDomains",
+  "families": [
+   "058"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 368
+ },
+ {
+  "statement": "SymmetricMahlerEquality",
+  "families": [
+   "087"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 369
+ },
+ {
+  "statement": "SymmetricPolar",
+  "families": [
+   "087"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 370
+ },
+ {
+  "statement": "Tachikawa",
+  "families": [
+   "199"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 371
+ },
+ {
+  "statement": "TalagrandDiscreteConvexity",
+  "families": [
+   "175"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 372
+ },
+ {
+  "statement": "TalagrandExpectationThreshold",
+  "families": [
+   "175"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 373
+ },
+ {
+  "statement": "TamingCompatibility",
+  "families": [
+   "342"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 374
+ },
+ {
+  "statement": "ThompsonNonamenability",
+  "families": [
+   "248"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 375
+ },
+ {
+  "statement": "ThorpFirstReciprocal",
+  "families": [
+   "238"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 376
+ },
+ {
+  "statement": "ThorpRemaining",
+  "families": [
+   "238"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 377
+ },
+ {
+  "statement": "ThorpWeightedCompatibility",
+  "families": [
+   "238"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 378
+ },
+ {
+  "statement": "ThreeMachine",
+  "families": [
+   "124"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 379
+ },
+ {
+  "statement": "ThreeTorus",
+  "families": [
+   "144"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 380
+ },
+ {
+  "statement": "TingleySphereIsometry",
+  "families": [
+   "322"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 381
+ },
+ {
+  "statement": "TorsionFreeHyperbolic",
+  "families": [
+   "252"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 382
+ },
+ {
+  "statement": "TorsionFreeZeroDivisors",
+  "families": [
+   "196"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 383
+ },
+ {
+  "statement": "TotientAsymptotic",
+  "families": [
+   "024"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 384
+ },
+ {
+  "statement": "TotientCompanionZero",
+  "families": [
+   "024"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 385
+ },
+ {
+  "statement": "TraceReconstruction",
+  "families": [
+   "122"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 386
+ },
+ {
+  "statement": "TreeEdit",
+  "families": [
+   "099"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 387
+ },
+ {
+  "statement": "TriangleFace",
+  "families": [
+   "113"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 388
+ },
+ {
+  "statement": "TriangleRemoval",
+  "families": [
+   "188"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 389
+ },
+ {
+  "statement": "TriangularCovering",
+  "families": [
+   "100"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 390
+ },
+ {
+  "statement": "TriangularEnergy",
+  "families": [
+   "090"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 391
+ },
+ {
+  "statement": "TriangularGaussian",
+  "families": [
+   "090"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 392
+ },
+ {
+  "statement": "TriangularHilbert",
+  "families": [
+   "082"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 393
+ },
+ {
+  "statement": "TruffetCounterexample",
+  "families": [
+   "104"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 394
+ },
+ {
+  "statement": "TwoWayComplementation",
+  "families": [
+   "129"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 395
+ },
+ {
+  "statement": "TwoWayDeterminization",
+  "families": [
+   "129"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 396
+ },
+ {
+  "statement": "TypeSystemNormalization",
+  "families": [
+   "245"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 397
+ },
+ {
+  "statement": "UniformCommutator",
+  "families": [
+   "288"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 398
+ },
+ {
+  "statement": "UniformFourier",
+  "families": [
+   "130"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 399
+ },
+ {
+  "statement": "UniformGamma",
+  "families": [
+   "291"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 400
+ },
+ {
+  "statement": "UniformKServer",
+  "families": [
+   "110"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 401
+ },
+ {
+  "statement": "UniformSparsestCut",
+  "families": [
+   "117"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 402
+ },
+ {
+  "statement": "UniqueGamesTheorem",
+  "families": [
+   "102"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 403
+ },
+ {
+  "statement": "UniversalFInfinity",
+  "families": [
+   "250"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 404
+ },
+ {
+  "statement": "UniversalTensorSquares",
+  "families": [
+   "205"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 405
+ },
+ {
+  "statement": "VariableWL",
+  "families": [
+   "133"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 406
+ },
+ {
+  "statement": "VelocityHemisphere",
+  "families": [
+   "220"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 407
+ },
+ {
+  "statement": "VertexCover",
+  "families": [
+   "102"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 408
+ },
+ {
+  "statement": "VlasovMaxwell",
+  "families": [
+   "362"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 409
+ },
+ {
+  "statement": "WLIdentification",
+  "families": [
+   "133"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 410
+ },
+ {
+  "statement": "WeakHessian",
+  "families": [
+   "356"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 411
+ },
+ {
+  "statement": "WeakMTWGlobalSupport",
+  "families": [
+   "360"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 412
+ },
+ {
+  "statement": "WeightedSweepMoments",
+  "families": [
+   "238"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 413
+ },
+ {
+  "statement": "WeisfeilerLeman",
+  "families": [
+   "133"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 414
+ },
+ {
+  "statement": "WitnessedChoice",
+  "families": [
+   "243"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 415
+ },
+ {
+  "statement": "YauCounterexample",
+  "families": [
+   "350"
+  ],
+  "priority": 0,
+  "reasons": [],
+  "order": 416
+ }
+]

@@ -92,7 +92,8 @@ Python 3.10 or newer and git are the only requirements. The dataset in `data/` i
 - `statements.json`: every Comparator statement file, its imports and the definitions it introduces;
 - `graph.json`: citations between manuscripts inside the collection;
 - `works.json`: the outside works the collection cites;
-- `summary.json`: every number above, with its definition.
+- `review_queue.json`: every challenge file in order of where a careful reading is most useful, with the reasons, by a rule stated in `summary.json`;
+- `summary.json`: every number above, with its unit, universe and rule.
 
 ## For producers of formal mathematics
 

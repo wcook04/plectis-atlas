@@ -1312,6 +1312,54 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         "statement; families and papers in the sources list of OpenAI's lean/formalization.yaml; OpenAI's own reported "
         "share; and counts from other public sources. Each measures a different thing.")
 
+    # Review queue: where a careful human reading of a challenge file is most useful, ordered by a
+    # stated rule over public facts. It allocates attention; it says nothing about correctness.
+    rows_by_stmt = {}
+    if cov_path.exists() and not (summary.get("scope_coverage") or {}).get("stale"):
+        rows_by_stmt = {r["statement"]: r for r in json.loads(cov_path.read_text(encoding="utf-8")).get("rows", [])}
+    no_full = set((summary.get("scope_coverage") or {}).get("families_no_full_headline") or [])
+    targets = defaultdict(set)
+    for c in challenges.values():
+        for t in c["comparator"].get("theorem_names") or []:
+            targets[(c["comparator"].get("solution_module"), t)].add(c["id"])
+    queue = []
+    for c in challenges.values():
+        cfg, row, reasons = c["comparator"], rows_by_stmt.get(c["id"]), []
+        holes = cfg.get("definition_names") or []
+        if not cfg.get("theorem_names"):
+            reasons.append((100, "definition-only", "The configuration names no theorem: it checks a definition whose type carries the claim, so read that definition's type and body."))
+        if holes:
+            reasons.append((90 + len(holes), "definition-holes", f"{len(holes)} definition hole{'s' if len(holes) != 1 else ''}: Comparator compares {'these' if len(holes) != 1 else 'it'} by name and type only, so a reader checks what each solution body means."))
+        if row and row["class"] == "unclear":
+            reasons.append((85, "unclear-scope", "The draft scope reading could not tell from OpenAI's note how much of the paper's headline result this file states."))
+        if row and row.get("needs_specialist"):
+            reasons.append((80, "needs-specialist", "The draft scope reading depends on mathematics a specialist should settle."))
+        twins = sorted({x for t in cfg.get("theorem_names") or [] for x in targets[(cfg.get("solution_module"), t)]} - {c["id"]})
+        if twins:
+            reasons.append((70, "shared-target", f"Checks the same target theorem as {', '.join(twins)}; compare the two files before counting them as separate results."))
+        if c["declares_axiom"]:
+            reasons.append((60, "axiom", "States its claim through an axiom in the challenge file; check what the configuration compares."))
+        if c["vocabulary_count"] == 0 and c["non_mathlib_imports"]:
+            reasons.append((50, "imported-vocabulary", "Adds no local vocabulary but imports OpenAI modules, so its meaning lives in those imported definitions."))
+        if c["vocabulary_count"] >= 100:
+            reasons.append((20 + min(c["vocabulary_count"], 2000) // 100, "large", f"{c['vocabulary_count']:,} local vocabulary declarations to read."))
+        if row and row["class"] != "headline" and any(f in no_full for f in c["families"]):
+            reasons.append((5, "family-without-full-headline", "No Lean statement in its family states the paper's full headline theorem."))
+        queue.append({"statement": c["id"], "families": c["families"], "priority": sum(p for p, _, _ in reasons),
+                      "reasons": [{"kind": k, "text": t} for _, k, t in sorted(reasons, key=lambda r: -r[0])]})
+    queue.sort(key=lambda r: (-r["priority"], r["statement"]))
+    for i, r in enumerate(queue, 1):
+        r["order"] = i
+    summary["review_queue"] = {
+        "flagged": sum(1 for r in queue if r["reasons"]),
+        "first": [r["statement"] for r in queue[:25]],
+        "rule": ("Points per reason, highest first: a configuration with no theorem target 100; definition holes 90 plus one per hole; "
+                 "unclear draft scope 85; a draft scope reading needing a specialist 80; a target theorem shared with another file 70; "
+                 "an axiom in the challenge 60; no local vocabulary but OpenAI imports 50; 100 or more local declarations 20 plus one per hundred "
+                 "(capped); a family with no full-headline statement 5. Ties go alphabetically. The order allocates reading; it is no verdict."),
+    }
+    summary["lean_distinct_target_theorems"] = len(targets)
+
     # One receipt per headline number: its unit, the universe it counts over and the rule, so no
     # figure on the site or in the README stands without a definition (scripts/build_data.py).
     pin = f"openai/math at {commit[:12]}"
@@ -1340,6 +1388,8 @@ def build(upstream: Path, out: Path, quiet: bool = False):
                 "Files in which a textual scan detects no local vocabulary declarations, whatever they import."),
         receipt("lean_vocabulary_median", summary["lean_vocabulary_median"], "local vocabulary declarations per file", f"{pin}, all challenge files",
                 "Conventional median of the detected local vocabulary declarations (definitions, structures, instances, notation, axioms and similar; theorems and lemmas excluded)."),
+        receipt("lean_distinct_target_theorems", summary["lean_distinct_target_theorems"], "distinct target theorems", f"{pin}, lean/ComparatorChallenges/*.json",
+                "Distinct pairs of solution module and theorem name across all configurations' theorem_names. Two files can check the same theorem."),
         receipt("lean_definition_holes", summary["lean_definition_holes"], "definition holes", f"{pin}, lean/ComparatorChallenges/*.json",
                 f"Names in a configuration's definition_names, across {len(summary['lean_statements_with_definition_holes'])} configurations. "
                 "Comparator compares these definitions by name and type only; their bodies come from OpenAI's solution, so a reader checks what each body means."),
@@ -1374,6 +1424,7 @@ def build(upstream: Path, out: Path, quiet: bool = False):
     dump("families.json", families)
     dump("manuscripts.json", [manuscripts[s] for s in all_slugs])
     dump("statements.json", [challenges[k] for k in sorted(challenges)])
+    dump("review_queue.json", queue)
     dump("graph.json", edges)
     dump("works.json", sorted(works.values(), key=lambda w: (-len(w["cited_by"]), w["id"])))
     dump("history.json", history)

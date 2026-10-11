@@ -673,6 +673,38 @@
   "tier_list_families_with_lean": 127,
   "tier_list_lean_formalisations_total": 162
  },
+ "review_queue": {
+  "flagged": 54,
+  "first": [
+   "ElementaryPositivity",
+   "ThorpRouting",
+   "LogspaceEquality",
+   "Brenier",
+   "KServer",
+   "Naimark",
+   "OccupiedOverlap",
+   "Rokhlin",
+   "DefocusingNLS",
+   "SpinAngle",
+   "EuclideanFiveColor",
+   "MatchingEntropy",
+   "MemoryPrecision",
+   "BalancedThreeStack",
+   "ForcedNavierStokesComputation",
+   "HarmonicGrowth",
+   "CharacterVarietiesAllSeamsSupport",
+   "EditApproximation",
+   "SnakyCertificate",
+   "CKSBondiPenrose",
+   "CoarseAssembly",
+   "CharacterCriterion",
+   "CylinderCovering",
+   "IrrationalRotation",
+   "NavierStokesVelocity"
+  ],
+  "rule": "Points per reason, highest first: a configuration with no theorem target 100; definition holes 90 plus one per hole; unclear draft scope 85; a draft scope reading needing a specialist 80; a target theorem shared with another file 70; an axiom in the challenge 60; no local vocabulary but OpenAI imports 50; 100 or more local declarations 20 plus one per hundred (capped); a family with no full-headline statement 5. Ties go alphabetically. The order allocates reading; it is no verdict."
+ },
+ "lean_distinct_target_theorems": 536,
  "metric_receipts": [
   {
    "key": "families",
@@ -752,6 +784,14 @@
    "unit": "local vocabulary declarations per file",
    "universe": "openai/math at fd4aeeb2ee4f, all challenge files",
    "rule": "Conventional median of the detected local vocabulary declarations (definitions, structures, instances, notation, axioms and similar; theorems and lemmas excluded).",
+   "source": "scripts/build_data.py"
+  },
+  {
+   "key": "lean_distinct_target_theorems",
+   "value": 536,
+   "unit": "distinct target theorems",
+   "universe": "openai/math at fd4aeeb2ee4f, lean/ComparatorChallenges/*.json",
+   "rule": "Distinct pairs of solution module and theorem name across all configurations' theorem_names. Two files can check the same theorem.",
    "source": "scripts/build_data.py"
   },
   {
