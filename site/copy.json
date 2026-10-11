@@ -25,7 +25,8 @@
   "trail_home": "Atlas",
   "brand_label": "OpenAI Math Atlas, home",
   "breadcrumb": "Breadcrumb",
-  "site_nav": "Site"
+  "site_nav": "Site",
+  "community": "Community"
  },
  "words": {
   "result": "result",
@@ -127,7 +128,14 @@
   "legend_covers_less": "Only a consequence or a weaker form is certified",
   "legend_covers_support": "Only supporting results are certified",
   "legend_covers_none": "No Lean statement",
-  "legend_covers_note": "Each statement was classified from OpenAI’s own Lean notes by an AI agent, quoting the note. No person has reviewed the classification yet; corrections are welcome."
+  "legend_covers_note": "Each statement was classified from OpenAI’s own Lean notes by an AI agent, quoting the note. No person has reviewed the classification yet; corrections are welcome.",
+  "overlay_community": "Others’ work",
+  "legend_community_2": "Two or more linked pieces of public work",
+  "legend_community_1": "One linked piece of public work",
+  "legend_community_0": "Nothing linked yet",
+  "legend_community_note": "Replays, error reports, follow-up results, explanations and commentary by other people, each credited and linked on the result’s page.",
+  "credit_community": "The people working on this release",
+  "credit_community_text": "The atlas gathers {efforts} public efforts by {people} people, with {findings} findings attached to specific results, each credited and linked."
  },
  "family": {
   "trail_label": "Result {id}",
@@ -514,5 +522,74 @@
   "check": "Check {statement}",
   "replay": "Replay {statement}",
   "problem_statement": "Problem on statement {statement}"
+ },
+ "community": {
+  "title": "Everyone working on this release",
+  "lede": "{efforts} public efforts by {people} people have indexed, checked, replayed, explained or built on OpenAI’s release. {findings} of their findings attach to specific results, and each appears on that result’s page with its author’s name.",
+  "lede_empty": "Public work by other people on this release is being gathered here, each piece credited and linked.",
+  "credit": "The atlas exists alongside this work and draws on it. Findings are cited with their authors and links; code and text are reused only where the author’s licence allows it, and otherwise linked.",
+  "how": "Each entry is a public project, paper, post or organisation, described in the atlas’s words with a link to the original. Listing someone’s work does not mean they endorse the atlas.",
+  "add": "Add your work or correct an entry",
+  "add_title": "Add or correct a community entry",
+  "findings_n": "{n} findings on specific results",
+  "results": "Results:",
+  "licence": "Licence: {licence}.",
+  "reuse_link": "Linked.",
+  "reuse_cite": "Findings cited with credit.",
+  "reuse_import": "Data reused under its licence, with credit.",
+  "reuse_adopt": "An idea adopted with credit.",
+  "source": "Source",
+  "family_heading": "What others have found and built",
+  "family_intro": "Public work by other people on this result: replays, error reports, follow-up results, explanations and commentary, each credited and linked.",
+  "family_efforts": "Projects that cover this result",
+  "statement_heading": "Elsewhere",
+  "all_link": "Everyone working on the release",
+  "kind_order": [
+   "audit",
+   "replay",
+   "follow-up",
+   "tracker",
+   "atlas",
+   "explorer",
+   "map",
+   "tier-list",
+   "explanation",
+   "commentary",
+   "analysis",
+   "paper",
+   "press",
+   "post",
+   "thread",
+   "tooling",
+   "institution"
+  ],
+  "kind_titles": {
+   "audit": "Audits",
+   "replay": "Replays of the Lean proofs",
+   "follow-up": "Follow-up mathematics",
+   "tracker": "Trackers",
+   "atlas": "Atlases and catalogues",
+   "explorer": "Explorers",
+   "map": "Maps and visualisations",
+   "tier-list": "Rankings",
+   "explanation": "Explanations",
+   "commentary": "Commentary",
+   "analysis": "Analyses",
+   "paper": "Papers",
+   "press": "Press",
+   "post": "Posts",
+   "thread": "Discussions",
+   "tooling": "Tools",
+   "institution": "Organisations"
+  },
+  "finding_kinds": {
+   "replay-pass": "Replay passed",
+   "replay-fail": "Replay failed",
+   "error-reported": "Error reported",
+   "correction": "Correction",
+   "follow-up-result": "Follow-up result",
+   "explanation": "Explanation",
+   "commentary": "Commentary"
+  }
  }
 }

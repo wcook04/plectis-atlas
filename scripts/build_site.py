@@ -955,6 +955,61 @@ def load_coverage():
 COVERAGE = load_coverage()
 
 
+def load_community():
+    p = ROOT / "curated" / "community.json"
+    empty = {"efforts": {}, "by_family": {}, "by_statement": {}, "efforts_by_family": {}, "list": [], "findings": []}
+    if not p.exists():
+        return empty
+    try:
+        raw = json.loads(p.read_text(encoding="utf-8"))
+    except Exception as exc:
+        warn(f"curated/community.json could not be read ({exc})")
+        return empty
+    eff = {e["id"]: e for e in raw.get("efforts", [])}
+    by_family, by_statement, efforts_by_family = {}, {}, {}
+    for f in raw.get("findings", []):
+        if f.get("effort") not in eff:
+            continue
+        by_family.setdefault(f.get("family"), []).append(f)
+        if f.get("statement"):
+            by_statement.setdefault(f["statement"], []).append(f)
+    for e in eff.values():
+        for fam in e.get("families") or []:
+            efforts_by_family.setdefault(fam, []).append(e)
+    return {"efforts": eff, "by_family": by_family, "by_statement": by_statement,
+            "efforts_by_family": efforts_by_family, "list": list(eff.values()), "findings": raw.get("findings", [])}
+
+
+COMMUNITY = load_community()
+
+
+def credit_names(e):
+    return ", ".join((a.get("name") or a.get("handle") or "") for a in (e.get("authors") or []) if (a.get("name") or a.get("handle")))
+
+
+def finding_item(f, root):
+    e = COMMUNITY["efforts"].get(f["effort"], {})
+    kind = C("community.finding_kinds").get(f["kind"], f["kind"]) if isinstance(C("community.finding_kinds"), dict) else f["kind"]
+    who = credit_names(e)
+    return (f'<li class="cfind"><span class="pill pill--support">{esc(kind)}</span> {esc(f["summary"])} '
+            f'<span class="muted small">{esc(who)}{", " if who else ""}{esc(e.get("name", ""))}, {esc(f["date"])}</span> '
+            f'<a class="ext small" href="{esc(f["url"])}" rel="noopener">{esc(C("community.source"))}</a></li>')
+
+
+def community_family_html(fid, root):
+    finds = COMMUNITY["by_family"].get(fid, [])
+    effs = [e for e in COMMUNITY["efforts_by_family"].get(fid, []) if not any(f["effort"] == e["id"] for f in finds)]
+    if not finds and not effs:
+        return ""
+    items = "".join(finding_item(f, root) for f in sorted(finds, key=lambda x: x["date"]))
+    eff_items = "".join(f'<li><a class="ext" href="{esc(e["url"])}" rel="noopener">{esc(e["name"])}</a> <span class="muted small">{esc(credit_names(e))}</span></li>' for e in effs)
+    return (f'<section class="band" aria-labelledby="h-community"><h2 class="h2" id="h-community">{esc(C("community.family_heading"))}</h2>'
+            f'<p class="intro">{esc(C("community.family_intro"))} <a href="{root}community.html">{esc(C("community.all_link"))}</a></p>'
+            + (f'<ul class="cfinds">{items}</ul>' if items else "")
+            + (f'<h3 class="h3">{esc(C("community.family_efforts"))}</h3><ul class="cfinds">{eff_items}</ul>' if eff_items else "")
+            + "</section>")
+
+
 def coverage_html(sid):
     row = COVERAGE.get(sid)
     if not row:
@@ -1110,7 +1165,8 @@ def head(rel: str, title: str, description: str, *, og_image: str | None = None,
 
 
 NAV = [("index.html", "atlas"), ("explain.html", "explain"), ("statements.html", "statements"),
-       ("numbers.html", "numbers"), ("contribute.html", "contribute"), ("about.html", "about")]
+       ("community.html", "community"), ("numbers.html", "numbers"), ("contribute.html", "contribute"),
+       ("about.html", "about")]
 
 
 def header(rel: str, current: str | None) -> str:
@@ -1563,6 +1619,7 @@ def build_family(f):
  </aside>
 </div>
 {formulations_html}
+{community_family_html(fid, root)}
 <section class="band" aria-labelledby="h-rests">
  <div class="cols2">
   <div><h2 class="h2" id="h-rests">{esc(C('family.rests_heading'))}</h2><p class="intro">{esc(C('family.rests_intro'))}</p>{rests}</div>
@@ -1820,6 +1877,7 @@ def build_statement(stmt, og_available: set):
  {f'<ul>{checks_html}</ul>' if checks else f'<p>{esc(C("statement.checks_none"))}</p>'}
  <h3 class="h3">{esc(C('statement.replays_heading'))}</h3>
  {f'<ul>{replays_html}</ul>' if replays else f'<p>{esc(C("statement.replays_none"))}</p>'}
+ {('<h3 class="h3">' + esc(C('community.statement_heading')) + '</h3><ul class="cfinds">' + ''.join(finding_item(f, root) for f in COMMUNITY['by_statement'].get(sid, [])) + '</ul>') if COMMUNITY['by_statement'].get(sid) else ''}
  <p class="actions"><a class="btn btn--ghost ext" href="{esc(check_url)}" rel="noopener">{esc(C('statement.check_button'))}</a><a class="btn btn--ghost ext" href="{esc(replay_url)}" rel="noopener">{esc(C('statement.replay_button'))}</a><a class="btn btn--quiet ext" href="{esc(problem_url)}" rel="noopener">{esc(C('statement.problem_button'))}</a></p>
 </section>
 </div>
@@ -1849,6 +1907,7 @@ def map_data():
             "b": FAM_CITED_BY[f["id"]],
             "k": fam_cited_by_ms(f),
             "x": {"open": 0, "claimed": 1, "explained": 2}[status],
+            "w": len(COMMUNITY["by_family"].get(f["id"], [])) + len(COMMUNITY["efforts_by_family"].get(f["id"], [])),
             "g": fam_cover_grade(f),
         })
     vocab = sorted(v for v in (x["v"] for x in fams) if v is not None)
@@ -1928,7 +1987,7 @@ def build_home(md):
     for i, d in enumerate(DISCIPLINES):
         lis = "".join(f'<li><a href="families/{fid}.html">{fam_title_html(FAM[fid])}</a></li>' for fid in d["families"] if fid in FAM)
         idx.append(f'<section class="idx__d" id="idx-{DISC_SLUG[i]}"><h3 class="h3">{esc(d["name"])} <span class="count">{len(d["families"])}</span></h3><ul>{lis}</ul></section>')
-    ov = [("lean", "home.overlay_lean"), ("covers", "home.overlay_covers"), ("size", "home.overlay_size"), ("rests", "home.overlay_rests"), ("explained", "home.overlay_explained")]
+    ov = [("lean", "home.overlay_lean"), ("covers", "home.overlay_covers"), ("community", "home.overlay_community"), ("size", "home.overlay_size"), ("rests", "home.overlay_rests"), ("explained", "home.overlay_explained")]
     ov_btns = "".join(f'<button type="button" class="seg__b" data-overlay="{k}" aria-pressed="{"true" if k == "lean" else "false"}">{esc(C(lab))}</button>' for k, lab in ov)
     strings = {k: v for k, v in COPY["home"].items()}
     strings.update({"manuscript": C("words.manuscript"), "manuscripts": C("words.manuscripts"),
@@ -1971,6 +2030,7 @@ def build_home(md):
  <div class="cols2">
   <div><h3 class="h3"><a href="builds-on.html">{esc(C('home.credit_builds'))}</a></h3><p>{esc(C('home.credit_builds_text', works=s['external_works_cited'], top1=work_name(0), top2=work_name(1)))}</p></div>
   <div><h3 class="h3"><a href="rests-on.html">{esc(C('home.credit_rests'))}</a></h3><p>{esc(C('home.credit_rests_text'))}</p></div>
+  {('<div><h3 class="h3"><a href="community.html">' + esc(C('home.credit_community')) + '</a></h3><p>' + esc(C('home.credit_community_text', efforts=len(COMMUNITY['list']), people=len({(a.get('name') or a.get('handle')) for e in COMMUNITY['list'] for a in (e.get('authors') or [])}), findings=len(COMMUNITY['findings']))) + '</p></div>') if COMMUNITY['list'] else ''}
  </div>
 </section>
 <section class="frame band idx" aria-labelledby="h-index">
@@ -2195,6 +2255,44 @@ def build_builds_on():
 <section class="band band--tight">{''.join(rows)}</section>
 </div>"""
     write_page(rel, page(rel, C("builds_on.title"), C("builds_on.lede", works=SUMMARY["external_works_cited"], citations=SUMMARY["external_citations"], n=len(hl)), body))
+
+
+def build_community():
+    rel = "community.html"
+    order = C("community.kind_order")
+    titles = C("community.kind_titles")
+    groups = {}
+    for e in COMMUNITY["list"]:
+        groups.setdefault(e.get("kind"), []).append(e)
+    sections = []
+    for kind in order + sorted(k for k in groups if k not in order):
+        if kind not in groups:
+            continue
+        cards = []
+        for e in sorted(groups[kind], key=lambda x: (x.get("date") or "", x["name"])):
+            nf = sum(1 for f in COMMUNITY["findings"] if f.get("effort") == e["id"])
+            fams = [f for f in (e.get("families") or []) if f in FAM]
+            fam_links = ", ".join(f'<a href="families/{esc(f)}.html">{esc(f)}</a>' for f in fams[:8]) + (" …" if len(fams) > 8 else "")
+            cards.append(f"""<article class="ceff">
+ <h3 class="h3"><a class="ext" href="{esc(e['url'])}" rel="noopener">{esc(e['name'])}</a></h3>
+ <p class="muted small">{esc(credit_names(e))}{' · ' if credit_names(e) else ''}{esc(e.get('date') or '')}{(' · ' + esc(C('community.findings_n', n=nf))) if nf else ''}</p>
+ <p>{esc(e['summary'])}</p>
+ {('<p class="small">' + esc(C('community.results')) + ' ' + fam_links + '</p>') if fams else ''}
+ <p class="muted small">{esc(C('community.reuse_' + e.get('reuse', 'link')))} {esc(C('community.licence', licence=e.get('licence') or 'n/a'))}</p>
+</article>""")
+        sections.append(f'<section class="band band--tight"><h2 class="h2">{esc(titles.get(kind, kind))} <span class="count">{len(groups[kind])}</span></h2><div class="ceffs">{"".join(cards)}</div></section>')
+    people = {(a.get("name") or a.get("handle")) for e in COMMUNITY["list"] for a in (e.get("authors") or [])}
+    lede = C("community.lede", efforts=len(COMMUNITY["list"]), people=len(people), findings=len(COMMUNITY["findings"]))
+    body = f"""<div class="frame page">
+<header class="phead">
+ <h1 class="phead__title">{esc(C('community.title'))}</h1>
+ <p class="lede">{esc(lede if COMMUNITY['list'] else C('community.lede_empty'))}</p>
+ <p>{esc(C('community.credit'))}</p>
+ <p class="muted small">{esc(C('community.how'))} <a class="ext" href="{esc(issue_url('problem', C('community.add_title'), page=BASE_URL + rel))}" rel="noopener">{esc(C('community.add'))}</a></p>
+</header>
+{''.join(sections)}
+</div>"""
+    write_page(rel, page(rel, C("community.title"), lede if COMMUNITY["list"] else C("community.lede_empty"), body, current="community"))
 
 
 def build_rests_on():
@@ -2472,6 +2570,7 @@ def main():
     build_numbers()
     build_builds_on()
     build_rests_on()
+    build_community()
     build_contribute()
     build_about()
     build_404()

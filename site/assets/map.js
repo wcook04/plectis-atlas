@@ -257,6 +257,12 @@
       if (g === 'support') return { fill: 'var(--t-none)', key: 'csup', ring: 'ring-steel' };
       return { fill: 'var(--t-none)', key: 'cnone' };
     }
+    if (o === 'community') {
+      var w = f.w || 0;
+      if (!w) return { fill: 'var(--t-none)', key: 'w0' };
+      if (w === 1) return { fill: 'var(--t-x1)', key: 'w1' };
+      return { fill: 'var(--t-x2)', key: 'w2', ink: true };
+    }
     if (o === 'size') {
       var b = sizeBin(f.v);
       if (b < 0) return { fill: 'var(--t-none)', key: 'none' };
@@ -287,6 +293,9 @@
     } else if (o === 'covers') {
       row('sw--main', S.legend_covers_full, 'cfull'); row('sw--sup', S.legend_covers_part, 'cpart'); row('sw--x1', S.legend_covers_less, 'cless'); row('sw--none ring-steel', S.legend_covers_support, 'csup'); row('sw--none', S.legend_covers_none, 'cnone');
       rows.push('<p class="legend__note">' + esc(S.legend_covers_note) + '</p>');
+    } else if (o === 'community') {
+      row('sw--x2', S.legend_community_2, 'w2'); row('sw--x1', S.legend_community_1, 'w1'); row('sw--none', S.legend_community_0, 'w0');
+      rows.push('<p class="legend__note">' + esc(S.legend_community_note) + '</p>');
     } else if (o === 'size') {
       D.sizeBins.forEach(function (b, i) {
         var label = i === 0 ? S.legend_size_zero : (b[1] == null ? fmt(S.legend_size_bin_open, { lo: n(b[0]) }) : fmt(S.legend_size_bin, { lo: n(b[0]), hi: n(b[1]) }));
@@ -517,7 +526,7 @@
   function readHash() {
     var h = new URLSearchParams(location.hash.replace(/^#/, ''));
     var o = h.get('o');
-    if (o && /^(lean|covers|size|rests|explained)$/.test(o)) setOverlay(o, true);
+    if (o && /^(lean|covers|community|size|rests|explained)$/.test(o)) setOverlay(o, true);
     var f = h.get('f');
     var d = h.get('d');
     if (f && fam[f]) return { level: 1, disc: fam[f].d, sel: f };
