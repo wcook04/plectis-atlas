@@ -773,61 +773,12 @@ def cite_label(r, key):
 
 # ------------------------------------------------------------- Lean highlight
 
-LEAN_KW = ("theorem lemma def abbrev structure class inductive instance axiom opaque example notation infix infixl "
-           "infixr prefix postfix macro syntax macro_rules where extends namespace section end open scoped variable "
-           "universe noncomputable private protected import in fun let have show from by if then else match with do "
-           "deriving mutual set_option attribute local export calc at Type Sort Prop forall exists").split()
-LEAN_DECL = "theorem lemma def abbrev structure class inductive instance axiom opaque".split()
-LEAN_TOKEN = re.compile(
-    r"(?P<doc>/--.*?-/)|(?P<bc>/-.*?-/)|(?P<lc>--[^\n]*)|(?P<str>\"(?:\\.|[^\"\\\n])*\")|(?P<attr>@\[[^\]\n]*\])"
-    r"|(?P<decl>\b(?:" + "|".join(LEAN_DECL) + r")\b)(?P<sp>[ \t]+)(?P<name>[^\s:({\[]+)?"
-    r"|(?P<sorry>\b(?:sorry|admit)\b)"
-    r"|(?P<kw>\b(?:" + "|".join(k for k in LEAN_KW if k not in LEAN_DECL) + r")\b)"
-    r"|(?P<num>\b\d+(?:\.\d+)?\b)",
-    re.S,
-)
-
-
 def lean_lines(text: str) -> list[str]:
-    toks = []
-    pos = 0
-    for m in LEAN_TOKEN.finditer(text):
-        if m.start() > pos:
-            toks.append((None, text[pos:m.start()]))
-        g = m.lastgroup
-        if m.group("decl"):
-            toks.append(("k", m.group("decl")))
-            toks.append((None, m.group("sp")))
-            if m.group("name"):
-                toks.append(("d", m.group("name")))
-        elif g == "doc":
-            toks.append(("c d", m.group(0)))
-        elif g in ("bc", "lc"):
-            toks.append(("c", m.group(0)))
-        elif g == "str":
-            toks.append(("s", m.group(0)))
-        elif g == "attr":
-            toks.append(("a", m.group(0)))
-        elif g == "sorry":
-            toks.append(("x", m.group(0)))
-        elif g == "kw":
-            toks.append(("k", m.group(0)))
-        elif g == "num":
-            toks.append(("n", m.group(0)))
-        pos = m.end()
-    if pos < len(text):
-        toks.append((None, text[pos:]))
-    lines = [[]]
-    for cls, t in toks:
-        parts = t.split("\n")
-        for k, p in enumerate(parts):
-            if k:
-                lines.append([])
-            if p:
-                lines[-1].append(f'<span class="{cls}">{esc(p)}</span>' if cls else esc(p))
-    if text.endswith("\n") and lines and not lines[-1]:
-        lines.pop()
-    return ["".join(x) for x in lines]
+    """Highlighted lines without links, for snippets and cards: Lean's own
+    tokenizer in scripts/lean_render.py (nested comments, Lean's identifier
+    characters), each line hanging from its own indentation when it wraps."""
+    import lean_render
+    return lean_render.lines_html(text)
 
 
 def lean_key_ranges(text: str, theorem_names: list[str]):
@@ -2651,7 +2602,8 @@ def build_statement(stmt):
         heads = headline_statements(m)
         inner = "".join(render_paper_statement(m, st, root, cv, "pst") for st in heads) or f'<p class="muted">{esc(C("family.no_headline"))}</p>'
         paper_cols.append(f'<div class="sbs__paper"><h3 class="h3"><a href="{root}papers/{esc(slug)}.html">{ms_title_html(m)}</a></h3>{inner}</div>')
-    code_lines = "".join(f'<span class="ln" id="L{i}" data-n="{i}">{l}</span>' for i, l in enumerate(lines_html, 1))
+    import lean_render  # the whole file, every resolved name linked, beside "What you must check"
+    file_section = lean_render.file_section(stmt, commit=COMMIT, root=root)
     checks = CONTRIB["checks"].get(sid, [])
     replays = CONTRIB["replays"].get(sid, [])
     checks_html = "".join(f'<li><strong>{esc(c["name"])}</strong>{(": " + esc(c["verdict"])) if c.get("verdict") else ""}{(", " + esc(c["date"])) if c.get("date") else ""} <a class="ext small" href="{esc(REPO + "/blob/main/" + c["path"])}" rel="noopener">{esc(C("statement.record_link"))}</a></li>' for c in checks)
@@ -2713,7 +2665,7 @@ def build_statement(stmt):
  <details class="more" id="sbs"><summary><span class="h3" id="h-sbs">{esc(C('statement.paper_heading'))}</span></summary><p class="intro">{esc(C('statement.paper_intro'))}</p><div class="sbs__all">{''.join(paper_cols)}</div></details>
  <details class="more"><summary><span class="h3">{esc(C('statement.facts_heading'))}</span></summary><dl class="dl">{dl}</dl></details>
  <details class="more"><summary><span class="h3">{esc(C('statement.vocab_heading'))} <span class="count">{num(stmt['vocabulary_count'])}</span></span></summary>{vocab}</details>
- <details class="more" id="file"><summary><span class="h3" id="h-file">{esc(C('statement.file_heading'))}</span></summary><p class="intro">{esc(C('statement.file_intro', lines=len(lines_html)))}</p><pre class="lean lean--file"><code>{code_lines}</code></pre></details>
+ {file_section}
 </section>
 <section class="band explain-box" aria-labelledby="h-checks">
  <h2 class="h2" id="h-checks">{esc(C('statement.checks_heading'))}</h2>
@@ -2732,7 +2684,8 @@ def build_statement(stmt):
     generic = generic_og_meta()
     own = og_meta(BASE_URL + f"og/{sid}.png", C("statement.og_alt", label=label))
     OG_DONE[sid] = (generic, own)
-    write_page(rel, page(rel, f"{label} (Lean)", desc, body, og_block=generic, page_type="article"))
+    lean_head = f'<link rel="stylesheet" href="{root}assets/lean.css">\n<script defer src="{root}assets/lean.js"></script>'
+    write_page(rel, page(rel, f"{label} (Lean)", desc, body, og_block=generic, page_type="article", extra_head=lean_head))
 
 
 # ------------------------------------------------------------------- home

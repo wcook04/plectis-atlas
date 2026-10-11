@@ -1,0 +1,179 @@
+/* OpenAI Math Atlas: the Lean file view on statement pages (scripts/lean_render.py).
+   The whole challenge file beside the "What you must check" panel. Colours come
+   from atlas.css: steel marks Lean, ink the text, and every link keeps the token's
+   own colour at rest, so the code reads as code.
+
+   The Lean face sits behind one variable. A Lean-complete monospace face
+   (JuliaMono covers all 177 non-ASCII characters of the 416 challenge files) is
+   not shipped yet; when its subset arrives, declare it as "Atlas Lean Mono" with
+   an @font-face rule and it takes over, since it is first in the stack. Until
+   then the stack prefers the installed faces that cover most of Lean's symbols:
+   JuliaMono where a reader has it, DejaVu Sans Mono (Linux), Menlo (macOS: it
+   lacks 47 of the 177 characters, 4.1% of their occurrences, where SF Mono lacks
+   109 and 59%), Cascadia Mono and Consolas (Windows), then STIX Two Math, through
+   the site's own Plectis Math subset or an installed copy, for the operators
+   Menlo lacks. Measured on macOS, Menlo then STIX Two Math leave 9 characters to
+   the system's fallback, 0.4% of occurrences: the subscript letters ₗ ₙ ₜ ₖ ₕ ₘ ₛ ₚ
+   and ᗮ. */
+:root {
+  --lean-mono: "Atlas Lean Mono", "JuliaMono", "DejaVu Sans Mono", Menlo, "Cascadia Mono", Consolas,
+    "Noto Sans Mono", "Liberation Mono", "Plectis Math", "STIX Two Math", "Cambria Math", "Apple Symbols",
+    "Segoe UI Symbol", monospace;
+  --lx-fs: 0.8125rem;
+  --lx-lh: 1.6;
+  --lx-gutter: 7ch;
+  --lx-hang: 4;
+  --lx-height: calc(100vh - var(--top-h, 64px) - 40px);
+}
+
+.lx { margin-top: 28px; }
+.lx .intro { max-width: 46em; }
+.lx-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 4px 0 6px; font-size: var(--fs-small); color: var(--muted); }
+.lx-key { font-family: var(--lean-mono); font-size: 0.95em; color: var(--ink); }
+.lx-key--r { text-decoration: underline dotted; text-decoration-color: var(--steel-text); text-underline-offset: 3px; }
+.lx-key--m { color: var(--muted); }
+.lx-key--o { text-decoration: underline dashed; text-decoration-color: var(--link-ext); text-underline-offset: 3px; }
+.lx-counts { font-size: var(--fs-small); color: var(--muted); max-width: 60em; margin: 0 0 14px; line-height: 1.5; }
+
+/* The bench: the panel beside the file on a wide screen, above it on a narrow one.
+   Each scrolls on its own, so the page keeps its length whatever the file's. */
+.lx-bench { display: grid; grid-template-columns: minmax(250px, 330px) minmax(0, 1fr); gap: 18px; align-items: start; }
+@media (max-width: 1000px) {
+  .lx-bench { grid-template-columns: minmax(0, 1fr); }
+  .lxp { max-height: 55vh; }
+}
+
+/* ---- the file ----------------------------------------------------------- */
+.lx-codewrap { min-width: 0; }
+.lx-code {
+  margin: 0; padding: 10px 0; max-height: var(--lx-height); overflow: auto; overscroll-behavior: contain;
+  background: var(--code-bg); border: 1px solid var(--rule); border-radius: var(--r-md);
+  font-family: var(--lean-mono); font-size: var(--lx-fs); line-height: var(--lx-lh); tab-size: 2;
+  font-variant-ligatures: none;
+}
+.lx-code:focus-visible { outline: 2px solid var(--steel); outline-offset: 2px; }
+.lx-code code { display: block; font: inherit; }
+.lx-k { display: block; content-visibility: auto; contain-intrinsic-size: auto calc(var(--n, 100) * var(--lx-lh) * 1em); }
+/* A long line wraps with a hanging indent: its continuation starts four columns
+   right of the line's own indentation (--i, set per line), never at column 0. */
+.lx-code .ln, .lx-card__code .ln {
+  display: block; position: relative; white-space: pre-wrap; overflow-wrap: break-word; word-break: normal;
+  padding-left: calc(var(--lx-gutter) + (var(--i, 0) + var(--lx-hang)) * 1ch);
+  text-indent: calc((var(--i, 0) + var(--lx-hang)) * -1ch);
+  padding-right: 14px; scroll-margin-top: calc(var(--top-h, 64px) + 24px);
+  min-height: calc(var(--lx-lh) * 1em);    /* a blank line keeps its height */
+}
+.lx-code .ln::before, .lx-card__code .ln::before {
+  content: attr(data-n); position: absolute; left: 0; top: 0; width: calc(var(--lx-gutter) - 1.6ch);
+  text-align: right; text-indent: 0; color: var(--faint); opacity: 0.72;
+  font-variant-numeric: tabular-nums; user-select: none; -webkit-user-select: none;
+}
+.lx-code .ln:target { background: color-mix(in oklab, var(--steel) 20%, transparent); }
+.lx-code .ln:target::before { color: var(--steel-text); opacity: 1; }
+
+.lx .k { color: var(--steel-text); font-weight: 600; }
+.lx .d { color: var(--ink); font-weight: 700; }
+.lx .c { color: var(--faint); font-style: italic; }
+.lx .cd { color: var(--muted); }
+.lx .s { color: var(--brick-text); }
+.lx .n { color: var(--ink-soft); }
+.lx .a { color: var(--muted); }
+.lx .x { color: var(--brick-text); font-weight: 700; }
+
+/* Links keep the token's colour. A name declared in this file carries a dotted
+   steel underline, OpenAI's library a dashed one; a Mathlib name shows its line
+   only when pointed at. */
+.lx-code a, .lx-card__code a { color: inherit; text-decoration: none; border-radius: 2px; }
+.lx-code a.r, .lx-card__code a.r { text-decoration: underline dotted; text-decoration-color: color-mix(in oklab, var(--steel-text) 75%, transparent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.lx-code a.o, .lx-code a.lib, .lx-card__code a.o, .lx-card__code a.lib { text-decoration: underline dashed; text-decoration-color: color-mix(in oklab, var(--link-ext) 80%, transparent); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.lx-code a:hover, .lx-code a:focus-visible { color: var(--steel-strong); text-decoration: underline solid; text-decoration-color: currentColor; background: color-mix(in oklab, var(--steel) 14%, transparent); }
+.lx-code a:focus-visible { outline: 2px solid var(--steel); outline-offset: 1px; }
+
+/* ---- the panel ------------------------------------------------------------ */
+.lxp {
+  max-height: var(--lx-height); overflow: auto; overscroll-behavior: contain; padding: 12px 14px 14px;
+  background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md);
+  font-size: var(--fs-small); line-height: 1.45;
+}
+.lxp-title { font-family: var(--serif); font-weight: 600; font-size: 1.0625rem; line-height: 1.3; margin: 0 0 6px; color: var(--ink); }
+.lxp-intro { color: var(--ink-soft); margin: 0 0 6px; }
+.lxp-sum { color: var(--ink); font-weight: 600; margin: 0 0 10px; }
+.lxp-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0 0 8px; }
+.lxp-controls[hidden] { display: none; }
+.lxp-search { flex: 1 1 100%; }
+.lxp-search input {
+  width: 100%; font: inherit; font-size: var(--fs-small); color: var(--ink); background: var(--page);
+  border: 1px solid var(--rule-control); border-radius: var(--r-sm); padding: 5px 8px;
+}
+.lxp-search input:focus-visible { outline: 2px solid var(--steel); outline-offset: 1px; }
+.lxp-direct { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-soft); cursor: pointer; }
+.lxp-count { color: var(--muted); font-variant-numeric: tabular-nums; margin-left: auto; }
+.lxp-list { list-style: none; margin: 0; padding: 0; counter-reset: lxp; }
+.lxp-row { padding: 2px 6px 3px; border-top: 1px solid var(--rule); border-radius: 4px; }
+.lxp-row:first-child { border-top: 0; }
+.lxp-row[hidden] { display: none; }
+.lxp-row.is-thm { background: color-mix(in oklab, var(--steel) 9%, transparent); }
+.lxp-row.is-here { outline: 2px solid color-mix(in oklab, var(--steel) 55%, transparent); outline-offset: -1px; }
+.lxp-go { display: block; padding: 3px 0; color: var(--ink); text-decoration: none; overflow-wrap: break-word; }
+/* every control in a row offers a 24px hit area (WCAG 2.5.8) */
+.lxp-meta > a, .lxp-meta > button { display: inline-flex; align-items: center; min-height: 24px; }
+.lxp-go:hover .lxp-name, .lxp-go:focus-visible .lxp-name { color: var(--steel-strong); text-decoration: underline; }
+.lxp-go:focus-visible { outline: 2px solid var(--steel); outline-offset: 1px; }
+.lxp-kind { font-family: var(--lean-mono); font-size: 0.92em; color: var(--steel-text); font-weight: 600; margin-right: 0.25em; }
+.lxp-name { font-family: var(--lean-mono); font-size: 0.95em; color: var(--ink); font-weight: 600; }
+.lxp-ns { color: var(--faint); font-weight: 400; }
+.lxp-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0 10px; color: var(--muted); font-size: 0.95em; }
+.lxp-line { font-variant-numeric: tabular-nums; }
+.lxp-flag { color: var(--steel-text); font-weight: 600; }
+.lxp-flag--thm { color: var(--ink); }
+.lxp-flag--hole { color: var(--brick-text); }
+.lxp-lib { color: var(--link-ext); text-decoration: underline dashed; text-underline-offset: 3px; }
+.lxp-lib::after { content: "\2009\2197"; }
+.lxp-rel {
+  font: inherit; color: var(--muted); background: none; border: 0; padding: 0; cursor: pointer;
+  text-decoration: underline dotted; text-decoration-color: color-mix(in oklab, var(--muted) 60%, transparent);
+  text-underline-offset: 3px;
+}
+.lxp-rel:hover { color: var(--steel-text); text-decoration-color: currentColor; }
+.lxp-rel[hidden] { display: none; }
+.lxp-rel[aria-expanded="true"] { text-decoration-style: solid; }
+.lxp-rel:focus-visible { outline: 2px solid var(--steel); outline-offset: 1px; }
+.lxp-rels { margin: 6px 0 2px; padding: 6px 8px; background: var(--page); border: 1px solid var(--rule); border-radius: 4px; }
+.lxp-relline { margin: 0 0 3px; display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; }
+.lxp-relline:last-child { margin-bottom: 0; }
+.lxp-relk { color: var(--muted); min-width: 4.8em; }
+.lxp-relline a { font-family: var(--lean-mono); font-size: 0.95em; color: var(--ink); }
+.lxp-relnone { color: var(--faint); }
+.lxp-empty { color: var(--muted); margin: 8px 0; }
+.lxp-empty button { font: inherit; color: var(--steel-text); background: none; border: 0; padding: 0; cursor: pointer; text-decoration: underline; }
+.lxp-more { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--rule-strong); }
+.lxp-h { font-family: var(--sans); font-size: var(--fs-small); font-weight: 700; margin: 0 0 4px; color: var(--ink); }
+.lxp-note { color: var(--muted); margin: 0 0 6px; }
+.lxp-nn > summary { cursor: pointer; color: var(--ink-soft); font-weight: 600; }
+.lxp-nn > summary:focus-visible { outline: 2px solid var(--steel); outline-offset: 1px; }
+.lxp-nn[open] > summary { margin-bottom: 6px; }
+.lxp-mini { list-style: none; margin: 0; padding: 0; }
+.lxp-mini li { padding: 2px 0; overflow-wrap: break-word; }
+.lxp-mini a { color: var(--ink); text-decoration: none; }
+.lxp-mini a:hover code, .lxp-mini a:focus-visible code { text-decoration: underline; color: var(--steel-strong); }
+.lxp-mini code { font-family: var(--lean-mono); font-size: 0.95em; }
+
+/* ---- the card ------------------------------------------------------------- */
+.lx-card {
+  position: fixed; z-index: 60; left: 0; top: 0; max-width: min(760px, calc(100vw - 16px));
+  padding: 8px 10px 9px; background: var(--surface); color: var(--ink);
+  border: 1px solid var(--rule-strong); border-radius: var(--r-md);
+  box-shadow: 0 8px 28px rgba(15, 10, 20, 0.22); pointer-events: none; font-size: var(--fs-small);
+}
+.lx-card[hidden] { display: none; }
+.lx-card__t { margin: 0 0 4px; color: var(--muted); font-weight: 600; }
+.lx-card__n { margin: 0; font-family: var(--lean-mono); color: var(--ink); overflow-wrap: anywhere; }
+.lx-card__code {
+  margin: 0; padding: 2px 0; background: none; border: 0; max-height: 60vh; overflow: hidden;
+  font-family: var(--lean-mono); font-size: var(--lx-fs); line-height: var(--lx-lh);
+}
+.lx-card__code .ln { padding-right: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .lx-code { scroll-behavior: auto; }
+}

@@ -1,0 +1,85 @@
+{
+ "_note": "Every visible string of a statement page's Lean file view and its 'What you must check' panel (scripts/lean_render.py). Placeholders in braces are filled from data. Plain words; no em dashes.",
+ "file": {
+  "heading": "The whole challenge file",
+  "intro": "{lines} lines, exactly as in the release at commit {commit}. A name declared in this file links to its line, and hovering it shows its declaration.",
+  "legend_local": "Declared in this file",
+  "legend_mathlib": "Other linked names open Mathlib documentation (current) and show their underline when pointed at.",
+  "legend_oai": "OpenAI’s library at {commit}",
+  "counts": "Links in the file: {local} to its own declarations, {ext} to Mathlib’s documentation.",
+  "counts_imported": {
+   "one": "{n} more goes to the OpenAI modules the file imports.",
+   "many": "{n} more go to the OpenAI modules the file imports."
+  },
+  "counts_library": {
+   "one": "{n} declared name also links to the same declaration in OpenAI’s library.",
+   "many": "{n} declared names also link to the same declaration in OpenAI’s library."
+  },
+  "counts_plain": {
+   "one": "{n} identifier stays plain because it resolves to no single declaration: a variable Lean binds automatically, notation, or a name the scan of the pinned sources did not find.",
+   "many": "{n} identifiers stay plain because they resolve to no single declaration: variables Lean binds automatically, notation, or names the scan of the pinned sources did not find."
+  },
+  "counts_ambiguous": {
+   "one": "{n} of them could name more than one declaration.",
+   "many": "{n} of them could name more than one declaration."
+  },
+  "namespace_note": "Names in the namespace {ns} are listed without it.",
+  "mathlib_note": "OpenAI pins Mathlib at commit {mathlib}, and the documentation follows current Mathlib, so a name renamed since then may be missing there.",
+  "code_aria": "Lean source of {file}"
+ },
+ "panel": {
+  "heading": "What you must check",
+  "intro": "A proof that Comparator accepts proves {theorem} as this file states it. These are the declarations its statement reaches by name, directly or through one another, each listed after everything it uses. A call written with dot notation, x.foo, counts every foo this file declares on its types, so the list may hold a declaration the statement does not need.",
+  "summary": {
+   "one": "It reaches {n} of the file’s {total} other declarations; with the theorem itself they span {lines} lines.",
+   "many": "It reaches {n} of the file’s {total} other declarations; with the theorem itself they span {lines} lines."
+  },
+  "intro_holes": "This configuration names no theorem: Comparator checks that OpenAI’s library defines {names} with the type this file gives. These are the declarations reached by name from there, each listed after everything it uses.",
+  "holes_note": "A definition marked “name and type only” is checked by its name and type alone; a proof is checked against its body in OpenAI’s library, linked beside it, so compare that body with the one here.",
+  "summary_all": {
+   "one": "It reaches the file’s only other declaration; with the theorem itself they span {lines} lines.",
+   "many": "It reaches all {n} other declarations of the file; with the theorem itself they span {lines} lines."
+  },
+  "summary_none": "The statement reaches no other declaration of this file.",
+  "summary_imported": {
+   "one": "It also names {n} declaration from the OpenAI modules the file imports, listed below.",
+   "many": "It also names {n} declarations from the OpenAI modules the file imports, listed below."
+  },
+  "imported_heading": "From the OpenAI modules the file imports",
+  "imported_intro": "The statement rests on these as well. They live in OpenAI’s library at the pinned commit, so read them there.",
+  "summary_direct": {
+   "one": "{n} of them is named in the statement itself.",
+   "many": "{n} of them are named in the statement itself."
+  },
+  "flag_theorem": "checked theorem",
+  "flag_direct": "in the statement",
+  "flag_hole": "name and type only",
+  "library": "library",
+  "library_aria": "{name} in OpenAI’s library on GitHub",
+  "line": "line {line}",
+  "rel_counts": "uses {uses}, used by {users}",
+  "rel_aria": "Show what {name} uses and what uses it",
+  "search_label": "Find a declaration",
+  "search_placeholder": "Find a declaration",
+  "direct_only": "Only names in the statement",
+  "empty": "No declaration matches.",
+  "clear": "Clear the filter",
+  "implicit_heading": "Also in force",
+  "implicit_intro": "Instances, notation and attributes take effect without being named, so the reference graph cannot follow them. Read these as well.",
+  "not_needed": {
+   "one": "{n} declaration the statement does not reach by name",
+   "many": "{n} declarations the statement does not reach by name"
+  },
+  "not_needed_intro": "The scan follows names in the text, so a declaration reached only through an instance or a macro is listed here."
+ },
+ "script": {
+  "shown": "{n} of {total}",
+  "uses": "Uses",
+  "used_by": "Used by",
+  "rel_none": "nothing in this file",
+  "card_local": "Declared at line {line}",
+  "card_mathlib": "Mathlib documentation (current)",
+  "card_oai": "OpenAI’s library at {commit}",
+  "card_library": "The same declaration in OpenAI’s library at {commit}"
+ }
+}
