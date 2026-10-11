@@ -1054,6 +1054,50 @@ def sourced(f, field):
     return vals[0] if vals else None
 
 
+def sourced_all(obj, field):
+    """Every source's value for a field, in source order, as [{value, source}]."""
+    return (obj.get("sourced") or {}).get(field) or []
+
+
+def source_credit(source_id):
+    src = SOURCES.get(source_id) or {}
+    return src.get("credit") or src.get("name") or source_id
+
+
+def independent_reruns_html(stmt, root):
+    """Other people's re-runs of this challenge, each in its own words, credited, dated and linked."""
+    items = []
+    for v in sourced_all(stmt, "replay"):
+        rv = v["value"]
+        holes = (rv.get("holes") or {}).get("text")
+        when = f', {esc(rv["date"])}' if rv.get("date") else ""
+        items.append(f'<li><p>{ctext(rv["text"])}{(" " + ctext(holes)) if holes else ""}</p>'
+                     f'<p class="small muted">{source_link(v["source"], root)}{when}. '
+                     f'<a class="ext" href="{esc(rv["url"])}" rel="noopener">{esc(C("sources.record_link"))}</a></p></li>')
+    if not items:
+        return ""
+    return (f'<div class="reruns"><h3 class="h3">{esc(C("statement.reruns_heading"))}</h3>'
+            f'<p class="intro small">{esc(C("statement.reruns_intro"))}</p><ul class="cfinds">{"".join(items)}</ul></div>')
+
+
+def scope_readings_html(f, root):
+    """Independent readers' verdicts on whether the family's challenges state its headline, beside OpenAI's note."""
+    items = []
+    for v in sourced_all(f, "scope_reading"):
+        rv = v["value"]
+        extra = ""
+        if rv.get("gap"):
+            extra += f'<p class="small">{esc(C("family.reading_gap"))} <span class="md-math">{ctext(rv["gap"])}</span></p>'
+        if rv.get("note"):
+            extra += f'<p class="small md-math">{ctext(rv["note"])}</p>'
+        items.append(f'<li><p><strong>{esc(source_credit(v["source"]))}:</strong> {esc(rv.get("text") or rv.get("code") or "")}</p>{extra}'
+                     f'<p class="small muted">{source_link(v["source"], root)}. <a class="ext" href="{esc(rv["url"])}" rel="noopener">{esc(C("sources.record_link"))}</a></p></li>')
+    if not items:
+        return ""
+    return (f'<h3 class="h3">{esc(C("family.readings_heading"))}</h3><p class="intro small">{esc(C("family.readings_intro"))}</p>'
+            f'<ul class="cfinds">{"".join(items)}</ul>')
+
+
 def source_link(source_id, root):
     src = SOURCES.get(source_id) or COMMUNITY["efforts"].get(source_id) or {}
     name = src.get("name") or source_id
@@ -2092,6 +2136,7 @@ def build_family(f):
    <h2 class="h2" id="h-lean">{esc(C('family.lean_heading'))}</h2>
    {lean_html}
    {('<h3 class="h3">' + esc(C('family.lean_scope_heading')) + '</h3>' + scope) if scope else ''}
+   {scope_readings_html(f, root)}
    {reasoning_html}
   </div>
  </aside>
@@ -2187,6 +2232,10 @@ def review_records(sid):
         e = COMMUNITY["efforts"].get(f_["effort"], {})
         kinds = C("community.finding_kinds")
         reps.append((kinds.get(f_["kind"], f_["kind"]) if isinstance(kinds, dict) else f_["kind"], credit_names(e) or e.get("name", ""), f_.get("date") or ""))
+    rerun_kinds = C("statement.rerun_kinds")
+    for v in sourced_all(ST.get(sid) or {}, "replay"):
+        rv = v["value"]
+        reps.append((rerun_kinds.get(rv["verdict"], rv["verdict"]) if isinstance(rerun_kinds, dict) else rv["verdict"], source_credit(v["source"]), rv.get("date") or ""))
     replay = C("statement.replay_recorded", items=record_items(reps)) if reps else C("statement.replay_none_short")
     return review, replay
 
@@ -2486,6 +2535,7 @@ def build_statement(stmt):
  {coverage_html(sid)}
  {family_note}
  <dl class="dl dl--status"><div><dt>{esc(C('statement.review_key'))}</dt><dd>{esc(review)}</dd></div><div><dt>{esc(C('statement.replay_key'))}</dt><dd>{esc(replay)}</dd></div></dl>
+ {independent_reruns_html(stmt, root)}
 </section>
 <section class="band band--card" aria-labelledby="h-share">
  <h2 class="h2" id="h-share">{esc(C('statement.card_heading'))}</h2>
@@ -2924,7 +2974,10 @@ def build_numbers():
 </article>""")
     rc = s.get("lean_count_reconciliation") or {}
     recon_rows = []
-    for key in ("families_with_lean_in_scope_notes", "families_with_a_paper_in_formalization_yaml_sources", "papers_in_formalization_yaml_sources", "tier_list_families_with_lean", "tier_list_lean_formalisations_total"):
+    for key in ("families_with_lean_in_scope_notes", "families_with_a_paper_in_formalization_yaml_sources", "papers_in_formalization_yaml_sources", "tier_list_families_with_lean", "tier_list_lean_formalisations_total",
+                "mathvet_families_full", "mathvet_families_partial", "mathvet_families_weaker_or_supporting",
+                "cert_machine_families_matching", "cert_machine_families_narrower_declared", "cert_machine_families_narrower_undeclared_or_unlinked", "cert_machine_families_different_or_supporting",
+                "mathvet_challenges_accepted", "cert_machine_challenges_accepted"):
         if rc.get(key) is not None:
             recon_rows.append(f'<tr><td>{esc(C("numbers.recon." + key))}</td><td class="t-num">{num(rc[key])}</td></tr>')
     if rc.get("openai_reported_top_line_formalized"):

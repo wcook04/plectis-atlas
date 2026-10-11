@@ -618,6 +618,110 @@
  },
  "sources": [
   {
+   "id": "cert-machine",
+   "name": "cert-machine audit of openai/math",
+   "url": "https://carlostoledo.co/reports/openai-math.html",
+   "authors": [
+    {
+     "name": "Carlos Toledo",
+     "handle": "carlostoledo1891"
+    }
+   ],
+   "kind": "audit",
+   "licence": "MIT",
+   "reuse": "import",
+   "snapshot": "2026-10-11",
+   "method": "Every Comparator challenge re-run on Linux with nanoda switched on, decided by a preregistered rule; every family's challenge statements read against OpenAI's headline, clause by clause. Decider: Comparator (leanprover/comparator d03acab1 = tag v4.34.0, built with the release's toolchain v4.34.1), lean4export 076e8e57, landrun 811cfff5, nanoda_lib 3a240721 — on GitHub's Linux runners (.github/workflows/openai-math-kernel.yml), one j",
+   "fields": {
+    "replay": "Per challenge: the audit's Comparator re-run with both kernels, and for files with definition holes whether the displayed statement is proved.",
+    "scope_reading": "Per family: whether the challenge statements state OpenAI's headline, with the gap and whether OpenAI's Lean note declares it."
+   },
+   "tier_names": null,
+   "adopted": [
+    {
+     "kind": "data",
+     "what": "Its re-run verdict for each of the 416 challenges, with the held-definition checks for the ten files with definition holes",
+     "where": "the Independent replay line on statement pages"
+    },
+    {
+     "kind": "data",
+     "what": "Its reading of each of the 242 families against OpenAI's headline, with the gap and whether OpenAI's note declares it",
+     "where": "the readings of the scope on family pages"
+    },
+    {
+     "kind": "idea",
+     "what": "Telling apart a gap OpenAI's note declares from one it does not",
+     "where": "family pages"
+    }
+   ],
+   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "credit": "Carlos Toledo, cert-machine",
+   "repository": "https://github.com/carlostoledo1891/cert-machine",
+   "counts": {
+    "kernel": {
+     "CERTIFIED": 398,
+     "REFUSED": 18
+    },
+    "statements": {
+     "MATCHES": 127,
+     "NARROWER — UNLINKED": 39,
+     "NARROWER — DECLARED": 38,
+     "SUPPORT-ONLY": 4,
+     "DIFFERENT": 11,
+     "NARROWER — UNDECLARED": 23
+    }
+   }
+  },
+  {
+   "id": "mathvet",
+   "name": "MathVet fidelity review of openai/math",
+   "url": "https://math.vet",
+   "authors": [
+    {
+     "name": "MathVet maintainers"
+    }
+   ],
+   "kind": "audit",
+   "licence": "Apache-2.0",
+   "reuse": "import",
+   "snapshot": "2026-10-10",
+   "method": "An independent, pre-referee review of each family's challenge statements against its headline claim under a published rubric (PROTOCOL.md), with its own Comparator runs per challenge. MathVet publishes the error rate of its own verdicts.",
+   "fields": {
+    "scope_reading": "Per family: MathVet's verdict on whether the challenge statements state the headline claim, with its review note.",
+    "replay": "Per challenge: MathVet's own machine check."
+   },
+   "tier_names": null,
+   "adopted": [
+    {
+     "kind": "data",
+     "what": "Its verdict and review note for each of the 242 families with Lean",
+     "where": "the readings of the scope on family pages"
+    },
+    {
+     "kind": "data",
+     "what": "Its Comparator check for each challenge it ran",
+     "where": "the Independent replay line on statement pages"
+    },
+    {
+     "kind": "idea",
+     "what": "A published rubric with a stated error rate for statement-fidelity verdicts",
+     "where": "the about and numbers pages"
+    }
+   ],
+   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+   "credit": "MathVet",
+   "repository": "https://github.com/mathvet/mathvet",
+   "counts": {
+    "families": {
+     "full": 149,
+     "partial": 59,
+     "weaker-statement": 18,
+     "supporting-only": 16
+    },
+    "challenges_checked": 382
+   }
+  },
+  {
    "id": "tier-list",
    "name": "OpenAI Math Tier List",
    "url": "https://claude.ai/artifact/JSqNXXfsvRntB6cqoEENaN",
@@ -662,7 +766,11 @@
      "what": "Its count of Lean formalisations per family",
      "where": "the published-counts reconciliation on the numbers page"
     }
-   ]
+   ],
+   "upstream_commit": null,
+   "credit": null,
+   "repository": null,
+   "counts": null
   }
  ],
  "lean_count_reconciliation": {
@@ -671,7 +779,16 @@
   "papers_in_formalization_yaml_sources": 173,
   "openai_reported_top_line_formalized": "top-line results formalized to 300 / 719 = ~42%",
   "tier_list_families_with_lean": 127,
-  "tier_list_lean_formalisations_total": 162
+  "tier_list_lean_formalisations_total": 162,
+  "mathvet_families_full": 149,
+  "mathvet_families_partial": 59,
+  "mathvet_families_weaker_or_supporting": 34,
+  "mathvet_challenges_accepted": 379,
+  "cert_machine_families_matching": 127,
+  "cert_machine_families_narrower_declared": 38,
+  "cert_machine_families_narrower_undeclared_or_unlinked": 62,
+  "cert_machine_families_different_or_supporting": 15,
+  "cert_machine_challenges_accepted": 398
  },
  "review_queue": {
   "flagged": 54,

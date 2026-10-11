@@ -14,3 +14,17 @@ the Apache License, Version 2.0 (LICENSE). Explanations contributed under
 contributions/explanations/ are licensed under the Creative Commons
 Attribution 4.0 International licence (LICENSES/CC-BY-4.0.txt), and their
 authors are credited by name.
+
+Data from other projects, imported under their licences and credited where
+each value appears:
+
+- curated/sources/cert-machine.json: verdicts from Carlos Toledo's audit of
+  openai/math in cert-machine, https://github.com/carlostoledo1891/cert-machine,
+  Copyright (c) 2026 Carlos Toledo, MIT License (LICENSES/MIT-cert-machine.txt).
+- curated/sources/mathvet.json: verdicts and checks from MathVet's review of
+  openai/math, https://github.com/mathvet/mathvet, licensed under the Apache
+  License, Version 2.0 (LICENSES/Apache-2.0.txt). The atlas changed their
+  form: codes are kept and plain sentences are added beside them.
+
+Findings recorded in curated/community.json are short paraphrases of other
+people's public work, each linked to its source and credited by name.

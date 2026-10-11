@@ -1371,11 +1371,24 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         src = json.loads(sp.read_text(encoding="utf-8"))
         meta = src.get("source", {})
         sid_ = meta.get("id") or sp.stem
-        sources.append({k: meta.get(k) for k in ("id", "name", "url", "authors", "kind", "licence", "reuse", "snapshot", "method", "fields", "tier_names", "adopted")})
+        sources.append({k: meta.get(k) for k in ("id", "name", "url", "authors", "kind", "licence", "reuse", "snapshot", "method", "fields", "tier_names", "adopted", "upstream_commit", "credit", "repository", "counts")})
+        # A source that read another release would attach its readings to different files: withhold it.
+        if meta.get("upstream_commit") and meta["upstream_commit"] != commit:
+            log(f"source {sid_} withheld: it read {meta['upstream_commit'][:12]}, data built from {commit[:12]}")
+            sources[-1]["withheld"] = True
+            continue
         for fid, vals in (src.get("families") or {}).items():
             if fid not in fam_by_id:
                 continue
             sourced = fam_by_id[fid].setdefault("sourced", {})
+            for field, value in vals.items():
+                if value is None:
+                    continue
+                sourced.setdefault(field, []).append({"value": value, "source": sid_})
+        for stid, vals in (src.get("statements") or {}).items():
+            if stid not in challenges:
+                continue
+            sourced = challenges[stid].setdefault("sourced", {})
             for field, value in vals.items():
                 if value is None:
                     continue
@@ -1393,6 +1406,22 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         tlf = [f.get("sourced", {}).get("lean_formalisations", [{}])[0].get("value") for f in families]
         recon["tier_list_families_with_lean"] = sum(1 for v in tlf if v)
         recon["tier_list_lean_formalisations_total"] = sum(v for v in tlf if v)
+    # Independent readers' counts, recomputed here from their per-row values folded into the rows above.
+    def read_count(rows, field, sid, verdicts):
+        return sum(1 for r in rows if any(v["source"] == sid and v["value"].get("verdict") in verdicts
+                                          for v in (r.get("sourced") or {}).get(field, [])))
+    live = {x["id"] for x in sources if not x.get("withheld")}
+    if "mathvet" in live:
+        recon["mathvet_families_full"] = read_count(families, "scope_reading", "mathvet", {"full"})
+        recon["mathvet_families_partial"] = read_count(families, "scope_reading", "mathvet", {"partial"})
+        recon["mathvet_families_weaker_or_supporting"] = read_count(families, "scope_reading", "mathvet", {"weaker-statement", "supporting-only"})
+        recon["mathvet_challenges_accepted"] = read_count(challenges.values(), "replay", "mathvet", {"accepted"})
+    if "cert-machine" in live:
+        recon["cert_machine_families_matching"] = read_count(families, "scope_reading", "cert-machine", {"matches"})
+        recon["cert_machine_families_narrower_declared"] = read_count(families, "scope_reading", "cert-machine", {"narrower-declared"})
+        recon["cert_machine_families_narrower_undeclared_or_unlinked"] = read_count(families, "scope_reading", "cert-machine", {"narrower-undeclared", "narrower-unlinked"})
+        recon["cert_machine_families_different_or_supporting"] = read_count(families, "scope_reading", "cert-machine", {"different", "supporting-only"})
+        recon["cert_machine_challenges_accepted"] = read_count(challenges.values(), "replay", "cert-machine", {"accepted"})
     summary["lean_count_reconciliation"] = recon
     summary["definitions"]["lean_count_reconciliation"] = (
         "Published counts of how much of the release has Lean, side by side: families whose Lean notes link a Comparator "
