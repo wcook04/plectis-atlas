@@ -8,7 +8,8 @@ what a page teaches, so the next pass starts from it.
 A public reading room for OpenAI's mathematics release, for mathematicians
 first and AI researchers second. It is set in a publication register and kept
 as quiet as a good journal. It takes one risk: the front door is the whole
-release, drawn as one map that opens into every family. Everything else stays
+release, drawn as one map that opens into every family, with a list beside it
+that reads the map in words. Everything else stays
 calm so that the map, and the mathematics, are what a visitor remembers.
 
 The release arrives as 719 papers, 416 Lean files and a catalogue. A
@@ -32,59 +33,45 @@ Every family page answers these, in this order. The home page promises them.
 This list is grounded in mathematicians' own writing about AI-generated
 mathematics. The About page paraphrases those essays and links them.
 
-## The family mark
+## No symbol codes
 
-Every family has one small drawing of its recorded evidence, made by
-`scripts/glyphs.py` from the states in `scripts/evidence.py`. It appears
-wherever the family does: on the plate, in lists and search results, in the
-desk, at the head of the family page. Every stroke encodes a recorded state;
-nothing is decoration, and every mark carries a sentence for screen readers.
+Every drawn thing is one concrete object (a family, a paper, a theorem, a Lean
+statement), labelled in words on the drawing. Colour means one thing in a
+drawing, said in one line. A state is a sentence beside the object it
+qualifies. Never a composite mark that packs several facts into one symbol, never
+a key the reader must learn before the page makes sense, never treemap or
+stock-market tile grids. (12 October 2026: a "family mark" with papers, a
+reader-split diamond, tones and rings was rejected as a code to crack, and the
+old tile map as just as bad. The Plectis maths site is the model: a problem is
+introduced in words with its mathematics typeset, its status is a sentence, and
+its map labels every problem with plain counts.)
 
-- **Papers**: short ink lines on the left, one per current paper, at most four.
-- **Ring**: a brick ring around those lines when an outside group checked the
-  paper's result by another method (HOL Light cards, exact computation).
-- **Thread**: a steel line from the papers to the diamond when a paper theorem
-  is paired with the Lean. Dashed for a candidate pairing found by shared
-  words; solid when the Lean source cites the theorem or the release declares
-  the link.
-- **Diamond**: the release has a Lean statement for the family; a second
-  outline behind it, more than one. Each half is one outside reader's finding
-  on whether that Lean states the family's headline result: left half MathVet,
-  right half cert-machine (order in `site/copy_evidence.json`). Filled, all of
-  it; pale, part of it or a narrower or weaker statement; open, a supporting
-  or different result; dotted, not read.
+## The front door: the map and the list
 
-The two halves are never merged into one verdict. Agreement is visible as a
-symmetric diamond and stated in words from the backend's own comparison.
+The release on one screen as our map, with a readable list beside it, the way
+a good maps app pairs a map with its results. 700-plus results need both: the
+map for where things are, the list for reading them.
 
-## The plate: the front door
-
-The whole release on one screen, as a plate of specimens: the seventeen
-disciplines in the release's order, each a titled group of its families' marks
-in catalogue order. Seen from across a room it shows where the release has Lean
-and what the outside readers found; up close, every mark is a family.
-
-- Each group's title says, in one sentence, how many families it has and how
-  many have Lean statements.
-- Groups flow in columns on wide screens and stack on phones. Geometry is
-  stable: filtering dims marks, never moves them.
-- Every mark is a link to its family page, so the plate works without
-  JavaScript, and has a text alternative.
-- Pointing at a mark previews it (name, the catalogue's first sentence, its
-  evidence in words). Selecting it opens the desk beside the plate and rings
-  the mark; its citations inside the release are drawn to the marks they
-  connect, with direction and counts. Hover never replaces the selection.
-- A discipline's title opens it as a sheet: each family as a card with its
-  mark at reading size, name, first sentence of its claim and its evidence in
-  words. The trail leads back to the whole release.
-- The key is also the filter: each line has its count and highlights the marks
-  it describes.
-- Search sits above the plate. Its results light up marks and list families,
-  papers, theorems and Lean names.
-- Selection lives in the URL (`#o=f%3A003`, `#o=d%3Anumber-theory`); Back and
-  Forward restore it. The older `#d=...&f=...` links still land.
-- Keyboard: Tab reaches the plate, arrow keys move between marks in reading
-  order, Enter opens the desk, Escape closes it. Nothing needs dragging.
+- **The map** (the existing map engine): the seventeen disciplines labelled in
+  words on the drawing with plain counts ("Number theory, 31 families, 24 with
+  Lean"). Family nodes are coloured by one meaning (what the outside readers
+  find the release's Lean states), each colour named in one line. Citations
+  are drawn only for the selected family, and called citations.
+- **The list** (the left panel): the release in sentences, search, then the
+  disciplines. Choosing one zooms the map to it and lists its families as plain
+  entries: title, the claim's first sentence with its mathematics typeset
+  (credited to OpenAI's catalogue), and one sentence saying what the Lean
+  states and who checked it. Pointing at an entry lights its node; clicking
+  opens the family.
+- **A family**: the map shows its papers (short title, date), their results
+  labelled by printed number ("Theorem 1.1") and its Lean statements by name.
+  Selecting a result shows the theorem typeset as printed, the Lean statement
+  paired with it if any, and the routes on: read it in the paper, compare with
+  Lean, open the family page. A click always leads to mathematics, never to a
+  status page.
+- Hover to read, click to open. Selection lives in the URL (`#o=f%3A003`,
+  `#o=d%3Anumber-theory`, `#o=r:...`, `#o=l:...`); Back and Forward restore it;
+  older `#d=...&f=...` links still land. Keyboard: Tab, arrows, Enter, Escape.
 
 ## The thread
 
@@ -109,9 +96,10 @@ whole and sit under a heading that says so.
 The family page is the beginning of mathematical work, not of an audit.
 
 - **Head**: the trail; the family's name; OpenAI's catalogue description as a
-  credited quotation; the family's figure, a small map of its papers, their
-  main statements and the Lean statements with their threads; one sentence of
-  evidence beside the mark.
+  credited quotation, with its mathematics typeset.
+- **The theorem**: the page's centrepiece, set large as printed (number, paper,
+  date), with "Read it in the paper" and "Compare with Lean". Its place in the
+  family is one click away on the map ("Show on the map").
 - **Two lines kept apart**: the formal status (what the Lean states, who re-ran
   it) and the readable argument (the paper at the passage, any explanation).
   Neither stands in for the other.
@@ -146,11 +134,11 @@ candidate theorem, a number, a Lean name, a citation.
 
 ## Identity and links
 
-Every object keeps one identity across the plate, the lists, the family page,
+Every object keeps one identity across the map, the lists, the family page,
 the paper and the Lean page: the backend's ids, never rebuilt from TeX.
 
 - Pages have stable addresses: `families/003.html`, `papers/<slug>.html#<anchor>`,
-  `statements/<id>.html`. The plate's selection is `index.html#o=<id>`.
+  `statements/<id>.html`. The map's selection is `index.html#o=<id>`.
 - A copied link opens the same object, with JavaScript off too, and the page
   says which release pin it shows.
 - A shared family page carries its own title, description and preview, so the
@@ -187,8 +175,8 @@ the paper and the Lean page: the backend's ids, never rebuilt from TeX.
 
 **Entering the release.**
 - Start from one thing a person can hold: one family, one theorem, one Lean statement.
-- The plate shows the whole release. A preview speaks for what is under the pointer, and the desk beside it for what is selected; rewriting the desk on every hover made it flicker.
-- The key sits on the plate's first screen, so the marks can be read before scrolling.
+- The map shows the whole release. A preview speaks for what is under the pointer, and the panel for what is selected; rewriting the panel on every hover made it flicker.
+- The one-line colour key sits on the map's first screen.
 
 **Disclosure.**
 - Release, then discipline, then family, then result.
@@ -233,7 +221,7 @@ Each of these states has its own wording. Unknown is neither red nor green.
 ## Motion
 
 Motion only answers an action:
-- the desk sliding in when you select a family, and a discipline opening into its sheet;
+- the camera moving to a discipline or a family when you select it;
 - the thread brightening when you point at a pairing;
 - the theme cross-fade.
 
@@ -244,7 +232,7 @@ jumps instead of flying.
 
 | Page | Its job |
 |---|---|
-| `index.html`, the plate | See the whole release's evidence and find a way in |
+| `index.html`, the map and the list | See the whole release and find a way in |
 | `families/<id>.html` | What is claimed, what states it formally, what has been checked |
 | `papers/<slug>.html` | Read the paper, with evidence at each theorem |
 | `statements/<id>.html` | Read the Lean statement whole, and what you must check |

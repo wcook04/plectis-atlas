@@ -9722,9 +9722,10 @@
    "kind": "follow-up-result",
    "summary": "PR 109 'Curator replies: quasi-RH Lean question, K3 products withdrawal' (8 October).",
    "url": "https://github.com/mrconter1/vibemathed/pull/109",
-   "date": "2026-07-27",
+   "date": "2026-10-08",
    "verified": "repository metadata, commits, pull requests and README read via gh api GET on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "institutions-hexagon-a-repository-for-research-in-the-mat-b7cd9",
@@ -9733,9 +9734,10 @@
    "kind": "follow-up-result",
    "summary": "hexagon:2610.00178v1 (Shubhrajit Bhattacharya, from one GPT-6 Astra prompt, no human scrutiny) lists published RH/GRH-conditional results that need only the 7/8 zero-free half-plane taken from OpenAI's quasi-Riemann manuscript.",
    "url": "https://hexagonmath.org/abs/2610.00178v1",
-   "date": "2026-09-28",
+   "date": "2026-10-10",
    "verified": "home, about and who pages read via WebFetch; public API (/api/v1/works, 111 records) queried read-only and analysed locally; four deposit pages read via WebFetch on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "blogs-the-openai-problem-dump-4b6ec",
@@ -10190,9 +10192,10 @@
    "kind": "replay-pass",
    "summary": "Same receipt for the Catalan irrationality family.",
    "url": "https://github.com/chokmah-me/fragile-proof-audit",
-   "date": "2026-09-18",
+   "date": "2026-10-09",
    "verified": "GitHub REST API metadata and the README read via raw.githubusercontent.com on 11 Oct 2026; the receipts section of the README; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "institutions-hexagon-a-repository-for-research-in-the-mat-b7cd9",
@@ -10201,9 +10204,10 @@
    "kind": "follow-up-result",
    "summary": "hexagon:2610.00187v1 (Sean Litsey, produced by Claude Opus 5.5) bounds the irrationality exponent of Catalan's constant by 61,300, building on OpenAI's proof and extending its Lean formalisation.",
    "url": "https://hexagonmath.org/abs/2610.00187v1",
-   "date": "2026-09-28",
+   "date": "2026-10-10",
    "verified": "home, about and who pages read via WebFetch; public API (/api/v1/works, 111 records) queried read-only and analysed locally; four deposit pages read via WebFetch on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "blogs-a-brief-digest-of-some-new-openai-results-a4506",
@@ -10876,9 +10880,10 @@
    "kind": "explanation",
    "summary": "hexagon:2610.00156v1 (Bao Le Hung) parses the structure of OpenAI's modularity argument for elliptic curves over imaginary quadratic fields, also covering totally real fields and CM fields without a fifth root of unity.",
    "url": "https://hexagonmath.org/abs/2610.00156v1",
-   "date": "2026-09-28",
+   "date": "2026-10-08",
    "verified": "home, about and who pages read via WebFetch; public API (/api/v1/works, 111 records) queried read-only and analysed locally; four deposit pages read via WebFetch on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "blogs-the-openai-problem-dump-4b6ec",
@@ -10920,9 +10925,10 @@
    "kind": "correction",
    "summary": "Two entries (Hodge conjecture for products of K3 surfaces; Kuga-Satake Hodge conjecture) are marked retracted following OpenAI's withdrawal notices.",
    "url": "https://vibemathed.com/problem/hodge-conjecture-products-of-k3-surfaces",
-   "date": "2026-07-20",
+   "date": "2026-10-11",
    "verified": "home, methodology and about pages read via WebFetch; the public dataset (/api/dataset, 1,276 problems, generated 2026-10-11T10:30Z) downloaded and analysed locally on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "observed; the source records no date for this entry"
   },
   {
    "effort": "buzzard-ant-results-comment",
@@ -11072,9 +11078,10 @@
    "kind": "commentary",
    "summary": "Contested: the release is said to contradict itself on whether the log abundance theorem is unconditional (24 September abstract) or rests on an appendix statement, and five dependent entries (Campana-Peternell, effective Iitaka and others) inherit the flag; likely family 034.",
    "url": "https://vibemathed.com/problem/log-abundance-conjecture-char-zero",
-   "date": "2026-07-20",
+   "date": "2026-10-11",
    "verified": "home, methodology and about pages read via WebFetch; the public dataset (/api/dataset, 1,276 problems, generated 2026-10-11T10:30Z) downloaded and analysed locally on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "observed; the source records no date for this entry"
   },
   {
    "effort": "arxiv-2610-10439",
@@ -11258,9 +11265,10 @@
    "kind": "commentary",
    "summary": "Contested: conflicts with preprints by el Abdalaoui (arXiv:1609.03435 and two others) claiming flat Littlewood polynomials of this kind do not exist.",
    "url": "https://vibemathed.com/problem/erdos-littlewood-polynomials-fixed-gap",
-   "date": "2026-07-20",
+   "date": "2026-10-11",
    "verified": "home, methodology and about pages read via WebFetch; the public dataset (/api/dataset, 1,276 problems, generated 2026-10-11T10:30Z) downloaded and analysed locally on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "observed; the source records no date for this entry"
   },
   {
    "effort": "formal-series-of-15-issues-and-15-draft-prs-adding--43693",
@@ -11334,9 +11342,10 @@
    "kind": "follow-up-result",
    "summary": "hexagon:2610.00176v1 (Vjekoslav Kovač, text from ChatGPT 6 Astra on 9 October) proves a non-universality criterion for the Erdős similarity conjecture beyond geometric decay, building on OpenAI's geometric-case manuscript.",
    "url": "https://hexagonmath.org/abs/2610.00176v1",
-   "date": "2026-09-28",
+   "date": "2026-10-09",
    "verified": "home, about and who pages read via WebFetch; public API (/api/v1/works, 111 records) queried read-only and analysed locally; four deposit pages read via WebFetch on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "github-haraldschilly-math-distance-set-similarity-e-19800",
@@ -11537,9 +11546,10 @@
    "kind": "follow-up-result",
    "summary": "hexagon:2610.00165v1 (Scott Kominers) constructs multi-coverings by lattice translates building on OpenAI's horizontal-vertical covering construction; the family is probably 092 (convex-body covering density) but the abstract does not give an id.",
    "url": "https://hexagonmath.org/abs/2610.00165v1",
-   "date": "2026-09-28",
+   "date": "2026-10-08",
    "verified": "home, about and who pages read via WebFetch; public API (/api/v1/works, 111 records) queried read-only and analysed locally; four deposit pages read via WebFetch on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "george-lean-statements-review",
@@ -11636,9 +11646,10 @@
    "kind": "follow-up-result",
    "summary": "RBarish-UTokyo's MaxSNP and APX completeness of MAX-3-SAT reuses the 194-file Unique Games formalisation from the OpenAI repository (PALOMAR-2026-10-09-000010).",
    "url": "https://data.palomar-registry.org/recent.json",
-   "date": "2026-08-21",
+   "date": "2026-10-09",
    "verified": "home page read via WebFetch; public recent.json feed (200 entries) downloaded and analysed locally on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "aaronson-mathocalypse",
@@ -11887,9 +11898,10 @@
    "kind": "follow-up-result",
    "summary": "Sela Navot's Lean extension of omega <= 9/4 to arbitrary fields (PALOMAR-2026-10-08-000005) and a further extension to every ring (PALOMAR-2026-10-11-000007).",
    "url": "https://data.palomar-registry.org/recent.json",
-   "date": "2026-08-21",
+   "date": "2026-10-08",
    "verified": "home page read via WebFetch; public recent.json feed (200 entries) downloaded and analysed locally on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "github-gasstationmanager-safeverifyagent-audit-log--bebc3",
@@ -11898,9 +11910,10 @@
    "kind": "replay-pass",
    "summary": "Headline omega(C) <= 9/4 EXACT against a reference statement; builds on three standard axioms; export accepted by four independent checkers.",
    "url": "https://github.com/GasStationManager/SafeVerifyAgent/blob/main/audits/2026-10-08-openai-math-MatrixMultiplication-9-4.md",
-   "date": "2026-08-25",
+   "date": "2026-10-08",
    "verified": "GitHub REST API metadata and the README read via raw.githubusercontent.com on 11 Oct 2026; the two audit files read; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "openai-forum-first-look-thread",
@@ -12535,9 +12548,10 @@
    "kind": "follow-up-result",
    "summary": "Lean-certified lower bound of order d^2 log^2 d for the number of hyperbolic limit cycles.",
    "url": "https://github.com/AscendFoam/hierarchical-melnikov-lean/releases/tag/v1.1.0",
-   "date": "2026-09-14",
+   "date": "2026-10-07",
    "verified": "GitHub REST API metadata and the README read via raw.githubusercontent.com on 11 Oct 2026; releases, workflow file and Actions runs read through the REST API; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "github-ascendfoam-hierarchical-melnikov-lean-lean-4-308f0",
@@ -12546,9 +12560,10 @@
    "kind": "replay-pass",
    "summary": "Repository's Lean CI (lake build and axiom audit) green on 6 of 6 runs, latest 7 Oct 19:15 UTC.",
    "url": "https://github.com/AscendFoam/hierarchical-melnikov-lean/actions",
-   "date": "2026-09-14",
+   "date": "2026-10-07",
    "verified": "GitHub REST API metadata and the README read via raw.githubusercontent.com on 11 Oct 2026; releases, workflow file and Actions runs read through the REST API; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "blogs-openai-releases-solutions-to-hundreds-of-pro-e014c",
@@ -12895,9 +12910,10 @@
    "kind": "replay-pass",
    "summary": "PlaneColoring challenge statement read against the paper (5 of 5 clauses paired) as part of the corpus look.",
    "url": "https://github.com/GasStationManager/SafeVerifyAgent/blob/main/audits/2026-10-07-openai-math-corpus-look.md",
-   "date": "2026-08-25",
+   "date": "2026-10-07",
    "verified": "GitHub REST API metadata and the README read via raw.githubusercontent.com on 11 Oct 2026; the two audit files read; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "github-decalion89-chromatic-number-of-the-plane-had-8c051",
@@ -12906,9 +12922,10 @@
    "kind": "follow-up-result",
    "summary": "The points constructible with ruler and compass cannot be 5-coloured, checked in Lean (and so any Euclidean field).",
    "url": "https://github.com/decalion89/chromatic-number-of-the-plane",
-   "date": "2026-09-25",
+   "date": "2026-10-09",
    "verified": "GitHub REST API metadata and the README read via raw.githubusercontent.com on 11 Oct 2026; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "institutions-hexagon-a-repository-for-research-in-the-mat-b7cd9",
@@ -12917,9 +12934,10 @@
    "kind": "follow-up-result",
    "summary": "hexagon:2610.00171v1 (Ákos Dúcz) shows planar measurable independence density equals the finite independence-ratio infimum using the spectral rigidity theorem in OpenAI's no-five-colouring proof.",
    "url": "https://hexagonmath.org/abs/2610.00171v1",
-   "date": "2026-09-28",
+   "date": "2026-10-09",
    "verified": "home, about and who pages read via WebFetch; public API (/api/v1/works, 111 records) queried read-only and analysed locally; four deposit pages read via WebFetch on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "blogs-openai-releases-solutions-to-hundreds-of-pro-e014c",
@@ -13431,9 +13449,10 @@
    "kind": "follow-up-result",
    "summary": "hexagon:2610.00016v2 (Eric Naslund) reaches a unit-distance exponent of 1.043 with the number-field construction of OpenAI and Sawin; it predates the October release and relates to the earlier unit-distance disproof.",
    "url": "https://hexagonmath.org/abs/2610.00016v2",
-   "date": "2026-09-28",
+   "date": "2026-10-01",
    "verified": "home, about and who pages read via WebFetch; public API (/api/v1/works, 111 records) queried read-only and analysed locally; four deposit pages read via WebFetch on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "blogs-state-of-the-25-erd-s-problem-pages-named-in-5c60d",
@@ -13671,9 +13690,10 @@
    "kind": "follow-up-result",
    "summary": "JD Jones's Lean development on six concyclic points and the Euclidean Ramsey tensor criterion, restating definitions from the release's challenge file (PALOMAR-2026-10-07-000011).",
    "url": "https://data.palomar-registry.org/recent.json",
-   "date": "2026-08-21",
+   "date": "2026-10-07",
    "verified": "home page read via WebFetch; public recent.json feed (200 entries) downloaded and analysed locally on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "formal-six-concyclic-points-satisfy-the-euclidean-r-a888b",
@@ -14217,9 +14237,10 @@
    "kind": "follow-up-result",
    "summary": "hexagon:2610.00140v4 (琪越 唐) simplifies OpenAI's algebra of infinite little finitistic dimension and extends it to every field, with Lean verification added on 10 October.",
    "url": "https://hexagonmath.org/abs/2610.00140v4",
-   "date": "2026-09-28",
+   "date": "2026-10-07",
    "verified": "home, about and who pages read via WebFetch; public API (/api/v1/works, 111 records) queried read-only and analysed locally; four deposit pages read via WebFetch on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "institutions-hexagon-a-repository-for-research-in-the-mat-b7cd9",
@@ -14228,9 +14249,10 @@
    "kind": "follow-up-result",
    "summary": "hexagon:2610.00143v2 (琪越 唐) extends OpenAI's counterexample constructions to any field with an element of infinite multiplicative order, covering both Tachikawa conjectures.",
    "url": "https://hexagonmath.org/abs/2610.00143v2",
-   "date": "2026-09-28",
+   "date": "2026-10-07",
    "verified": "home, about and who pages read via WebFetch; public API (/api/v1/works, 111 records) queried read-only and analysed locally; four deposit pages read via WebFetch on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "github-kitaken1-tachikawa-characteristic-zero-tachi-945bf",
@@ -14305,9 +14327,10 @@
    "kind": "commentary",
    "summary": "Contested: conflicts with a published claim by Mochizuki (arXiv:1503.07966) on the local Gersten conjecture.",
    "url": "https://vibemathed.com/problem/gersten-conjecture-integral-regular-local",
-   "date": "2026-07-20",
+   "date": "2026-10-11",
    "verified": "home, methodology and about pages read via WebFetch; the public dataset (/api/dataset, 1,276 problems, generated 2026-10-11T10:30Z) downloaded and analysed locally on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "observed; the source records no date for this entry"
   },
   {
    "effort": "github-realopjt-foulkes-sixth-power-check-independe-2e31d",
@@ -14475,9 +14498,10 @@
    "kind": "replay-pass",
    "summary": "Axiom-audit receipt: headline theorem depends only on propext, Classical.choice, Quot.sound after a clean rebuild.",
    "url": "https://github.com/chokmah-me/fragile-proof-audit",
-   "date": "2026-09-18",
+   "date": "2026-10-09",
    "verified": "GitHub REST API metadata and the README read via raw.githubusercontent.com on 11 Oct 2026; the receipts section of the README; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "blogs-openai-releases-solutions-to-hundreds-of-pro-e014c",
@@ -14647,9 +14671,10 @@
    "kind": "commentary",
    "summary": "Contested: the release says its construction contradicts Espindola's published Theorem 4.1 on categoricity transfer.",
    "url": "https://vibemathed.com/problem/aec-categoricity-hanf-threshold-ch-failure",
-   "date": "2026-07-20",
+   "date": "2026-10-11",
    "verified": "home, methodology and about pages read via WebFetch; the public dataset (/api/dataset, 1,276 problems, generated 2026-10-11T10:30Z) downloaded and analysed locally on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "observed; the source records no date for this entry"
   },
   {
    "effort": "blogs-now-all-mathematicians-can-be-mechanical-tur-64043",
@@ -15707,9 +15732,10 @@
    "kind": "commentary",
    "summary": "Catalogue marked the matrix-coefficient Crouzeix inequality solved on 8 Oct after two AI-agent audits; Lean status left unverified.",
    "url": "https://github.com/ajt60gaibb/OpenProblemsInNLA/blob/main/reviews/2026-10-08-claimed-solutions/MF-23.md",
-   "date": "2026-09-08",
+   "date": "2026-10-08",
    "verified": "GitHub REST API metadata and the README read via raw.githubusercontent.com on 11 Oct 2026; review file MF-23.md read; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "formal-significant-number-of-openai-results-appeari-a0bae",
@@ -15872,9 +15898,10 @@
    "kind": "commentary",
    "summary": "Contested: the release states that Ma's Theorem 1.5 on Arnold fixed-point counts is contradicted by its own Theorem 1.1 (three entries flagged).",
    "url": "https://vibemathed.com/problem/stable-morse-arnold-bound",
-   "date": "2026-07-20",
+   "date": "2026-10-11",
    "verified": "home, methodology and about pages read via WebFetch; the public dataset (/api/dataset, 1,276 problems, generated 2026-10-11T10:30Z) downloaded and analysed locally on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "observed; the source records no date for this entry"
   },
   {
    "effort": "george-lean-statements-review",
@@ -16099,9 +16126,10 @@
    "kind": "commentary",
    "summary": "5 Sep clarification says they were not aware of any significant Navier-Stokes development and that the discussion was hypothetical.",
    "url": "https://mathstodon.xyz/@tao/117219101339291693",
-   "date": "2026-09-03",
+   "date": "2026-09-05",
    "verified": "read in full via the public Mastodon API on 11 Oct 2026; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "press-slopocalypse-c4a9c",
@@ -16152,9 +16180,10 @@
    "kind": "commentary",
    "summary": "OpenAI's 1 August 'Ten advances' post names the declaration's signers and says attribution should reflect how a result was produced; the declaration site lists that post among its news items.",
    "url": "https://leidendeclaration.ai/news",
-   "date": "2026-06-02",
+   "date": "2026-08-01",
    "verified": "home page and news page read via WebFetch on 2026-10-11; IMU circular letter read via r.jina.ai; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "institutions-vibemathed-math-problems-solved-with-ai-7e2de",
@@ -16163,9 +16192,10 @@
    "kind": "commentary",
    "summary": "Contested: conflicts with arXiv:2601.12267 (Gonzalez Nevado), which claims a positive answer to the generalized Lax conjecture that the release's appendix says is false; the family id is not identified here.",
    "url": "https://vibemathed.com/problem/generalized-lax-conjecture",
-   "date": "2026-07-20",
+   "date": "2026-10-11",
    "verified": "home, methodology and about pages read via WebFetch; the public dataset (/api/dataset, 1,276 problems, generated 2026-10-11T10:30Z) downloaded and analysed locally on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "observed; the source records no date for this entry"
   },
   {
    "effort": "institutions-mrconter1-vibemathed-67323",
@@ -16174,9 +16204,10 @@
    "kind": "follow-up-result",
    "summary": "PR 99 'OpenAI math release: batch 5, final (104 entries)' completed the import on 7 October; batches 2 to 4 covered 80, 139 and 129 entries.",
    "url": "https://github.com/mrconter1/vibemathed/pull/99",
-   "date": "2026-07-27",
+   "date": "2026-10-07",
    "verified": "repository metadata, commits, pull requests and README read via gh api GET on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "institutions-mrconter1-vibemathed-67323",
@@ -16185,9 +16216,10 @@
    "kind": "follow-up-result",
    "summary": "PR 107 re-synchronised the collection with the 7 October release update (fd4aeeb) on 8 October.",
    "url": "https://github.com/mrconter1/vibemathed/pull/107",
-   "date": "2026-07-27",
+   "date": "2026-10-08",
    "verified": "repository metadata, commits, pull requests and README read via gh api GET on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "institutions-ten-advances-in-mathematics-and-theoretical--30d77",
@@ -16196,9 +16228,10 @@
    "kind": "follow-up-result",
    "summary": "Hexagon deposit hexagon:2610.00021 (Scott Kominers) derives an asymptotic lattice kissing number bound from the auxiliary functions in this release.",
    "url": "https://hexagonmath.org/abs/2610.00021v1",
-   "date": "2026-08-01",
+   "date": "2026-10-02",
    "verified": "read via r.jina.ai on 2026-10-11; date from a web.archive.org snapshot listing and OpenAI's RSS feed; repository metadata via gh api GET; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "blogs-comment-stating-for-the-record-his-views-on--bbcfc",
@@ -16218,9 +16251,10 @@
    "kind": "commentary",
    "summary": "OpenAI's 21 September post cites this letter as the reason it is working with mathematicians on an advisory group.",
    "url": "https://openai.com/index/advisory-group-on-mathematics-and-ai/",
-   "date": "2026-09-11",
+   "date": "2026-09-21",
    "verified": "mathandai.org home, endorsers.php, the Zenodo record and Tao's 11 September post read via WebFetch on 2026-10-11; URL status 403 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "agmai-guidelines-and-statement",
@@ -16229,9 +16263,10 @@
    "kind": "commentary",
    "summary": "Statement of 6 October says the group's advisory role is neither a judgement of the results nor an endorsement of OpenAI's process, and leaves the assessment of its recommendations to the mathematical community.",
    "url": "https://agmai.org/statement-oct6/",
-   "date": "2026-09-21",
+   "date": "2026-10-06",
    "verified": "agmai.org home page read in full via WebFetch on 2026-10-11 (also cross-checked against Tao's guest post and OpenAI's 21 September post); IAS hosting is stated by the site and by OpenAI, but the ias.edu project page itself returned HTTP 403 and was not read; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "institutions-hexagon-a-repository-for-research-in-the-mat-b7cd9",
@@ -16240,9 +16275,10 @@
    "kind": "commentary",
    "summary": "hexagon:2610.00180v1 (Sheng Yin) is a free-probability paper whose text and mathematics were generated entirely by OpenAI's Astra; no openai/math family is cited.",
    "url": "https://hexagonmath.org/abs/2610.00180v1",
-   "date": "2026-09-28",
+   "date": "2026-10-10",
    "verified": "home, about and who pages read via WebFetch; public API (/api/v1/works, 111 records) queried read-only and analysed locally; four deposit pages read via WebFetch on 2026-10-11; URL status 200 on 11 Oct 2026",
-   "source_seed": "C_community_seed.curated.json"
+   "source_seed": "C_community_seed.curated.json",
+   "date_basis": "source"
   },
   {
    "effort": "agmai-recommendations",
