@@ -5,7 +5,7 @@
  "author_url": "https://wcook04.github.io/plectis/",
  "upstream_repo": "https://github.com/openai/math",
  "release_date": "6 October 2026",
- "katex_version": "0.16.11",
+ "katex_version": "0.18.9",
  "fonts_css": "https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400..700;1,400..700&family=STIX+Two+Text:ital,wght@0,400..700;1,400..700&display=swap",
  "issue_templates": {
   "claim": "claim-an-explanation",

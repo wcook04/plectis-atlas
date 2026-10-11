@@ -54,6 +54,7 @@ Begin with a bounded note when the person has fifteen minutes. A short Lean file
 | `scripts/check_contributions.py` | The contribution checker |
 | `scripts/sync_skills.py` | Regenerates the skill mirrors |
 | `scripts/build_data.py`, `scripts/build_site.py` | The data and site builders |
+| `scripts/build_papers.py`, `data/paper_acceptance.json` | Each paper's full reading page, and whether it was accepted (every formula, reference and statement anchor checked) |
 
 Links in the data point at github.com/openai/math at the pinned commit. To print one statement's Lean text and configuration:
 

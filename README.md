@@ -17,6 +17,7 @@ The atlas is independent of OpenAI. It is built from the public collection at a 
 - The TeX sources of the current manuscripts contain 2,255 theorem, 4,745 proposition, 1,267 corollary and 12,397 lemma environments, repeated statements included.
 - **Draft scope reading.** Of 416 challenge files, 307 state a paper's headline theorem as stated, 21 part of one, 28 a consequence, 24 a weaker form and 35 a supporting result; for 1 the note leaves it unclear. In 14 families with Lean statements, no statement covers the headline result or part of it, and in 10 more only part of it is covered. An AI agent classified each file from OpenAI's scope note, quoting the note (`curated/scope_coverage.json`); no person has reviewed it.
 - **Two independent readers.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine), reading each family's Lean against its headline independently of OpenAI and of each other, agree that 127 families' Lean states the headline and 93 states less; they disagree on 22. Their verdicts sit on each family page, credited.
+- **Every paper in the browser.** 683 of the 719 current manuscripts have a full reading page made from their TeX, with every formula, cross-reference, citation and theorem anchor checked (figures are shown as placeholders); the other 36 have a reading page with a banner listing what did not convert. Formulas are checked with the KaTeX version the site loads. The PDF stays the reference (`data/paper_acceptance.json`).
 
 Counted from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb) by `scripts/build_data.py`. The unit, universe and rule behind each number are in `data/summary.json` under `metric_receipts`.
 <!-- numbers:end -->
@@ -83,10 +84,11 @@ cd openai-math-atlas
 sh scripts/fetch_upstream.sh            # sparse checkout of openai/math at the pinned commit, without PDFs
 python3 scripts/build_data.py           # writes data/*.json
 python3 scripts/build_site.py           # writes site/_build/
+python3 scripts/build_papers.py         # writes each paper's full reading page into site/_build/papers/
 python3 -m http.server -d site/_build   # then open http://localhost:8000
 ```
 
-Python 3.10 or newer and git are the only requirements. The dataset in `data/` is plain JSON for your own analysis:
+Python 3.10 or newer and git are the only requirements. The reading pages check every formula with KaTeX when Node and the KaTeX version in `site/config.json` are available (`KATEX_JS=path/to/node_modules/katex`); without them every page is marked partial and links the PDF. The dataset in `data/` is plain JSON for your own analysis:
 
 - `families.json`: the 372 families, their discipline, OpenAI's description, manuscripts and Lean statements;
 - `manuscripts.json`: abstracts, theorem-like statements with source file and line (those in the introduction flagged as candidate headline statements), and references with where each is cited;

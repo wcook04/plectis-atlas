@@ -49,6 +49,7 @@
   "pdf": "PDF",
   "pdf_label": "PDF of {title} at the pinned commit",
   "source_line": "TeX source, line {line}",
+  "read_in_paper": "Read it in the paper",
   "tex_source": "Show the TeX",
   "copy": "Copy",
   "copied": "Copied",

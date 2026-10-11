@@ -57,6 +57,21 @@ try:
     _CLAIMS = load("lean_claims.json")
 except FileNotFoundError:
     _CLAIMS = []
+# Papers with a full reading page (scripts/build_papers.py writes it over papers/<slug>.html).
+try:
+    PAPER_READING = {r["id"]: r["status"] for r in load("paper_acceptance.json").get("papers", [])
+                     if r.get("status") in ("accepted", "partial")}
+except (FileNotFoundError, ValueError):
+    PAPER_READING = {}
+
+
+def paper_statement_href(ms_id, st, root):
+    """The statement's place in the paper's reading page, or None when the paper has none:
+    its label, else L-<file>-<line> (the anchors scripts/build_papers.py writes)."""
+    if ms_id not in PAPER_READING or not st:
+        return None
+    anchor = st.get("label") or f'L-{st.get("file")}-{st.get("line")}'
+    return f"{root}papers/{quote(ms_id)}.html#{quote(anchor, safe=':-_./')}"
 CLAIMS_BY_FAMILY: dict = {}
 for _c in _CLAIMS:
     for _f in _c.get("families") or []:
@@ -1469,11 +1484,14 @@ def render_paper_statement(m, st, root, conv: TexConv, anchor_prefix="st"):
     sec_title = f', {esc(st["section_title"])}' if st.get("section_title") else ""
     aid = f'{anchor_prefix}-{slugify(m["id"])[:40]}-{slugify(st.get("label") or str(st["line"]))}'
     raw = st["text"]
+    in_paper = paper_statement_href(m["id"], st, root)
+    in_paper_html = f'<a href="{esc(in_paper)}">{esc(C("words.read_in_paper"))}</a>' if in_paper else ""
     return f"""<figure class="stmt" id="{aid}" data-macros="{esc(m['id'])}">
  <figcaption class="stmt__head"><span class="stmt__kind">{esc(st['display'])}</span>{title}</figcaption>
  <div class="stmt__body">{body}</div>
  <div class="stmt__foot">
   <span class="stmt__loc">{esc(loc_sec)}{sec_title}</span>
+  {in_paper_html}
   <a class="ext" href="{esc(src_url)}" rel="noopener">{esc(C('words.source_line', line=st['line']))}</a>
   <details class="texsrc"><summary>{esc(C('words.tex_source'))}</summary><div class="texsrc__box"><button class="copy" type="button" data-copy-next>{esc(C('words.copy'))}</button><pre><code>{esc(raw)}</code></pre></div></details>
  </div>
@@ -2420,7 +2438,7 @@ def build_statement(stmt):
     if paper_st:
         loc = C("statement.card_locator", label=paper_st["label"], file=paper_st["file"], line=paper_st["line"]) if paper_st.get("label") else C("statement.card_locator_nolabel", file=paper_st["file"], line=paper_st["line"])
         paper_read = (f'<p class="claim__label">{esc(C("statement.card_paper_candidate"))}</p>'
-                      f'<p class="claim__src"><a href="{root}papers/{esc(paper_ms["id"])}.html">{ms_title_html(paper_ms)}</a>. {esc(loc)}</p>'
+                      f'<p class="claim__src"><a href="{esc(paper_statement_href(paper_ms["id"], paper_st, root) or (root + "papers/" + paper_ms["id"] + ".html"))}">{ms_title_html(paper_ms)}</a>. {esc(loc)}</p>'
                       + render_paper_statement(paper_ms, paper_st, root, conv, "claim"))
     else:
         paper_read = f'<p class="claim__label">{esc(C("statement.card_paper_none"))}</p><p class="muted">{esc(C("statement.card_paper_abstain_" + pairing))} <a href="#h-sbs">{esc(C("statement.all_statements_link"))}</a></p>'

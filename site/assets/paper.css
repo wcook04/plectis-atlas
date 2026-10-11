@@ -1,0 +1,165 @@
+/* OpenAI Math Atlas: the reading view of a paper (papers/<slug>.html).
+   Reading typography on the site's own tokens (atlas.css): a comfortable measure,
+   numbered statements, proofs, displays that scroll sideways when wide, figure
+   placeholders and the banner of a partial page. Every class is prefixed pr-. */
+
+.pr-page { width: min(860px, calc(100% - 32px)); }
+.pr-head { margin-bottom: 14px; }
+.pr-facts { color: var(--muted); font-size: var(--fs-meta); }
+.pr-facts .pr-m { font-size: 1em; }
+
+/* Status: a quiet note when accepted, a banner when partial. */
+.pr-status { margin: 14px 0 22px; padding: 2px 0 2px 12px; border-left: 3px solid var(--rule-strong); color: var(--muted); font-size: var(--fs-meta); max-width: 46em; }
+.pr-status p { margin: 0; }
+.pr-banner { margin: 14px 0 22px; padding: 12px 16px; border: 1px solid color-mix(in oklab, var(--brick) 55%, var(--rule)); border-left-width: 4px; border-radius: var(--r-md); background: var(--surface); font-size: var(--fs-body); max-width: 46em; }
+.pr-banner p { margin: 0 0 6px; }
+.pr-banner__h { font-weight: 700; color: var(--brick-text); }
+.pr-banner ul { margin: 6px 0 8px; padding-left: 1.2em; }
+.pr-banner li { margin: 2px 0; }
+
+/* Contents */
+.pr-toc { margin: 0 0 24px; font-family: var(--sans); font-size: var(--fs-body); }
+.pr-toc summary { cursor: pointer; font-weight: 600; color: var(--ink-soft); padding: 4px 0; }
+.pr-toc-list, .pr-toc-sub { list-style: none; margin: 6px 0; padding: 0; }
+.pr-toc-sub { margin: 2px 0 6px 1.6em; }
+.pr-toc li { margin: 3px 0; }
+.pr-toc a { color: var(--ink); text-decoration: none; }
+.pr-toc a:hover { text-decoration: underline; }
+.pr-toc-n { display: inline-block; min-width: 2.4em; color: var(--muted); font-variant-numeric: tabular-nums; }
+.pr-toc-part > a { font-weight: 700; }
+
+/* The text */
+.paper, .pr-abstract, .pr-notes { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.62; color: var(--ink); }
+.paper p, .pr-abstract p, .pr-notes p { margin: 0 0 0.8em; }
+.paper > p, .paper > .pr-thm, .paper > .pr-proof, .paper > .pr-list, .paper > .pr-desc,
+.paper > .pr-box, .pr-abstract > p, .paper > .pr-quote, .paper > .pr-bib { max-width: 40em; }
+.pr-abstract { margin: 0 0 26px; }
+.paper a, .pr-abstract a, .pr-notes a { color: var(--accent); text-decoration: none; }
+.paper a:hover, .pr-abstract a:hover, .pr-notes a:hover { text-decoration: underline; }
+.paper a.pr-ref, .paper a.pr-cite { color: var(--steel-text); }
+.paper code { font-family: var(--mono); font-size: 0.86em; }
+.paper [id], .pr-notes [id] { scroll-margin-top: 16px; }
+
+/* Headings: numbers computed from the source */
+.pr-sec, .pr-part { font-family: var(--serif); color: var(--ink); line-height: 1.3; margin: 1.6em 0 0.6em; scroll-margin-top: 16px; }
+.pr-part { font-size: 1.6rem; font-weight: 500; text-align: center; margin: 2em 0 1em; }
+.pr-sec--1 { font-size: 1.4rem; font-weight: 500; }
+.pr-sec--2 { font-size: 1.16rem; font-weight: 600; }
+.pr-sec--3 { font-size: 1.02rem; font-weight: 700; }
+.pr-abstract > .pr-sec, .pr-notes > .pr-sec { margin-top: 0.4em; }
+.pr-secnum { font-variant-numeric: lining-nums tabular-nums; margin-right: 0.35em; }
+.pr-runin { font-weight: 700; margin-right: 0.3em; }
+
+/* Theorem-like statements: plain style is italic, definition and remark upright */
+.pr-thm { margin: 1em 0 1.1em; padding-left: 14px; border-left: 2px solid var(--rule-strong); }
+.pr-thm--remark { border-left-color: transparent; padding-left: 0; }
+.pr-thm--plain > p, .pr-thm--plain .pr-li-body, .pr-thm--plain .pr-desc dd { font-style: italic; }
+.pr-thm--plain em, .pr-thm--plain i { font-style: normal; }
+.pr-thm-h { font-style: normal; }
+.pr-thm-n, .pr-thm-p { font-weight: 700; }
+.pr-thm--remark .pr-thm-n, .pr-thm--remark .pr-thm-p { font-weight: 400; font-style: italic; }
+.pr-thm-note { font-style: normal; }
+.pr-thm > p:last-child, .pr-proof > p:last-child { margin-bottom: 0; }
+
+/* Proofs */
+.pr-proof { margin: 0.4em 0 1.3em; }
+.pr-proof-h { font-style: italic; }
+.pr-qed { float: right; margin-left: 1em; color: var(--ink-soft); }
+.pr-qed-line { margin: 0; text-align: right; }
+
+/* Mathematics. Displays scroll sideways rather than overflow the page. */
+.pr-m { overflow-wrap: anywhere; }
+.pr-m:not(.pr-m--ok) { font-family: var(--mono); font-size: 0.82em; color: var(--muted); }
+.pr-m[data-d="1"] { display: block; }
+.pr-eq { margin: 0.7em 0; padding: 2px 0; overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.pr-eq .katex-display { margin: 0; }
+.pr-eq--diagram { display: flex; align-items: center; gap: 12px; }
+.pr-eq--diagram .pr-ph { flex: 1; }
+.pr-eqno { flex: none; font-family: var(--serif, inherit); }
+.pr-eq .katex-display > .katex { white-space: nowrap; }
+.pr-m.pr-m--fail { font-family: var(--mono); font-size: 0.82em; color: var(--brick-text); background: var(--code-bg); border-radius: 3px; padding: 1px 4px; white-space: pre-wrap; }
+.pr-eq .pr-m.pr-m--fail { display: block; padding: 6px 8px; }
+
+/* Lists */
+.pr-list { list-style: none; margin: 0.4em 0 0.9em; padding: 0; }
+.pr-list > li { display: grid; grid-template-columns: minmax(2.2em, max-content) minmax(0, 1fr); column-gap: 0.55em; margin: 0.3em 0; }
+.pr-li-lab { text-align: right; font-style: normal; white-space: nowrap; }
+.pr-li-body > p:last-child { margin-bottom: 0.2em; }
+.pr-desc { margin: 0.4em 0 0.9em; }
+.pr-desc dt { font-weight: 700; }
+.pr-desc dd { margin: 0 0 0.5em 1.5em; }
+
+/* Boxes, quotations and alignment */
+.pr-center { text-align: center; }
+.pr-center > .pr-eq, .pr-center > .pr-tbl { margin-inline: auto; }
+.pr-right { text-align: right; }
+.pr-quote { margin: 0.6em 0 0.9em 1.5em; }
+.pr-framed { border: 1px solid var(--rule-strong); border-radius: var(--r-md); padding: 10px 14px; margin: 0.8em 0; }
+.pr-box > p:last-child { margin-bottom: 0.8em; }
+.pr-fbox { border: 1px solid var(--rule-control); padding: 0 3px; }
+.pr-sc { font-variant: small-caps; }
+.pr-stack { display: inline-block; vertical-align: middle; text-align: center; line-height: 1.25; }
+.pr-sf { font-family: var(--sans); }
+.pr-tabbing { white-space: normal; }
+
+/* Figures: a labelled placeholder keeps the caption and its anchor */
+.pr-float { margin: 1.4em 0; }
+.pr-ph { display: flex; align-items: center; justify-content: center; min-height: 92px; padding: 16px; border: 1px dashed var(--rule-control); border-radius: var(--r-md); background: var(--sunk); color: var(--muted); font-family: var(--sans); font-size: var(--fs-meta); text-align: center; }
+.pr-ph + .pr-ph { margin-top: 8px; }
+.pr-ph--listing { min-height: 0; justify-content: flex-start; text-align: left; }
+p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
+.pr-cap { font-size: 0.95em; color: var(--ink-soft); margin: 0.55em 0 0; max-width: 42em; }
+.pr-cap-n { font-weight: 700; color: var(--ink); }
+.pr-tcap .pr-cap { margin: 0 0 0.4em; }
+
+/* Tables */
+.pr-tbl { overflow-x: auto; margin: 0.8em 0; max-width: 100%; }
+.pr-tbl table { border-collapse: collapse; font-size: 0.94em; line-height: 1.45; }
+.pr-tbl td { padding: 3px 10px; vertical-align: top; text-align: left; }
+.pr-tbl td.pr-center { text-align: center; }
+.pr-tbl td.pr-right { text-align: right; }
+.pr-tbl tr.pr-rule > td { border-top: 1px solid var(--rule-strong); }
+.pr-tbl tr:last-child > td { border-bottom: 1px solid var(--rule); }
+
+/* Code */
+.pr-verb { background: var(--code-bg); border-radius: var(--r-sm); padding: 10px 12px; overflow-x: auto; font-size: 0.82em; line-height: 1.5; margin: 0.6em 0 1em; }
+.pr-verb code { font-family: var(--mono); font-size: 1em; }
+
+/* What could not be converted stays visible */
+.pr-raw { font-family: var(--mono); font-size: 0.82em; color: var(--brick-text); }
+.pr-unres { color: var(--brick-text); font-weight: 600; }
+.pr-unknown { border-left: 3px solid color-mix(in oklab, var(--brick) 55%, var(--rule)); padding-left: 10px; }
+
+/* Notes and references */
+.pr-fnref { font-size: 0.72em; line-height: 0; margin-left: 1px; }
+.pr-fnref a { text-decoration: none; }
+.pr-notes { margin-top: 32px; border-top: 1px solid var(--rule); padding-top: 8px; font-size: 0.97rem; }
+.pr-fn-list { list-style: none; margin: 0; padding: 0; max-width: 42em; }
+.pr-fn { display: grid; grid-template-columns: 1.8em minmax(0, 1fr) auto; column-gap: 0.4em; margin: 0.4em 0; }
+.pr-fn-n { color: var(--muted); text-align: right; }
+.pr-fn-body > p:last-child { margin-bottom: 0; }
+.pr-fn-back { color: var(--muted); text-decoration: none; }
+.pr-bib { margin-top: 2em; }
+.pr-bib-list { list-style: none; margin: 0; padding: 0; font-size: 0.95em; line-height: 1.5; }
+.pr-bib-item { display: grid; grid-template-columns: minmax(2.6em, max-content) minmax(0, 1fr); column-gap: 0.6em; margin: 0.45em 0; }
+.pr-bib-lab { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.pr-bib-text { overflow-wrap: anywhere; }
+
+/* Arrival at a link */
+.pr-target { background: color-mix(in oklab, var(--select) 75%, transparent); box-shadow: 0 0 0 6px color-mix(in oklab, var(--select) 75%, transparent); border-radius: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+  .pr-target { animation: pr-arrive 2.4s var(--ease-out, ease-out) 1; }
+  @keyframes pr-arrive { 0% { background: var(--select); } 100% { background: color-mix(in oklab, var(--select) 75%, transparent); } }
+}
+
+/* Phones */
+@media (max-width: 600px) {
+  .pr-page { width: calc(100% - 32px); }
+  .paper, .pr-abstract, .pr-notes { font-size: 1rem; line-height: 1.58; }
+  .pr-thm { padding-left: 10px; }
+  .pr-list > li { grid-template-columns: minmax(1.8em, max-content) minmax(0, 1fr); column-gap: 0.4em; }
+  .pr-quote { margin-left: 0.8em; }
+  .pr-desc dd { margin-left: 0.8em; }
+  .pr-sec--1 { font-size: 1.25rem; }
+  .pr-part { font-size: 1.35rem; }
+}

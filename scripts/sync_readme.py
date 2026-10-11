@@ -63,6 +63,19 @@ def numbers_block(s: dict) -> str:
             f"reading each family's Lean against its headline independently of OpenAI and of each other, agree that {n(ra.get('agree-full', 0))} families' "
             f"Lean states the headline and {n(ra.get('agree-less', 0))} states less; they disagree on {n(ra.get('disagree', 0))}. "
             "Their verdicts sit on each family page, credited.")
+    try:
+        pa = load("paper_acceptance.json")
+    except FileNotFoundError:
+        pa = None
+    if pa and pa.get("upstream_commit") == s["upstream"]["commit"] and pa.get("summary"):
+        ps = pa["summary"]
+        rest = ps.get("partial", 0)
+        rows.append(
+            f"- **Every paper in the browser.** {n(ps['accepted'])} of the {n(ps['papers'])} current manuscripts have a full reading page made from "
+            f"their TeX, with every formula, cross-reference, citation and theorem anchor checked (figures are shown as placeholders); "
+            f"the other {n(rest)} have a reading page with a banner listing what did not convert"
+            + (f", and {n(ps['unavailable'])} have none" if ps.get("unavailable") else "")
+            + ". Formulas are checked with the KaTeX version the site loads. The PDF stays the reference (`data/paper_acceptance.json`).")
     rows += [
         "",
         f"Counted from [openai/math at `{s['upstream']['commit'][:12]}`](https://github.com/openai/math/tree/{s['upstream']['commit']}) by "

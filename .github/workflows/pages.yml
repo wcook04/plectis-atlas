@@ -19,6 +19,17 @@ jobs:
         with:
           python-version: "3.12"
       - run: python3 scripts/build_site.py
+      # The papers' reading pages: the pinned release's TeX, with every formula checked by
+      # the KaTeX version the site loads (site/config.json). They are written after the
+      # site build, which clears site/_build.
+      - name: Fetch the pinned release's TeX sources
+        run: sh scripts/fetch_upstream.sh
+      - name: Install the site's KaTeX version for the formula check
+        run: |
+          v=$(python3 -c "import json; print(json.load(open('site/config.json'))['katex_version'])")
+          npm install --no-save --no-audit --no-fund --prefix "$RUNNER_TEMP/katex" "katex@$v"
+      - name: Build the papers' reading pages
+        run: KATEX_JS="$RUNNER_TEMP/katex/node_modules/katex" python3 scripts/build_papers.py
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
