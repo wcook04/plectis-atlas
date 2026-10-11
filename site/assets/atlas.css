@@ -653,7 +653,7 @@ th[aria-sort="ascending"], th[aria-sort="descending"] { color: var(--ink); }
 .numrow { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: 0 28px; padding: 16px 0; border-top: 1px solid var(--rule); scroll-margin-top: 12px; }
 .numrow:first-child { border-top: 0; }
 .numrow:target { background: color-mix(in oklab, var(--steel) 9%, transparent); }
-.numrow__v { font-family: var(--serif); font-size: 2rem; line-height: 1.1; margin: 0; text-align: right; font-variant-numeric: tabular-nums lining-nums; }
+.numrow__v { font-family: var(--serif); font-size: 1.5rem; line-height: 1.1; margin: 0; text-align: right; font-variant-numeric: tabular-nums lining-nums; }
 .numrow__t p { max-width: 50em; font-size: var(--fs-body); }
 .numrow__k { font-weight: 600; color: var(--ink-soft); }
 @media (max-width: 640px) { .numrow { grid-template-columns: minmax(0, 1fr); } .numrow__v { text-align: left; } }
@@ -933,3 +933,17 @@ a.cell__sub { color: var(--steel-text); }
   .tbl--families .t-action { padding-top: 6px; }
   .tbl tr:hover td { background: none; }
 }
+
+/* ---- Numbers (numbers.html) ---------------------------------------------- */
+.numtoc ul { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 10px 0 0; padding: 0; font-size: var(--fs-meta); }
+.numrow__v--unknown { font-family: var(--sans); font-size: var(--fs-body); color: var(--muted); padding-top: 4px; }
+.numrow .h3 { font-size: 1.0625rem; margin-bottom: 4px; }
+.numrow__t p { margin-bottom: 4px; }
+.numrow__unit { color: var(--ink-soft); }
+.numrow__state { color: var(--muted); }
+.numrow__state--reported, .numrow__state--incomplete, .numrow__state--unavailable { color: var(--brick-text); }
+.numrow__rule, .numrow__credit { font-size: var(--fs-meta) !important; color: var(--ink-soft); }
+.receipt__body { margin: 6px 0 0; padding: 8px 0 4px 14px; border-left: 2px solid var(--rule-strong); }
+.receipt__facts { display: flex; flex-wrap: wrap; gap: 2px 16px; font-size: var(--fs-small); color: var(--muted); }
+.receipt__members { margin: 4px 0 8px; padding-left: 1.2em; columns: 2 18rem; column-gap: 28px; font-size: var(--fs-small); }
+.receipt__members li { break-inside: avoid; overflow-wrap: anywhere; }

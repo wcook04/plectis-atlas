@@ -267,6 +267,164 @@
     apply(false);
   });
 
+  /* ---- Number receipts (numbers.html) ---------------------------------------
+     "The records behind this number": the receipt header, then its member pages in
+     order, as Statement Map's WEB.md describes. Each packet must carry this page's
+     generation; each page must start where the last ended; the total must match
+     the header. The build has already reconstructed every receipt and checked its
+     digest; the page shows the members a reader asks for, a page at a time. */
+  var numWords = {};
+  try { numWords = JSON.parse((doc.getElementById('number-words') || {}).textContent || '{}'); } catch (e) { numWords = {}; }
+  var NW = function (k, o) { var t = numWords[k] || ''; return t.replace(/\{(\w+)\}/g, function (m, x) { return o && o[x] != null ? o[x] : m; }); };
+  var GEN_PAGE = (doc.body && doc.body.getAttribute('data-generation')) || '';
+  var numCache = {};
+  function getNum(path) {
+    if (!numCache[path]) {
+      numCache[path] = fetch(root + 'data/' + path).then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }).then(function (j) {
+        if (GEN_PAGE && j.generation_id !== GEN_PAGE) { var e = new Error('generation'); e.generation = true; throw e; }
+        return j;
+      });
+      numCache[path].catch(function () { delete numCache[path]; });
+    }
+    return numCache[path];
+  }
+  function memberLabel(item) {
+    if (typeof item === 'string') return { id: item, text: item };
+    var id = item.id || '';
+    var ident = item.identity;
+    var text = item.name || (Array.isArray(ident) ? ident.join(', ') : (ident != null ? String(ident) : id));
+    if (item.value != null) text += ': ' + item.value;
+    return { id: id, text: text };
+  }
+  var LAB = null;   /* family names and paper titles, from the search's labels.json */
+  function named(id) {
+    if (!LAB) return null;
+    if (id.slice(0, 2) === 'f:' && LAB.families[id]) return id.slice(2) + ' ' + LAB.families[id].n;
+    if (id.slice(0, 2) === 'p:' && LAB.papers[id]) return LAB.papers[id];
+    if (id.slice(0, 2) === 'r:') { var rest = id.slice(2), j = rest.indexOf(':'); var t = LAB.papers['p:' + rest.slice(0, j)]; return rest.slice(j + 1) + (t ? ', ' + t : ''); }
+    if (id.slice(0, 2) === 'l:') return id.slice(2);
+    return null;
+  }
+  function memberLi(item) {
+    var li = doc.createElement('li');
+    var m = memberLabel(item);
+    var url = /^[fplrd]:/.test(m.id) && window.AtlasSearch ? window.AtlasSearch.url(m.id) : null;
+    if (url) {
+      var a = doc.createElement('a');
+      a.href = root + url;
+      a.textContent = m.text === m.id ? (named(m.id) || m.id.replace(/^[fplrd]:/, '')) : m.text;
+      li.appendChild(a);
+    } else {
+      li.textContent = m.text;
+    }
+    return li;
+  }
+  function loadCollection(header, name, upto) {
+    var coll = (header.collections || {})[name];
+    if (!coll || !coll.pages || !coll.pages.length) return Promise.resolve([]);
+    var pages = coll.pages.slice(0, upto == null ? coll.pages.length : upto);
+    return Promise.all(pages.map(getNum)).then(function (docs) {
+      var items = [], expect = 0;
+      docs.forEach(function (d) {
+        if (d.start !== expect) throw new Error('page out of order');
+        items = items.concat(d.items);
+        expect += d.items.length;
+      });
+      if (pages.length === coll.pages.length && expect !== coll.count) throw new Error('count');
+      return items;
+    });
+  }
+  function renderReceipt(det) {
+    var row = det.closest('.numrow');
+    var body = det.querySelector('.receipt__body');
+    var path = row && row.getAttribute('data-receipt');
+    if (!path || det.getAttribute('data-loaded')) return;
+    det.setAttribute('data-loaded', '1');
+    var keep = body.innerHTML;
+    var status = doc.createElement('p');
+    status.className = 'small muted';
+    status.setAttribute('role', 'status');
+    status.textContent = NW('loading');
+    body.insertBefore(status, body.firstChild);
+    getNum(path).then(function (header) {
+      var number = header.number || {};
+      var colls = header.collections || {};
+      var show = colls.observations && colls.observations.count ? 'observations' : 'members';
+      var frag = doc.createDocumentFragment();
+      var facts = doc.createElement('p');
+      facts.className = 'receipt__facts';
+      ['members', 'universe', 'observations'].forEach(function (n) {
+        if (colls[n]) { var sp = doc.createElement('span'); sp.textContent = NW(n, { n: colls[n].count.toLocaleString('en-GB') }); facts.appendChild(sp); }
+      });
+      frag.appendChild(facts);
+      if (number.membership === 'unavailable' || !(colls[show] && colls[show].count)) {
+        var p = doc.createElement('p'); p.textContent = number.state === 'reported' ? NW('none_listed') : NW('empty'); frag.appendChild(p);
+      }
+      if (number.issues && number.issues.length) {
+        var ih = doc.createElement('p'); ih.textContent = NW('issues'); frag.appendChild(ih);
+        var il = doc.createElement('ul');
+        number.issues.forEach(function (x) { var li = doc.createElement('li'); li.textContent = typeof x === 'string' ? x : JSON.stringify(x); il.appendChild(li); });
+        frag.appendChild(il);
+      }
+      var ul = doc.createElement('ul');
+      ul.className = 'receipt__members';
+      frag.appendChild(ul);
+      var total = colls[show] ? colls[show].count : 0;
+      var more = null;
+      function fill(items, limit) {
+        ul.innerHTML = '';
+        items.slice(0, limit).forEach(function (it) { ul.appendChild(memberLi(it)); });
+      }
+      if (total) {
+        var labelsReady = window.AtlasSearch ? window.AtlasSearch.labels().then(function (l) { LAB = l; }, function () {}) : Promise.resolve();
+        Promise.all([loadCollection(header, show, 1), labelsReady]).then(function (r2) { var items = r2[0];
+          fill(items, 50);
+          if (total > 50) {
+            more = doc.createElement('button');
+            more.type = 'button';
+            more.className = 'btn btn--small';
+            more.textContent = NW('more', { n: total.toLocaleString('en-GB') });
+            more.addEventListener('click', function () {
+              more.disabled = true;
+              loadCollection(header, show).then(function (all) { fill(all, all.length); more.remove(); })
+                .catch(function () { more.disabled = false; status.textContent = NW('failed'); });
+            });
+            ul.insertAdjacentElement('afterend', more);
+          }
+        }).catch(function () { status.textContent = NW('failed'); });
+      }
+      if (number.sha256) {
+        var dg = doc.createElement('p'); dg.className = 'small muted receipt__digest';
+        dg.textContent = NW('digest', { sha: number.sha256.replace('sha256:', '').slice(0, 16) });
+        frag.appendChild(dg);
+      }
+      status.textContent = '';
+      body.innerHTML = '';
+      body.appendChild(frag);
+      body.insertAdjacentHTML('beforeend', keep);
+    }).catch(function (e) {
+      status.textContent = e && e.generation ? NW('generation') : NW('failed');
+      det.removeAttribute('data-loaded');
+    });
+  }
+  doc.addEventListener('toggle', function (ev) {
+    var det = ev.target;
+    if (det && det.matches && det.matches('details.receipt[data-key]') && det.open) renderReceipt(det);
+  }, true);
+  /* A link to numbers.html#n-<key> opens that number's records. */
+  function openNumberFromHash() {
+    var m = /^#n-(.+)$/.exec(location.hash);
+    if (!m) return;
+    var row = doc.getElementById('n-' + decodeURIComponent(m[1]));
+    var det = row && row.querySelector('details.receipt');
+    if (det && !det.open) det.open = true;
+  }
+  window.addEventListener('hashchange', openNumberFromHash);
+  openNumberFromHash();
+
   /* ---- Receipt card fitting ---------------------------------------------- */
   /* On a narrow screen the inline comparison reflows into stacked, readable text
      (atlas.css), so it is never shrunk or clipped; only the fixed 16:9 frames are. */
@@ -624,7 +782,7 @@
       });
     });
   }
-  global.AtlasSearch = { query: query, tokens: searchTokens, url: urlFor,
+  global.AtlasSearch = { query: query, tokens: searchTokens, url: urlFor, labels: labels,
     family: function (fid) { return labels().then(function (l) { return l.families[fid] || null; }); } };
 
   /* ---- The search dialog ------------------------------------------------ */

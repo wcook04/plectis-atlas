@@ -3753,40 +3753,6 @@ def build_statement(stmt):
 # ------------------------------------------------------------------- home
 
 
-NUMBER_ORDER = ["families", "disciplines", "manuscripts_current", "manuscripts_withdrawn", "manuscripts_previous_editions",
-                "statements_lean", "statements_lean_main_results", "main_result_declarations", "families_with_lean",
-                "manuscripts_with_lean", "lean_statements_pure_mathlib", "lean_statements_no_local_vocabulary", "lean_statements_with_custom_vocabulary",
-                "lean_statements_importing_non_mathlib", "lean_statements_declaring_axioms", "lean_definition_holes", "lean_vocabulary_total",
-                "lean_vocabulary_median", "lean_vocabulary_max", "internal_citation_edges", "manuscripts_citing_collection",
-                "manuscripts_citing_unformalised_collection_results", "external_works_cited", "external_citations"]
-HOME_NUMBERS = ["families", "manuscripts_current", "statements_lean", "statements_lean_main_results",
-                "families_with_lean", "manuscripts_with_lean", "internal_citation_edges", "external_works_cited"]
-
-
-def num_words(n):
-    words = "zero one two three four five six seven eight nine ten".split()
-    return words[n] if isinstance(n, int) and 0 <= n < len(words) else num(n)
-
-
-def number_item(key):
-    items = COPY["numbers"]["items"]
-    it = items.get(key, {})
-    return it
-
-
-def work_name(i):
-    hl = SUMMARY.get("highlights", {}).get("most_cited_outside_works", [])
-    if i >= len(hl):
-        return ""
-    w = hl[i]
-    title = clean_ref_text(w.get("title") or w.get("text") or "")
-    au = clean_ref_text(w.get("authors") or "")
-    if au and "authors" not in au.lower():
-        sur = au.split(",")[0].split(" and ")[0].strip()
-        return f"{sur}’s {title}"
-    return title if title.lower().startswith("the ") else title
-
-
 def build_home():
     """index.html is the release's front door, written by scripts/build_universe.py; it is
     registered here because the sitemap is written before that script runs. The tile
@@ -4033,176 +3999,155 @@ def build_statements_table():
     write_page(rel, page(rel, C("statements.title"), C("statements.lede", lean=SUMMARY["statements_lean"], main=SUMMARY["statements_lean_main_results"]), body, current="statements"))
 
 
-def recompute_checks():
-    """Recount headline numbers from the data files and compare with summary.json."""
-    cur = [m for m in MANUSCRIPTS if m["status"] == "current"]
-    checks = {
-        "families": len(FAMILIES),
-        "disciplines": len(DISCIPLINES),
-        "manuscripts_current": len(cur),
-        "manuscripts_withdrawn": sum(1 for m in MANUSCRIPTS if m["status"] == "withdrawn"),
-        "manuscripts_previous_editions": sum(1 for m in MANUSCRIPTS if m["status"] == "previous-edition"),
-        "statements_lean": len(STATEMENTS),
-        "statements_lean_main_results": sum(1 for s in STATEMENTS if s["main_result"]),
-        "families_with_lean": sum(1 for f in FAMILIES if f["statements"]),
-        "manuscripts_with_lean": sum(1 for m in cur if m["has_lean"]),
-        "lean_statements_declaring_axioms": sum(1 for s in STATEMENTS if s["declares_axiom"]),
-        "lean_vocabulary_total": sum(s["vocabulary_count"] for s in STATEMENTS),
-        "lean_vocabulary_max": max(s["vocabulary_count"] for s in STATEMENTS),
-        "internal_citation_edges": len(GRAPH),
-        "external_citations": sum(len(m.get("references") or []) for m in cur),
-    }
-    out = {}
-    for k, v in checks.items():
-        out[k] = v
-        if SUMMARY.get(k) != v:
-            warn(f"summary.json {k}={SUMMARY.get(k)} but the data files give {v}")
-    return out
+NUMBER_PACKETS = ("number-receipt", "number-members")
+
+# The numbers page's groups, in reading order. Which group a number sits in is
+# presentation; every value, unit, rule, state and credit is the backend's. A sentence
+# key the backend adds later lands in the last group, so nothing is dropped.
+NUMBER_GROUPS = [
+    ("release", ["families", "disciplines", "manuscripts_current", "manuscripts_withdrawn", "manuscripts_previous_editions"]),
+    ("lean", ["statements_lean", "statements_lean_main_results", "main_result_declarations", "distinct_target_theorems",
+              "families_with_lean", "manuscripts_with_lean", "lean_definition_holes", "lean_statements_pure_mathlib",
+              "lean_statements_no_local_vocabulary", "lean_statements_with_custom_vocabulary",
+              "lean_statements_importing_non_mathlib", "lean_statements_declaring_axioms", "lean_vocabulary_total",
+              "lean_vocabulary_median", "lean_vocabulary_max"]),
+    ("citations", ["internal_citation_edges", "atlas_baseline_internal_citation_edges", "manuscripts_citing_collection",
+                   "atlas_baseline_manuscripts_citing_collection", "manuscripts_citing_unformalised_collection_results",
+                   "atlas_baseline_manuscripts_citing_unformalised_collection_results", "external_citations",
+                   "external_works_cited"]),
+    ("scope", ["scope_statements_classified", "scope_class_headline", "scope_class_headline-part", "scope_class_consequence",
+               "scope_class_weaker", "scope_class_supporting", "scope_class_unclear", "scope_families_no_full_headline",
+               "scope_families_partial_headline_only", "scope_families_with_lean_but_no_headline_coverage",
+               "scope_families_mixed_classes"]),
+    ("library", ["lean_projects", "lean_files", "projects_with_model_file", "model_files", "model_statement_definitions",
+                 "model_statement_projects_linked_to_a_family", "manuscript_theorems", "projects_with_manuscript_theorems",
+                 "manuscript_theorems_checked_by_comparator"]),
+    ("papers", ["paper_environments_theorem", "paper_environments_lemma", "paper_environments_proposition",
+                "paper_environments_corollary", "paper_environments_definition", "paper_environments_remark",
+                "paper_environments_hypothesis", "paper_environments_claim", "paper_environments_question"]),
+    ("community", ["community_efforts", "community_findings", "community_people"]),
+    ("other", []),
+]
+
+
+def number_value(summary: dict) -> str:
+    """A number's value as the page prints it: never a zero for an unknown."""
+    v = summary.get("value")
+    if v is None:
+        kv = summary.get("known_value")
+        return C("numbers.value_known", n=num(kv)) if kv is not None else C("numbers.value_unknown")
+    if isinstance(v, float):
+        return f"{v:,.1f}".rstrip("0").rstrip(".") if v != int(v) else num(int(v))
+    return num(v)
+
+
+def NUM(key: str) -> str:
+    """The value of a number the site states in a sentence, from the backend's numbers
+    index (r.number), formatted for a sentence. Unknown values say so in words."""
+    return number_value(RD().number(key))
+
+
+def NUMV(key: str):
+    """The raw value (None when unknown), for choosing singular or plural wording."""
+    return RD().number(key).get("value")
+
+
+def number_credit(summary: dict) -> str:
+    cr = summary.get("credit") or {}
+    names = []
+    for i in cr.get("inputs") or []:
+        n_ = i.get("credit") or i.get("source")
+        if n_ and n_ not in names:
+            names.append(n_)
+    who = "; ".join(names) or cr.get("kind") or ""
+    return who
 
 
 def build_numbers():
     rel = "numbers.html"
-    s = SUMMARY
-    defs = s.get("definitions", {})
-    receipts = {r.get("key"): r for r in (s.get("metric_receipts") or []) if isinstance(r, dict) and r.get("key")}
-    used_receipts = set()
-
-    def receipt_html(key):
-        r = receipts.get(key)
-        if not r:
-            return ""
-        used_receipts.add(key)
-        rows = []
-        for field in ("unit", "universe", "rule", "source"):
-            if r.get(field):
-                val = f'<code>{esc(r[field])}</code>' if field == "source" else esc(r[field])
-                rows.append(f'<div><dt>{esc(C("numbers.receipt_" + field))}</dt><dd>{val}</dd></div>')
-        return f'<details class="receipt"><summary>{esc(C("numbers.receipt_heading"))}</summary><dl class="dl dl--receipt">{"".join(rows)}</dl></details>'
-
-    items = []
-    for k in NUMBER_ORDER:
-        if k not in s or not isinstance(s[k], int):
+    r = RD()
+    # The receipts and their member pages, copied at their logical paths for the page's
+    # script; the build reconstructs every receipt and checks its digest first.
+    dst = OUT / "data"
+    for logical, path in r.browser_files(NUMBER_PACKETS):
+        r.packet(logical)
+        out = dst / logical
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, out)
+    keys = r.numbers_index["sentence_keys"]
+    grouped = {g: [k for k in ks if k in keys] for g, ks in NUMBER_GROUPS}
+    placed = {k for ks in grouped.values() for k in ks}
+    grouped["other"] = [k for k in keys if k not in placed]
+    labels = COPY["numbers"]["labels"]
+    sections = []
+    for g, ks in NUMBER_GROUPS:
+        ks = grouped[g]
+        if not ks:
             continue
-        it = number_item(k)
-        # Wording comes from copy.json, which owns every sentence on the site; the
-        # data file's definition is the fallback for a number copy.json does not describe.
-        d = it.get("definition") or defs.get(k) or defs.get(it.get("definition_key", "")) or ""
-        extra = ""
-        if k == "lean_vocabulary_max" and s.get("lean_vocabulary_max_statement") in ST:
-            sid = s["lean_vocabulary_max_statement"]
-            extra = f' <a href="statements/{esc(sid)}.html"><code>{esc(sid)}</code></a>'
-        if k == "lean_statements_declaring_axioms" and s.get("lean_statements_declaring_axioms_ids"):
-            extra = " " + ", ".join(f'<a href="statements/{esc(x)}.html"><code>{esc(x)}</code></a>' for x in s["lean_statements_declaring_axioms_ids"])
-        if k == "lean_statements_pure_mathlib" and s.get("lean_statements_pure_mathlib_ids"):
-            extra = " " + ", ".join(f'<a href="statements/{esc(x)}.html"><code>{esc(x)}</code></a>' for x in s["lean_statements_pure_mathlib_ids"])
-        if k == "lean_definition_holes" and s.get("lean_statements_with_definition_holes"):
-            extra = " " + ", ".join(f'<a href="statements/{esc(x)}.html"><code>{esc(x)}</code></a>' for x in s["lean_statements_with_definition_holes"])
-        items.append(f"""<article class="numrow" id="{k}">
- <p class="numrow__v">{num(s[k])}</p>
+        rows = []
+        for k in ks:
+            s = r.number(k)
+            r.number_receipt(k)            # stops the build if the receipt does not reconstruct
+            state = s.get("state") or "computed"
+            value = number_value(s)
+            label = labels.get(k) or k.replace("_", " ")
+            rule = s.get("rule") or ""
+            credit = number_credit(s)
+            receipt = s.get("receipt") or {}
+            raw = f'data/{receipt.get("path")}' if receipt.get("path") else ""
+            state_words = C("numbers.state." + state) if state in COPY["numbers"]["state"] else state
+            rows.append(f"""<article class="numrow" id="n-{esc(k)}" data-receipt="{esc(receipt.get('path') or '')}">
+ <p class="numrow__v{' numrow__v--unknown' if s.get('value') is None else ''}">{esc(value)}</p>
  <div class="numrow__t">
-  <h2 class="h3">{esc(it.get('label', k))}</h2>
-  <p><span class="numrow__k">{esc(C('numbers.definition'))}.</span> {esc(d)}{extra}</p>
-  <p><span class="numrow__k">{esc(C('numbers.how'))}.</span> {esc(it.get('how', ''))}</p>
-  {receipt_html(k)}
+  <h3 class="h3">{esc(label)}</h3>
+  <p class="numrow__unit">{esc(C('numbers.unit', unit=s.get('unit') or ''))} <span class="numrow__state numrow__state--{esc(state)}">{esc(state_words)}</span></p>
+  <p class="numrow__rule"><span class="numrow__k">{esc(C('numbers.rule'))}</span> {esc(rule)}</p>
+  <p class="numrow__credit"><span class="numrow__k">{esc(C('numbers.credit'))}</span> {esc(credit)}</p>
+  <details class="receipt" data-key="{esc(k)}"><summary>{esc(C('numbers.records'))}</summary>
+   <div class="receipt__body"><p class="small muted">{esc(C('numbers.records_nojs'))} <a href="{esc(raw)}">{esc(C('numbers.records_raw'))}</a></p></div>
+  </details>
  </div>
 </article>""")
-    # The draft scope reading, with its unclear class kept apart.
-    sc = s.get("scope_coverage") or {}
-    scope_html = ""
-    if sc.get("classes"):
-        if COVER_STALE:
-            scope_body = f'<p>{esc(C("numbers.scope_stale"))}</p>'
-        else:
-            order = ["headline", "headline-part", "consequence", "weaker", "supporting", "unclear"]
-            keys = order + [k for k in sc["classes"] if k not in order]
-            rows_ = "".join(f'<tr><td>{esc(cover_label(k))}</td><td class="t-num">{num(sc["classes"][k])}</td></tr>' for k in keys if k in sc["classes"])
-            total = sum(v for v in sc["classes"].values() if isinstance(v, int))
-            rows_ += f'<tr><td><strong>{esc(C("numbers.scope_total"))}</strong></td><td class="t-num"><strong>{num(total)}</strong></td></tr>'
-            fam_rows = []
-            for key in ("families_no_full_headline", "families_partial_headline_only", "families_with_lean_but_no_headline_coverage", "families_mixed_classes"):
-                v = sc.get(key)
-                if isinstance(v, list):
-                    links = ", ".join(f'<a href="families/{esc(x)}.html">{esc(x)}</a>' for x in v if x in FAM)
-                    fam_rows.append(f'<details class="receipt"><summary>{esc(C("numbers.scope_" + key, n=len(v)))}</summary><p class="small">{links}</p></details>')
-            scope_body = f'<table class="tbl tbl--narrow"><tbody>{rows_}</tbody></table>{"".join(fam_rows)}'
-        scope_html = f'<section class="band" aria-labelledby="h-scope-n" id="scope"><h2 class="h2" id="h-scope-n">{esc(C("numbers.scope_heading"))}</h2><p class="intro">{esc(C("numbers.scope_intro"))}</p>{scope_body}{receipt_html("scope_coverage")}</section>'
-    # The Lean library scan: a source index, never a check.
-    lc = s.get("lean_claim_layer") or {}
-    claim_html = ""
-    if lc:
-        crow = []
-        for key in ("lean_projects", "lean_files", "projects_with_model_file", "model_files", "model_statement_definitions", "model_statement_projects_linked_to_a_family", "manuscript_theorems", "projects_with_manuscript_theorems"):
-            if isinstance(lc.get(key), int):
-                crow.append(f'<tr><td>{esc(C("numbers.claims." + key))}</td><td class="t-num">{num(lc[key])}</td></tr>')
-        direct = lc.get("manuscript_theorems_checked_by_comparator")
-        direct_p = f'<p>{esc(C("numbers.claims.direct", n=num_words(direct), total=lc.get("manuscript_theorems", 0)))}</p>' if isinstance(direct, int) else ""
-        claim_html = f'<section class="band" aria-labelledby="h-claims" id="lean-library"><h2 class="h2" id="h-claims">{esc(C("numbers.claims.heading"))}</h2><p class="intro">{esc(C("numbers.claims.intro"))}</p><table class="tbl tbl--narrow"><tbody>{"".join(crow)}</tbody></table>{direct_p}</section>'
-    def other_receipts():
-        rest = [k for k in receipts if k not in used_receipts]
-        if not rest:
-            return ""
-        out = []
-        for k in rest:
-            r = receipts[k]
-            label = number_item(k).get("label") or r.get("unit") or ""
-            val = num(r["value"]) if isinstance(r.get("value"), int) else ""
-            out.append(f'<article class="numrow" id="receipt-{esc(k)}"><p class="numrow__v">{val}</p><div class="numrow__t"><h3 class="h3">{esc(label)}</h3>{receipt_html(k)}</div></article>')
-        return f'<section class="band" aria-labelledby="h-receipts"><h2 class="h2" id="h-receipts">{esc(C("numbers.receipts_heading"))}</h2>{"".join(out)}</section>'
-
-    # upstream figures
-    upr = s.get("upstream_reported", {})
+        intro = C("numbers.group_intro." + g) if g in COPY["numbers"]["group_intro"] else ""
+        extra = ""
+        if g == "citations":
+            extra = f'<p class="intro">{esc(C("numbers.two_inventories", current=NUM("internal_citation_edges"), baseline=NUM("atlas_baseline_internal_citation_edges")))}</p>'
+        sections.append(f'<section class="band" aria-labelledby="h-n-{g}"><h2 class="h2" id="h-n-{g}">{esc(C("numbers.group." + g))}</h2>'
+                        f'{f"<p class=intro>{esc(intro)}</p>" if intro else ""}{extra}<div class="numrows">{"".join(rows)}</div></section>')
+    # What OpenAI's release says about itself, quoted, beside the backend's count.
+    s_ = SUMMARY
+    upr = s_.get("upstream_reported", {})
     up_html = []
-    if upr:
-        tf = upr.get("top_line_results_formalized")
-        if tf:
-            up_html.append(f"""<article class="pair" id="openai-formalised">
- <div class="pair__a"><p class="pair__k">{esc(C('numbers.col_openai'))}</p><p class="pair__v">{esc(C('numbers.formalised_value', a=tf['formalized'], b=tf['of']))}</p><blockquote class="quote"><p>“{esc(tf['quote'])}”</p><footer>{esc(C('numbers.quoted_from'))} <a class="ext" href="{esc(tf['source'])}" rel="noopener">history.md</a></footer></blockquote></div>
- <div class="pair__b"><p class="pair__k">{esc(C('numbers.col_atlas'))}</p><p class="pair__v">{esc(C('numbers.atlas_formalised_value', n=s['manuscripts_with_lean']))}</p><p>{esc(C('numbers.upstream_formalised_atlas', n=s['manuscripts_with_lean']))}</p><p class="muted small">{esc(defs.get('manuscripts_with_lean', ''))}</p></div>
+    cat = upr.get("catalogue")
+    if cat:
+        up_html.append(f"""<article class="pair">
+ <div class="pair__a"><p class="pair__k">{esc(C('numbers.col_openai'))}</p><blockquote class="quote"><p>“{esc(cat['quote'])}”</p><footer>{esc(C('numbers.quoted_from'))} <a class="ext" href="{esc(cat['source'])}" rel="noopener">README.md</a></footer></blockquote></div>
+ <div class="pair__b"><p class="pair__k">{esc(C('numbers.col_atlas'))}</p><p>{esc(C('numbers.catalogue_atlas_value', manuscripts=NUM('manuscripts_current'), families=NUM('families')))} <a href="#n-manuscripts_current">{esc(C('numbers.see_records'))}</a></p></div>
 </article>""")
-        cat = upr.get("catalogue")
-        if cat:
-            up_html.append(f"""<article class="pair">
- <div class="pair__a"><p class="pair__k">{esc(C('numbers.col_openai'))}</p><p class="pair__v">{esc(C('numbers.catalogue_value', manuscripts=cat['manuscripts'], families=cat['families']))}</p><blockquote class="quote"><p>“{esc(cat['quote'])}”</p><footer>{esc(C('numbers.quoted_from'))} <a class="ext" href="{esc(cat['source'])}" rel="noopener">README.md</a></footer></blockquote></div>
- <div class="pair__b"><p class="pair__k">{esc(C('numbers.col_atlas'))}</p><p class="pair__v">{esc(C('numbers.catalogue_atlas_value', manuscripts=s['manuscripts_current'], families=s['families']))}</p><p>{esc(C('numbers.upstream_catalogue_atlas', manuscripts=s['manuscripts_current'], families=s['families']))}</p></div>
+    tf = upr.get("top_line_results_formalized")
+    if tf:
+        up_html.append(f"""<article class="pair">
+ <div class="pair__a"><p class="pair__k">{esc(C('numbers.col_openai'))}</p><blockquote class="quote"><p>“{esc(tf['quote'])}”</p><footer>{esc(C('numbers.quoted_from'))} <a class="ext" href="{esc(tf['source'])}" rel="noopener">history.md</a></footer></blockquote></div>
+ <div class="pair__b"><p class="pair__k">{esc(C('numbers.col_atlas'))}</p><p>{esc(C('numbers.upstream_formalised_atlas', n=NUM('manuscripts_with_lean')))} <a href="#n-manuscripts_with_lean">{esc(C('numbers.see_records'))}</a></p></div>
 </article>""")
-        pp = upr.get("problems_posed")
-        if pp:
-            up_html.append(f"""<article class="pair">
- <div class="pair__a"><p class="pair__k">{esc(C('numbers.col_openai'))}</p><p class="pair__v">{esc(C('numbers.problems_value', n=pp['approximately']))}</p><blockquote class="quote"><p>“{esc(pp['quote'])}”</p><footer>{esc(C('numbers.quoted_from'))} <a class="ext" href="{esc(pp['source'])}" rel="noopener">README.md</a></footer></blockquote></div>
- <div class="pair__b"><p class="pair__k">{esc(C('numbers.col_atlas'))}</p><p>{esc(C('numbers.upstream_problems_atlas'))}</p></div>
-</article>""")
-    rc = s.get("lean_count_reconciliation") or {}
-    recon_rows = []
-    for key in ("families_with_lean_in_scope_notes", "families_with_a_paper_in_formalization_yaml_sources", "papers_in_formalization_yaml_sources", "tier_list_families_with_lean", "tier_list_lean_formalisations_total",
-                "mathvet_families_full", "mathvet_families_partial", "mathvet_families_weaker_or_supporting",
-                "cert_machine_families_matching", "cert_machine_families_narrower_declared", "cert_machine_families_narrower_undeclared_or_unlinked", "cert_machine_families_different_or_supporting",
-                "mathvet_challenges_accepted", "cert_machine_challenges_accepted"):
-        if rc.get(key) is not None:
-            recon_rows.append(f'<tr><td>{esc(C("numbers.recon." + key))}</td><td class="t-num">{num(rc[key])}</td></tr>')
-    if rc.get("openai_reported_top_line_formalized"):
-        recon_rows.append(f'<tr><td>{esc(C("numbers.recon.openai_reported"))}</td><td class="t-num">\u201c{esc(rc["openai_reported_top_line_formalized"])}\u201d</td></tr>')
-    recon_html = (f'<section class="band" aria-labelledby="h-recon"><h2 class="h2" id="h-recon">{esc(C("numbers.recon.heading"))}</h2><p class="intro">{esc(C("numbers.recon.intro"))}</p><table class="tbl"><tbody>{"".join(recon_rows)}</tbody></table><p class="muted small">{esc(C("numbers.recon.note"))}</p></section>') if recon_rows else ""
-    envs = s.get("paper_statement_environments", {})
-    env_rows = "".join(f'<tr><td>{esc(k)}</td><td class="t-num">{num(v)}</td></tr>' for k, v in sorted(envs.items(), key=lambda kv: -kv[1]))
     wd = [m for m in MANUSCRIPTS if m["status"] == "withdrawn"]
     wd_html = "".join(f'<article class="note note--warn"><h3 class="h3"><a href="papers/{esc(m["id"])}.html">{ms_title_html(m)}</a></h3><div class="md-math">{md_paragraphs(m.get("withdrawal_note") or "")}</div><p class="muted small">{esc(C("paper.withdrawn_on", date=m.get("withdrawn_on") or ""))}</p></article>' for m in wd)
     hist = "".join(f'<article class="changelog"><h3 class="h3">{esc(h["date"])}</h3><blockquote class="quote md-math">{md_paragraphs(h["markdown"])}<footer><a class="ext" href="{BASE_BLOB}history.md" rel="noopener">{esc(C("numbers.changelog_source"))}</a></footer></blockquote></article>' for h in HISTORY)
-    body = f"""<div class="frame page">
+    toc = "".join(f'<li><a href="#h-n-{g}">{esc(C("numbers.group." + g))}</a></li>' for g, _ in NUMBER_GROUPS if grouped[g])
+    body = f"""<div class="frame page page--numbers" data-generation="{esc(r.generation)}">
 <header class="phead">
  <h1 class="phead__title">{esc(C('numbers.title'))}</h1>
- <p class="lede">{esc(C('numbers.lede', commit_short=COMMIT_SHORT))}</p>
+ <p class="lede">{esc(C('numbers.lede'))}</p>
+ <p class="phead__facts">{esc(C('numbers.states_note'))}</p>
+ <nav class="numtoc" aria-label="{esc(C('numbers.toc_label'))}"><ul>{toc}</ul></nav>
 </header>
+{''.join(sections)}
 <section class="band" aria-labelledby="h-up"><h2 class="h2" id="h-up">{esc(C('numbers.upstream_heading'))}</h2><p class="intro">{esc(C('numbers.upstream_intro'))}</p>{''.join(up_html)}</section>
-{recon_html}
-<section class="band" aria-labelledby="h-atlas-n"><h2 class="h2" id="h-atlas-n">{esc(C('numbers.atlas_heading'))}</h2>{''.join(items)}</section>
-{scope_html}
-{claim_html}
-<section class="band" aria-labelledby="h-envs"><h2 class="h2" id="h-envs">{esc(C('numbers.envs_heading'))}</h2><p class="intro">{esc(C('numbers.envs_intro', manuscripts=s['manuscripts_current'], unparsed=len(s.get('manuscripts_tex_unparsed') or [])))}</p><table class="tbl tbl--narrow"><tbody>{env_rows}</tbody></table>{receipt_html('paper_statement_environments')}</section>
-{other_receipts()}
-<section class="band" aria-labelledby="h-wd"><h2 class="h2" id="h-wd">{esc(C('numbers.withdrawn_heading'))}</h2><p class="intro">{esc(C('numbers.withdrawn_intro', n=len(wd)))}</p>{wd_html}</section>
+<section class="band" aria-labelledby="h-wd"><h2 class="h2" id="h-wd">{esc(C('numbers.withdrawn_heading'))}</h2><p class="intro">{esc(C('numbers.withdrawn_intro', n=NUM('manuscripts_withdrawn')))}</p>{wd_html}</section>
 <section class="band" aria-labelledby="h-hist"><h2 class="h2" id="h-hist">{esc(C('numbers.changelog_heading'))}</h2>{hist}</section>
-</div>"""
-    write_page(rel, page(rel, C("numbers.title"), C("numbers.lede", commit_short=COMMIT_SHORT), body, current="numbers"))
+</div>
+{json_script('number-words', COPY['numbers']['js'])}"""
+    write_page(rel, page(rel, C("numbers.title"), C("numbers.lede"), body, current="numbers"))
 
 
 def build_references_outside():
@@ -4358,10 +4303,27 @@ def build_contribute():
     write_page(rel, page(rel, C("contribute.title"), C("contribute.lede"), body, current="contribute"))
 
 
+def credited_groups() -> list[str]:
+    """Every outside group whose record the backend carries: readings, re-runs and check
+    cards, by their credited names, in first-seen order."""
+    r = RD()
+    names = []
+    for fid in r.family_ids():
+        d = r.family(fid)
+        recs = [x.get("credit") for x in d.get("readings") or []]
+        recs += [run.get("credit") for l in d.get("lean") or [] for run in l.get("runs") or []]
+        recs += [c.get("credit") for c in d.get("independent_check_cards") or []]
+        for cr in recs:
+            n_ = (cr or {}).get("name")
+            if n_ and n_ not in names:
+                names.append(n_)
+    return names
+
+
 def build_about():
     rel = "about.html"
-    s = SUMMARY
-    fill = dict(release_date=CFG["release_date"], families=s["families"], families_with_lean=s["families_with_lean"],
+    r = RD()
+    fill = dict(release_date=CFG["release_date"], families=NUM("families"), families_with_lean=NUM("families_with_lean"),
                 commit_short=COMMIT_SHORT, author=CFG["author"])
     cite = C("about.cite_format", author=CFG["author"], name=C("site.name"), url=BASE_URL, commit=COMMIT)
     ur = SUMMARY.get("upstream_reported", {})
@@ -4381,21 +4343,26 @@ def build_about():
         for a in COPY["about"]["approach_items"])
     approach += "</ul>" + f'<p class="approach__then">{esc(C("about.approach_response_intro"))}</p><ul class="adds">' + "".join(
         f"<li>{esc(t)}</li>" for t in COPY["about"]["approach_responses"])
-    reading = list(PAPER_READING.values())
-    groups = len({v["source"] for s_ in STATEMENTS for v in sourced_all(s_, "replay")})
-    adds_fill = dict(manuscripts=num(s["manuscripts_current"]), lean=num(s["statements_lean"]), families=num(s["families"]),
-                     accepted=num(reading.count("accepted")), partial=num(reading.count("partial")), groups=num(groups))
+    adds_fill = dict(manuscripts=NUM("manuscripts_current"), lean=NUM("statements_lean"), families=NUM("families"))
     adds = "".join(f"<li>{esc(t.format(**adds_fill))}</li>" for t in COPY["about"]["adds_items"])
-    import backend
-    b = backend.load()
-    backend_p = f'<p>{esc(C("about.backend", generation=b.generation.split(":")[-1][:12]))}</p>' if b else ""
+    receipt = r.export.get("acceptance_receipt") or {}
+    backend_p = (f'<p>{esc(C("about.backend"))}</p>'
+                 f'<p>{esc(C("about.backend_pin", generation=r.generation.split(":")[-1][:12], commit=(r.commit or "")[:12], runtime=(r.runtime or "")[:12], exporter=r.exporter or "", receipt=(receipt.get("sha256") or "").split(":")[-1][:12], schema=r.export.get("reader_schema") or ""))} '
+                 f'<a href="numbers.html">{esc(C("about.backend_numbers"))}</a></p>')
+    groups = credited_groups()
+    group_list = ", ".join(groups[:-1]) + (" " + C("about.and") + " " if len(groups) > 1 else "") + (groups[-1] if groups else "")
+    since = "".join(
+        f'<li class="approach__item"><p><span class="approach__who">{esc(a["who"])}</span>, in '
+        f'<a class="ext" href="{esc(a["url"])}" rel="noopener">{esc(a["title"])}</a>, {esc(a["says"])}</p></li>'
+        for a in COPY["about"]["since_items"])
     body = f"""<div class="frame page page--narrow prose-page">
 <header class="phead"><h1 class="phead__title">{esc(C('about.title'))}</h1></header>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.what_heading'))}</h2><p>{esc(C('about.what', **fill))}</p></section>
 <section class="band band--tight" id="approach" aria-labelledby="h-approach"><h2 class="h2" id="h-approach">{esc(C('about.approach_heading'))}</h2><p>{esc(C('about.approach_intro'))}</p><ul class="approach">{approach}</ul></section>
+<section class="band band--tight" id="since" aria-labelledby="h-since"><h2 class="h2" id="h-since">{esc(C('about.since_heading'))}</h2><p>{esc(C('about.since_intro'))}</p><ul class="approach">{since}</ul><p>{esc(C('about.since_note'))}</p></section>
 <section class="band band--tight" id="adds" aria-labelledby="h-adds"><h2 class="h2" id="h-adds">{esc(C('about.adds_heading'))}</h2><p>{esc(C('about.adds_intro', **adds_fill))}</p><ul class="adds">{adds}</ul></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.how_heading'))}</h2><p>{esc(C('about.how', **fill))}</p>{backend_p}</section>
-<section class="band band--tight"><h2 class="h2">{esc(C('about.independence_heading'))}</h2><p>{esc(C('about.independence'))}</p></section>
+<section class="band band--tight" id="independence"><h2 class="h2">{esc(C('about.independence_heading'))}</h2><p>{esc(C('about.independence'))}</p><p>{esc(C('about.independence_groups', groups=group_list))}</p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.made_heading'))}</h2><p>{esc(C('about.made'))}</p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.not_heading'))}</h2><p>{esc(C('about.not'))}</p></section>
 {('<section class="band band--tight"><h2 class="h2">' + esc(C('about.interests_heading')) + '</h2><p>' + esc(C('about.interests')) + '</p></section>') if C('about.interests') else ''}
@@ -4641,7 +4608,6 @@ def main():
     shutil.copytree(ASSETS, OUT / "assets")
     (OUT / ".nojekyll").write_text("")
     (OUT / "cards").mkdir(exist_ok=True)
-    recompute_checks()
 
     (OUT / "data").mkdir(parents=True, exist_ok=True)
     build_home()

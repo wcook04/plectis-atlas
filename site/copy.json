@@ -715,198 +715,127 @@
  },
  "numbers": {
   "title": "Numbers",
-  "lede": "Counts from the release at commit {commit_short}, with what each counts and how.",
-  "how": "How it is computed",
-  "definition": "What it counts",
-  "receipt_heading": "Counting rule",
-  "receipt_unit": "Unit",
-  "receipt_universe": "Counted in",
-  "receipt_rule": "Rule",
-  "receipt_source": "Computed by",
-  "receipts_heading": "Other counting rules",
+  "lede": "Every number the atlas states in a sentence, with what it counts, the rule that counts it, whether it was computed or reported, and who it is credited to. Each one opens the records behind it.",
+  "states_note": "Statement Map, the atlas’s backend, computes each number from the release’s records and keeps a receipt for it. A number the release only reports is marked as reported; a number whose inputs are missing says so and is never shown as zero.",
+  "toc_label": "Groups of numbers",
+  "unit": "Counts {unit}.",
+  "rule": "Rule.",
+  "credit": "Credit.",
+  "records": "The records behind this number",
+  "records_nojs": "The full receipt, with every member, is a JSON file:",
+  "records_raw": "open the receipt",
+  "value_unknown": "Not available",
+  "value_known": "At least {n}",
+  "see_records": "The records",
+  "two_inventories": "Citations between papers are counted in two inventories. The backend’s current extraction finds {current} directed pairs of papers. The Atlas baseline, the atlas’s own extraction that the backend imported, finds {baseline}: the same records without the edges the current extraction added. Neither claims to have found every citation.",
+  "state": {
+   "computed": "Computed from the records.",
+   "reported": "Reported by the source; its members are not listed.",
+   "incomplete": "Incomplete: some inputs are missing, so only the known part is shown.",
+   "unavailable": "Unavailable: the inputs are missing."
+  },
+  "group": {
+   "release": "The release",
+   "lean": "Lean statements",
+   "citations": "Citations",
+   "scope": "Draft scope readings by an AI agent",
+   "library": "OpenAI’s Lean library",
+   "papers": "Environments in the papers",
+   "community": "Outside work the atlas credits",
+   "other": "Other numbers"
+  },
+  "group_intro": {
+   "scope": "An AI agent classified OpenAI’s own note on each Lean statement. Nobody has reviewed these classes; they count drafts, never verdicts.",
+   "library": "Counts from scanning the text of OpenAI’s Lean library at the pinned commit. Nothing here was built or elaborated by Lean.",
+   "papers": "Environments found in the TeX source of the current papers, summed over papers.",
+   "community": "Reports by people and groups outside OpenAI. A finding is a report, not a judgement by the atlas."
+  },
+  "js": {
+   "loading": "Loading the records…",
+   "failed": "The records could not load. The receipt file is linked above.",
+   "generation": "These records come from a different build of the backend than this page, so they are not shown.",
+   "members": "{n} members",
+   "universe": "out of {n}",
+   "observations": "{n} observations",
+   "empty": "None.",
+   "more": "Show all {n}",
+   "none_listed": "The source reports this total without listing its members.",
+   "issues": "Issues the backend recorded:",
+   "digest": "Receipt digest {sha}"
+  },
+  "labels": {
+   "families": "families of related papers",
+   "disciplines": "disciplines",
+   "manuscripts_current": "current manuscripts",
+   "manuscripts_withdrawn": "withdrawn manuscripts",
+   "manuscripts_previous_editions": "earlier editions",
+   "statements_lean": "Comparator challenge files",
+   "statements_lean_main_results": "Comparator challenge files OpenAI lists as main results",
+   "main_result_declarations": "main-result declarations",
+   "families_with_lean": "families with a linked Comparator statement",
+   "manuscripts_with_lean": "manuscripts with an accompanying Comparator statement",
+   "lean_statements_pure_mathlib": "challenge files that import only Mathlib and add no local vocabulary",
+   "lean_statements_no_local_vocabulary": "challenge files with no local vocabulary",
+   "lean_statements_with_custom_vocabulary": "challenge files with local vocabulary",
+   "lean_statements_importing_non_mathlib": "challenge files importing from outside Mathlib",
+   "lean_statements_declaring_axioms": "challenge files declaring an axiom",
+   "lean_definition_holes": "definition holes across all configurations",
+   "lean_vocabulary_total": "local vocabulary declarations across all challenge files",
+   "lean_vocabulary_median": "median local vocabulary declarations per challenge file",
+   "lean_vocabulary_max": "largest local vocabulary count in one challenge file",
+   "internal_citation_edges": "citation links between manuscripts in the collection",
+   "manuscripts_citing_collection": "manuscripts that cite another in the collection",
+   "manuscripts_citing_unformalised_collection_results": "manuscripts citing a manuscript without associated Lean",
+   "external_works_cited": "automatically grouped references outside the release",
+   "external_citations": "resolved external reference keys (each manuscript and key counted once)",
+   "atlas_baseline_internal_citation_edges": "citation links between manuscripts, in the Atlas baseline inventory",
+   "atlas_baseline_manuscripts_citing_collection": "manuscripts that cite another in the collection, in the Atlas baseline inventory",
+   "atlas_baseline_manuscripts_citing_unformalised_collection_results": "manuscripts citing a manuscript without associated Lean, in the Atlas baseline inventory",
+   "community_efforts": "credited outside efforts recorded by the atlas",
+   "community_findings": "credited findings from those efforts",
+   "community_people": "people and groups credited for them",
+   "distinct_target_theorems": "distinct theorems the Comparator configurations name",
+   "lean_files": "Lean files in OpenAI’s library, as the release reports",
+   "lean_projects": "projects in OpenAI’s Lean library, as the release reports",
+   "projects_with_model_file": "projects with a Model.lean file, as the release reports",
+   "model_files": "Model.lean files, as the release reports",
+   "model_statement_definitions": "statement definitions in the Model.lean files",
+   "model_statement_projects_linked_to_a_family": "projects with Model.lean statements linked to a family",
+   "manuscript_theorems": "library theorems whose names mention a manuscript",
+   "projects_with_manuscript_theorems": "projects holding those theorems",
+   "manuscript_theorems_checked_by_comparator": "of those theorems, named exactly by a Comparator configuration",
+   "paper_environments_theorem": "theorem environments in the current papers",
+   "paper_environments_lemma": "lemma environments",
+   "paper_environments_proposition": "proposition environments",
+   "paper_environments_corollary": "corollary environments",
+   "paper_environments_definition": "definition environments",
+   "paper_environments_remark": "remark environments",
+   "paper_environments_hypothesis": "hypothesis environments",
+   "paper_environments_claim": "claim environments",
+   "paper_environments_question": "question environments",
+   "scope_statements_classified": "Lean statements with a draft scope class from an AI agent",
+   "scope_class_headline": "drafted as stating the paper’s headline theorem",
+   "scope_class_headline-part": "drafted as stating part of the headline theorem",
+   "scope_class_consequence": "drafted as stating a consequence",
+   "scope_class_weaker": "drafted as stating a weaker form",
+   "scope_class_supporting": "drafted as stating a supporting result",
+   "scope_class_unclear": "drafted as unclear from OpenAI’s note",
+   "scope_families_no_full_headline": "families the draft finds without a Lean statement of the full headline",
+   "scope_families_partial_headline_only": "families the draft finds with only part of the headline in Lean",
+   "scope_families_with_lean_but_no_headline_coverage": "families with Lean that the draft finds covers none of the headline",
+   "scope_families_mixed_classes": "families whose Lean statements the draft puts in more than one class"
+  },
+  "col_openai": "OpenAI’s figure",
+  "col_atlas": "The atlas’s count",
+  "quoted_from": "Quoted from",
+  "catalogue_atlas_value": "{manuscripts} manuscripts in {families} families",
+  "upstream_formalised_atlas": "The atlas counts {n} current manuscripts listed as accompanying papers in family notes that link a Comparator statement, whatever part of the paper that statement covers. OpenAI’s figure counts formalised headline results.",
   "upstream_heading": "OpenAI’s own figures",
   "upstream_intro": "OpenAI’s reported figures and the atlas’s related counts, with the measure and source for each.",
-  "upstream_formalised_atlas": "The atlas counts {n} current manuscripts listed as accompanying papers in family notes that link a Comparator statement, whatever part of the paper that statement covers. OpenAI’s figure counts formalised headline results.",
-  "upstream_catalogue_atlas": "The atlas counts {manuscripts} current manuscripts in {families} families.",
-  "upstream_problems_atlas": "The atlas does not count problems posed; the release does not list them.",
-  "quoted_from": "Quoted from",
-  "scope_heading": "Scope in OpenAI’s notes: the draft reading",
-  "scope_intro": "An AI agent read OpenAI’s note for every Comparator challenge file and classified what each states. No person has reviewed these classifications yet. Unclear stays a class of its own.",
-  "scope_total": "Challenge files classified",
-  "scope_stale": "The draft scope reading was made for a different version of the release, so its counts are not shown.",
-  "scope_families_no_full_headline": "{n} families with linked statements, none classified as stating the paper’s headline theorem",
-  "scope_families_partial_headline_only": "{n} families where a statement is classified as stating part of the headline theorem and none the whole of it",
-  "scope_families_with_lean_but_no_headline_coverage": "{n} families where no statement is classified as stating the headline theorem or a part of it",
-  "scope_families_mixed_classes": "{n} families whose statements fall in different classes",
-  "claims": {
-   "heading": "OpenAI’s Lean library: a source index",
-   "intro": "A textual scan of the Lean library at the pinned commit. Nothing is built, so a declaration listed here exists in the source; the scan records nothing about whether it was checked.",
-   "lean_projects": "Projects with Lean files",
-   "lean_files": "Lean files",
-   "projects_with_model_file": "Distinct projects with a Model.lean file",
-   "model_files": "Model.lean files",
-   "model_statement_definitions": "Proposition-valued definitions in Model.lean files",
-   "model_statement_projects_linked_to_a_family": "Projects with such definitions that are linked to a family",
-   "manuscript_theorems": "Theorem or lemma names containing ‘manuscript’",
-   "projects_with_manuscript_theorems": "Projects with such names",
-   "direct": "Of the {total} names containing ‘manuscript’, {n} occur directly in Comparator configurations’ theorem lists. A configured proof can use many other theorems, so this is a match of names only."
-  },
-  "envs_heading": "Statements in the papers",
-  "envs_intro": "Counts of theorem-like environments extracted from the current manuscripts’ TeX sources, by kind. The extraction could not parse the sources of {unparsed} manuscripts.",
   "withdrawn_heading": "Withdrawn manuscripts",
   "withdrawn_intro": "The release withdrew {n} manuscripts. Their notices are quoted in full.",
   "changelog_heading": "The release’s changelog",
-  "changelog_source": "Quoted from the release’s history file",
-  "items": {
-   "families": {
-    "label": "families of related papers",
-    "definition": "The numbered families of the release, each with one or more manuscripts. Some numbers in the sequence are unused.",
-    "how": "Counted from the release’s overview.tex, which lists every family under its discipline, cross-checked against CONTENTS.md."
-   },
-   "disciplines": {
-    "label": "disciplines",
-    "definition": "The subject headings under which the release’s overview groups its families.",
-    "how": "Counted from the section headings of overview.tex."
-   },
-   "manuscripts_current": {
-    "label": "current manuscripts",
-    "definition": "Manuscripts listed under a family in the release’s overview or contents list, in their current edition.",
-    "how": "Every folder under preprints/ named by a family, excluding withdrawn manuscripts and earlier editions that a newer README replaces."
-   },
-   "manuscripts_withdrawn": {
-    "label": "withdrawn manuscripts",
-    "definition": "Manuscripts whose README carries a withdrawal notice.",
-    "how": "Counted from the withdrawal notices in each preprint’s README."
-   },
-   "manuscripts_previous_editions": {
-    "label": "earlier editions",
-    "definition": "Manuscript folders that a newer edition lists as its previous version.",
-    "how": "Counted from the previous-version links in each current README."
-   },
-   "statements_lean": {
-    "label": "Comparator challenge files",
-    "definition": "Lean files in lean/ComparatorChallenges/, each with a configuration naming the theorems or definitions Comparator compares against a solution. One file can hold several target theorems.",
-    "how": "Every .lean file in lean/ComparatorChallenges/."
-   },
-   "statements_lean_main_results": {
-    "label": "Comparator challenge files OpenAI lists as main results",
-    "definition": "Comparator challenge files that OpenAI’s lean/formalization.yaml names in its main-results list. The release’s Lean notes link the other challenge files; formalization.yaml leaves them out.",
-    "how": "Challenge files named by a main-result entry in lean/formalization.yaml."
-   },
-   "main_result_declarations": {
-    "label": "main-result declarations",
-    "definition": "Entries in the main-results list of the release’s formalisation record; one challenge file can carry several.",
-    "how": "Counted from the main-results list in lean/formalization.yaml."
-   },
-   "families_with_lean": {
-    "label": "families with a linked Comparator statement",
-    "definition": "Families whose Lean notes (lean/docs/NNN.md) link at least one Comparator challenge file.",
-    "how": "Counted from the statement rows of each family’s Lean notes."
-   },
-   "manuscripts_with_lean": {
-    "label": "manuscripts with an accompanying Comparator statement",
-    "definition": "Current manuscripts listed as accompanying papers in a family’s Lean notes that link at least one Comparator statement, whatever part of the paper that statement covers.",
-    "how": "Current manuscripts named as accompanying papers in a family’s Lean notes, where those notes link at least one challenge file."
-   },
-   "lean_statements_pure_mathlib": {
-    "label": "challenge files that import only Mathlib and add no local vocabulary",
-    "definition": "Comparator challenge files whose imports are all Mathlib and in which no local vocabulary declaration is detected.",
-    "how": "Challenge files whose imports are all Mathlib and which declare no definition, structure, instance, notation or axiom of their own."
-   },
-   "lean_statements_no_local_vocabulary": {
-    "label": "challenge files with no local vocabulary",
-    "definition": "Comparator challenge files in which no local vocabulary declaration is detected, whatever they import.",
-    "how": "Challenge files with a local vocabulary count of zero."
-   },
-   "lean_statements_with_custom_vocabulary": {
-    "label": "challenge files with local vocabulary",
-    "definition": "Comparator challenge files with at least one local vocabulary declaration: a definition, structure, instance, notation or axiom.",
-    "how": "Challenge files with a local vocabulary count of one or more."
-   },
-   "lean_statements_importing_non_mathlib": {
-    "label": "challenge files importing from outside Mathlib",
-    "definition": "Comparator challenge files with an import outside Mathlib.",
-    "how": "Read from the import lines of each challenge file."
-   },
-   "lean_statements_declaring_axioms": {
-    "label": "challenge files declaring an axiom",
-    "definition": "Comparator challenge files with an axiom declaration of their own.",
-    "how": "Read from the declarations of each challenge file."
-   },
-   "lean_definition_holes": {
-    "label": "definition holes across all configurations",
-    "definition": "Definitions a configuration names for comparison by name and type only; their bodies come from the solution. These configurations have them:",
-    "how": "Counted from the definition_names list of each challenge configuration."
-   },
-   "lean_vocabulary_total": {
-    "label": "local vocabulary declarations across all challenge files",
-    "definition": "Local vocabulary declarations: definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms detected in a challenge file. Theorem and lemma declarations are excluded. The count describes the file; it measures neither difficulty nor correctness.",
-    "how": "The local vocabulary counts of all challenge files, added up. A definition repeated in two files counts twice."
-   },
-   "lean_vocabulary_median": {
-    "label": "median local vocabulary declarations per challenge file",
-    "definition": "Local vocabulary declarations: definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms detected in a challenge file. Theorem and lemma declarations are excluded.",
-    "how": "The median of the local vocabulary counts across all challenge files."
-   },
-   "lean_vocabulary_max": {
-    "label": "largest local vocabulary count in one challenge file",
-    "definition": "Local vocabulary declarations: definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms detected in a challenge file. Theorem and lemma declarations are excluded. The file with the largest count is",
-    "how": "The largest local vocabulary count of any challenge file."
-   },
-   "internal_citation_edges": {
-    "label": "citation links between manuscripts in the collection",
-    "definition": "Bibliography entries in a manuscript’s TeX sources that point to another manuscript in the collection, counted once per citing and cited manuscript. A citation records that one paper cites another.",
-    "how": "Read from each manuscript’s bibliography: entries linking to an openai/math preprint or keyed OAI:, once per pair."
-   },
-   "manuscripts_citing_collection": {
-    "label": "manuscripts that cite another in the collection",
-    "definition": "Current manuscripts with at least one citation to another manuscript in the collection.",
-    "how": "Current manuscripts with one or more internal citations."
-   },
-   "manuscripts_citing_unformalised_collection_results": {
-    "label": "manuscripts citing a manuscript with no accompanying Comparator statement",
-    "definition": "Current manuscripts that cite at least one manuscript in the collection that is not listed as an accompanying paper in family notes linking a Comparator statement.",
-    "how": "Current manuscripts with an internal citation to a manuscript that no family’s Lean notes list as an accompanying paper."
-   },
-   "external_works_cited": {
-    "label": "automatically grouped references outside the release",
-    "definition": "References outside the collection, grouped automatically by DOI, then arXiv identifier, then normalised title. Automatic grouping can merge two works or split one, so this approximates the number of distinct works.",
-    "how": "Every bibliography entry cited in a current manuscript’s text that points outside the collection, grouped across manuscripts by DOI, then arXiv identifier, then normalised title."
-   },
-   "external_citations": {
-    "label": "resolved external reference keys (each manuscript and key counted once)",
-    "definition": "Resolved bibliography keys in the current manuscripts’ TeX sources that point outside the collection, each manuscript and key counted once.",
-    "how": "Counted from each manuscript’s cited bibliography entries."
-   }
-  },
-  "atlas_heading": "The atlas’s counts",
-  "col_openai": "OpenAI’s figure",
-  "col_atlas": "The atlas’s count",
-  "formalised_value": "{a} of {b}",
-  "catalogue_value": "{manuscripts} manuscripts in {families} families",
-  "catalogue_atlas_value": "{manuscripts} manuscripts in {families} families",
-  "atlas_formalised_value": "{n} manuscripts",
-  "problems_value": "about {n} problems",
-  "recon": {
-   "heading": "How much of the release has Lean: the published counts",
-   "intro": "Several different counts of the release’s Lean coverage are in circulation. Each measures a different thing.",
-   "families_with_lean_in_scope_notes": "Families whose Lean notes (lean/docs) link at least one Comparator statement",
-   "families_with_a_paper_in_formalization_yaml_sources": "Families with a paper in the sources list of OpenAI’s lean/formalization.yaml",
-   "papers_in_formalization_yaml_sources": "Papers in that sources list",
-   "tier_list_families_with_lean": "Families the OpenAI Math Tier List counts as having a Lean formalisation",
-   "tier_list_lean_formalisations_total": "Lean formalisations the Tier List counts in total (the figure some press reports quote as papers)",
-   "openai_reported": "OpenAI’s own figure, from history.md",
-   "mathvet_families_full": "Families whose challenges state the headline in full, in MathVet’s reading",
-   "mathvet_families_partial": "Families where only a special case is stated, in MathVet’s reading",
-   "mathvet_families_weaker_or_supporting": "Families with only a weaker statement or supporting results, in MathVet’s reading",
-   "cert_machine_families_matching": "Families whose challenges match OpenAI’s headline, in Carlos Toledo’s cert-machine reading",
-   "cert_machine_families_narrower_declared": "Families stated more narrowly with OpenAI’s note saying so, in cert-machine’s reading",
-   "cert_machine_families_narrower_undeclared_or_unlinked": "Families stated more narrowly where OpenAI’s note does not say so or the missing paper is unlinked, in cert-machine’s reading",
-   "cert_machine_families_different_or_supporting": "Families whose challenges state a different theorem or only supporting results, in cert-machine’s reading",
-   "mathvet_challenges_accepted": "Challenge files MathVet’s own Comparator runs accepted",
-   "cert_machine_challenges_accepted": "Challenge files cert-machine’s re-run accepted with both Lean’s kernel and nanoda",
-   "note": "The Tier List’s families with Lean are all among the families with a paper in OpenAI’s sources list, which the 7 October update extended. OpenAI’s Lean notes link Comparator statements for more families than its sources list names."
-  }
+  "changelog_source": "Quoted from the release’s history file"
  },
  "references_outside": {
   "title": "References outside the release",
@@ -942,7 +871,7 @@
  "about": {
   "title": "About the atlas",
   "what_heading": "What it is",
-  "what": "The Plectis Atlas is an independent guide to OpenAI’s mathematics release of {release_date}. It groups the manuscripts into {families} families of related papers, links the Lean statements accompanying {families_with_lean} families, gives each paper a reading page in the browser, and records citations and reader contributions.",
+  "what": "The Plectis Atlas is an independent guide to OpenAI’s mathematics release of {release_date}. It follows the release’s grouping of its papers into {families} families, sets the Lean statements of {families_with_lean} of them beside the paper theorems they are paired with, gives each paper a reading page, and records who has checked what.",
   "approach_heading": "The essays behind the design",
   "approach_intro": "In August and September 2026, mathematicians wrote about what AI-generated results ask of the people who read them. These essays shaped how the atlas is built. Their authors have not reviewed the atlas and are not involved in it.",
   "approach_response_intro": "What the atlas does about it:",
@@ -962,18 +891,45 @@
    {"who": "Daniel Litt", "title": "A beginning for mathematics", "url": "https://www.daniellitt.com/blog/2026/9/13/a-beginning-for-mathematics/", "argues": "argues that mathematics should be judged by human understanding, which makes the people who explain and teach it more necessary."}
   ],
   "adds_heading": "What the atlas adds to the release",
-  "adds_intro": "OpenAI’s release publishes {manuscripts} papers as PDF and TeX, {lean} Lean challenge files with their configurations, a catalogue, and notes on what the Lean covers. For each of its {families} families, the atlas adds:",
+  "adds_intro": "OpenAI’s release publishes {manuscripts} current papers as PDF and TeX, {lean} Lean challenge files with their configurations, a catalogue, and notes on what the Lean covers. For each of its {families} families, the atlas adds:",
   "adds_items": [
-   "a reading page for every paper, with each formula typeset and each theorem anchored ({accepted} in full, and {partial} with a list of what did not convert);",
-   "the main theorems, located and numbered as printed, each linked to its passage;",
-   "each Lean statement beside the paper theorem it appears to state, marked as a candidate until a person reviews the pairing;",
-   "re-runs of OpenAI’s Lean solutions by {groups} outside groups, each credited and dated;",
-   "two independent readings of whether each Lean statement states its theorem in full;",
-   "checks in a second proof assistant and by exact computation, where outside groups have made them;",
-   "the citations between the release’s papers, in both directions;",
-   "a way to explain, check or correct any of it, credited by name."
+  "a reading page for every paper, with each formula typeset and each theorem anchored; a page that did not convert in full lists what is missing, and the PDF stays the reference;",
+  "the main theorems, located and numbered as printed, each linked to its passage;",
+  "each Lean statement beside the paper theorem it is paired with, with the evidence for the pairing said at the join, and marked as a candidate until a person reviews it;",
+  "re-runs of OpenAI’s Lean solutions reported by outside groups, each credited and dated, at the release’s pinned commit;",
+  "outside readings of whether each family’s Lean statements state its headline, each in the reader’s own terms;",
+  "checks in a second proof assistant and by exact computation, where outside groups have made them;",
+  "the citations between the release’s papers, in both directions;",
+  "a way to explain, check or correct any of it, credited by name."
+ ],
+  "backend": "Every evidence state on the site, every pairing of a paper theorem with a Lean statement and every number comes from Statement Map, a backend by Will Cook that joins the release’s statements, Lean challenges, outside readings and contributions into records pinned to the release, with a receipt behind every count. The site renders its decisions and makes none of its own.",
+  "backend_pin": "This build reads one pinned export of it: generation {generation} of reader schema {schema}, exported by {exporter} from Statement Map commit {commit}, whose acceptance receipt ({receipt}) records the tests it passed at commit {runtime}. A page never mixes two generations; the build stops if any packet differs from the export.",
+  "backend_numbers": "Every number, with its receipt",
+  "and": "and",
+  "independence_groups": "It is equally independent of every group whose work it credits: {groups}. Each group’s findings are shown as their own, in their own terms, and none of them has reviewed or endorsed the atlas.",
+  "since_heading": "Since the release",
+  "since_intro": "Three pieces published since the release bear on how the atlas words what it shows.",
+  "since_items": [
+   {
+    "who": "Thomas Hales",
+    "title": "What mathematicians should know about the Lean theorem prover",
+    "url": "https://terrytao.wordpress.com/2026/10/09/what-mathematicians-should-know-about-the-lean-theorem-proverquestions-of-reliability-and-ai/",
+    "says": "a guest post on Terence Tao’s blog (9 October 2026), explains that Lean’s kernel check is the core safeguard, and that a person must still confirm that a formal statement and its definitions say what was intended. This is why every Lean statement here is shown whole, with who compared it with the paper and what they found."
+   },
+   {
+    "who": "Thomas Bloom",
+    "title": "Changes to the Erdős problems web site",
+    "url": "https://terrytao.wordpress.com/2026/10/06/changes-to-the-erdos-problems-web-site/",
+    "says": "(6 October 2026), describes removing problem statuses and the count of solved problems from erdosproblems.com, in favour of neutral wording such as “it is known that”, with a source. The atlas follows the same discipline: it says what is recorded and by whom, and keeps no tally of results."
+   },
+   {
+    "who": "The Association for Human Mathematics",
+    "title": "AHM Statement on OpenAI’s October 6 Release of Mathematical Documents",
+    "url": "https://terrytao.wordpress.com/2026/10/07/ahm-statement-on-openais-october-6-release-of-mathematical-documents/",
+    "says": "reposted on Terence Tao’s blog (7 October 2026), sets out its view of the release and asks mathematicians to stop working with OpenAI. The atlas records it as one perspective on the release, and neither joins nor answers it."
+   }
   ],
-  "backend": "Evidence counts and contribution targets come from Statement Map, a backend that joins the release’s statements, Lean challenges, outside readings and contributions into pinned records with a receipt behind every count. The site reads one pinned export of it, generation {generation}.",
+  "since_note": "None of these authors has reviewed or endorsed the atlas.",
   "how_heading": "How it is built",
   "how": "Scripts read the release at commit {commit_short} and extract catalogue entries, available manuscript sources, bibliographies, Comparator files and scope notes. The generated pages link back to the source files. Each paper’s reading page is converted from its TeX, with every formula checked by KaTeX; a page that did not convert in full lists what is missing, and the PDF stays the reference. Catalogue counts come from the release; contribution status comes from the atlas’s own records.",
   "independence_heading": "Independence",
