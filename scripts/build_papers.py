@@ -101,6 +101,11 @@ TXT = {
     "fig_image": "Figure image; see the PDF",
     "fig_other": "Figure not reproduced here; see the PDF",
     "lean_pair": "Candidate Lean statement, chosen automatically by word overlap and not reviewed:",
+    "lean_runs_n": "re-run and accepted by {n} groups outside OpenAI",
+    "lean_runs_1": "re-run and accepted by one group outside OpenAI",
+    "lean_runs_0": "not yet re-run outside OpenAI",
+    "lean_holes_1": "one definition Comparator compares by name and type only",
+    "lean_holes_n": "{n} definitions Comparator compares by name and type only",
     "listing_link": "Code listing {file}: open it in the release",
     "listing_pdf": "Code listing {file}; see the PDF",
     "math_failed": "This formula could not be typeset; its TeX source is shown.",
@@ -2627,7 +2632,7 @@ class Paper:
         self.thm_lines[lid] = env
         lean = lean_pairs().get((self.slug, f, line)) or []
         if lean:
-            links = ", ".join(f'<a href="../statements/{quote(sid)}.html"><code>{esc_t(sid)}</code></a>' for sid in lean)
+            links = "; ".join(lean_evidence_html(sid) for sid in lean)
             body += f'<p class="pr-lean">{esc_t(TXT["lean_pair"])} {links}.</p>'
         out.append(block(f'<div class="pr-thm pr-thm--{style}" id="{self.id_ph(ctx)}" data-env="{esc_a(env)}" '
                          f'data-src="{esc_a(f)}:{line}">{self.xa_ph(ctx)}{body}</div>'))
@@ -4335,6 +4340,23 @@ def lean_pairs() -> dict:
                 pairs[(ms["id"], st["file"], st["line"])].append(stmt["id"])
         _LEAN_PAIRS = {k: sorted(v) for k, v in pairs.items()}
     return _LEAN_PAIRS
+
+
+def lean_evidence_html(sid: str) -> str:
+    """A paired Lean statement and what has happened to it, in the Plectis inks: steel for
+    stated in Lean, brick for re-run and accepted by groups outside OpenAI."""
+    import_site()
+    st = S.ST.get(sid) or {}
+    runs = {v["source"] for v in S.sourced_all(st, "replay") if (v.get("value") or {}).get("verdict") == "accepted"}
+    holes = len((st.get("comparator") or {}).get("definition_names") or [])
+    bits = [TXT["lean_runs_n"].format(n=len(runs)) if len(runs) > 1 else
+            TXT["lean_runs_1"] if runs else TXT["lean_runs_0"]]
+    if holes:
+        bits.append(TXT["lean_holes_1"] if holes == 1 else TXT["lean_holes_n"].format(n=holes))
+    run_mark = '<span class="pr-ev pr-ev--run" aria-hidden="true"></span>' if runs else ""
+    return (f'<span class="pr-ev pr-ev--lean" aria-hidden="true"></span>{run_mark}'
+            f'<a href="../statements/{quote(sid)}.html"><code>{esc_t(sid)}</code></a> '
+            f'<span class="pr-lean__ev">({esc_t(", ".join(bits))})</span>')
 
 
 PAPER_SECONDS = int(os.environ.get("ATLAS_PAPER_SECONDS", "1800"))
