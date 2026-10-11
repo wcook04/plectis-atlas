@@ -3517,6 +3517,42 @@ def scope_draft_html(fid, doc, rec) -> str:
     return '<div class="scope">' + "".join(parts) + "</div>"
 
 
+_PAPER_MARKS = None
+
+
+def paper_marks():
+    """(manuscript id, file, line) -> what the backend records at that theorem, for the
+    paper reading pages' margin notes: {"lean": [{id, state, accepted, holes}],
+    "headline": [family ids whose catalogue claim names it as the candidate]}.
+    Every pairing is lean_pairing's reading of the backend's records."""
+    global _PAPER_MARKS
+    if _PAPER_MARKS is not None:
+        return _PAPER_MARKS
+    r = RD()
+    marks = defaultdict(lambda: {"lean": [], "headline": []})
+    for fid in r.family_ids():
+        doc = r.family(fid)
+        for rec in doc.get("lean") or []:
+            pinfo = lean_pairing(doc, rec["id"])
+            if pinfo["state"] not in PAIRED_STATES or not pinfo["target"]:
+                continue
+            m, st, _ = ms_statement(doc, pinfo["target"])
+            if not st:
+                continue
+            row = marks[(m["id"], st["file"], st["line"])]
+            if all(x["id"] != rec["id"] for x in row["lean"]):
+                row["lean"].append({"id": rec["id"], "state": pinfo["state"],
+                                    "accepted": len(rec.get("accepted_current_sources") or []),
+                                    "holes": len(rec["definition_holes"]) if isinstance(rec.get("definition_holes"), list) else None})
+        claim = doc.get("claim") or {}
+        if claim.get("state") == "candidate" and claim.get("primary_candidate"):
+            m, st, _ = ms_statement(doc, claim["primary_candidate"])
+            if st:
+                marks[(m["id"], st["file"], st["line"])]["headline"].append(fid)
+    _PAPER_MARKS = dict(marks)
+    return _PAPER_MARKS
+
+
 OG_DONE: dict = {}   # statement id -> (generic og block, per-statement og block)
 
 

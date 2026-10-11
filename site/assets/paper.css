@@ -59,13 +59,17 @@
 .pr-thm-n, .pr-thm-p { font-weight: 700; }
 .pr-thm--remark .pr-thm-n, .pr-thm--remark .pr-thm-p { font-weight: 400; font-style: italic; }
 .pr-thm-note { font-style: normal; }
-.pr-lean { margin: 0.6em 0 0; font-family: var(--sans); font-size: var(--fs-meta); font-style: normal; color: var(--muted); }
-.pr-lean__ev { color: var(--faint); }
-.pr-thm .pr-lean, .pr-thm .pr-lean * { font-style: normal; }
-/* Evidence marks in the Plectis inks: steel, stated in Lean; brick, re-run outside OpenAI. */
-.pr-ev { display: inline-block; width: 0.55em; height: 0.55em; border-radius: 50%; margin-right: 0.3em; vertical-align: 0.08em; }
-.pr-ev--lean { background: var(--steel-fill); }
-.pr-ev--run { background: var(--brick-fill); }
+/* What the backend records at a theorem, in words: the Lean statement paired with it
+   (a steel rule, dashed for a candidate pairing, solid for a cited link) and, at a
+   headline candidate, a quiet note. Never italic, even inside a plain theorem. */
+.pr-lean, .pr-head-note { margin: 0.7em 0 0; padding: 2px 0 2px 12px; font-family: var(--sans); font-size: var(--fs-meta); line-height: 1.5; font-style: normal; color: var(--ink-soft); max-width: 62ch; }
+.pr-lean { border-left: 2px dashed var(--steel); }
+.pr-lean--cited { border-left-style: solid; }
+.pr-lean__k { font-weight: 700; color: var(--steel-text); }
+.pr-lean code { font-family: var(--mono); font-size: 0.92em; }
+.pr-lean__ev { color: var(--muted); }
+.pr-head-note { border-left: 2px solid var(--rule-strong); color: var(--muted); }
+.pr-thm .pr-lean, .pr-thm .pr-lean *, .pr-thm .pr-head-note, .pr-thm .pr-head-note * { font-style: normal; }
 .pr-thm > p:last-child, .pr-proof > p:last-child { margin-bottom: 0; }
 
 /* Proofs */
