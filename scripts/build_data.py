@@ -674,8 +674,23 @@ def ref_record(key: str, fields: dict | None, raw: str):
         rec["arxiv"] = am.group(1)
     dm = DOI_RE.search((fields or {}).get("doi", "") or blob)
     if dm:
-        rec["doi"] = dm.group(1).rstrip(".")
+        rec["doi"] = clean_doi(dm.group(1))
     return rec
+
+
+def clean_doi(d: str) -> str:
+    """Drop sentence punctuation and unbalanced closing brackets from the end of a DOI.
+    Balanced brackets inside a DOI are legal and kept."""
+    while d:
+        if d[-1] in ".,;:":
+            d = d[:-1]
+        elif d[-1] == ")" and d.count(")") > d.count("("):
+            d = d[:-1]
+        elif d[-1] == "]" and d.count("]") > d.count("["):
+            d = d[:-1]
+        else:
+            break
+    return d
 
 
 def work_id(rec: dict) -> str:
@@ -683,9 +698,11 @@ def work_id(rec: dict) -> str:
         return "doi:" + rec["doi"].lower()
     if rec.get("arxiv"):
         return "arxiv:" + rec["arxiv"]
-    t = rec.get("title") or rec.get("text") or rec["key"]
-    t = re.sub(r"[^a-z0-9]+", " ", t.lower()).strip()
-    return "title:" + " ".join(t.split()[:12])
+    return "title:" + norm_title(rec.get("title") or rec.get("text") or rec["key"])
+
+
+def norm_title(t: str) -> str:
+    return " ".join(re.sub(r"[^a-z0-9]+", " ", (t or "").lower()).split())
 
 
 # ------------------------------------------------------------------- Lean
@@ -698,58 +715,97 @@ VOCAB_KINDS = {"def", "abbrev", "structure", "class", "inductive", "instance", "
                "notation", "infix", "infixl", "infixr", "prefix", "postfix", "macro", "syntax", "macro_rules"}
 
 
+def lean_mask_comments(text: str):
+    """Blank out Lean comments, keeping every line break so line numbers survive. Block comments
+    nest; a line comment runs to the end of its line. Docstrings (/-- ... -/) are returned as
+    {end_line: text} so the declaration that follows can claim them."""
+    out, docs = [], {}
+    i, n, depth, line = 0, len(text), 0, 1
+    doc_chars = None
+    while i < n:
+        if depth == 0 and text.startswith("--", i):
+            j = text.find("\n", i)
+            j = n if j < 0 else j
+            out.append(" " * (j - i))
+            i = j
+            continue
+        if text.startswith("/-", i):
+            if depth == 0:
+                doc_chars = [] if text.startswith("/--", i) and not text.startswith("/--/", i) else None
+                step = 3 if doc_chars is not None else 2
+            else:
+                step = 2
+            depth += 1
+            out.append(" " * step)
+            i += step
+            continue
+        if depth > 0 and text.startswith("-/", i):
+            depth -= 1
+            out.append("  ")
+            i += 2
+            if depth == 0 and doc_chars is not None:
+                docs[line] = norm_ws("".join(doc_chars))
+                doc_chars = None
+            continue
+        c = text[i]
+        if depth > 0:
+            if doc_chars is not None:
+                doc_chars.append(c)
+            out.append("\n" if c == "\n" else " ")
+        else:
+            out.append(c)
+        if c == "\n":
+            line += 1
+        i += 1
+    return "".join(out), docs
+
+
+ATTR_ONLY_RE = re.compile(r"^(?:@\[[^\]]*\]\s*)+$")
+
+
 def parse_challenge(lean_path: Path, json_path: Path):
     text = read(lean_path)
     cfg = json.loads(read(json_path)) if json_path.exists() else {}
-    imports = re.findall(r"^import\s+(\S+)", text, flags=re.M)
-    ns: list[str] = []
+    masked, docs = lean_mask_comments(text)
+    imports = [mod for line in re.findall(r"^import\s+(.+)$", masked, flags=re.M) for mod in line.split()]
+    scopes: list[tuple[str, str | None]] = []  # ("namespace", name) or ("section", name or None)
     decls = []
     doc_buf = None
-    in_block_comment = False
     content_lines = 0
-    lines = text.split("\n")
-    i = 0
-    while i < len(lines):
-        line = lines[i]
+    lines = masked.split("\n")
+    for i, line in enumerate(lines):
         st = line.strip()
-        if st.startswith("/--"):
-            buf = [line]
-            while "-/" not in lines[i] and i + 1 < len(lines):
-                i += 1
-                buf.append(lines[i])
-            doc = "\n".join(buf).strip()
-            doc = re.sub(r"^/--\s*", "", doc)
-            doc = re.sub(r"\s*-/\s*$", "", doc)
-            doc_buf = norm_ws(doc)
-            i += 1
-            continue
-        if st.startswith("/-"):
-            while "-/" not in lines[i] and i + 1 < len(lines):
-                i += 1
-            i += 1
-            continue
-        if not st or st.startswith("--"):
-            i += 1
+        if (i + 1) in docs:
+            doc_buf = docs[i + 1]
+        if not st:
             continue
         m = re.match(r"^namespace\s+(\S+)", st)
         if m:
-            ns.append(m.group(1))
-            i += 1
+            scopes.append(("namespace", m.group(1)))
             continue
-        m = re.match(r"^end\s+(\S+)", st)
-        if m and ns and ns[-1] == m.group(1):
-            ns.pop()
-            i += 1
+        m = re.match(r"^(?:@\[[^\]]*\]\s*)*(?:(?:public|private|noncomputable)\s+)*section(?:\s+(\S+))?\s*$", st)
+        if m:
+            scopes.append(("section", m.group(1)))
             continue
-        if not (st.startswith("import ") or st.startswith("open ") or st.startswith("set_option") or st.startswith("universe") or st.startswith("variable") or st.startswith("section") or st == "end"):
+        if st == "mutual":
+            scopes.append(("mutual", None))
+            continue
+        m = re.match(r"^end(?:\s+(\S+))?\s*$", st)
+        if m:
+            if scopes and (m.group(1) is None or scopes[-1][1] == m.group(1)):
+                scopes.pop()
+            continue
+        if not (st.startswith("import ") or st.startswith("open ") or st.startswith("set_option") or st.startswith("universe") or st.startswith("variable")):
             content_lines += 1
+        if ATTR_ONLY_RE.match(st):
+            continue  # an attribute line between a docstring and its declaration keeps the docstring
         m = DECL_RE.match(st)
         if m:
             kind, name = m.group(1), m.group(2)
+            ns = [nm for k, nm in scopes if k == "namespace" and nm]
             full = ".".join(ns + [name]) if name and kind not in ("notation", "infix", "infixl", "infixr", "prefix", "postfix", "macro", "syntax", "macro_rules") else name
             decls.append({"kind": kind, "name": full, "line": i + 1, "doc": doc_buf})
         doc_buf = None
-        i += 1
     vocab = [d for d in decls if d["kind"] in VOCAB_KINDS]
     non_mathlib = [x for x in imports if not (x == "Mathlib" or x.startswith("Mathlib."))]
     theorems = [d for d in decls if d["kind"] in ("theorem", "lemma")]
@@ -1140,6 +1196,34 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         if fid in fam_by_id:
             fam_by_id[fid]["reasoning_summary"] = {"title": title, "url": base_blob + path}
 
+    # Reconcile automatic reference identities: a title-only record whose full normalised title equals
+    # the title of exactly one DOI or arXiv record (with the same year when both give one) joins that
+    # record. Merged keys stay listed as aliases, so each merge can be audited.
+    by_title = defaultdict(list)
+    for wid, w in works.items():
+        if not wid.startswith("title:") and w["record"].get("title"):
+            by_title[norm_title(w["record"]["title"])].append(wid)
+    remap = {}
+    for wid, w in list(works.items()):
+        cands = by_title.get(wid[len("title:"):], []) if wid.startswith("title:") else []
+        if len(cands) != 1:
+            continue
+        target = works[cands[0]]
+        y1, y2 = w["record"].get("year"), target["record"].get("year")
+        if y1 and y2 and y1 != y2:
+            continue
+        for c in w["cited_by"]:
+            if c not in target["cited_by"]:
+                target["cited_by"].append(c)
+        target.setdefault("aliases", []).append(wid)
+        remap[wid] = cands[0]
+        del works[wid]
+    for m in manuscripts.values():
+        for ref in m.get("references") or []:
+            if ref.get("work") in remap:
+                ref["work"] = remap[ref["work"]]
+    log(f"reference identities reconciled by exact title: {len(remap)}")
+
     # ---- summary
     cur = [m for m in manuscripts.values() if m["status"] == "current"]
     stmt_counts = Counter()
@@ -1160,7 +1244,8 @@ def build(upstream: Path, out: Path, quiet: bool = False):
     cur_with_internal = [m for m in cur if m["rests_on"]]
     cur_on_withdrawn = [m for m in cur if any(r["status"] == "withdrawn" for r in m["rests_on"])]
     cur_on_unformal = [m for m in cur if any(not r["has_lean"] for r in m["rests_on"])]
-    distinct_works = {w for w in works}
+    current_ids = {m["id"] for m in cur}
+    distinct_works = {wid for wid, w in works.items() if any(c in current_ids for c in w["cited_by"])}
     summary = {
         "upstream": {"repository": "https://github.com/openai/math", "commit": commit, "commit_date": commit_date,
                       "formalization_yaml_review_status": review_status, "formalization_yaml_sections": fy_top},
@@ -1203,7 +1288,7 @@ def build(upstream: Path, out: Path, quiet: bool = False):
             "lean_vocabulary": "Local vocabulary declarations detected by a textual scan of a Comparator challenge file: definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms. Theorem and lemma declarations, including the target theorem, are excluded. A proof that Comparator accepts proves the statement as phrased in this vocabulary, so each item is something a reader checks means what the paper means.",
             "manuscripts_with_lean": "Current manuscripts listed as accompanying papers in a family's Lean scope note (lean/docs/NNN.md) that links at least one Comparator statement.",
             "internal_citation_edges": "Bibliography entries in a manuscript's TeX sources that point to another manuscript in the collection (an openai/math preprint link or an OAI: key), counted once per citing and cited manuscript.",
-            "external_works_cited": "References outside the collection grouped automatically by DOI, then arXiv id, then the first twelve words of the normalised title. Distinct works with similar titles can merge, and one work cited by DOI in one paper and by title in another can split, so this is an automatic grouping and has not been audited.",
+            "external_works_cited": "References outside the collection grouped automatically by DOI, then arXiv id, then full normalised title; a title-only reference joins the one DOI or arXiv record with the same full title (and year, when both give one), keeping the merged keys as aliases in works.json. No person has audited the grouping, so a work can still be split or merged by mistake.",
             "external_citations": "Resolved bibliography keys in current manuscripts' TeX sources that point outside the collection, each manuscript and key counted once.",
         },
     }
@@ -1213,10 +1298,12 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         if r.get("title"):
             return {"authors": r.get("authors"), "title": r["title"], "year": r.get("year")}
         return {"text": (r.get("text") or "")[:200], "year": r.get("year")}
-    ranked_works = sorted(works.values(), key=lambda w: (-len(w["cited_by"]), w["id"]))
+    def current_citers(w):
+        return [c for c in w["cited_by"] if c in current_ids]
+    ranked_works = sorted((w for w in works.values() if current_citers(w)), key=lambda w: (-len(current_citers(w)), w["id"]))
     summary["highlights"] = {
         "most_cited_outside_works": [
-            dict(work_label(w), id=w["id"], citing_manuscripts=len(w["cited_by"])) for w in ranked_works[:25]
+            dict(work_label(w), id=w["id"], citing_manuscripts=len(current_citers(w))) for w in ranked_works[:25]
         ],
         "most_cited_inside_collection": [
             {"manuscript": m["id"], "title": m["title"], "family": m["family"],
@@ -1400,7 +1487,7 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         receipt("external_citations", summary["external_citations"], "resolved external reference keys", f"{pin}, current manuscripts' bibliographies",
                 "Bibliography keys resolved to a reference outside the collection, each manuscript and key counted once."),
         receipt("external_works_cited", summary["external_works_cited"], "automatically grouped references", f"{pin}, current manuscripts' bibliographies",
-                "References grouped by DOI, then arXiv id, then the first twelve words of the title. Unaudited: similar titles can merge and one work can split."),
+                "References grouped by DOI, then arXiv id, then full title, with exact-title matches joined to their DOI or arXiv record and kept as aliases. Unaudited."),
     ]
     if sc and not sc.get("stale"):
         summary["metric_receipts"].append(receipt(

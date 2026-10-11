@@ -216,7 +216,7 @@
   ],
   "vocabulary_count": 11,
   "declares_axiom": false,
-  "statement_lines": 52,
+  "statement_lines": 51,
   "comparator": {
    "theorem_names": [
     "OAI.AffineBernstein.affine_bernstein"
@@ -977,7 +977,7 @@
   ],
   "vocabulary_count": 22,
   "declares_axiom": false,
-  "statement_lines": 78,
+  "statement_lines": 77,
   "comparator": {
    "theorem_names": [
     "OAI.GAD.main"
@@ -1254,7 +1254,7 @@
   ],
   "vocabulary_count": 19,
   "declares_axiom": false,
-  "statement_lines": 75,
+  "statement_lines": 74,
   "comparator": {
    "theorem_names": [
     "OAI.ArnoldCounterexample.main"
@@ -2616,7 +2616,7 @@
   ],
   "vocabulary_count": 68,
   "declares_axiom": false,
-  "statement_lines": 148,
+  "statement_lines": 147,
   "comparator": {
    "theorem_names": [
     "OAI.AtomicTriangular.sharp_gaussian_minorants_atomic"
@@ -2734,7 +2734,7 @@
   ],
   "vocabulary_count": 6,
   "declares_axiom": false,
-  "statement_lines": 50,
+  "statement_lines": 49,
   "comparator": {
    "theorem_names": [
     "OAI.ArExplicit.Statement.main"
@@ -2837,7 +2837,7 @@
   ],
   "vocabulary_count": 4,
   "declares_axiom": false,
-  "statement_lines": 19,
+  "statement_lines": 18,
   "comparator": {
    "theorem_names": [
     "OAI.BackwardIntertwiners.direct_algebra_corollary"
@@ -3915,7 +3915,7 @@
   ],
   "vocabulary_count": 51,
   "declares_axiom": false,
-  "statement_lines": 173,
+  "statement_lines": 172,
   "comparator": {
    "theorem_names": [
     "OAI.BalancedTransport.balanced_three_stack_realization"
@@ -4679,7 +4679,7 @@
   ],
   "vocabulary_count": 18,
   "declares_axiom": false,
-  "statement_lines": 197,
+  "statement_lines": 194,
   "comparator": {
    "theorem_names": [
     "OAI.TorsionFreeBass.torsion_free_corollary"
@@ -5079,7 +5079,7 @@
   ],
   "vocabulary_count": 31,
   "declares_axiom": false,
-  "statement_lines": 388,
+  "statement_lines": 387,
   "comparator": {
    "theorem_names": [
     "OAI.BassTrace.RightProjective.bassTraceModules_vanishing_and_support"
@@ -5812,7 +5812,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 46,
+  "statement_lines": 45,
   "comparator": {
    "theorem_names": [
     "OAI.Bernoulli.nonflat_in_seven"
@@ -6020,7 +6020,7 @@
   ],
   "vocabulary_count": 13,
   "declares_axiom": false,
-  "statement_lines": 71,
+  "statement_lines": 68,
   "comparator": {
    "theorem_names": [
     "OAI.WeakMTWTransport.uniform_biHolder_transport"
@@ -6869,7 +6869,7 @@
   ],
   "vocabulary_count": 68,
   "declares_axiom": false,
-  "statement_lines": 230,
+  "statement_lines": 229,
   "comparator": {
    "theorem_names": [
     "OAI.BinPackingGap.main_results"
@@ -7503,7 +7503,7 @@
   ],
   "vocabulary_count": 18,
   "declares_axiom": false,
-  "statement_lines": 60,
+  "statement_lines": 58,
   "comparator": {
    "theorem_names": [
     "OAI.binary_sweep_contraction_and_mixing"
@@ -7699,7 +7699,7 @@
   ],
   "vocabulary_count": 11,
   "declares_axiom": false,
-  "statement_lines": 36,
+  "statement_lines": 35,
   "comparator": {
    "theorem_names": [
     "OAI.Zarankiewicz.mainTarget_proof"
@@ -8036,7 +8036,7 @@
   ],
   "vocabulary_count": 24,
   "declares_axiom": false,
-  "statement_lines": 93,
+  "statement_lines": 92,
   "comparator": {
    "theorem_names": [
     "OAI.BogomolovPop.main_graph_injective"
@@ -8515,7 +8515,7 @@
   ],
   "vocabulary_count": 38,
   "declares_axiom": false,
-  "statement_lines": 144,
+  "statement_lines": 143,
   "comparator": {
    "theorem_names": [
     "OAI.BoltzmannNonuniqueness.nonuniqueness"
@@ -8919,7 +8919,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 60,
+  "statement_lines": 59,
   "comparator": {
    "theorem_names": [
     "OAI.BoundedRecovery.bounded_recovery"
@@ -9274,7 +9274,7 @@
   ],
   "vocabulary_count": 27,
   "declares_axiom": false,
-  "statement_lines": 298,
+  "statement_lines": 295,
   "comparator": {
    "theorem_names": [
     "OAI.BoundedTreePotentials.TreeCalculus.main_counterexample"
@@ -9396,7 +9396,7 @@
   ],
   "vocabulary_count": 5,
   "declares_axiom": false,
-  "statement_lines": 26,
+  "statement_lines": 25,
   "comparator": {
    "theorem_names": [
     "OAI.BoundedTreewidthL1.main_theorem"
@@ -9594,7 +9594,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 79,
+  "statement_lines": 78,
   "comparator": {
    "theorem_names": [
     "OAI.Problem358.one_third_stability",
@@ -9747,7 +9747,7 @@
   ],
   "vocabulary_count": 8,
   "declares_axiom": false,
-  "statement_lines": 32,
+  "statement_lines": 31,
   "comparator": {
    "theorem_names": [
     "OAI.Brennan.main_theorem"
@@ -9894,7 +9894,7 @@
   ],
   "vocabulary_count": 8,
   "declares_axiom": false,
-  "statement_lines": 19,
+  "statement_lines": 18,
   "comparator": {
    "theorem_names": [
     "OAI.Brennan.Sharp.sharp_endpoints"
@@ -10436,7 +10436,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 46,
+  "statement_lines": 45,
   "comparator": {
    "theorem_names": [
     "OAI.Problem340.exists_C1_entropy_counterexample"
@@ -10641,7 +10641,7 @@
   ],
   "vocabulary_count": 14,
   "declares_axiom": false,
-  "statement_lines": 64,
+  "statement_lines": 63,
   "comparator": {
    "theorem_names": [
     "OAI.CHObstruction.main"
@@ -14116,7 +14116,7 @@
   ],
   "vocabulary_count": 310,
   "declares_axiom": false,
-  "statement_lines": 1993,
+  "statement_lines": 1857,
   "comparator": {
    "theorem_names": [
     "OAI.CKSSourceExterior.area_controlled_end_replacement",
@@ -14350,7 +14350,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 65,
+  "statement_lines": 64,
   "comparator": {
    "theorem_names": [
     "OAI.CannonRelease.cannon"
@@ -14416,7 +14416,7 @@
   ],
   "vocabulary_count": 1,
   "declares_axiom": false,
-  "statement_lines": 19,
+  "statement_lines": 17,
   "comparator": {
    "theorem_names": [
     "OAI.CartierSections.isCompact_closedChartFieldRetraction_cone"
@@ -16368,7 +16368,7 @@
   ],
   "vocabulary_count": 146,
   "declares_axiom": false,
-  "statement_lines": 1805,
+  "statement_lines": 1804,
   "comparator": {
    "theorem_names": [
     "OAI.KirchbergRordam.character_criterion"
@@ -16427,7 +16427,7 @@
   "vocabulary": [],
   "vocabulary_count": 0,
   "declares_axiom": false,
-  "statement_lines": 10,
+  "statement_lines": 9,
   "comparator": {
    "theorem_names": [
     "OAI.IntegralCharacterVarieties.SurfacePresentation.Diagram.producedMarkedValues_allSeams"
@@ -17398,7 +17398,7 @@
   ],
   "vocabulary_count": 83,
   "declares_axiom": false,
-  "statement_lines": 338,
+  "statement_lines": 337,
   "comparator": {
    "theorem_names": [
     "OAI.CPTSeparation.main"
@@ -17702,7 +17702,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 34,
+  "statement_lines": 33,
   "comparator": {
    "theorem_names": [
     "OAI.ClassicalON.main"
@@ -20205,7 +20205,7 @@
   ],
   "vocabulary_count": 216,
   "declares_axiom": false,
-  "statement_lines": 4550,
+  "statement_lines": 4469,
   "comparator": {
    "theorem_names": [
     "OAI.CoarseAssembly.bounded_geometry_graph_counterexample_unconditional"
@@ -20433,7 +20433,7 @@
   ],
   "vocabulary_count": 15,
   "declares_axiom": false,
-  "statement_lines": 47,
+  "statement_lines": 46,
   "comparator": {
    "theorem_names": [
     "OAI.CoboundaryExpanders.main"
@@ -20899,7 +20899,7 @@
   ],
   "vocabulary_count": 17,
   "declares_axiom": false,
-  "statement_lines": 40,
+  "statement_lines": 39,
   "comparator": {
    "theorem_names": [
     "OAI.AbhyankarSathaye.CommutingDerivations.commuting_derivations_with_ordinary_extras"
@@ -21174,7 +21174,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 56,
+  "statement_lines": 55,
   "comparator": {
    "theorem_names": [
     "OAI.Paper170.complete_graph_crossing_number"
@@ -21288,7 +21288,7 @@
   ],
   "vocabulary_count": 5,
   "declares_axiom": false,
-  "statement_lines": 21,
+  "statement_lines": 20,
   "comparator": {
    "theorem_names": [
     "OAI.CompleteCrouzeix.main"
@@ -21457,7 +21457,7 @@
   ],
   "vocabulary_count": 10,
   "declares_axiom": false,
-  "statement_lines": 16,
+  "statement_lines": 15,
   "comparator": {
    "theorem_names": [
     "OAI.ComplexCancellation.main"
@@ -21768,7 +21768,7 @@
   ],
   "vocabulary_count": 23,
   "declares_axiom": false,
-  "statement_lines": 53,
+  "statement_lines": 52,
   "comparator": {
    "theorem_names": [
     "OAI.ScalarConductivity.main_nonuniqueness"
@@ -22024,7 +22024,7 @@
   ],
   "vocabulary_count": 18,
   "declares_axiom": false,
-  "statement_lines": 80,
+  "statement_lines": 79,
   "comparator": {
    "theorem_names": [
     "OAI.ThreeManifold.main_theorem"
@@ -22648,7 +22648,7 @@
   ],
   "vocabulary_count": 10,
   "declares_axiom": false,
-  "statement_lines": 35,
+  "statement_lines": 34,
   "comparator": {
    "theorem_names": [
     "OAI.ContinuousCircleWeight.main_theorem"
@@ -23760,7 +23760,7 @@
   ],
   "vocabulary_count": 90,
   "declares_axiom": false,
-  "statement_lines": 417,
+  "statement_lines": 416,
   "comparator": {
    "theorem_names": [
     "OAI.ContinuumCoulomb.unit_coulomb_qmaHard",
@@ -24660,7 +24660,7 @@
   ],
   "vocabulary_count": 59,
   "declares_axiom": false,
-  "statement_lines": 191,
+  "statement_lines": 190,
   "comparator": {
    "theorem_names": [
     "OAI.CoordinateSweeps.conditional_main",
@@ -25590,7 +25590,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 28,
+  "statement_lines": 27,
   "comparator": {
    "theorem_names": [
     "OAI.Cotype.mainTarget_proved"
@@ -25857,7 +25857,7 @@
   ],
   "vocabulary_count": 19,
   "declares_axiom": false,
-  "statement_lines": 67,
+  "statement_lines": 66,
   "comparator": {
    "theorem_names": [
     "OAI.Problem356.coulomb_counterexample_and_equal_infima"
@@ -26117,7 +26117,7 @@
   ],
   "vocabulary_count": 19,
   "declares_axiom": false,
-  "statement_lines": 67,
+  "statement_lines": 66,
   "comparator": {
    "theorem_names": [
     "OAI.CoulombAtom.generalized_ionization"
@@ -26396,7 +26396,7 @@
   ],
   "vocabulary_count": 20,
   "declares_axiom": false,
-  "statement_lines": 58,
+  "statement_lines": 57,
   "comparator": {
    "theorem_names": [
     "OAI.NeutralAtom.generalized_outer_radii"
@@ -26624,7 +26624,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 39,
+  "statement_lines": 38,
   "comparator": {
    "theorem_names": [
     "OAI.LeanBlast.CourtadeKumar.courtadeKumarAndAttainment"
@@ -27484,7 +27484,7 @@
   ],
   "vocabulary_count": 28,
   "declares_axiom": false,
-  "statement_lines": 85,
+  "statement_lines": 84,
   "comparator": {
    "theorem_names": [
     "OAI.CriticalSK.realized_equilibrium_initial_states",
@@ -27756,7 +27756,7 @@
   ],
   "vocabulary_count": 19,
   "declares_axiom": false,
-  "statement_lines": 46,
+  "statement_lines": 45,
   "comparator": {
    "theorem_names": [
     "OAI.CriticalSK.critical_mixing_bounds"
@@ -28059,7 +28059,7 @@
   ],
   "vocabulary_count": 22,
   "declares_axiom": false,
-  "statement_lines": 46,
+  "statement_lines": 45,
   "comparator": {
    "theorem_names": [
     "OAI.CriticalStrip.critical_strip_mass"
@@ -28645,7 +28645,7 @@
   ],
   "vocabulary_count": 24,
   "declares_axiom": false,
-  "statement_lines": 107,
+  "statement_lines": 106,
   "comparator": {
    "theorem_names": [
     "OAI.CrouzeixHilbert.hilbert"
@@ -28913,7 +28913,7 @@
   ],
   "vocabulary_count": 18,
   "declares_axiom": false,
-  "statement_lines": 48,
+  "statement_lines": 47,
   "comparator": {
    "theorem_names": [
     "OAI.CubicTorus.unit_cubic_isoperimetric"
@@ -29070,7 +29070,7 @@
   ],
   "vocabulary_count": 3,
   "declares_axiom": false,
-  "statement_lines": 15,
+  "statement_lines": 14,
   "comparator": {
    "theorem_names": [
     "OAI.ErdosGallai.erdos_gallai"
@@ -30316,7 +30316,7 @@
   ],
   "vocabulary_count": 108,
   "declares_axiom": false,
-  "statement_lines": 339,
+  "statement_lines": 327,
   "comparator": {
    "theorem_names": [
     "OAI.CylinderCovering.fourPaperMain"
@@ -30550,7 +30550,7 @@
   ],
   "vocabulary_count": 14,
   "declares_axiom": false,
-  "statement_lines": 62,
+  "statement_lines": 61,
   "comparator": {
    "theorem_names": [
     "OAI.ExactModuli.exact_main",
@@ -31041,7 +31041,7 @@
   ],
   "vocabulary_count": 37,
   "declares_axiom": false,
-  "statement_lines": 217,
+  "statement_lines": 216,
   "comparator": {
    "theorem_names": [
     "OAI.DefocusingNLS.stable_blowup",
@@ -31662,7 +31662,7 @@
   ],
   "vocabulary_count": 38,
   "declares_axiom": false,
-  "statement_lines": 158,
+  "statement_lines": 157,
   "comparator": {
    "theorem_names": [
     "OAI.DeligneDrinfeld.main"
@@ -31885,7 +31885,7 @@
   ],
   "vocabulary_count": 15,
   "declares_axiom": false,
-  "statement_lines": 105,
+  "statement_lines": 104,
   "comparator": {
    "theorem_names": [
     "OAI.Problem335.main"
@@ -32682,7 +32682,7 @@
   ],
   "vocabulary_count": 37,
   "declares_axiom": false,
-  "statement_lines": 225,
+  "statement_lines": 224,
   "comparator": {
    "theorem_names": [
     "OAI.DiamondDistortion.headline_all_pairs"
@@ -33164,7 +33164,7 @@
   ],
   "vocabulary_count": 9,
   "declares_axiom": false,
-  "statement_lines": 25,
+  "statement_lines": 24,
   "comparator": {
    "theorem_names": [
     "OAI.DimensionTen.exists_channel_fin21"
@@ -33490,7 +33490,7 @@
   ],
   "vocabulary_count": 25,
   "declares_axiom": false,
-  "statement_lines": 87,
+  "statement_lines": 86,
   "comparator": {
    "theorem_names": [
     "OAI.DimensionTen.main_pair"
@@ -33603,7 +33603,7 @@
   ],
   "vocabulary_count": 5,
   "declares_axiom": false,
-  "statement_lines": 23,
+  "statement_lines": 22,
   "comparator": {
    "theorem_names": [
     "OAI.DirectCrouzeix.complete_crouzeix",
@@ -34700,7 +34700,7 @@
   ],
   "vocabulary_count": 19,
   "declares_axiom": false,
-  "statement_lines": 119,
+  "statement_lines": 118,
   "comparator": {
    "theorem_names": [
     "OAI.DiscreteFree.source_endpoints"
@@ -34860,7 +34860,7 @@
   ],
   "vocabulary_count": 9,
   "declares_axiom": false,
-  "statement_lines": 28,
+  "statement_lines": 27,
   "comparator": {
    "theorem_names": [
     "OAI.CenteredDiskEndpoint.main_endpoint"
@@ -34973,7 +34973,7 @@
   ],
   "vocabulary_count": 5,
   "declares_axiom": false,
-  "statement_lines": 25,
+  "statement_lines": 24,
   "comparator": {
    "theorem_names": [
     "OAI.Dixmier.main_theorem_all_universes"
@@ -35081,7 +35081,7 @@
   ],
   "vocabulary_count": 5,
   "declares_axiom": false,
-  "statement_lines": 29,
+  "statement_lines": 28,
   "comparator": {
    "theorem_names": [
     "OAI.Dixmier.current_main_theorem"
@@ -35638,7 +35638,7 @@
   ],
   "vocabulary_count": 32,
   "declares_axiom": false,
-  "statement_lines": 165,
+  "statement_lines": 164,
   "comparator": {
    "theorem_names": [
     "OAI.DukePrimeDegree.prime_degree_packet_measure_equidistribution_unconditional",
@@ -35800,7 +35800,7 @@
   ],
   "vocabulary_count": 10,
   "declares_axiom": false,
-  "statement_lines": 41,
+  "statement_lines": 39,
   "comparator": {
    "theorem_names": [
     "OAI.Lech.dutta_domain"
@@ -35862,7 +35862,7 @@
   ],
   "vocabulary_count": 1,
   "declares_axiom": false,
-  "statement_lines": 10,
+  "statement_lines": 9,
   "comparator": {
    "theorem_names": [
     "OAI.Problem310.dyadic_affine_avoidance"
@@ -49667,7 +49667,7 @@
   ],
   "vocabulary_count": 11,
   "declares_axiom": false,
-  "statement_lines": 90,
+  "statement_lines": 89,
   "comparator": {
    "theorem_names": [
     "OAI.Problem337.egyptian_length_is_minimum",
@@ -50023,7 +50023,7 @@
   ],
   "vocabulary_count": 25,
   "declares_axiom": false,
-  "statement_lines": 83,
+  "statement_lines": 82,
   "comparator": {
    "theorem_names": [
     "OAI.EilenbergGanea.source_main"
@@ -50446,7 +50446,7 @@
   ],
   "vocabulary_count": 32,
   "declares_axiom": false,
-  "statement_lines": 131,
+  "statement_lines": 128,
   "comparator": {
    "theorem_names": [
     "OAI.PositiveEinsteinFour.orientedClassification",
@@ -50752,7 +50752,7 @@
   ],
   "vocabulary_count": 23,
   "declares_axiom": false,
-  "statement_lines": 65,
+  "statement_lines": 64,
   "comparator": {
    "theorem_names": [
     "OAI.Elasticity.global_uniqueness"
@@ -51088,7 +51088,7 @@
   ],
   "vocabulary_count": 10,
   "declares_axiom": false,
-  "statement_lines": 56,
+  "statement_lines": 55,
   "comparator": {
    "theorem_names": [
     "OAI.ThresholdParallelRepetition.threshold_parallel_repetition"
@@ -51350,7 +51350,7 @@
   ],
   "vocabulary_count": 17,
   "declares_axiom": false,
-  "statement_lines": 51,
+  "statement_lines": 50,
   "comparator": {
    "theorem_names": [
     "OAI.EntropyPhotonNumber.entropy_photon_number_inequality"
@@ -51666,7 +51666,7 @@
   ],
   "vocabulary_count": 10,
   "declares_axiom": false,
-  "statement_lines": 30,
+  "statement_lines": 29,
   "comparator": {
    "theorem_names": [
     "OAI.EuclideanRamsey.classification"
@@ -51759,7 +51759,7 @@
   ],
   "vocabulary_count": 3,
   "declares_axiom": false,
-  "statement_lines": 12,
+  "statement_lines": 11,
   "comparator": {
    "theorem_names": [
     "OAI.EuclideanRamsey.CircleConsequence.at_most_five_circle_points_ramsey"
@@ -51856,7 +51856,7 @@
   ],
   "vocabulary_count": 4,
   "declares_axiom": false,
-  "statement_lines": 17,
+  "statement_lines": 16,
   "comparator": {
    "theorem_names": [
     "OAI.EuclideanRamsey.NineStatement.nine_circle_configuration"
@@ -51984,7 +51984,7 @@
   ],
   "vocabulary_count": 7,
   "declares_axiom": false,
-  "statement_lines": 24,
+  "statement_lines": 23,
   "comparator": {
    "theorem_names": [
     "OAI.EuclideanRamsey.spherical_quadraticIndependent_ramsey_all"
@@ -52068,7 +52068,7 @@
   ],
   "vocabulary_count": 3,
   "declares_axiom": false,
-  "statement_lines": 12,
+  "statement_lines": 11,
   "comparator": {
    "theorem_names": [
     "OAI.EuclideanRamsey.ramsey_cospherical"
@@ -52735,7 +52735,7 @@
   ],
   "vocabulary_count": 23,
   "declares_axiom": false,
-  "statement_lines": 120,
+  "statement_lines": 116,
   "comparator": {
    "theorem_names": [
     "OAI.WeakPureInfiniteness.exact_weaklyPurelyInfinite_individuallyProperlyInfinite_any",
@@ -53541,7 +53541,7 @@
   ],
   "vocabulary_count": 34,
   "declares_axiom": false,
-  "statement_lines": 117,
+  "statement_lines": 116,
   "comparator": {
    "theorem_names": [
     "OAI.FKCRT.finite_fk_maps_converge_to_brownian_crt"
@@ -53649,7 +53649,7 @@
   ],
   "vocabulary_count": 5,
   "declares_axiom": false,
-  "statement_lines": 24,
+  "statement_lines": 23,
   "comparator": {
    "theorem_names": [
     "OAI.Generator.single_generation_of_II1_separable_predual"
@@ -54012,7 +54012,7 @@
   ],
   "vocabulary_count": 23,
   "declares_axiom": false,
-  "statement_lines": 84,
+  "statement_lines": 83,
   "comparator": {
    "theorem_names": [
     "OAI.SharpIntegralFillings.coefficient_optimal"
@@ -54953,7 +54953,7 @@
   ],
   "vocabulary_count": 19,
   "declares_axiom": false,
-  "statement_lines": 86,
+  "statement_lines": 85,
   "comparator": {
    "theorem_names": [
     "OAI.FiniteEntropySeparation.main"
@@ -55150,7 +55150,7 @@
   ],
   "vocabulary_count": 3,
   "declares_axiom": false,
-  "statement_lines": 22,
+  "statement_lines": 21,
   "comparator": {
    "theorem_names": [
     "OAI.LittleFinitistic.extreme_left_right_asymmetry"
@@ -55899,7 +55899,7 @@
   ],
   "vocabulary_count": 50,
   "declares_axiom": false,
-  "statement_lines": 171,
+  "statement_lines": 170,
   "comparator": {
    "theorem_names": [
     "OAI.BalancedTransport.balanced_three_stack_realization"
@@ -56454,7 +56454,7 @@
   ],
   "vocabulary_count": 43,
   "declares_axiom": false,
-  "statement_lines": 328,
+  "statement_lines": 324,
   "comparator": {
    "theorem_names": [
     "OAI.ForestSpace.main_theorem"
@@ -56747,7 +56747,7 @@
   ],
   "vocabulary_count": 6,
   "declares_axiom": false,
-  "statement_lines": 28,
+  "statement_lines": 27,
   "comparator": {
    "theorem_names": [
     "OAI.Problem346.canonical_foulkes_howe_surjective"
@@ -56904,7 +56904,7 @@
   ],
   "vocabulary_count": 9,
   "declares_axiom": false,
-  "statement_lines": 22,
+  "statement_lines": 21,
   "comparator": {
    "theorem_names": [
     "OAI.FourRow.robust_permanent"
@@ -57225,7 +57225,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 62,
+  "statement_lines": 61,
   "comparator": {
    "theorem_names": [
     "OAI.Problem367.free_ising_factor_iff_threshold"
@@ -57569,7 +57569,7 @@
   ],
   "vocabulary_count": 26,
   "declares_axiom": false,
-  "statement_lines": 107,
+  "statement_lines": 106,
   "comparator": {
    "theorem_names": [
     "OAI.Problem336.fusf_is_factor_iid"
@@ -60198,7 +60198,7 @@
   ],
   "vocabulary_count": 64,
   "declares_axiom": false,
-  "statement_lines": 429,
+  "statement_lines": 428,
   "comparator": {
    "theorem_names": [
     "OAI.CurrentProjection.mixedMomentMain",
@@ -60313,7 +60313,7 @@
   ],
   "vocabulary_count": 3,
   "declares_axiom": false,
-  "statement_lines": 16,
+  "statement_lines": 15,
   "comparator": {
    "theorem_names": [
     "OAI.GeneralMahler.general_mahler"
@@ -60769,7 +60769,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 30,
+  "statement_lines": 28,
   "comparator": {
    "theorem_names": [
     "OAI.GrahamSpherical.full_main"
@@ -61806,7 +61806,7 @@
   ],
   "vocabulary_count": 7,
   "declares_axiom": false,
-  "statement_lines": 30,
+  "statement_lines": 29,
   "comparator": {
    "theorem_names": [
     "OAI.GroupRingDeterminant.main"
@@ -62597,7 +62597,7 @@
   ],
   "vocabulary_count": 31,
   "declares_axiom": false,
-  "statement_lines": 302,
+  "statement_lines": 301,
   "comparator": {
    "theorem_names": [
     "OAI.HardSphere.condensation_with_mixed"
@@ -63076,7 +63076,7 @@
   ],
   "vocabulary_count": 19,
   "declares_axiom": true,
-  "statement_lines": 59,
+  "statement_lines": 58,
   "comparator": {
    "theorem_names": [
     "OAI.HarmonicCounterexample.main"
@@ -63450,7 +63450,7 @@
   ],
   "vocabulary_count": 23,
   "declares_axiom": false,
-  "statement_lines": 186,
+  "statement_lines": 185,
   "comparator": {
    "theorem_names": [
     "OAI.SevenEighths.HeckeFamily.LFunction_ne_zero_of_seven_eighths_lt_re"
@@ -63648,7 +63648,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 41,
+  "statement_lines": 40,
   "comparator": {
    "theorem_names": [
     "OAI.Problem355.heilbronn_power_lower_bound",
@@ -64041,7 +64041,7 @@
   ],
   "vocabulary_count": 31,
   "declares_axiom": false,
-  "statement_lines": 170,
+  "statement_lines": 169,
   "comparator": {
    "theorem_names": [
     "OAI.Heisenberg.spontaneous_magnetization"
@@ -64490,7 +64490,7 @@
   ],
   "vocabulary_count": 26,
   "declares_axiom": false,
-  "statement_lines": 94,
+  "statement_lines": 92,
   "comparator": {
    "theorem_names": [
     "OAI.HilbertCrouzeix.numericalClosure_geometry",
@@ -65142,7 +65142,7 @@
   ],
   "vocabulary_count": 15,
   "declares_axiom": false,
-  "statement_lines": 40,
+  "statement_lines": 39,
   "comparator": {
    "theorem_names": [
     "OAI.HoneycombForce.logPartition_tendsto"
@@ -65284,7 +65284,7 @@
   ],
   "vocabulary_count": 8,
   "declares_axiom": false,
-  "statement_lines": 35,
+  "statement_lines": 34,
   "comparator": {
    "theorem_names": [
     "OAI.StrictHotSpots.main_theorem"
@@ -65500,7 +65500,7 @@
   ],
   "vocabulary_count": 15,
   "declares_axiom": false,
-  "statement_lines": 49,
+  "statement_lines": 48,
   "comparator": {
    "theorem_names": [
     "OAI.Paper256.main_result"
@@ -65821,7 +65821,7 @@
   ],
   "vocabulary_count": 23,
   "declares_axiom": false,
-  "statement_lines": 88,
+  "statement_lines": 87,
   "comparator": {
    "theorem_names": [
     "OAI.HyperbolicObstruction.main"
@@ -66200,7 +66200,7 @@
   ],
   "vocabulary_count": 17,
   "declares_axiom": false,
-  "statement_lines": 67,
+  "statement_lines": 66,
   "comparator": {
    "theorem_names": [
     "OAI.IndependentProducts.main_general",
@@ -66443,7 +66443,7 @@
   ],
   "vocabulary_count": 15,
   "declares_axiom": false,
-  "statement_lines": 51,
+  "statement_lines": 50,
   "comparator": {
    "theorem_names": [
     "OAI.LargeIndependentSets.mainTheoremReal"
@@ -67089,7 +67089,7 @@
   ],
   "vocabulary_count": 42,
   "declares_axiom": false,
-  "statement_lines": 250,
+  "statement_lines": 248,
   "comparator": {
    "theorem_names": [
     "OAI.MainGap.Manuscript.individual_to_strong_main"
@@ -67961,7 +67961,7 @@
   ],
   "vocabulary_count": 41,
   "declares_axiom": false,
-  "statement_lines": 140,
+  "statement_lines": 139,
   "comparator": {
    "theorem_names": [
     "OAI.FreeGroupFactorMain.Interpolation.allInterpolatedIsomorphic"
@@ -68829,7 +68829,7 @@
   ],
   "vocabulary_count": 66,
   "declares_axiom": false,
-  "statement_lines": 390,
+  "statement_lines": 389,
   "comparator": {
    "theorem_names": [
     "OAI.InvariantIsing.limiting_pressure_of_extreme_limits_unconditional",
@@ -70235,7 +70235,7 @@
   ],
   "vocabulary_count": 114,
   "declares_axiom": false,
-  "statement_lines": 562,
+  "statement_lines": 551,
   "comparator": {
    "theorem_names": [
     "OAI.Invariant233.Results.prescribed_irrational_counterexample",
@@ -70477,7 +70477,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 63,
+  "statement_lines": 62,
   "comparator": {
    "theorem_names": [
     "OAI.TriangularBilliards.irrational_triangle_billiard"
@@ -70671,7 +70671,7 @@
   ],
   "vocabulary_count": 13,
   "declares_axiom": false,
-  "statement_lines": 55,
+  "statement_lines": 54,
   "comparator": {
    "theorem_names": [
     "OAI.IsingPerceptron.variationalValue_real_of_continuous"
@@ -70789,7 +70789,7 @@
   ],
   "vocabulary_count": 5,
   "declares_axiom": false,
-  "statement_lines": 28,
+  "statement_lines": 27,
   "comparator": {
    "theorem_names": [
     "OAI.SmoothLocal.Geometry.exists_local_metric_without_local_immersion"
@@ -72275,7 +72275,7 @@
   ],
   "vocabulary_count": 9,
   "declares_axiom": false,
-  "statement_lines": 43,
+  "statement_lines": 42,
   "comparator": {
    "theorem_names": [
     "OAI.KServer.main_theorem"
@@ -72370,7 +72370,7 @@
   ],
   "vocabulary_count": 3,
   "declares_axiom": false,
-  "statement_lines": 19,
+  "statement_lines": 18,
   "comparator": {
    "theorem_names": [
     "OAI.BoundedHochschild.KadisonRingrose.main_result"
@@ -72659,7 +72659,7 @@
   ],
   "vocabulary_count": 20,
   "declares_axiom": false,
-  "statement_lines": 65,
+  "statement_lines": 62,
   "comparator": {
    "theorem_names": [
     "OAI.KadisonSimilarity.universalCommutatorTheorem",
@@ -72899,7 +72899,7 @@
   ],
   "vocabulary_count": 17,
   "declares_axiom": false,
-  "statement_lines": 99,
+  "statement_lines": 98,
   "comparator": {
    "theorem_names": [
     "OAI.UniversalCoverSplitting.main"
@@ -73162,7 +73162,7 @@
   ],
   "vocabulary_count": 7,
   "declares_axiom": false,
-  "statement_lines": 28,
+  "statement_lines": 27,
   "comparator": {
    "theorem_names": [
     "OAI.Kaplansky.kaplansky_quasitrace_counterexample"
@@ -73548,7 +73548,7 @@
   ],
   "vocabulary_count": 26,
   "declares_axiom": false,
-  "statement_lines": 126,
+  "statement_lines": 125,
   "comparator": {
    "theorem_names": [
     "OAI.KaplanskyConsequences.stable_finiteness_bundle"
@@ -73676,7 +73676,7 @@
   ],
   "vocabulary_count": 7,
   "declares_axiom": false,
-  "statement_lines": 17,
+  "statement_lines": 16,
   "comparator": {
    "theorem_names": [
     "OAI.Kervaire.coefficient_injective"
@@ -73877,7 +73877,7 @@
   ],
   "vocabulary_count": 13,
   "declares_axiom": false,
-  "statement_lines": 43,
+  "statement_lines": 42,
   "comparator": {
    "theorem_names": [
     "OAI.Problem047.koebe_circle_domain",
@@ -74254,7 +74254,7 @@
   ],
   "vocabulary_count": 11,
   "declares_axiom": false,
-  "statement_lines": 35,
+  "statement_lines": 34,
   "comparator": {
    "theorem_names": [
     "OAI.LaughlinFock.thm_fock"
@@ -74915,7 +74915,7 @@
   ],
   "vocabulary_count": 15,
   "declares_axiom": false,
-  "statement_lines": 52,
+  "statement_lines": 51,
   "comparator": {
    "theorem_names": [
     "OAI.SharpLiebThirring.sharp_lieb_thirring"
@@ -75028,7 +75028,7 @@
   ],
   "vocabulary_count": 5,
   "declares_axiom": false,
-  "statement_lines": 26,
+  "statement_lines": 25,
   "comparator": {
    "theorem_names": [
     "OAI.LipschitzCounterexample.main"
@@ -75188,7 +75188,7 @@
   ],
   "vocabulary_count": 8,
   "declares_axiom": false,
-  "statement_lines": 47,
+  "statement_lines": 46,
   "comparator": {
    "theorem_names": [
     "OAI.LipschitzHilbert.main",
@@ -75373,7 +75373,7 @@
   ],
   "vocabulary_count": 1,
   "declares_axiom": false,
-  "statement_lines": 11,
+  "statement_lines": 10,
   "comparator": {
    "theorem_names": [
     "OAI.LittleFinitistic.Main.exists_counterexample"
@@ -75468,7 +75468,7 @@
   ],
   "vocabulary_count": 3,
   "declares_axiom": false,
-  "statement_lines": 20,
+  "statement_lines": 19,
   "comparator": {
    "theorem_names": [
     "OAI.AsymptoticallyMinimalLittlewoodFiniteFlatness.main"
@@ -75585,7 +75585,7 @@
   ],
   "vocabulary_count": 6,
   "declares_axiom": false,
-  "statement_lines": 19,
+  "statement_lines": 18,
   "comparator": {
    "theorem_names": [
     "OAI.LogBrunnMinkowski.main"
@@ -75827,7 +75827,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 56,
+  "statement_lines": 55,
   "comparator": {
    "theorem_names": [
     "OAI.LogConcaveSampling.exact_source_main"
@@ -76287,7 +76287,7 @@
   ],
   "vocabulary_count": 34,
   "declares_axiom": false,
-  "statement_lines": 150,
+  "statement_lines": 149,
   "comparator": {
    "theorem_names": [
     "OAI.ReverseLogKodaira.SmoothProjectiveVariety.veryGenerally_fiber_negative_branch"
@@ -76871,7 +76871,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 36,
+  "statement_lines": 35,
   "comparator": {
    "theorem_names": [
     "OAI.MUB6.fourier_and_family_bound"
@@ -76934,7 +76934,7 @@
   ],
   "vocabulary_count": 1,
   "declares_axiom": false,
-  "statement_lines": 9,
+  "statement_lines": 8,
   "comparator": {
    "theorem_names": [
     "OAI.SymmetricMahler.symmetric_mahler"
@@ -77104,7 +77104,7 @@
   ],
   "vocabulary_count": 10,
   "declares_axiom": false,
-  "statement_lines": 42,
+  "statement_lines": 41,
   "comparator": {
    "theorem_names": [
     "OAI.MarkovSuperreflexivity.hasNontrivialMarkovType_iff_hasEquivalentUCNorm"
@@ -77250,7 +77250,7 @@
   ],
   "vocabulary_count": 8,
   "declares_axiom": false,
-  "statement_lines": 39,
+  "statement_lines": 38,
   "comparator": {
    "theorem_names": [
     "OAI.Problem326.global_bounded_persistent_solution"
@@ -77564,7 +77564,7 @@
   ],
   "vocabulary_count": 13,
   "declares_axiom": false,
-  "statement_lines": 33,
+  "statement_lines": 32,
   "comparator": {
    "theorem_names": [
     "OAI.MatchingEntropy.entropy_main"
@@ -77777,7 +77777,7 @@
   ],
   "vocabulary_count": 14,
   "declares_axiom": false,
-  "statement_lines": 36,
+  "statement_lines": 35,
   "comparator": {
    "theorem_names": [
     "OAI.MatchingEntropyBounds.Refined.pointwise_entropy"
@@ -78424,7 +78424,7 @@
   ],
   "vocabulary_count": 14,
   "declares_axiom": false,
-  "statement_lines": 56,
+  "statement_lines": 55,
   "comparator": {
    "theorem_names": [
     "OAI.MatrixAllFields.MatrixMultiplication.AllFieldMain.omega_lt_source_constant"
@@ -78699,7 +78699,7 @@
   ],
   "vocabulary_count": 18,
   "declares_axiom": false,
-  "statement_lines": 70,
+  "statement_lines": 69,
   "comparator": {
    "theorem_names": [
     "OAI.MatrixMultiplication.complex_omega_le_nine_quarters",
@@ -78891,7 +78891,7 @@
   ],
   "vocabulary_count": 11,
   "declares_axiom": false,
-  "statement_lines": 53,
+  "statement_lines": 52,
   "comparator": {
    "theorem_names": [
     "OAI.Problem348.no_polynomial_removal_bound"
@@ -80075,7 +80075,7 @@
   ],
   "vocabulary_count": 44,
   "declares_axiom": false,
-  "statement_lines": 227,
+  "statement_lines": 223,
   "comparator": {
    "theorem_names": [
     "OAI.MaximalSeshadri.Geometry.maximalSeshadriConstants"
@@ -80939,7 +80939,7 @@
   ],
   "vocabulary_count": 66,
   "declares_axiom": false,
-  "statement_lines": 690,
+  "statement_lines": 688,
   "comparator": {
    "theorem_names": [
     "OAI.MemoryPrecision.main"
@@ -81093,7 +81093,7 @@
   ],
   "vocabulary_count": 8,
   "declares_axiom": false,
-  "statement_lines": 30,
+  "statement_lines": 29,
   "comparator": {
    "theorem_names": [
     "OAI.MetricEntropyDuality.exists_entropy_duality_counterexample_with_covers"
@@ -81687,7 +81687,7 @@
   ],
   "vocabulary_count": 35,
   "declares_axiom": false,
-  "statement_lines": 276,
+  "statement_lines": 275,
   "comparator": {
    "theorem_names": [
     "OAI.SegmentLenses.midpoint_lens_main"
@@ -82482,7 +82482,7 @@
   ],
   "vocabulary_count": 29,
   "declares_axiom": false,
-  "statement_lines": 234,
+  "statement_lines": 233,
   "comparator": {
    "theorem_names": [
     "OAI.Nagata.Workers.W30.exists_positive_degree_equation_of_homogeneous_cycle",
@@ -82620,7 +82620,7 @@
   ],
   "vocabulary_count": 7,
   "declares_axiom": false,
-  "statement_lines": 35,
+  "statement_lines": 34,
   "comparator": {
    "theorem_names": [
     "OAI.NaimarkZFC.main"
@@ -83295,7 +83295,7 @@
   ],
   "vocabulary_count": 56,
   "declares_axiom": false,
-  "statement_lines": 174,
+  "statement_lines": 173,
   "comparator": {
    "theorem_names": [
     "OAI.AlternatingNS.alternating"
@@ -85540,7 +85540,7 @@
   ],
   "vocabulary_count": 196,
   "declares_axiom": false,
-  "statement_lines": 653,
+  "statement_lines": 607,
   "comparator": {
    "theorem_names": [
     "OAI.VelocityDetection.main_result"
@@ -85682,7 +85682,7 @@
   ],
   "vocabulary_count": 8,
   "declares_axiom": false,
-  "statement_lines": 36,
+  "statement_lines": 35,
   "comparator": {
    "theorem_names": [
     "OAI.SharpNodal.Main"
@@ -85944,7 +85944,7 @@
   ],
   "vocabulary_count": 19,
   "declares_axiom": false,
-  "statement_lines": 83,
+  "statement_lines": 82,
   "comparator": {
    "theorem_names": [
     "OAI.NoiselessRegression.main"
@@ -86338,7 +86338,7 @@
   ],
   "vocabulary_count": 29,
   "declares_axiom": false,
-  "statement_lines": 136,
+  "statement_lines": 133,
   "comparator": {
    "theorem_names": [
     "OAI.NuclearUltrapower.main_no_embedding"
@@ -86822,7 +86822,7 @@
   ],
   "vocabulary_count": 33,
   "declares_axiom": false,
-  "statement_lines": 163,
+  "statement_lines": 160,
   "comparator": {
    "theorem_names": [
     "OAI.RowColumn.occupied_overlap_endpoint",
@@ -86933,7 +86933,7 @@
   ],
   "vocabulary_count": 4,
   "declares_axiom": false,
-  "statement_lines": 17,
+  "statement_lines": 16,
   "comparator": {
    "theorem_names": [
     "OAI.OddKaplansky.main_theorem"
@@ -88357,7 +88357,7 @@
   ],
   "vocabulary_count": 6,
   "declares_axiom": false,
-  "statement_lines": 24,
+  "statement_lines": 23,
   "comparator": {
    "theorem_names": [
     "OAI.OrdinaryCorrelations.binary_corrected_elliott"
@@ -88521,7 +88521,7 @@
   ],
   "vocabulary_count": 9,
   "declares_axiom": false,
-  "statement_lines": 40,
+  "statement_lines": 39,
   "comparator": {
    "theorem_names": [
     "OAI.OrdinaryTwoPointCorrelations.liouville_log_saving",
@@ -89145,7 +89145,7 @@
   ],
   "vocabulary_count": 37,
   "declares_axiom": false,
-  "statement_lines": 155,
+  "statement_lines": 154,
   "comparator": {
    "theorem_names": [
     "OAI.ParityWL.parity_reduction"
@@ -89386,7 +89386,7 @@
   ],
   "vocabulary_count": 17,
   "declares_axiom": false,
-  "statement_lines": 71,
+  "statement_lines": 70,
   "comparator": {
    "theorem_names": [
     "OAI.PartialPermutation.complementaryCosets_finite"
@@ -90908,7 +90908,7 @@
   ],
   "vocabulary_count": 21,
   "declares_axiom": false,
-  "statement_lines": 55,
+  "statement_lines": 54,
   "comparator": {
    "theorem_names": [
     "OAI.CubicFirstMoment.patterson_firstMoment",
@@ -91258,7 +91258,7 @@
   ],
   "vocabulary_count": 27,
   "declares_axiom": false,
-  "statement_lines": 72,
+  "statement_lines": 71,
   "comparator": {
    "theorem_names": [
     "OAI.SphericalPerceptronFreeEnergy.main"
@@ -91980,7 +91980,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 35,
+  "statement_lines": 34,
   "comparator": {
    "theorem_names": [
     "OAI.PeriodicTilingThree.periodic_tiling_counterexample_and_minimality"
@@ -92269,7 +92269,7 @@
   ],
   "vocabulary_count": 10,
   "declares_axiom": false,
-  "statement_lines": 25,
+  "statement_lines": 24,
   "comparator": {
    "theorem_names": [
     "OAI.PettyProjection.petty_projection_volume"
@@ -92799,7 +92799,7 @@
   ],
   "vocabulary_count": 37,
   "declares_axiom": false,
-  "statement_lines": 106,
+  "statement_lines": 105,
   "comparator": {
    "theorem_names": [
     "OAI.PinchedHartogs.main_theorem",
@@ -92925,7 +92925,7 @@
   ],
   "vocabulary_count": 6,
   "declares_axiom": false,
-  "statement_lines": 16,
+  "statement_lines": 15,
   "comparator": {
    "theorem_names": [
     "OAI.WeakPinned.main"
@@ -93050,7 +93050,7 @@
   ],
   "vocabulary_count": 6,
   "declares_axiom": false,
-  "statement_lines": 16,
+  "statement_lines": 15,
   "comparator": {
    "theorem_names": [
     "OAI.PlanarAnderson.anderson_spectrum_ae"
@@ -93772,7 +93772,7 @@
   ],
   "vocabulary_count": 2,
   "declares_axiom": false,
-  "statement_lines": 6,
+  "statement_lines": 5,
   "comparator": {
    "theorem_names": [
     "OAI.Problem160.properColoring_seven"
@@ -94086,7 +94086,7 @@
   ],
   "vocabulary_count": 20,
   "declares_axiom": false,
-  "statement_lines": 142,
+  "statement_lines": 136,
   "comparator": {
    "theorem_names": [
     "OAI.PolycyclicRecognition.group_recognition",
@@ -94971,7 +94971,7 @@
   ],
   "vocabulary_count": 75,
   "declares_axiom": false,
-  "statement_lines": 326,
+  "statement_lines": 323,
   "comparator": {
    "theorem_names": [
     "OAI.PosteriorReplicas.source_main"
@@ -95235,7 +95235,7 @@
   ],
   "vocabulary_count": 6,
   "declares_axiom": false,
-  "statement_lines": 24,
+  "statement_lines": 23,
   "comparator": {
    "theorem_names": [
     "OAI.Problem344.large_gaps_and_ratio_density"
@@ -96131,7 +96131,7 @@
   ],
   "vocabulary_count": 62,
   "declares_axiom": false,
-  "statement_lines": 553,
+  "statement_lines": 541,
   "comparator": {
    "theorem_names": [
     "OAI.FiniteFactor.productBrown"
@@ -96274,7 +96274,7 @@
   ],
   "vocabulary_count": 8,
   "declares_axiom": false,
-  "statement_lines": 18,
+  "statement_lines": 17,
   "comparator": {
    "theorem_names": [
     "OAI.ProjectionCounterexample.universal_simplex_upper_bound_false"
@@ -97323,7 +97323,7 @@
   ],
   "vocabulary_count": 90,
   "declares_axiom": false,
-  "statement_lines": 431,
+  "statement_lines": 425,
   "comparator": {
    "theorem_names": [
     "OAI.ProjectionMoments.main"
@@ -97507,7 +97507,7 @@
   ],
   "vocabulary_count": 11,
   "declares_axiom": false,
-  "statement_lines": 34,
+  "statement_lines": 33,
   "comparator": {
    "theorem_names": [
     "OAI.Paper092.product_counterexample"
@@ -97750,7 +97750,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 38,
+  "statement_lines": 37,
   "comparator": {
    "theorem_names": [
     "OAI.QAC.parity_lower_bound"
@@ -98661,7 +98661,7 @@
   ],
   "vocabulary_count": 13,
   "declares_axiom": false,
-  "statement_lines": 45,
+  "statement_lines": 44,
   "comparator": {
    "theorem_names": [
     "OAI.RadialTransition.densityInterval"
@@ -98856,7 +98856,7 @@
   ],
   "vocabulary_count": 13,
   "declares_axiom": false,
-  "statement_lines": 42,
+  "statement_lines": 41,
   "comparator": {
    "theorem_names": [
     "OAI.RadialTransition.main"
@@ -99700,7 +99700,7 @@
   ],
   "vocabulary_count": 6,
   "declares_axiom": false,
-  "statement_lines": 24,
+  "statement_lines": 23,
   "comparator": {
    "theorem_names": [
     "OAI.DiscreteFree.real_l1_quantitative_renorming"
@@ -101500,7 +101500,7 @@
   ],
   "vocabulary_count": 159,
   "declares_axiom": false,
-  "statement_lines": 541,
+  "statement_lines": 538,
   "comparator": {
    "theorem_names": [
     "OAI.ComparatorModel.RecursivePotentials.main"
@@ -101578,7 +101578,7 @@
   ],
   "vocabulary_count": 1,
   "declares_axiom": false,
-  "statement_lines": 12,
+  "statement_lines": 11,
   "comparator": {
    "theorem_names": [
     "OAI.ReflexiveFixedPoints.exists_fixedPoint_of_canonicallyReflexive"
@@ -101809,7 +101809,7 @@
   ],
   "vocabulary_count": 15,
   "declares_axiom": false,
-  "statement_lines": 37,
+  "statement_lines": 36,
   "comparator": {
    "theorem_names": [
     "OAI.QAC.parity_lower_bound_polynomial_size"
@@ -102002,7 +102002,7 @@
   ],
   "vocabulary_count": 11,
   "declares_axiom": false,
-  "statement_lines": 67,
+  "statement_lines": 66,
   "comparator": {
    "theorem_names": [
     "OAI.RelativeGeneration.main_theorem"
@@ -102144,7 +102144,7 @@
   ],
   "vocabulary_count": 8,
   "declares_axiom": false,
-  "statement_lines": 35,
+  "statement_lines": 34,
   "comparator": {
    "theorem_names": [
     "OAI.RieszRectifiability.quantitative_higher_codimension_riesz_rectifiability"
@@ -102812,7 +102812,7 @@
   ],
   "vocabulary_count": 46,
   "declares_axiom": false,
-  "statement_lines": 162,
+  "statement_lines": 161,
   "comparator": {
    "theorem_names": [
     "OAI.RuledApproximation.fullMain"
@@ -102976,7 +102976,7 @@
   ],
   "vocabulary_count": 10,
   "declares_axiom": false,
-  "statement_lines": 30,
+  "statement_lines": 29,
   "comparator": {
    "theorem_names": [
     "OAI.RyserCoveringCounterexample.exists_prime_eventually_counterexampleRank"
@@ -103156,7 +103156,7 @@
   ],
   "vocabulary_count": 11,
   "declares_axiom": false,
-  "statement_lines": 42,
+  "statement_lines": 41,
   "comparator": {
    "theorem_names": [
     "OAI.RyserOdd.eventualOddFailures_and_infinite"
@@ -103532,7 +103532,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 45,
+  "statement_lines": 44,
   "comparator": {
    "theorem_names": [
     "OAI.RandomKSAT.sharpness"
@@ -103761,7 +103761,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 39,
+  "statement_lines": 38,
   "comparator": {
    "theorem_names": [
     "OAI.RandomKSAT.variance_main"
@@ -104023,7 +104023,7 @@
   ],
   "vocabulary_count": 19,
   "declares_axiom": false,
-  "statement_lines": 48,
+  "statement_lines": 46,
   "comparator": {
    "theorem_names": [
     "OAI.SK.main"
@@ -104253,7 +104253,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 64,
+  "statement_lines": 63,
   "comparator": {
    "theorem_names": [
     "OAI.ZeroTemperatureSK.full_support"
@@ -104507,7 +104507,7 @@
   ],
   "vocabulary_count": 18,
   "declares_axiom": false,
-  "statement_lines": 43,
+  "statement_lines": 42,
   "comparator": {
    "theorem_names": [
     "OAI.SKGap.sk_main"
@@ -104737,7 +104737,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 45,
+  "statement_lines": 44,
   "comparator": {
    "theorem_names": [
     "OAI.SKRatio.ratio_cutoff"
@@ -105382,7 +105382,7 @@
   ],
   "vocabulary_count": 14,
   "declares_axiom": false,
-  "statement_lines": 54,
+  "statement_lines": 53,
   "comparator": {
    "theorem_names": [
     "OAI.SLEExactGauge.sourceLowerMain_proved"
@@ -105588,7 +105588,7 @@
   ],
   "vocabulary_count": 14,
   "declares_axiom": false,
-  "statement_lines": 73,
+  "statement_lines": 72,
   "comparator": {
    "theorem_names": [
     "OAI.Saxl.saxl_conjecture"
@@ -105789,7 +105789,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 38,
+  "statement_lines": 37,
   "comparator": {
    "theorem_names": [
     "OAI.LeanBlast.SecondKahnKalai.secondKahnKalaiBounds"
@@ -106261,7 +106261,7 @@
   ],
   "vocabulary_count": 5,
   "declares_axiom": false,
-  "statement_lines": 23,
+  "statement_lines": 22,
   "comparator": {
    "theorem_names": [
     "OAI.Paper320.quantitative_separation"
@@ -106452,7 +106452,7 @@
   ],
   "vocabulary_count": 4,
   "declares_axiom": false,
-  "statement_lines": 16,
+  "statement_lines": 15,
   "comparator": {
    "theorem_names": [
     "OAI.SeymourSecondNeighborhood.exists_goodVertex"
@@ -106774,7 +106774,7 @@
   ],
   "vocabulary_count": 24,
   "declares_axiom": false,
-  "statement_lines": 95,
+  "statement_lines": 93,
   "comparator": {
    "theorem_names": [
     "OAI.CAT0Fillings.sharp_integral_filling"
@@ -107057,7 +107057,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 38,
+  "statement_lines": 37,
   "comparator": {
    "theorem_names": [
     "OAI.Problem313.sharp_threshold_width"
@@ -107471,7 +107471,7 @@
   ],
   "vocabulary_count": 7,
   "declares_axiom": false,
-  "statement_lines": 22,
+  "statement_lines": 21,
   "comparator": {
    "theorem_names": [
     "OAI.SignedDisk.CenteredDiskEndpoint.main_signed_finite_band"
@@ -107917,7 +107917,7 @@
   ],
   "vocabulary_count": 34,
   "declares_axiom": false,
-  "statement_lines": 134,
+  "statement_lines": 133,
   "comparator": {
    "theorem_names": [
     "OAI.SignedSweeps.signed_occurrence_moment_bound"
@@ -109126,7 +109126,7 @@
   ],
   "vocabulary_count": 18,
   "declares_axiom": false,
-  "statement_lines": 90,
+  "statement_lines": 88,
   "comparator": {
    "theorem_names": [
     "OAI.YauCounterexamples.sphere_three",
@@ -117291,7 +117291,7 @@
   ],
   "vocabulary_count": 34,
   "declares_axiom": false,
-  "statement_lines": 69,
+  "statement_lines": 68,
   "comparator": {
    "theorem_names": [
     "OAI.SoftChannel204.fullMain"
@@ -117804,7 +117804,7 @@
   ],
   "vocabulary_count": 42,
   "declares_axiom": false,
-  "statement_lines": 140,
+  "statement_lines": 139,
   "comparator": {
    "theorem_names": [
     "OAI.Solenoidal.sheet_theorem"
@@ -118738,7 +118738,7 @@
   ],
   "vocabulary_count": 66,
   "declares_axiom": false,
-  "statement_lines": 448,
+  "statement_lines": 446,
   "comparator": {
    "theorem_names": [
     "OAI.SphericalPerceptron.spherical_linear_field_formula"
@@ -119538,7 +119538,7 @@
   ],
   "vocabulary_count": 61,
   "declares_axiom": false,
-  "statement_lines": 330,
+  "statement_lines": 329,
   "comparator": {
    "theorem_names": [
     "OAI.SpinAngle.TypeAngle.one_sided_type_angle"
@@ -119822,7 +119822,7 @@
   ],
   "vocabulary_count": 20,
   "declares_axiom": false,
-  "statement_lines": 87,
+  "statement_lines": 86,
   "comparator": {
    "theorem_names": [
     "OAI.SplitTangent.integrability_main"
@@ -120070,7 +120070,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 30,
+  "statement_lines": 29,
   "comparator": {
    "theorem_names": [
     "OAI.SquareRootDegree.main"
@@ -121367,7 +121367,7 @@
   ],
   "vocabulary_count": 6,
   "declares_axiom": false,
-  "statement_lines": 18,
+  "statement_lines": 17,
   "comparator": {
    "theorem_names": [
     "OAI.KadisonKastler.universal_strong_stability"
@@ -121809,7 +121809,7 @@
   ],
   "vocabulary_count": 21,
   "declares_axiom": false,
-  "statement_lines": 140,
+  "statement_lines": 139,
   "comparator": {
    "theorem_names": [
     "OAI.Problem336AdditiveD139.finite_strongly_rayleigh_response",
@@ -122065,7 +122065,7 @@
   ],
   "vocabulary_count": 18,
   "declares_axiom": false,
-  "statement_lines": 121,
+  "statement_lines": 119,
   "comparator": {
    "theorem_names": [
     "OAI.StructuralCrouzeixReference.challenge"
@@ -122172,7 +122172,7 @@
   ],
   "vocabulary_count": 4,
   "declares_axiom": false,
-  "statement_lines": 26,
+  "statement_lines": 25,
   "comparator": {
    "theorem_names": [
     "OAI.SubpolynomialLp.source_main"
@@ -122901,7 +122901,7 @@
   ],
   "vocabulary_count": 61,
   "declares_axiom": false,
-  "statement_lines": 278,
+  "statement_lines": 265,
   "comparator": {
    "theorem_names": [
     "OAI.SubsphereCurrent.full_current_main_scope"
@@ -123265,7 +123265,7 @@
   ],
   "vocabulary_count": 6,
   "declares_axiom": false,
-  "statement_lines": 19,
+  "statement_lines": 18,
   "comparator": {
    "theorem_names": [
     "OAI.ClosedSurfaceR4.FiniteOrderSmoothing.smooth_isometric_immersion"
@@ -123638,7 +123638,7 @@
   ],
   "vocabulary_count": 28,
   "declares_axiom": false,
-  "statement_lines": 126,
+  "statement_lines": 125,
   "comparator": {
    "theorem_names": [
     "OAI.Problem315.switch_chain_main",
@@ -123892,7 +123892,7 @@
   ],
   "vocabulary_count": 5,
   "declares_axiom": false,
-  "statement_lines": 27,
+  "statement_lines": 26,
   "comparator": {
    "theorem_names": [
     "OAI.SymmetricMahler.symmetric_mahler_equality"
@@ -124144,7 +124144,7 @@
   ],
   "vocabulary_count": 3,
   "declares_axiom": false,
-  "statement_lines": 23,
+  "statement_lines": 22,
   "comparator": {
    "theorem_names": [
     "OAI.Tachikawa.main_theorem"
@@ -124303,7 +124303,7 @@
   ],
   "vocabulary_count": 8,
   "declares_axiom": false,
-  "statement_lines": 21,
+  "statement_lines": 20,
   "comparator": {
    "theorem_names": [
     "OAI.TalagrandDiscreteConvexity.talagrand_discrete_convexity"
@@ -124499,7 +124499,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 26,
+  "statement_lines": 25,
   "comparator": {
    "theorem_names": [
     "OAI.TalagrandThreshold.talagrand_expectation_threshold_equivalence"
@@ -124701,7 +124701,7 @@
   ],
   "vocabulary_count": 13,
   "declares_axiom": false,
-  "statement_lines": 41,
+  "statement_lines": 40,
   "comparator": {
    "theorem_names": [
     "OAI.TamingCompatibility.taming_implies_compatibility"
@@ -125976,7 +125976,7 @@
   ],
   "vocabulary_count": 110,
   "declares_axiom": false,
-  "statement_lines": 1915,
+  "statement_lines": 1914,
   "comparator": {
    "theorem_names": [
     "OAI.Thomason.main",
@@ -126163,7 +126163,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 52,
+  "statement_lines": 51,
   "comparator": {
    "theorem_names": [
     "OAI.ThompsonNonamenability.thompson_F_nonamenable_composition"
@@ -126595,7 +126595,7 @@
   ],
   "vocabulary_count": 34,
   "declares_axiom": false,
-  "statement_lines": 139,
+  "statement_lines": 138,
   "comparator": {
    "theorem_names": [
     "OAI.Thorp.Current.first_reciprocal_main"
@@ -127710,7 +127710,7 @@
   ],
   "vocabulary_count": 87,
   "declares_axiom": false,
-  "statement_lines": 350,
+  "statement_lines": 349,
   "comparator": {
    "theorem_names": [
     "OAI.ThorpResults.remaining_main"
@@ -132963,7 +132963,7 @@
   ],
   "vocabulary_count": 14,
   "declares_axiom": false,
-  "statement_lines": 61,
+  "statement_lines": 60,
   "comparator": {
    "theorem_names": [
     "OAI.ThreeState.TreeClauses.Tree.regular_reconstructs_above_KS",
@@ -133150,7 +133150,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 52,
+  "statement_lines": 51,
   "comparator": {
    "theorem_names": [
     "OAI.ThreeTorus.simple_lebesgue_spectrum"
@@ -133226,7 +133226,7 @@
   ],
   "vocabulary_count": 2,
   "declares_axiom": false,
-  "statement_lines": 18,
+  "statement_lines": 17,
   "comparator": {
    "theorem_names": [
     "OAI.Tingley.tingley_sphere_isometry_full"
@@ -133859,7 +133859,7 @@
   ],
   "vocabulary_count": 32,
   "declares_axiom": false,
-  "statement_lines": 106,
+  "statement_lines": 105,
   "comparator": {
    "theorem_names": [
     "OAI.TotientAsymptotic.totient_asymptotic_formula",
@@ -134157,7 +134157,7 @@
   ],
   "vocabulary_count": 22,
   "declares_axiom": false,
-  "statement_lines": 65,
+  "statement_lines": 64,
   "comparator": {
    "theorem_names": [
     "OAI.TotientAsymptotic.companion_zero_case"
@@ -134650,7 +134650,7 @@
   ],
   "vocabulary_count": 30,
   "declares_axiom": false,
-  "statement_lines": 159,
+  "statement_lines": 158,
   "comparator": {
    "theorem_names": [
     "OAI.TraceConeClassification.TraceConeEquiv.idealOrderIso_finIdeal",
@@ -134901,7 +134901,7 @@
   ],
   "vocabulary_count": 13,
   "declares_axiom": false,
-  "statement_lines": 50,
+  "statement_lines": 49,
   "comparator": {
    "theorem_names": [
     "OAI.TraceReconstruction.quantitative_sample_lower_bound",
@@ -135363,7 +135363,7 @@
   ],
   "vocabulary_count": 24,
   "declares_axiom": false,
-  "statement_lines": 92,
+  "statement_lines": 86,
   "comparator": {
    "theorem_names": [
     "OAI.TriangleFace198.triangle_expansion_face"
@@ -135763,7 +135763,7 @@
   ],
   "vocabulary_count": 16,
   "declares_axiom": false,
-  "statement_lines": 41,
+  "statement_lines": 40,
   "comparator": {
    "theorem_names": [
     "OAI.TriangularCovering.main"
@@ -136040,7 +136040,7 @@
   ],
   "vocabulary_count": 20,
   "declares_axiom": false,
-  "statement_lines": 40,
+  "statement_lines": 39,
   "comparator": {
    "theorem_names": [
     "OAI.AtomicTriangular.universal_energy_minimum"
@@ -136895,7 +136895,7 @@
   ],
   "vocabulary_count": 73,
   "declares_axiom": false,
-  "statement_lines": 152,
+  "statement_lines": 149,
   "comparator": {
    "theorem_names": [
     "OAI.AtomicTriangular.sharp_gaussian_minorants_with_construction"
@@ -137046,7 +137046,7 @@
   ],
   "vocabulary_count": 9,
   "declares_axiom": false,
-  "statement_lines": 29,
+  "statement_lines": 28,
   "comparator": {
    "theorem_names": [
     "OAI.TriangularHilbert.main_estimate"
@@ -137434,7 +137434,7 @@
   ],
   "vocabulary_count": 30,
   "declares_axiom": false,
-  "statement_lines": 93,
+  "statement_lines": 92,
   "comparator": {
    "theorem_names": [
     "OAI.TruffetV4Counterexample.finite_execution_not_optimal"
@@ -138042,7 +138042,7 @@
   ],
   "vocabulary_count": 3,
   "declares_axiom": false,
-  "statement_lines": 22,
+  "statement_lines": 21,
   "comparator": {
    "theorem_names": [
     "OAI.Kadison.uniform_commutator"
@@ -138722,7 +138722,7 @@
   ],
   "vocabulary_count": 54,
   "declares_axiom": false,
-  "statement_lines": 199,
+  "statement_lines": 198,
   "comparator": {
    "theorem_names": [
     "OAI.PowerSaving.transform_main",
@@ -139524,7 +139524,7 @@
   ],
   "vocabulary_count": 67,
   "declares_axiom": false,
-  "statement_lines": 338,
+  "statement_lines": 331,
   "comparator": {
    "theorem_names": [
     "OAI.ComparatorModel.CurrentMain.main"
@@ -140061,7 +140061,7 @@
   ],
   "vocabulary_count": 7,
   "declares_axiom": false,
-  "statement_lines": 31,
+  "statement_lines": 30,
   "comparator": {
    "theorem_names": [
     "OAI.UniformSparsestCut.mainGap"
@@ -140735,7 +140735,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 73,
+  "statement_lines": 72,
   "comparator": {
    "theorem_names": [
     "OAI.UniversalTensorSquares.universal_tensor_square"
@@ -142396,7 +142396,7 @@
   ],
   "vocabulary_count": 89,
   "declares_axiom": false,
-  "statement_lines": 536,
+  "statement_lines": 535,
   "comparator": {
    "theorem_names": [
     "OAI.MinimalVertex.main"
@@ -143111,7 +143111,7 @@
   ],
   "vocabulary_count": 28,
   "declares_axiom": false,
-  "statement_lines": 81,
+  "statement_lines": 80,
   "comparator": {
    "theorem_names": [
     "OAI.RVM.global_classical_solution"
@@ -144100,7 +144100,7 @@
   ],
   "vocabulary_count": 45,
   "declares_axiom": false,
-  "statement_lines": 150,
+  "statement_lines": 149,
   "comparator": {
    "theorem_names": [
     "OAI.WeakHessian.every_geodesic"
@@ -144270,7 +144270,7 @@
   ],
   "vocabulary_count": 10,
   "declares_axiom": false,
-  "statement_lines": 47,
+  "statement_lines": 46,
   "comparator": {
    "theorem_names": [
     "OAI.WeakMTWGlobalSupport.current_main_convexity"
@@ -144868,7 +144868,7 @@
   ],
   "vocabulary_count": 42,
   "declares_axiom": false,
-  "statement_lines": 178,
+  "statement_lines": 175,
   "comparator": {
    "theorem_names": [
     "OAI.CubeShuffle.WeightedSweep.weighted_sweep_moments"
@@ -146236,7 +146236,7 @@
   ],
   "vocabulary_count": 62,
   "declares_axiom": false,
-  "statement_lines": 362,
+  "statement_lines": 357,
   "comparator": {
    "theorem_names": [
     "OAI.WitnessedChoice.main"
@@ -146420,7 +146420,7 @@
   ],
   "vocabulary_count": 12,
   "declares_axiom": false,
-  "statement_lines": 45,
+  "statement_lines": 44,
   "comparator": {
    "theorem_names": [
     "OAI.Yau.Target.yau_nodal_set_upper_bound_counterexample"

@@ -132,14 +132,14 @@
  "manuscripts_citing_withdrawn": [],
  "manuscripts_citing_superseded_editions": [],
  "manuscripts_citing_unformalised_collection_results": 213,
- "external_works_cited": 11069,
+ "external_works_cited": 11020,
  "external_citations": 16078,
  "definitions": {
   "lean_statements_pure_mathlib": "Comparator challenge files that import only Mathlib and in which a textual scan detects no local vocabulary declarations: a reader checks the theorem statement against Mathlib vocabulary alone. Files with no local vocabulary that import OpenAI's own modules are excluded.",
   "lean_vocabulary": "Local vocabulary declarations detected by a textual scan of a Comparator challenge file: definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms. Theorem and lemma declarations, including the target theorem, are excluded. A proof that Comparator accepts proves the statement as phrased in this vocabulary, so each item is something a reader checks means what the paper means.",
   "manuscripts_with_lean": "Current manuscripts listed as accompanying papers in a family's Lean scope note (lean/docs/NNN.md) that links at least one Comparator statement.",
   "internal_citation_edges": "Bibliography entries in a manuscript's TeX sources that point to another manuscript in the collection (an openai/math preprint link or an OAI: key), counted once per citing and cited manuscript.",
-  "external_works_cited": "References outside the collection grouped automatically by DOI, then arXiv id, then the first twelve words of the normalised title. Distinct works with similar titles can merge, and one work cited by DOI in one paper and by title in another can split, so this is an automatic grouping and has not been audited.",
+  "external_works_cited": "References outside the collection grouped automatically by DOI, then arXiv id, then full normalised title; a title-only reference joins the one DOI or arXiv record with the same full title (and year, when both give one), keeping the merged keys as aliases in works.json. No person has audited the grouping, so a work can still be split or merged by mistake.",
   "external_citations": "Resolved bibliography keys in current manuscripts' TeX sources that point outside the collection, each manuscript and key counted once.",
   "most_cited_outside_works": "Outside works ranked by how many current manuscripts cite them (each manuscript counted once).",
   "most_cited_inside_collection": "Current manuscripts ranked by how many other current manuscripts in the collection cite them, with whether each has an accompanying Lean statement.",
@@ -200,7 +200,7 @@
     "title": "Birational Geometry of Algebraic Varieties",
     "year": "1998",
     "id": "doi:10.1017/cbo9780511662560",
-    "citing_manuscripts": 17
+    "citing_manuscripts": 18
    },
    {
     "text": "Boucksom, Sebastien; Demailly, Jean-Pierre; Paun, Mihai; Peternell, Thomas, The pseudo-effective cone of a compact Kahler manifold and varieties of negative Kodaira dimension, Journal of Algebraic Geo",
@@ -828,10 +828,10 @@
   },
   {
    "key": "external_works_cited",
-   "value": 11069,
+   "value": 11020,
    "unit": "automatically grouped references",
    "universe": "openai/math at fd4aeeb2ee4f, current manuscripts' bibliographies",
-   "rule": "References grouped by DOI, then arXiv id, then the first twelve words of the title. Unaudited: similar titles can merge and one work can split.",
+   "rule": "References grouped by DOI, then arXiv id, then full title, with exact-title matches joined to their DOI or arXiv record and kept as aliases. Unaudited.",
    "source": "scripts/build_data.py"
   },
   {

@@ -36,6 +36,8 @@ jobs:
             mkdir -p ".trusted/$(dirname "$f")" && cp -- "$f" ".trusted/$f"
           done < "$RUNNER_TEMP/changed"
           cd .trusted && xargs -0 -r python3 scripts/check_contributions.py --strict < "$RUNNER_TEMP/changed"
+      - name: The data parsers read their fixtures correctly
+        run: python3 scripts/test_build_data.py
       - name: The contribution checker rejects what it should
         run: python3 scripts/check_contributions.py --self-test
       - name: Contributions are well formed
