@@ -213,6 +213,60 @@
     apply();
   });
 
+  /* The Families list: filters by discipline, by evidence and by each outside reader's
+     finding, combined; the state lives in the address (?d=&c=&l=&r=) so a filtered
+     list can be shared. Without JavaScript the whole list shows and the filters stay hidden. */
+  Array.prototype.forEach.call(doc.querySelectorAll('[data-filter-families]'), function (wrap) {
+    var table = doc.getElementById(wrap.getAttribute('data-filter-families'));
+    if (!table) return;
+    var empty = doc.querySelector('.filters__empty');
+    var reset = wrap.querySelector('.filters__reset');
+    var state = { d: '', c: '', l: '', r: '' };
+    wrap.hidden = false;
+    function sync() {
+      wrap.querySelectorAll('.chip[data-filter]').forEach(function (b) {
+        b.setAttribute('aria-pressed', state[b.getAttribute('data-filter')] === b.getAttribute('data-value') ? 'true' : 'false');
+      });
+      wrap.querySelectorAll('select[data-filter]').forEach(function (sel) { sel.value = state[sel.getAttribute('data-filter')]; });
+    }
+    function apply(push) {
+      var n = 0;
+      Array.prototype.forEach.call(table.tBodies[0].rows, function (row) {
+        var ok = (!state.d || row.getAttribute('data-d') === state.d) &&
+          (!state.c || (' ' + row.getAttribute('data-c') + ' ').indexOf(' ' + state.c + ' ') >= 0) &&
+          (!state.l || row.getAttribute('data-l') === state.l) &&
+          (!state.r || row.getAttribute('data-r') === state.r);
+        row.hidden = !ok;
+        if (ok) n++;
+      });
+      shownCount(wrap, n);
+      if (empty) empty.hidden = n > 0;
+      var any = state.d || state.c || state.l || state.r;
+      if (reset) reset.hidden = !any;
+      if (push !== false && window.history && history.replaceState) {
+        var q = new URLSearchParams();
+        ['d', 'c', 'l', 'r'].forEach(function (k) { if (state[k]) q.set(k, state[k]); });
+        history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash);
+      }
+    }
+    wrap.addEventListener('click', function (ev) {
+      var b = ev.target.closest('.chip[data-filter]');
+      if (b) { state[b.getAttribute('data-filter')] = b.getAttribute('data-value'); sync(); apply(); return; }
+      if (ev.target.closest('.filters__reset')) { state = { d: '', c: '', l: '', r: '' }; sync(); apply(); }
+    });
+    wrap.addEventListener('change', function (ev) {
+      var sel = ev.target.closest('select[data-filter]');
+      if (sel) { state[sel.getAttribute('data-filter')] = sel.value; apply(); }
+    });
+    var params = new URLSearchParams(location.search);
+    ['d', 'c', 'l', 'r'].forEach(function (k) {
+      var v = params.get(k) || '';
+      if (v && (wrap.querySelector('[data-filter="' + k + '"][data-value="' + v + '"]') || wrap.querySelector('select[data-filter="' + k + '"] option[value="' + v + '"]'))) state[k] = v;
+    });
+    sync();
+    apply(false);
+  });
+
   /* ---- Receipt card fitting ---------------------------------------------- */
   /* On a narrow screen the inline comparison reflows into stacked, readable text
      (atlas.css), so it is never shrunk or clipped; only the fixed 16:9 frames are. */

@@ -828,7 +828,7 @@ body.social { margin: 0; width: 1200px; height: 675px; overflow: hidden; backgro
 #explain-table .btn, #explain-table [class^="rd-"] { white-space: nowrap; }
 /* While no family has an explanation recorded, that status is the quiet default; only
    work in progress and reviewed explanations carry colour. */
-#explain-table .st--none { box-shadow: none; padding: 0; font-weight: 400; color: var(--muted); }
+#families-table .st--none { box-shadow: none; padding: 0; font-weight: 400; color: var(--muted); }
 
 /* ---- Statement comparison on a narrow screen ---------------------------- */
 /* The inline comparison stops being a 16:9 picture: sections stack, text uses
@@ -886,3 +886,50 @@ a.term:hover, a.term:focus-visible { text-decoration-color: currentColor; }
 .approach__item .approach__so { margin-top: 6px; color: var(--ink-soft); }
 .adds { margin-top: 10px; }
 .adds li + li { margin-top: 4px; }
+
+/* ---- The Families list (explain.html) ------------------------------------ */
+/* Every family as a row, each state in words; filters combine and live in the URL. */
+.filters--families { align-items: flex-start; gap: 14px 28px; padding: 14px 0 6px; }
+.filters--families[hidden] { display: none; }
+.filters__g--wide { flex: 1 1 100%; }
+.filters--families .filters__n { flex: 1 1 auto; align-self: flex-end; color: var(--ink-soft); }
+.filters__reset { align-self: flex-end; min-height: 32px; }
+.filters__empty { margin: 16px 0; color: var(--ink-soft); }
+.select { min-height: 34px; padding: 4px 30px 4px 10px; border: 1px solid var(--rule-control); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); font-size: var(--fs-meta); }
+.tbl--families th { position: sticky; top: 0; z-index: 1; background: var(--page); }
+.tbl--families td { padding: 9px 10px; }
+.tbl--families .t-id { color: var(--faint); font-variant-numeric: tabular-nums; width: 3.5em; }
+.tbl--families .t-title { min-width: 18em; max-width: 30em; line-height: 1.35; }
+.tbl--families .t-title > a { display: inline; }
+.tbl--families .t-disc { color: var(--ink-soft); min-width: 9em; }
+.tbl--families .t-reader { min-width: 8.5em; }
+.tbl--families .t-action { white-space: nowrap; }
+.cell__sub { display: block; margin-top: 2px; font-size: var(--fs-small); color: var(--muted); font-family: var(--sans); font-weight: 400; }
+a.cell__sub { color: var(--steel-text); }
+.cell__warn, a.cell__warn { color: var(--brick-text); }
+.cell__none { color: var(--muted); }
+.cell__flag { display: block; margin-top: 4px; font-family: var(--sans); font-size: var(--fs-small); font-weight: 600; color: var(--brick-text); }
+.t-disc-inline { display: none; }
+.tbl--families .term { font-size: var(--fs-micro); }
+@media (max-width: 1100px) {
+  .tbl--families .t-disc { display: none; }
+  .t-disc-inline { display: block; }
+}
+/* On a phone each family is a block: the name first, then each state with its label. */
+@media (max-width: 760px) {
+  .tbl--families thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .tbl--families, .tbl--families tbody, .tbl--families tr, .tbl--families td { display: block; width: 100%; }
+  .tbl--families tr { padding: 12px 0; border-bottom: 1px solid var(--rule-strong); }
+  .tbl--families tr[hidden] { display: none; }
+  .tbl--families td { border: 0; padding: 2px 0; min-width: 0; max-width: none; text-align: left; }
+  .tbl--families td:empty { display: none; }
+  .tbl--families .t-id { width: auto; font-size: var(--fs-small); }
+  .tbl--families .t-title { font-size: 1.0625rem; padding-bottom: 6px; }
+  .tbl--families td[data-label] { display: grid; grid-template-columns: minmax(8.5em, 40%) 1fr; gap: 8px; font-size: var(--fs-meta); }
+  .tbl--families td[data-label]::before { content: attr(data-label); color: var(--muted); font-size: var(--fs-small); }
+  .tbl--families td[data-label] .cell__sub { margin-top: 0; }
+  .tbl--families td.t-reader[data-label] > * { grid-column: 2; }
+  .tbl--families td[data-label]:has(> :only-child:empty) { display: none; }
+  .tbl--families .t-action { padding-top: 6px; }
+  .tbl tr:hover td { background: none; }
+}
