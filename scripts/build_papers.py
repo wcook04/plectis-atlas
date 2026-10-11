@@ -100,6 +100,7 @@ TXT = {
     "fig_tikz": "Figure drawn in TikZ; see the PDF",
     "fig_image": "Figure image; see the PDF",
     "fig_other": "Figure not reproduced here; see the PDF",
+    "lean_pair": "Candidate Lean statement, chosen automatically by word overlap and not reviewed:",
     "listing_link": "Code listing {file}: open it in the release",
     "listing_pdf": "Code listing {file}; see the PDF",
     "math_failed": "This formula could not be typeset; its TeX source is shown.",
@@ -2624,6 +2625,10 @@ class Paper:
         body = assemble(frags, first_inline=head)
         style = spec["style"]
         self.thm_lines[lid] = env
+        lean = lean_pairs().get((self.slug, f, line)) or []
+        if lean:
+            links = ", ".join(f'<a href="../statements/{quote(sid)}.html"><code>{esc_t(sid)}</code></a>' for sid in lean)
+            body += f'<p class="pr-lean">{esc_t(TXT["lean_pair"])} {links}.</p>'
         out.append(block(f'<div class="pr-thm pr-thm--{style}" id="{self.id_ph(ctx)}" data-env="{esc_a(env)}" '
                          f'data-src="{esc_a(f)}:{line}">{self.xa_ph(ctx)}{body}</div>'))
 
@@ -4310,6 +4315,25 @@ def check_formulas(slug: str, formulas, macros, leqno=False, fleqn=False):
 
 # ------------------------------------------------------------ one paper
 
+_LEAN_PAIRS = None
+
+
+def lean_pairs() -> dict:
+    """(manuscript id, file, line) -> Comparator challenges whose statement page pairs them
+    with that paper statement (scripts/build_site.py pair_statement: a word-overlap candidate,
+    never a review), so a reading page links back to the Lean statement."""
+    global _LEAN_PAIRS
+    if _LEAN_PAIRS is None:
+        import_site()
+        pairs = defaultdict(list)
+        for stmt in S.STATEMENTS:
+            ms, st, how = S.pair_statement(stmt)
+            if how == "candidate" and ms and st:
+                pairs[(ms["id"], st["file"], st["line"])].append(stmt["id"])
+        _LEAN_PAIRS = {k: sorted(v) for k, v in pairs.items()}
+    return _LEAN_PAIRS
+
+
 PAPER_SECONDS = int(os.environ.get("ATLAS_PAPER_SECONDS", "1800"))
 
 # KaTeX has neither \lhook nor \joinrel. The release builds hooked arrows only as
@@ -4363,7 +4387,6 @@ def build_one_paper(m: dict, upstream: str, check: bool, out_dir: str) -> dict:
     slug = m["id"]
     row = {"id": slug, "status": "unavailable", "page": None, "pdf_url": m.get("pdf_url"),
            "main_tex": (m.get("tex") or {}).get("main"), "reasons": []}
-    t0 = time.time()
     try:
         p = Paper(m, upstream)
         p.convert()
@@ -4456,7 +4479,6 @@ def build_one_paper(m: dict, upstream: str, check: bool, out_dir: str) -> dict:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(html_text, encoding="utf-8")
     row["page"] = rel
-    row["seconds"] = round(time.time() - t0, 2)
     return row
 
 

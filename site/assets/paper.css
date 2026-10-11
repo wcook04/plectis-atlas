@@ -59,6 +59,7 @@
 .pr-thm-n, .pr-thm-p { font-weight: 700; }
 .pr-thm--remark .pr-thm-n, .pr-thm--remark .pr-thm-p { font-weight: 400; font-style: italic; }
 .pr-thm-note { font-style: normal; }
+.pr-lean { margin: 0.6em 0 0; font-family: var(--sans); font-size: var(--fs-meta); font-style: normal; color: var(--muted); }
 .pr-thm > p:last-child, .pr-proof > p:last-child { margin-bottom: 0; }
 
 /* Proofs */
