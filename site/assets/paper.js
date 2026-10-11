@@ -70,11 +70,25 @@
       return;
     }
     var i = 0;
+    function once(node) {
+      if (node.__typeset) return;
+      node.__typeset = true;
+      typeset(node);
+    }
+    /* What the reader can see comes first: formulas near the viewport are typeset as
+       they approach it (a deep link lands mid-paper), and the slices below fill in the
+       rest of the paper in order. */
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { if (e.isIntersecting) { once(e.target); io.unobserve(e.target); } });
+      }, { rootMargin: '800px 0px' });
+      nodes.forEach(function (n) { io.observe(n); });
+    }
     /* Typeset in slices so a long paper stays responsive; while the reader has not
        scrolled, keep the linked passage in view as the text above it changes. */
     function slice() {
       var t0 = Date.now();
-      while (i < nodes.length && Date.now() - t0 < 40) typeset(nodes[i++]);
+      while (i < nodes.length && Date.now() - t0 < 40) once(nodes[i++]);
       if (location.hash && !moved) land(true);
       if (i < nodes.length) { requestAnimationFrame(slice); return; }
       stats.done = true;
