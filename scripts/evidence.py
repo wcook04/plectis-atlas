@@ -66,7 +66,7 @@ class FamilyEvidence:
     withdrawn: int
     lean: tuple            # LeanMark, in the reader's order
     readers: tuple         # Reading, in READER_ORDER; tone "none" when that reader has no finding
-    agreement: str         # agree | disagree | unknown
+    agreement: str         # agree | disagree | unknown (the backend's headline_coverage)
     claim: str             # candidate | unresolved
     pairing: str           # selection.pairing_state
     scope_context: str | None
@@ -74,6 +74,13 @@ class FamilyEvidence:
     findings: int = 0
     community_findings: int = 0
     contributions: int = 0
+    comparison: str = "unavailable"   # the backend's finer reader_comparison.state
+
+    def agreement_sentence(self) -> str:
+        """The backend's comparison of the two readings, in one sentence."""
+        key = f"{self.comparison}:{self.agreement}"
+        table = WORDS["comparison"]
+        return table.get(key) or say("agreement." + self.agreement)
 
     @property
     def has_lean(self) -> bool:
@@ -124,8 +131,11 @@ def family_evidence(r, family_id: str, discipline: str | None = None) -> FamilyE
         rd = by_source.get(src)
         credit = (rd or {}).get("credit") or {}
         state = (rd or {}).get("state")
+        if rd is not None and state not in TONE:
+            raise SystemExit(f"family {family_id}: {src} reading has state {state!r}, which "
+                             "scripts/evidence.py does not know; add it to TONE and copy_evidence.json")
         readings.append(Reading(source=src, name=credit.get("name") or src, url=credit.get("url"),
-                                state=state, tone=TONE.get(state, "none") if rd else "none",
+                                state=state, tone=TONE[state] if rd is not None else "none",
                                 term=(rd or {}).get("source_term")))
     lean = tuple(LeanMark(id=l["id"], name=l.get("name") or l["id"][2:], main_result=l.get("main_result"),
                           accepted=tuple(l.get("accepted_current_sources") or ()),
@@ -153,6 +163,7 @@ def family_evidence(r, family_id: str, discipline: str | None = None) -> FamilyE
         findings=len(doc.get("findings") or []),
         community_findings=len(comm.get("findings") or []),
         contributions=len(doc.get("contributions") or []),
+        comparison=cmp.get("state") or "unavailable",
     )
 
 
