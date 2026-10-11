@@ -4,6 +4,11 @@ OpenAI's mathematics release, read and checked. The atlas sets out every paper o
 
 **[Open the atlas](https://wcook04.github.io/plectis-atlas/)**, a map of the whole release that opens into each family, its papers and its Lean statements. You can also go straight to [every family as a list](https://wcook04.github.io/plectis-atlas/explain.html), [the numbers and how each is counted](https://wcook04.github.io/plectis-atlas/numbers.html), or [how to contribute](CONTRIBUTING.md).
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/map-dark.png">
+  <img alt="The atlas's front page: every family of OpenAI's mathematics release drawn as one map by discipline, with a search, a key and four ways in" src="docs/map-light.png">
+</picture>
+
 The atlas is independent of OpenAI. It is built from the public collection at a pinned commit, and every number on this page is computed by a script in this repository.
 
 ## The release in numbers
