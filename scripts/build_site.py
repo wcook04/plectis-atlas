@@ -1340,7 +1340,7 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 <link rel="preload" href="{root}assets/fonts/plectis-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{root}{KATEX_DIR}/katex.min.css">
 <link rel="stylesheet" href="{root}assets/atlas.css">
-<script>(function(){{try{{var t=localStorage.getItem('atlas-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}}catch(e){{}}}})();</script>
+<script>(function(){{var d=document.documentElement;d.classList.add('js');try{{var t=localStorage.getItem('atlas-theme');if(t==='dark'||t==='light')d.setAttribute('data-theme',t);}}catch(e){{}}}})();</script>
 <script defer src="{root}{KATEX_DIR}/katex.min.js"></script>
 <script defer src="{root}{KATEX_DIR}/contrib/auto-render.min.js"></script>
 <script defer src="{root}assets/atlas.js"></script>
@@ -1366,8 +1366,9 @@ def header(rel: str, current: str | None) -> str:
 <header class="top">
  <div class="frame top__in">
   <a class="brand" href="{root}index.html" aria-label="{esc(C('nav.brand_label'))}">{MARK_SVG}<span class="brand__name" translate="no">{esc(C('site.name'))}</span></a>
-  <nav class="nav" aria-label="{esc(C('nav.site_nav'))}">{''.join(links)}</nav>
+  <nav class="nav" id="site-nav" aria-label="{esc(C('nav.site_nav'))}">{''.join(links)}</nav>
   <div class="top__tools">
+   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg><span>{esc(C('nav.menu'))}</span></button>
    <a class="search-open" href="{root}explain.html" aria-haspopup="dialog" aria-controls="search-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg><span class="search-open__label">{esc(C('nav.search'))}</span><kbd aria-hidden="true">/</kbd></a>
    <button class="theme-toggle" type="button" data-label-dark="{esc(C('nav.theme_dark'))}" data-label-light="{esc(C('nav.theme_light'))}" aria-label="{esc(C('nav.theme_dark'))}"><span class="theme-toggle__thumb" aria-hidden="true"></span></button>
   </div>
@@ -3677,6 +3678,9 @@ def build_statement(stmt):
     human_name = summ.get("name")
     subtitle = (f'<p class="phead__sub"><code>{esc(sid)}</code></p>' if not human_name or human_name == label
                 else f'<p class="phead__sub"><span class="md-math">{esc(human_name)}</span> <code>{esc(sid)}</code></p>')
+    reading_href = (root + paper_rec["reading_page"]) if paper_rec and paper_rec.get("reading_page") else None
+    read_primary = (f'<a class="btn btn--primary" href="{esc(reading_href)}">{esc(LW("page.read_in_paper"))}</a>' if reading_href
+                    else f'<a class="btn btn--primary" href="#h-claim">{esc(LW("page.read_pairing"))}</a>')
     runs_section = lean_runs_html(lrec, root) if lrec else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
     readings_section = ""
     if doc:
@@ -3695,8 +3699,7 @@ def build_statement(stmt):
  {subtitle}
  <p class="phead__facts">{where}</p>
  <p class="phead__facts">{esc(main_line)}</p>
- <p class="phead__facts phead__facts--quiet">{esc(LW('page.two_lines'))}</p>
- <p class="actions"><a class="btn btn--primary ext" href="{esc(check_url(sid))}" rel="noopener">{esc(C('statement.check_button'))}</a><a class="btn btn--ghost" href="#h-share">{esc(C('statement.share_jump'))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p>
+ <p class="actions">{read_primary}<a class="btn btn--ghost" href="#h-lean-read">{esc(LW('page.read_lean'))}</a><a class="btn btn--quiet ext" href="{esc(check_url(sid))}" rel="noopener">{esc(C('statement.check_button'))}</a></p>
 </header>
 {('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}
 <section class="band band--tight claim claim--paper" aria-labelledby="h-claim">
@@ -3803,9 +3806,13 @@ def build_explain():
     reader_names = {}
     for ev in evs:
         for rd in ev.readers:
-            reader_names.setdefault(rd.source, rd.name)
+            if rd.tone != "none" and rd.name and rd.name != rd.source:
+                reader_names.setdefault(rd.source, rd.name)
     order = evidence.reader_order(set(reader_names))[:2]
-    short_name = {s: (reader_names.get(s, s).split(", ")[-1]) for s in order}
+    # "Carlos Toledo, cert-machine" is "Carlos Toledo’s cert-machine" in prose and
+    # "cert-machine" in a column head; "MathVet" is "MathVet" in both.
+    short_name = {s_: reader_names.get(s_, s_).split(", ")[-1] for s_ in order}
+    prose_name = {s_: ("’s ".join(reader_names[s_].split(", ", 1)) if ", " in reader_names.get(s_, "") else reader_names.get(s_, s_)) for s_ in order}
     disc = {d["id"]: (slugify(d["name"]), d["name"]) for d in r.universe.get("disciplines") or []}
     status_counts = Counter()
     rows = []
@@ -3835,13 +3842,15 @@ def build_explain():
         if problems:
             classes.append("problems_reported")
         title = fam_title_html(f) if f else esc(ev.name)
+        name_plain = tex_plain(f["title"]) if f else ev.name
         # papers
         extra = []
         if ev.editions:
             extra.append(C("explain.editions_1") if ev.editions == 1 else C("explain.editions_n", n=say(ev.editions)))
         if ev.withdrawn:
             extra.append(C("explain.withdrawn_1") if ev.withdrawn == 1 else C("explain.withdrawn_n", n=say(ev.withdrawn)))
-        papers = f'{num(ev.papers)}' + (f'<span class="cell__sub">{esc(", ".join(extra))}</span>' if extra else "")
+        papers = num(ev.papers)
+        editions = f'<span class="cell__sub">{esc(cap(", ".join(extra)))}</span>' if extra else ""
         # Lean statements and re-runs
         k = len(ev.lean)
         if k:
@@ -3886,13 +3895,12 @@ def build_explain():
         else:
             claim = issue_url("claim", C("issues.claim", id=fid, title=tex_plain(f["title"]) if f else ev.name), family=fid)
             action = f'<a class="btn btn--small ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>'
-        name_plain = tex_plain(f["title"]) if f else ev.name
         rows.append(
-            f'<tr id="f-{fid}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none") if k else "nolean"}" '
+            f'<tr id="f-{fid}" data-q="{esc((fid + " " + name_plain + " " + dname).lower())}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none") if k else "nolean"}" '
             f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}">'
             f'<td class="t-num t-id" data-v="{fid}">{fid}</td>'
             f'<td class="t-title" data-v="{esc(name_plain.lower())}"><a href="families/{fid}.html">{title}</a>'
-            f'<span class="cell__sub t-disc-inline">{esc(dname)}</span>{agree}</td>'
+            f'<span class="cell__sub t-disc-inline">{esc(dname)}</span>{editions}{agree}</td>'
             f'<td class="t-disc" data-v="{esc(dname)}">{esc(dname)}</td>'
             f'<td class="t-num" data-v="{ev.papers}" data-label="{esc(C("explain.col_papers"))}">{papers}</td>'
             f'<td class="t-num" data-v="{k}" data-label="{esc(C("explain.col_lean"))}">{lean_cell}</td>'
@@ -3902,25 +3910,25 @@ def build_explain():
             f'<td data-v="{esc(checks)}" data-label="{esc(C("explain.col_checks"))}">{esc(checks)}</td>'
             f'<td data-v="{st}" data-label="{esc(C("explain.col_status"))}">{"".join(expl)}</td>'
             f'<td class="t-action">{action}</td></tr>')
-    # Filters: discipline, then evidence, then each reader's finding.
-    dbtns = [f'<button type="button" class="chip" data-filter="d" data-value="" aria-pressed="true">{esc(C("explain.all"))} <span class="count">{num(len(evs))}</span></button>']
+    # Filters, in one row: discipline, evidence, each reader's finding, and words.
+    def select(fid_, label, key, opts):
+        return (f'<div class="filters__g"><label class="filters__h" for="{fid_}">{esc(label)}</label>'
+                f'<select class="select" id="{fid_}" data-filter="{key}">{"".join(opts)}</select></div>')
+    dopts = [f'<option value="">{esc(C("explain.all_disciplines"))}</option>']
     for d in r.universe.get("disciplines") or []:
-        dbtns.append(f'<button type="button" class="chip" data-filter="d" data-value="{slugify(d["name"])}" aria-pressed="false">'
-                     f'{esc(d["name"])} <span class="count">{num(len(d.get("family_ids") or []))}</span></button>')
-    ebtns = [f'<button type="button" class="chip" data-filter="c" data-value="" aria-pressed="true">{esc(C("explain.all"))}</button>']
-    for key in ("lean", "nolean", "disagree", "thread_candidate", "thread_cited", "ring", "explained_by_others", "problems_reported"):
-        n = counts.get(key, 0)
-        ebtns.append(f'<button type="button" class="chip" data-filter="c" data-value="{key}" aria-pressed="false">'
-                     f'{esc(C("explain.ev_" + key))} <span class="count">{num(n)}</span></button>')
-    selects = []
+        dopts.append(f'<option value="{slugify(d["name"])}">{esc(d["name"])} ({num(len(d.get("family_ids") or []))})</option>')
+    eopts = [f'<option value="">{esc(C("explain.all_evidence"))}</option>']
+    for key in ("lean", "nolean", "disagree", "explained_by_others", "problems_reported", "ring", "thread_candidate", "thread_cited"):
+        eopts.append(f'<option value="{key}">{esc(C("explain.ev_" + key))} ({num(counts.get(key, 0))})</option>')
+    selects = [select("ff-d", C("explain.filter_discipline"), "d", dopts), select("ff-c", C("explain.filter_evidence"), "c", eopts)]
     for side, src in enumerate(order):
         opts = [f'<option value="">{esc(C("explain.reader_any"))}</option>']
         for tone in evidence.TONES:
             n = counts.get(("left_" if side == 0 else "right_") + tone, 0)
             opts.append(f'<option value="{tone}">{esc(cap(say_e("tone_short." + tone)))} ({num(n)})</option>')
-        sid_ = f"rf-{side}"
-        selects.append(f'<div class="filters__g"><label class="filters__h" for="{sid_}">{esc(C("explain.filter_reader", name=reader_names.get(src, src)))}</label>'
-                       f'<select class="select" id="{sid_}" data-filter="{"l" if side == 0 else "r"}">{"".join(opts)}</select></div>')
+        selects.append(select(f"ff-{side}", C("explain.filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts))
+    selects.append(f'<div class="filters__g filters__g--q"><label class="filters__h" for="ff-q">{esc(C("explain.filter_words"))}</label>'
+                   f'<input class="filter-input" id="ff-q" type="search" data-filter="q" autocomplete="off" spellcheck="false" placeholder="{esc(C("explain.filter_words_ph"))}"></div>')
     sort_cols = [("id", "n"), ("result", "s"), ("discipline", "s"), ("papers", "n"), ("lean", "n")]
     heads = []
     for i, (key, typ) in enumerate(sort_cols):
@@ -3935,7 +3943,7 @@ def build_explain():
     invite_key = "explain.invite_all" if status_counts["none"] == len(evs) else "explain.invite"
     invite = (f'<p class="muted">{esc(C(invite_key, open=num(status_counts["none"]), families=num(len(evs))))} {esc(C("explain.how"))} '
               f'<a class="ext" href="{esc(REPO + "/" + CFG["contributing_path"])}" rel="noopener">{esc(C("contribute.guide_link"))}</a></p>')
-    readers_note = C("explain.readers_note", left=reader_names.get(order[0], order[0]), right=reader_names.get(order[1], order[1]) if len(order) > 1 else "")
+    readers_note = C("explain.readers_note", left=prose_name[order[0]], right=prose_name[order[1]] if len(order) > 1 else "")
     body = f"""<div class="frame page page--families">
 <header class="phead">
  <h1 class="phead__title">{esc(C('explain.title'))}</h1>
@@ -3945,8 +3953,6 @@ def build_explain():
 <section class="band band--tight" aria-labelledby="h-list">
 <h2 class="h2 vh" id="h-list">{esc(C('explain.list_heading'))}</h2>
 <div class="filters filters--families" data-filter-families="families-table" hidden>
- <div class="filters__g filters__g--wide"><p class="filters__h" id="fh-d">{esc(C('explain.filter_discipline'))}</p><div class="chips" role="group" aria-labelledby="fh-d">{''.join(dbtns)}</div></div>
- <div class="filters__g filters__g--wide"><p class="filters__h" id="fh-c">{esc(C('explain.filter_evidence'))}</p><div class="chips" role="group" aria-labelledby="fh-c">{''.join(ebtns)}</div></div>
  {''.join(selects)}
  <p class="filters__n" aria-live="polite" data-shown-template="{esc(C('explain.shown', n='{n}', total=num(len(evs))))}">{esc(C('explain.shown', n=num(len(evs)), total=num(len(evs))))}</p>
  <button type="button" class="btn btn--quiet filters__reset" hidden>{esc(C('explain.reset'))}</button>

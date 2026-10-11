@@ -40,6 +40,25 @@
     toggle.addEventListener('click', function () { setTheme(effectiveTheme() === 'dark' ? 'light' : 'dark'); });
   }
 
+  /* ---- Site menu (phones) ------------------------------------------------ */
+  /* Below 760px the navigation folds behind one Menu button so the header stays one
+     row; without JavaScript the links simply wrap. Escape or a click outside closes it. */
+  var navBtn = doc.querySelector('.nav-toggle');
+  var nav = doc.getElementById('site-nav');
+  if (navBtn && nav) {
+    var setNav = function (open) {
+      navBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      nav.classList.toggle('nav--open', open);
+    };
+    navBtn.addEventListener('click', function () { setNav(navBtn.getAttribute('aria-expanded') !== 'true'); });
+    doc.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && navBtn.getAttribute('aria-expanded') === 'true') { setNav(false); navBtn.focus(); }
+    });
+    doc.addEventListener('click', function (ev) {
+      if (navBtn.getAttribute('aria-expanded') === 'true' && !nav.contains(ev.target) && !navBtn.contains(ev.target)) setNav(false);
+    });
+  }
+
   /* ---- Mathematics ---------------------------------------------------- */
   var GLOBAL_MACROS = {
     '\\ensuremath': '#1', '\\xspace': '', '\\bm': '\\boldsymbol{#1}', '\\mathbbm': '\\mathbb{#1}',
@@ -213,55 +232,59 @@
     apply();
   });
 
-  /* The Families list: filters by discipline, by evidence and by each outside reader's
-     finding, combined; the state lives in the address (?d=&c=&l=&r=) so a filtered
-     list can be shared. Without JavaScript the whole list shows and the filters stay hidden. */
+  /* The Families list: filters by discipline, evidence, each outside reader's finding
+     and words, combined; the state lives in the address (?d=&c=&l=&r=&q=) so a
+     filtered list can be shared. Without JavaScript the whole list shows and the
+     filters stay hidden. */
   Array.prototype.forEach.call(doc.querySelectorAll('[data-filter-families]'), function (wrap) {
     var table = doc.getElementById(wrap.getAttribute('data-filter-families'));
     if (!table) return;
     var empty = doc.querySelector('.filters__empty');
     var reset = wrap.querySelector('.filters__reset');
-    var state = { d: '', c: '', l: '', r: '' };
+    var KEYS = ['d', 'c', 'l', 'r', 'q'];
+    var state = { d: '', c: '', l: '', r: '', q: '' };
+    var controls = {};
+    wrap.querySelectorAll('[data-filter]').forEach(function (el) { controls[el.getAttribute('data-filter')] = el; });
     wrap.hidden = false;
-    function sync() {
-      wrap.querySelectorAll('.chip[data-filter]').forEach(function (b) {
-        b.setAttribute('aria-pressed', state[b.getAttribute('data-filter')] === b.getAttribute('data-value') ? 'true' : 'false');
-      });
-      wrap.querySelectorAll('select[data-filter]').forEach(function (sel) { sel.value = state[sel.getAttribute('data-filter')]; });
-    }
+    function sync() { KEYS.forEach(function (k) { if (controls[k]) controls[k].value = state[k]; }); }
     function apply(push) {
       var n = 0;
+      var words = norm(state.q).trim().split(/\s+/).filter(Boolean);
       Array.prototype.forEach.call(table.tBodies[0].rows, function (row) {
+        var q = row.getAttribute('data-q') || '';
         var ok = (!state.d || row.getAttribute('data-d') === state.d) &&
           (!state.c || (' ' + row.getAttribute('data-c') + ' ').indexOf(' ' + state.c + ' ') >= 0) &&
           (!state.l || row.getAttribute('data-l') === state.l) &&
-          (!state.r || row.getAttribute('data-r') === state.r);
+          (!state.r || row.getAttribute('data-r') === state.r) &&
+          words.every(function (w) { return norm(q).indexOf(w) >= 0; });
         row.hidden = !ok;
         if (ok) n++;
       });
       shownCount(wrap, n);
       if (empty) empty.hidden = n > 0;
-      var any = state.d || state.c || state.l || state.r;
-      if (reset) reset.hidden = !any;
+      if (reset) reset.hidden = !KEYS.some(function (k) { return state[k]; });
       if (push !== false && window.history && history.replaceState) {
-        var q = new URLSearchParams();
-        ['d', 'c', 'l', 'r'].forEach(function (k) { if (state[k]) q.set(k, state[k]); });
-        history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q.toString() : '') + location.hash);
+        var u = new URLSearchParams();
+        KEYS.forEach(function (k) { if (state[k]) u.set(k, state[k]); });
+        history.replaceState(null, '', location.pathname + (u.toString() ? '?' + u.toString() : '') + location.hash);
       }
     }
-    wrap.addEventListener('click', function (ev) {
-      var b = ev.target.closest('.chip[data-filter]');
-      if (b) { state[b.getAttribute('data-filter')] = b.getAttribute('data-value'); sync(); apply(); return; }
-      if (ev.target.closest('.filters__reset')) { state = { d: '', c: '', l: '', r: '' }; sync(); apply(); }
+    var t = 0;
+    wrap.addEventListener('input', function (ev) {
+      var el = ev.target.closest('[data-filter]');
+      if (!el) return;
+      state[el.getAttribute('data-filter')] = el.value;
+      clearTimeout(t);
+      t = setTimeout(apply, el.tagName === 'INPUT' ? 120 : 0);
     });
-    wrap.addEventListener('change', function (ev) {
-      var sel = ev.target.closest('select[data-filter]');
-      if (sel) { state[sel.getAttribute('data-filter')] = sel.value; apply(); }
-    });
+    if (reset) reset.addEventListener('click', function () { KEYS.forEach(function (k) { state[k] = ''; }); sync(); apply(); });
     var params = new URLSearchParams(location.search);
-    ['d', 'c', 'l', 'r'].forEach(function (k) {
+    KEYS.forEach(function (k) {
       var v = params.get(k) || '';
-      if (v && (wrap.querySelector('[data-filter="' + k + '"][data-value="' + v + '"]') || wrap.querySelector('select[data-filter="' + k + '"] option[value="' + v + '"]'))) state[k] = v;
+      var el = controls[k];
+      if (!v || !el) return;
+      if (el.tagName === 'SELECT' && !el.querySelector('option[value="' + v.replace(/"/g, '') + '"]')) return;
+      state[k] = v;
     });
     sync();
     apply(false);

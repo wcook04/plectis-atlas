@@ -30,7 +30,8 @@
   "site_nav": "Site",
   "sources": "Sources",
   "glossary": "Glossary",
-  "map": "Map"
+  "map": "Map",
+  "menu": "Menu"
  },
  "search": {
   "title": "Search the atlas",
@@ -642,12 +643,16 @@
  },
  "explain": {
   "title": "Families",
-  "lede": "All {families} families of the release, each with its papers, its Lean statements, what the two outside readers found, the re-runs outside groups report and who has explained it.",
-  "readers_note": "The outside readers judge whether a family’s Lean statements state its headline result: {left}, and {right}. Each column gives the reader’s own term, with the atlas’s plain reading of it underneath.",
+  "lede": "All {families} families of the release, each with its papers, its Lean statements, what the outside readers found, the re-runs outside groups report and who has explained it.",
+  "readers_note": "The outside readers judge whether a family’s Lean statements state its headline result: {left} and {right}. Each column gives the reader’s own term, with the atlas’s plain reading of it underneath.",
   "list_heading": "Every family",
   "caption": "Every family in the release, one per row, in the release’s order.",
   "filter_evidence": "Evidence",
   "filter_reader": "{name} finds",
+  "filter_words": "Words",
+  "filter_words_ph": "Name or number",
+  "all_disciplines": "All disciplines",
+  "all_evidence": "Any evidence",
   "reader_any": "Any finding",
   "reset": "Clear the filters",
   "none_match": "No family matches these filters.",
@@ -665,7 +670,7 @@
   "editions_n": "{n} previous editions",
   "withdrawn_1": "one withdrawn",
   "withdrawn_n": "{n} withdrawn",
-  "no_lean": "None in the release",
+  "no_lean": "None",
   "not_read": "Not read",
   "runs_of": "{k} of {n}",
   "disagree_flag": "The two readers disagree",
@@ -675,9 +680,9 @@
   "problems_n": "{n} problems reported, not judged by the atlas",
   "ev_lean": "Has Lean statements",
   "ev_nolean": "No Lean statement",
-  "ev_disagree": "The two readers disagree",
-  "ev_thread_candidate": "Paired by shared words only",
-  "ev_thread_cited": "Paired through the Lean source or the release",
+  "ev_disagree": "Readers disagree",
+  "ev_thread_candidate": "Paired by shared words",
+  "ev_thread_cited": "Paired by the Lean source or the release",
   "ev_ring": "Checked by another method",
   "ev_explained_by_others": "Explained by others",
   "ev_problems_reported": "Problems reported",
@@ -912,7 +917,7 @@
   "since_items": [
    {
     "who": "Thomas Hales",
-    "title": "What mathematicians should know about the Lean theorem prover",
+    "title": "What mathematicians should know about the Lean Theorem Prover: questions of reliability and AI",
     "url": "https://terrytao.wordpress.com/2026/10/09/what-mathematicians-should-know-about-the-lean-theorem-proverquestions-of-reliability-and-ai/",
     "says": "a guest post on Terence Tao’s blog (9 October 2026), explains that Lean’s kernel check is the core safeguard, and that a person must still confirm that a formal statement and its definitions say what was intended. This is why every Lean statement here is shown whole, with who compared it with the paper and what they found."
    },

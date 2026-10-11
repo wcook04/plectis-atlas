@@ -180,8 +180,8 @@
 
 /* ---- The Lean statement page: pairing, re-runs, readings ------------------- */
 .page--lean .phead__sub { margin: -4px 0 10px; color: var(--ink-soft); font-family: var(--serif); font-size: 1.125rem; }
-.page--lean .phead__sub code { font-family: var(--lean-mono); font-size: 0.82em; color: var(--steel-text); margin-left: 0.4em; }
-.phead__facts--quiet { font-size: var(--fs-small); max-width: 62ch; }
+.page--lean .phead__sub code { font-family: var(--lean-mono); font-size: 0.82em; color: var(--steel-text); }
+.page--lean .phead__sub span + code { margin-left: 0.4em; }
 .claim--paper .claim__src { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink); margin: 0 0 10px; }
 /* The join: the words between the paper theorem and the Lean statement it is paired
    with. A steel rule runs down from the theorem; dashed for a candidate pairing,

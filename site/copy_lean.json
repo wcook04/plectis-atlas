@@ -100,7 +100,9 @@
   "alternatives_heading": "Statements that share the most words with it",
   "alternatives_more": "Other statements that share words with it",
   "alternatives_none": "The backend records no other statement for it.",
-  "two_lines": "Formal status and readable argument are kept apart here: the Lean statement and its re-runs say what Lean checks, and the paper’s page holds the argument a person reads."
+  "read_in_paper": "Read the theorem in the paper",
+  "read_pairing": "Read the pairing",
+  "read_lean": "Read the Lean statement"
  },
  "pairing": {
   "ref": "{name} of {title}",
