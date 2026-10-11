@@ -257,6 +257,22 @@
       if (g === 'support') return { fill: 'var(--t-none)', key: 'csup', ring: 'ring-steel' };
       return { fill: 'var(--t-none)', key: 'cnone' };
     }
+    if (o === 'type') {
+      var t = f.ty;
+      if (t === 'counterexample') return { fill: 'var(--t-x2)', key: 'tyC', ink: true };
+      if (t === 'proof') return { fill: 'var(--t-main)', key: 'tyP', ink: true };
+      if (t === 'algorithm') return { fill: 'var(--t-sup)', key: 'tyA' };
+      if (t === 'construction') return { fill: 'var(--t-x1)', key: 'tyK' };
+      return { fill: 'var(--t-none)', key: 'ty0' };
+    }
+    if (o === 'tier') {
+      var n = f.ti;
+      if (n === null || n === undefined) return { fill: 'var(--t-none)', key: 'ti9' };
+      if (n <= 1) return { fill: 'var(--t-s3)', key: 'ti1', ink: true };
+      if (n === 2) return { fill: 'var(--t-s2)', key: 'ti2' };
+      if (n === 3) return { fill: 'var(--t-s1)', key: 'ti3' };
+      return { fill: 'var(--t-none)', key: 'ti4', ring: 'ring-steel' };
+    }
     if (o === 'community') {
       var w = f.w || 0;
       if (!w) return { fill: 'var(--t-none)', key: 'w0' };
@@ -293,6 +309,12 @@
     } else if (o === 'covers') {
       row('sw--main', S.legend_covers_full, 'cfull'); row('sw--sup', S.legend_covers_part, 'cpart'); row('sw--x1', S.legend_covers_less, 'cless'); row('sw--none ring-steel', S.legend_covers_support, 'csup'); row('sw--none', S.legend_covers_none, 'cnone');
       rows.push('<p class="legend__note">' + esc(S.legend_covers_note) + '</p>');
+    } else if (o === 'type') {
+      row('sw--main', S.legend_type_proof, 'tyP'); row('sw--x2', S.legend_type_counter, 'tyC'); row('sw--sup', S.legend_type_algorithm, 'tyA'); row('sw--x1', S.legend_type_construction, 'tyK');
+      rows.push('<p class="legend__note">' + esc(S.legend_type_note) + '</p>');
+    } else if (o === 'tier') {
+      row('sw--s3', S.legend_tier_1, 'ti1'); row('sw--s2', S.legend_tier_2, 'ti2'); row('sw--s1', S.legend_tier_3, 'ti3'); row('sw--none ring-steel', S.legend_tier_4, 'ti4');
+      rows.push('<p class="legend__note">' + esc(S.legend_tier_note) + '</p>');
     } else if (o === 'community') {
       row('sw--x2', S.legend_community_2, 'w2'); row('sw--x1', S.legend_community_1, 'w1'); row('sw--none', S.legend_community_0, 'w0');
       rows.push('<p class="legend__note">' + esc(S.legend_community_note) + '</p>');
@@ -526,7 +548,7 @@
   function readHash() {
     var h = new URLSearchParams(location.hash.replace(/^#/, ''));
     var o = h.get('o');
-    if (o && /^(lean|covers|community|size|rests|explained)$/.test(o)) setOverlay(o, true);
+    if (o && /^(lean|covers|type|tier|community|size|rests|explained)$/.test(o)) setOverlay(o, true);
     var f = h.get('f');
     var d = h.get('d');
     if (f && fam[f]) return { level: 1, disc: fam[f].d, sel: f };

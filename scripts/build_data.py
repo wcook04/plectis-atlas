@@ -1191,6 +1191,39 @@ def build(upstream: Path, out: Path, quiet: bool = False):
             "What each Lean statement certifies relative to its paper's headline result (headline, part of the headline, "
             "a consequence, a weaker form, a supporting result), classified by an AI agent from OpenAI's own Lean notes "
             "with each row quoting the note (curated/scope_coverage.json). No person has reviewed it yet.")
+    # Fold other people's work into the rows, crediting the source on every value (curated/sources/*.json).
+    sources = []
+    for sp in sorted((ROOT / "curated" / "sources").glob("*.json")):
+        src = json.loads(sp.read_text(encoding="utf-8"))
+        meta = src.get("source", {})
+        sid_ = meta.get("id") or sp.stem
+        sources.append({k: meta.get(k) for k in ("id", "name", "url", "authors", "kind", "licence", "reuse", "snapshot", "method", "fields", "tier_names")})
+        for fid, vals in (src.get("families") or {}).items():
+            if fid not in fam_by_id:
+                continue
+            sourced = fam_by_id[fid].setdefault("sourced", {})
+            for field, value in vals.items():
+                if value is None:
+                    continue
+                sourced.setdefault(field, []).append({"value": value, "source": sid_})
+    summary["sources"] = sources
+    tl = next((x for x in sources if x["id"] == "tier-list"), None)
+    yaml_src_slugs = set(re.findall(r"preprints/([^/\s]+)/", read(upstream / "lean" / "formalization.yaml").split("related_formalizations:")[0]))
+    recon = {
+        "families_with_lean_in_scope_notes": sum(1 for f in families if f["statements"]),
+        "families_with_a_paper_in_formalization_yaml_sources": len({m["family"] for sl, m in manuscripts.items() if sl in yaml_src_slugs and m.get("family")}),
+        "papers_in_formalization_yaml_sources": len(yaml_src_slugs),
+        "openai_reported_top_line_formalized": (upstream_reported.get("top_line_results_formalized") or {}).get("quote"),
+    }
+    if tl:
+        tlf = [f.get("sourced", {}).get("lean_formalisations", [{}])[0].get("value") for f in families]
+        recon["tier_list_families_with_lean"] = sum(1 for v in tlf if v)
+        recon["tier_list_lean_formalisations_total"] = sum(v for v in tlf if v)
+    summary["lean_count_reconciliation"] = recon
+    summary["definitions"]["lean_count_reconciliation"] = (
+        "Published counts of how much of the release has Lean, side by side: families whose Lean notes link a Comparator "
+        "statement; families and papers in the sources list of OpenAI's lean/formalization.yaml; OpenAI's own reported "
+        "share; and counts from other public sources. Each measures a different thing.")
     prior = out / "summary.json"
     if prior.exists():
         # The Lean claim-layer block comes from scripts/build_lean_claims.py; keep it across rebuilds.

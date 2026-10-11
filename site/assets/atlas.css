@@ -663,3 +663,6 @@ body.social { margin: 0; width: 1200px; height: 675px; overflow: hidden; backgro
 .cfinds { list-style: none; padding: 0; margin: .5rem 0 0; }
 .cfind { padding: .5rem 0; border-top: 1px solid var(--rule); }
 .cfind .pill { margin-right: .35rem; }
+
+.phead__facets { margin: .25rem 0 0; color: var(--ink-2, inherit); }
+.phead__facets .sep { margin: 0 .5rem; opacity: .6; }

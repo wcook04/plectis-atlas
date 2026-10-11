@@ -8,7 +8,27 @@
    "Milnes-rationality-conjecture-for-abelian-varieties-October-7-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "002",
@@ -21,7 +41,27 @@
    "The-two-primary-Birch-Swinnerton-Dyer-formula-in-Selmer-corank-at-most-one-October-6-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "003",
@@ -69,6 +109,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/003.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -81,7 +141,27 @@
    "A-pointwise-2-converse-for-elliptic-curves-with-rational-two-torsion-October-7-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "005",
@@ -106,6 +186,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/005.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -118,7 +218,27 @@
    "The-mean-analytic-rank-of-quadratic-twists-of-elliptic-curves-October-6-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "007",
@@ -154,6 +274,26 @@
   "reasoning_summary": {
    "title": "Ordinary two-point correlations of multiplicative functions",
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/ordinary-two-point-correlations.pdf"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -179,6 +319,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/008.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -206,6 +366,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/009.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -219,7 +399,27 @@
    "Fontaine-Mazur-modularity-at-the-prime-2-October-6-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "011",
@@ -232,7 +432,27 @@
    "Prime-Predecessors-with-an-Even-Number-of-Prime-Factors-September-17-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "012",
@@ -257,6 +477,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/012.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -289,6 +529,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/013.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -307,7 +567,27 @@
    "Frobenius-Structures-on-Tame-Hecke-Eigensheaves-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "015",
@@ -334,6 +614,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/015.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -348,7 +648,27 @@
    "Elliptic-Squares-and-Zilber-Pink-for-Curves-in-A2-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "017",
@@ -377,6 +697,26 @@
   "reasoning_summary": {
    "title": "The irrationality exponent of π",
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/irrationality-exponent-of-pi.pdf"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -389,7 +729,27 @@
    "The-Margulis-Platonov-conjecture-over-number-fields-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "019",
@@ -401,7 +761,27 @@
    "The-p-adic-section-conjecture-October-6-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "020",
@@ -426,6 +806,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/020.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -458,6 +858,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/021.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -469,7 +889,27 @@
    "The-weak-inhomogeneous-Duffin-Schaeffer-conjecture-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "023",
@@ -494,6 +934,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/023.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -526,6 +986,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/024.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -558,6 +1038,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/025.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -583,6 +1083,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/026.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -608,6 +1128,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/027.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -633,6 +1173,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/028.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -645,7 +1205,27 @@
    "Simultaneous-primitive-roots-a-conditional-lower-bound-for-prime-bases-October-4-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "030",
@@ -656,7 +1236,27 @@
    "Modularity-of-elliptic-curves-over-imaginary-quadratic-fields-October-4-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "031",
@@ -667,7 +1267,27 @@
    "Open-Homomorphisms-of-Global-Solvably-Closed-Galois-Groups-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "032",
@@ -682,7 +1302,27 @@
    "A-Conditional-Reduction-for-Algebraic-Kuga-Satake-Correspondences-September-10-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "033",
@@ -711,6 +1351,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/033.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -735,7 +1395,27 @@
    "Abundance-after-nonvanishing-for-compact-Kahler-fourfolds-September-27-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "035",
@@ -747,7 +1427,27 @@
    "Abundance-in-numerical-dimension-one-for-terminal-threefolds-in-positive-characteristic-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "036",
@@ -761,7 +1461,27 @@
    "Minimal-models-in-numerical-dimension-one-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "037",
@@ -773,7 +1493,27 @@
    "The-normalized-volume-gap-in-dimension-four-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "038",
@@ -784,7 +1524,27 @@
    "Fujitas-freeness-conjecture-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "039",
@@ -819,6 +1579,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/039.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -830,7 +1610,27 @@
    "Blochs-Conjecture-for-Surfaces-with-pg-equals-q-equals-0-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "041",
@@ -842,7 +1642,27 @@
    "The-Strong-Hyperkahler-SYZ-Conjecture-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "042",
@@ -853,7 +1673,27 @@
    "Every-complex-K3-surface-is-Oka-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "043",
@@ -864,7 +1704,27 @@
    "P-equals-W-in-composite-rank-for-fixed-determinant-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "044",
@@ -875,7 +1735,27 @@
    "The-equivariant-cohomological-Hikita-conjecture-for-arbitrary-quivers-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "046",
@@ -887,7 +1767,27 @@
    "A-surface-counterexample-to-Shafarevich-holomorphic-convexity-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "047",
@@ -912,6 +1812,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/047.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -923,7 +1843,27 @@
    "A-singular-normal-affine-surface-with-free-tangent-sheaf-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "049",
@@ -963,6 +1903,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/049.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -988,6 +1948,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/050.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -999,7 +1979,27 @@
    "Canonical-ampleness-of-compact-hyperbolic-Kahler-manifolds-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "052",
@@ -1032,6 +2032,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/052.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1043,7 +2063,27 @@
    "A-high-arity-counterexample-to-Pixton-completeness-in-Chow-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "054",
@@ -1054,7 +2094,27 @@
    "Irrational-cubic-fourfolds-with-geometric-K3-categories-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "055",
@@ -1066,7 +2126,27 @@
    "Prescribed-large-volume-charges-on-threefolds-with-trivial-canonical-bundle-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "056",
@@ -1081,7 +2161,27 @@
    "Finite-ordinary-minimal-model-programs-on-compact-Kahler-fourfolds-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "057",
@@ -1094,7 +2194,27 @@
    "A-conditional-abelianity-theorem-for-special-fourfold-pairs-with-a-half-weight-divisor-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "058",
@@ -1120,6 +2240,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/058.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1132,7 +2272,27 @@
    "Ambiently-homeomorphic-isolated-hypersurface-germs-in-C4-with-multiplicities-four-and-five-September-27-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "060",
@@ -1143,7 +2303,27 @@
    "Global-Spherical-Shells-on-Minimal-Surfaces-of-Class-VII-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "062",
@@ -1154,7 +2334,27 @@
    "Contact-Fano-manifolds-and-the-LeBrun-Salamon-conjecture-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "063",
@@ -1165,7 +2365,27 @@
    "The-Generalized-Mukai-Conjecture-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "064",
@@ -1176,7 +2396,27 @@
    "Topological-triviality-of-mu-constant-families-of-surface-singularities-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "065",
@@ -1188,7 +2428,27 @@
    "Virasoro-Constraints-for-Projective-Complete-Intersections-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "066",
@@ -1214,6 +2474,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/066.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1225,7 +2505,27 @@
    "The-Campana-Peternell-conjecture-in-dimension-six-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "068",
@@ -1242,7 +2542,27 @@
    "Exact-orders-and-invariant-anticanonical-linear-systems-September-26-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "069",
@@ -1253,7 +2573,27 @@
    "Global-quantum-geometric-Langlands-at-irrational-level-October-4-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "071",
@@ -1285,6 +2625,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/071.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1325,6 +2685,32 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/072.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1357,6 +2743,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/073.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1369,7 +2775,27 @@
    "Every-four-dimensional-Kakeya-set-has-full-Hausdorff-dimension-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "075",
@@ -1394,6 +2820,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/075.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1428,6 +2874,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/076.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1440,7 +2906,27 @@
    "Diagonal-Fourier-extension-for-positively-curved-surfaces-in-three-dimensions-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "078",
@@ -1451,7 +2937,27 @@
    "Bochner-Riesz-Multipliers-in-Three-Dimensions-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "079",
@@ -1462,7 +2968,27 @@
    "Critical-local-smoothing-for-the-three-dimensional-wave-equation-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "080",
@@ -1474,7 +3000,27 @@
    "Endpoint-pointwise-convergence-for-the-Schrodinger-equation-in-higher-dimensions-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "081",
@@ -1499,6 +3045,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/081.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1526,6 +3092,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/082.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1551,6 +3137,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/083.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1577,6 +3183,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/084.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1609,6 +3235,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/085.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1620,7 +3266,27 @@
    "An-L3-bound-for-the-trilinear-Hilbert-transform-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "087",
@@ -1672,6 +3338,26 @@
   "reasoning_summary": {
    "title": "Symmetric and general Mahler conjectures",
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/symmetric-and-general-mahler-conjectures.pdf"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1712,6 +3398,32 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/088.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1745,6 +3457,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/089.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1794,6 +3526,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/090.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1819,6 +3571,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/091.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1852,6 +3624,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/092.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1863,7 +3655,27 @@
    "A-dimension-free-logarithmic-Sobolev-inequality-for-subgaussian-log-concave-measures-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "094",
@@ -1888,6 +3700,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/094.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1915,6 +3747,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/095.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1940,6 +3792,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/096.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1965,6 +3837,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/097.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -1997,6 +3889,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/098.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2045,6 +3957,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/099.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2105,6 +4037,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/100.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2116,7 +4068,27 @@
    "A-sharp-entropy-bound-and-the-simplex-inequality-for-isotropic-constants-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "102",
@@ -2177,6 +4149,26 @@
   "reasoning_summary": {
    "title": "Ordinary NP-hardness at the basic semidefinite threshold",
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/basic-semidefinite-threshold-np-hardness.pdf"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2202,6 +4194,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/103.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2237,6 +4249,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/104.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2262,6 +4294,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/105.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2287,6 +4339,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/106.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2321,6 +4393,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/107.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2353,6 +4445,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/108.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2364,7 +4476,27 @@
    "Integer-multiplication-below-n-log-n-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "110",
@@ -2397,6 +4529,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/110.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2429,6 +4581,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/111.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2454,6 +4626,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/112.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2515,6 +4707,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/113.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2541,6 +4753,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/114.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2573,6 +4805,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/115.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2607,6 +4859,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/116.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2633,6 +4905,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/117.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2658,6 +4950,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/118.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2691,6 +5003,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/119.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2702,7 +5034,27 @@
    "Almost-Linear-Time-Maximum-Cardinality-Matching-in-Sparse-General-Graphs-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "121",
@@ -2727,6 +5079,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/121.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2754,6 +5126,32 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/122.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2779,6 +5177,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/124.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2826,6 +5244,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/125.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2858,6 +5296,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/126.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2883,6 +5341,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/127.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2908,6 +5386,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/128.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2948,6 +5446,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/129.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -2981,6 +5499,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/130.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3006,6 +5544,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/131.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3031,6 +5589,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/132.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3080,6 +5658,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/133.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3113,6 +5711,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/134.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3138,6 +5756,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/135.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3149,7 +5787,27 @@
    "The-PCP-for-PPAD-conjecture-a-quasilinear-reduction-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "137",
@@ -3174,6 +5832,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/137.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3186,7 +5864,27 @@
    "A-Low-Space-Algorithm-for-Worst-Case-Subset-Sum-September-26-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "139",
@@ -3211,6 +5909,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/139.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3290,6 +6008,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/140.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 6,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3301,7 +6039,27 @@
    "Existential-universal-real-sentences-in-the-counting-hierarchy-October-4-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "142",
@@ -3312,7 +6070,27 @@
    "Deterministic-Polynomial-Factorization-over-Prime-Fields-October-4-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "143",
@@ -3338,6 +6116,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/143.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3363,6 +6161,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/144.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3388,6 +6206,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/145.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3427,6 +6265,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/146.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3439,7 +6297,27 @@
    "Rigidity-of-Smooth-Billiards-with-a-Continuous-Caustic-Collar-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "148",
@@ -3471,6 +6349,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/148.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3497,6 +6395,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/149.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3523,6 +6441,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/150.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3548,6 +6486,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/151.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3573,6 +6531,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/152.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3584,7 +6562,27 @@
    "Arithmetic-classification-and-non-Pisot-singularity-for-Bernoulli-convolutions-October-3-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "154",
@@ -3598,7 +6596,27 @@
    "Pointwise-convergence-of-triple-ergodic-averages-for-mixing-transformations-October-4-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "155",
@@ -3623,6 +6641,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/155.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3648,6 +6686,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/156.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3682,6 +6740,32 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/157.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3714,6 +6798,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/158.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3743,6 +6847,26 @@
   "reasoning_summary": {
    "title": "Quasipolynomial bounds for arithmetic progressions",
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/quasipolynomial-arithmetic-progressions.pdf"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3768,6 +6892,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/160.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3793,6 +6937,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/161.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3833,6 +6997,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/162.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3844,7 +7028,27 @@
    "Monochromatic-finite-sums-and-products-in-the-positive-integers-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "165",
@@ -3877,6 +7081,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/165.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3888,7 +7112,27 @@
    "The-higher-dimensional-Erdos-distinct-distances-conjecture-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "167",
@@ -3921,6 +7165,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/167.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3946,6 +7210,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/168.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -3971,6 +7255,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/169.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4004,6 +7308,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/170.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4015,7 +7339,27 @@
    "The-hypercube-Ramsey-number-has-linear-order-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "172",
@@ -4082,6 +7426,32 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/172.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4107,6 +7477,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/173.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4140,6 +7530,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/174.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4174,6 +7584,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/175.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4199,6 +7629,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/176.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4224,6 +7674,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/177.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "construction",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4235,7 +7705,27 @@
    "Deterministic-nonbipartite-Ramanujan-graphs-in-every-fixed-degree-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "construction",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "179",
@@ -4267,6 +7757,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/179.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4292,6 +7802,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/180.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4317,6 +7847,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/181.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4344,6 +7894,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/182.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4369,6 +7939,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/183.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4395,6 +7985,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/184.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4427,6 +8037,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/185.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4453,6 +8083,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/186.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4492,6 +8142,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/187.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 6,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4517,6 +8187,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/188.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4542,6 +8232,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/189.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4567,6 +8277,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/190.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 6,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4592,6 +8322,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/191.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4617,6 +8367,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/192.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 6,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4628,7 +8398,27 @@
    "Positivity-of-Serres-Intersection-Multiplicity-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "194",
@@ -4653,6 +8443,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/194.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4678,6 +8488,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/195.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4703,6 +8533,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/196.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4756,6 +8606,26 @@
   "reasoning_summary": {
    "title": "Kaplansky's direct-finiteness conjecture in characteristic two",
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/kaplansky-direct-finiteness-characteristic-two.pdf"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4788,6 +8658,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/198.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4821,6 +8711,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/199.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4833,7 +8743,27 @@
    "Commuting-Division-Coefficient-Forms-and-the-Artinian-Eisenbud-Green-Harris-Conjecture-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "201",
@@ -4844,7 +8774,27 @@
    "A-Counterexample-to-Kuroshs-Division-Ring-Problem-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "202",
@@ -4855,7 +8805,27 @@
    "The-Blockwise-Alperin-Weight-Conjecture-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "203",
@@ -4867,7 +8837,27 @@
    "Integral-Donovan-Finiteness-over-Witt-Vectors-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "204",
@@ -4878,7 +8868,27 @@
    "Tensor-Saturation-for-Even-Spin-Groups-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "205",
@@ -4911,6 +8921,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/205.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4937,6 +8967,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/206.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4970,6 +9020,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/207.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -4981,7 +9051,27 @@
    "Fiber-functors-for-finite-symmetric-tensor-categories-in-positive-characteristic-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "209",
@@ -4993,7 +9083,27 @@
    "An-Integral-Degree-Three-Gersten-Counterexample-September-26-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "210",
@@ -5019,6 +9129,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/210.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5050,6 +9180,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/211.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5083,6 +9233,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/212.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5116,6 +9286,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/213.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5148,6 +9338,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/214.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5177,6 +9387,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/215.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5193,7 +9423,27 @@
    "BKT-universality-for-height-and-planar-spin-fields-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "217",
@@ -5205,7 +9455,27 @@
    "The-low-temperature-Sherrington-Kirkpatrick-fluctuation-scale-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "218",
@@ -5235,6 +9505,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/218.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5247,7 +9537,27 @@
    "GOE-bulk-universality-for-fixed-degree-random-regular-graphs-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "220",
@@ -5288,6 +9598,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/220.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5317,6 +9647,26 @@
   "reasoning_summary": {
    "title": "The Mézard–Parisi formula for diluted spin glasses",
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/mezard-parisi-formula.pdf"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5359,6 +9709,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/222.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5375,7 +9745,27 @@
    "Conformal-Limits-of-Critical-Square-Lattice-Random-Cluster-Interfaces-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "224",
@@ -5388,7 +9778,27 @@
    "Cardys-formula-for-critical-Poisson-Voronoi-percolation-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "225",
@@ -5399,7 +9809,27 @@
    "The-Gaussian-free-field-limit-of-the-balanced-six-vertex-model-with-variance-multiplier-1-over-arcsin-c-over-2-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "226",
@@ -5410,7 +9840,27 @@
    "The-curve-scaling-limit-of-half-plane-double-dimers-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "227",
@@ -5470,6 +9920,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/227.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5510,6 +9980,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/228.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "construction",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5544,6 +10034,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/229.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5570,6 +10080,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/230.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5602,6 +10132,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/231.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5615,7 +10165,27 @@
    "Uniform-real-Lipschitz-surfaces-on-the-triangular-lattice-October-6-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "233",
@@ -5626,7 +10196,27 @@
    "The-joint-scaling-limit-of-critical-Ashkin-Teller-currents-October-6-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "234",
@@ -5651,6 +10241,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/234.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5700,6 +10310,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/235.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5725,6 +10355,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/236.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5783,6 +10433,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/237.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5903,6 +10573,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/238.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5915,7 +10605,27 @@
    "The-sharp-singularity-rate-for-biased-symmetric-sign-matrices-October-4-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "240",
@@ -5941,6 +10651,32 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/240.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5966,6 +10702,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/241.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -5991,6 +10747,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/242.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6024,6 +10800,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/243.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6056,6 +10852,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/244.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6081,6 +10897,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/245.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6106,6 +10942,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/246.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6132,6 +10988,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/247.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6157,6 +11033,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/248.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6182,6 +11078,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/249.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6223,6 +11139,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/250.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6256,6 +11192,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/251.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6281,6 +11237,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/252.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6306,6 +11282,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/253.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "construction",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6347,6 +11343,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/254.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6372,6 +11388,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/255.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6398,6 +11434,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/256.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6423,6 +11479,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/257.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6435,7 +11511,27 @@
    "Virtual-compact-specialness-of-hyperbolic-one-relator-groups-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "259",
@@ -6446,7 +11542,27 @@
    "A-group-without-fixed-price-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "260",
@@ -6483,6 +11599,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/260.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6509,6 +11645,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/261.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6536,6 +11692,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/262.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6570,6 +11746,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/263.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6583,7 +11779,27 @@
    "Quantitative-Near-Kerr-Evolution-and-Generic-C2-Future-Inextendibility-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "265",
@@ -6595,7 +11811,27 @@
    "Polynomial-PEPS-approximation-of-gapped-square-grid-ground-states-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "266",
@@ -6628,6 +11864,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/266.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6657,6 +11913,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/267.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6669,7 +11945,27 @@
    "A-boundary-field-gap-for-the-spin-one-Heisenberg-chain-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "269",
@@ -6716,6 +12012,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/269.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6728,7 +12044,33 @@
    "Positive-eigenvalues-of-the-relative-SU-2-BFSS-Hamiltonian-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "271",
@@ -6760,6 +12102,26 @@
   "reasoning_summary": {
    "title": "Spontaneous magnetization in the quantum Heisenberg ferromagnet",
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/spontaneous-magnetization-quantum-heisenberg-ferromagnet.pdf"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6792,6 +12154,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/272.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6817,6 +12199,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/273.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6862,6 +12264,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/274.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6894,6 +12316,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/275.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6919,6 +12361,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/276.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6944,6 +12406,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/277.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -6955,7 +12437,27 @@
    "A-Coulomb-Ground-State-Density-without-Kohn-Sham-Ensemble-Representation-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "279",
@@ -6980,6 +12482,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/279.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7005,6 +12527,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/280.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7038,6 +12580,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/281.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7049,7 +12611,27 @@
    "Scale-and-conformal-symmetry-in-four-dimensional-operational-quantum-field-theory-September-26-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "283",
@@ -7060,7 +12642,27 @@
    "Polynomial-Time-Unitary-Synthesis-from-a-Boolean-Oracle-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "algorithm",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "284",
@@ -7071,7 +12673,27 @@
    "A-Nearly-Quartic-Separation-Between-Randomized-and-Quantum-Query-Complexity-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "285",
@@ -7084,7 +12706,27 @@
    "An-Irrational-Trace-Counterexample-to-Reduced-Baum-Connes-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "286",
@@ -7096,7 +12738,27 @@
    "The-arithmetic-category-and-stable-recovery-of-lattice-factors-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "287",
@@ -7125,6 +12787,26 @@
   "reasoning_summary": {
    "title": "Isomorphism of free group factors",
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/free-group-factor-isomorphism.pdf"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7157,6 +12839,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/288.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7184,6 +12886,32 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/289.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7210,6 +12938,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/290.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7238,6 +12986,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/291.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7263,6 +13031,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/292.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7330,6 +13118,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/293.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7362,6 +13170,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/294.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7387,6 +13215,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/295.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7419,6 +13267,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/296.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7444,6 +13312,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/297.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7469,6 +13357,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/298.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7494,6 +13402,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/299.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7506,7 +13434,27 @@
    "Quadratic-Strong-Operator-Paving-over-Arbitrary-Maximal-Abelian-Subalgebras-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "301",
@@ -7531,6 +13479,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/301.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7543,7 +13511,27 @@
    "Radius-of-comparison-equals-half-the-mean-dimension-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "303",
@@ -7575,6 +13563,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/303.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7586,7 +13594,27 @@
    "The-Hilbert-Smith-conjecture-in-every-finite-dimension-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "305",
@@ -7599,7 +13627,27 @@
    "A-PD4-group-without-an-aspherical-manifold-model-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "306",
@@ -7610,7 +13658,27 @@
    "Purely-Cosmetic-Surgery-on-Knots-in-the-Three-Sphere-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "307",
@@ -7636,6 +13704,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/307.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7648,7 +13736,27 @@
    "A-finite-Smith-Toda-complex-V4-at-the-prime-1009-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "construction",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "309",
@@ -7659,7 +13767,27 @@
    "The-Kervaire-Invariant-Problem-at-the-Prime-Three-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "310",
@@ -7670,7 +13798,27 @@
    "Rational-homology-and-Quillens-conjecture-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "311",
@@ -7681,7 +13829,27 @@
    "Stabilizer-Orbits-and-Thick-Tensor-Ideals-of-Dualizable-Kn-Local-Spectra-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "312",
@@ -7706,6 +13874,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/312.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7717,7 +13905,27 @@
    "Finite-generation-for-the-Kn-local-sphere-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "314",
@@ -7728,7 +13936,27 @@
    "Cyclic-Length-and-Chromatic-Fixed-Point-Loss-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "315",
@@ -7739,7 +13967,27 @@
    "The-Singer-conjecture-in-dimension-four-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "316",
@@ -7750,7 +13998,27 @@
    "The-Stable-Hurewicz-Image-of-the-Sphere-at-Two-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "317",
@@ -7775,6 +14043,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/317.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7790,7 +14078,27 @@
    "Counterexamples-to-weak-chromatic-splitting-sphere-kernels-and-descent-exponents-September-27-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "319",
@@ -7801,7 +14109,27 @@
    "Counterexamples-to-the-Hahn-Wilson-conjecture-at-height-two-September-26-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "320",
@@ -7812,7 +14140,27 @@
    "Nonhomeomorphic-closed-aspherical-four-manifolds-with-the-same-homotopy-type-October-4-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "321",
@@ -7823,7 +14171,27 @@
    "A-Counterexample-to-Walls-D2-Problem-October-6-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "322",
@@ -7848,6 +14216,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/322.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7873,6 +14261,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/323.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7906,6 +14314,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/324.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7960,6 +14388,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/325.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -7985,6 +14433,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/326.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8010,6 +14478,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/327.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8035,6 +14523,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/328.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8060,6 +14568,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/329.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8092,6 +14620,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/330.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8165,6 +14713,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/331.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 6,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 7,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8176,7 +14744,27 @@
    "Metric-Markov-Cotype-Two-of-l1-October-5-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "333",
@@ -8201,6 +14789,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/333.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8226,6 +14834,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/334.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8238,7 +14866,27 @@
    "Positive-scalar-curvature-forces-rational-inessentiality-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "336",
@@ -8251,7 +14899,27 @@
    "Positive-scalar-curvature-and-uniform-codimension-two-width-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "337",
@@ -8284,6 +14952,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/337.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8295,7 +14983,27 @@
    "Uniformization-of-complete-Kahler-manifolds-with-positive-bisectional-curvature-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "339",
@@ -8306,7 +15014,27 @@
    "Entropy-equality-and-local-symmetry-in-negative-curvature-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "340",
@@ -8317,7 +15045,27 @@
    "A-counterexample-to-the-nearby-Lagrangian-conjecture-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "341",
@@ -8328,7 +15076,27 @@
    "Deforming-hypersymplectic-four-manifolds-to-hyperkahler-triples-October-7-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "342",
@@ -8353,6 +15121,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/342.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8385,6 +15173,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/343.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8396,7 +15204,27 @@
    "The-metric-Blaschke-theorem-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "345",
@@ -8407,7 +15235,27 @@
    "Infinitely-many-closed-geodesic-images-on-every-Riemannian-sphere-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "346",
@@ -8419,7 +15267,27 @@
    "Almost-everywhere-regularity-of-stationary-integral-varifolds-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "347",
@@ -8448,6 +15316,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/347.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8475,6 +15363,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/348.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8486,7 +15394,27 @@
    "The-Solomon-Yau-least-volume-theorem-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "350",
@@ -8527,6 +15455,32 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/350.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8540,7 +15494,33 @@
    "Path-selection-and-an-elliptic-inequality-on-degenerating-Ricci-flat-trees-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "352",
@@ -8551,7 +15531,27 @@
    "A-finite-time-singularity-of-Calabi-flow-on-projective-space-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "353",
@@ -8577,6 +15577,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/353.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8602,6 +15622,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/354.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8613,7 +15653,27 @@
    "Tangent-flow-uniqueness-2026-09-24"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "356",
@@ -8639,6 +15699,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/356.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8650,7 +15730,27 @@
    "Bi-Lipschitz-Coordinates-at-Regular-Points-of-Noncollapsed-RCD-Spaces-September-25-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "358",
@@ -8675,6 +15775,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/358.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8701,6 +15821,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/359.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8734,6 +15874,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/360.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8760,6 +15920,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/361.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8789,6 +15969,26 @@
   "reasoning_summary": {
    "title": "The three-dimensional relativistic Vlasov–Maxwell system",
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/relativistic-vlasov-maxwell.pdf"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8815,6 +16015,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/363.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8827,7 +16047,27 @@
    "Hard-sphere-fluctuations-on-the-regular-Boltzmann-lifespan-September-23-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "365",
@@ -8854,6 +16094,32 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/365.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8865,7 +16131,27 @@
    "Interior-regularity-of-planar-Mumford-Shah-minimizers-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "367",
@@ -8890,6 +16176,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/367.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8902,7 +16208,27 @@
    "Strong-diffeomorphic-approximation-in-three-dimensions-for-p-gt-2-September-24-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "369",
@@ -8927,6 +16253,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/369.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8952,6 +16298,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/370.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 1,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -8977,6 +16343,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/371.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "construction",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -9002,6 +16388,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/372.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -9027,6 +16433,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/373.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 4,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -9052,6 +16478,32 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/374.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "also": [
+    {
+     "value": "counterexample",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 5,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -9063,7 +16515,27 @@
    "De-Giorgis-conjecture-in-dimension-eight-September-26-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  },
  {
   "id": "376",
@@ -9131,6 +16603,26 @@
     }
    ],
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/376.md"
+  },
+  "sourced": {
+   "type": [
+    {
+     "value": "construction",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 3,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
   }
  },
  {
@@ -9142,6 +16634,26 @@
    "Uniform-Interior-C1alpha-Estimates-for-Infinity-Harmonic-Functions-October-4-2026"
   ],
   "statements": [],
-  "lean_doc": null
+  "lean_doc": null,
+  "sourced": {
+   "type": [
+    {
+     "value": "proof",
+     "source": "tier-list"
+    }
+   ],
+   "tier": [
+    {
+     "value": 2,
+     "source": "tier-list"
+    }
+   ],
+   "lean_formalisations": [
+    {
+     "value": 0,
+     "source": "tier-list"
+    }
+   ]
+  }
  }
 ]

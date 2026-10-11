@@ -26,7 +26,7 @@
   "brand_label": "OpenAI Math Atlas, home",
   "breadcrumb": "Breadcrumb",
   "site_nav": "Site",
-  "community": "Community"
+  "sources": "Sources"
  },
  "words": {
   "result": "result",
@@ -129,13 +129,25 @@
   "legend_covers_support": "Only supporting results are certified",
   "legend_covers_none": "No Lean statement",
   "legend_covers_note": "Each statement was classified from OpenAI’s own Lean notes by an AI agent, quoting the note. No person has reviewed the classification yet; corrections are welcome.",
-  "overlay_community": "Others’ work",
+  "overlay_community": "Others’ findings",
   "legend_community_2": "Two or more linked pieces of public work",
   "legend_community_1": "One linked piece of public work",
   "legend_community_0": "Nothing linked yet",
   "legend_community_note": "Replays, error reports, follow-up results, explanations and commentary by other people, each credited and linked on the result’s page.",
-  "credit_community": "The people working on this release",
-  "credit_community_text": "The atlas gathers {efforts} public efforts by {people} people, with {findings} findings attached to specific results, each credited and linked."
+  "credit_community": "Where everything here comes from",
+  "credit_community_text": "OpenAI’s repository, the atlas’s own checks, and other people’s public work, each credited at the point where it is used.",
+  "overlay_type": "Proof or counterexample",
+  "legend_type_proof": "Proof",
+  "legend_type_counter": "Counterexample",
+  "legend_type_algorithm": "Algorithm",
+  "legend_type_construction": "Construction",
+  "legend_type_note": "As the OpenAI Math Tier List classifies each result. The atlas has not checked every label; corrections are welcome.",
+  "overlay_tier": "Significance if it holds up",
+  "legend_tier_1": "Tiers 0 and 1: landmark or Fields Medal level, if correct",
+  "legend_tier_2": "Tier 2: career-defining, if correct",
+  "legend_tier_3": "Tier 3: major journal, if correct",
+  "legend_tier_4": "Tiers 4 to 7: specialist journal to thesis",
+  "legend_tier_note": "One public ranking’s judgement of how significant each result would be if it holds up (the OpenAI Math Tier List). It assumes each claim is correct; nothing in it is verified."
  },
  "family": {
   "trail_label": "Result {id}",
@@ -447,7 +459,18 @@
   "catalogue_value": "{manuscripts} manuscripts in {families} families",
   "catalogue_atlas_value": "{manuscripts} manuscripts in {families} results",
   "atlas_formalised_value": "{n} manuscripts",
-  "problems_value": "about {n} problems"
+  "problems_value": "about {n} problems",
+  "recon": {
+   "heading": "How much of the release has Lean: the published counts",
+   "intro": "Several different counts of the release’s Lean coverage are in circulation. Each measures a different thing.",
+   "families_with_lean_in_scope_notes": "Families whose Lean notes (lean/docs) link at least one Comparator statement",
+   "families_with_a_paper_in_formalization_yaml_sources": "Families with a paper in the sources list of OpenAI’s lean/formalization.yaml",
+   "papers_in_formalization_yaml_sources": "Papers in that sources list",
+   "tier_list_families_with_lean": "Families the OpenAI Math Tier List counts as having a Lean formalisation",
+   "tier_list_lean_formalisations_total": "Lean formalisations the Tier List counts in total (the figure some press reports quote as papers)",
+   "openai_reported": "OpenAI’s own figure, from history.md",
+   "note": "The Tier List’s families with Lean are all among the families with a paper in OpenAI’s sources list, which the 7 October update extended. OpenAI’s Lean notes link Comparator statements for more families than its sources list names."
+  }
  },
  "builds_on": {
   "title": "The work this release builds on",
@@ -591,5 +614,34 @@
    "explanation": "Explanation",
    "commentary": "Commentary"
   }
+ },
+ "sources": {
+  "title": "Sources",
+  "lede": "Everything on the atlas comes from {sources} sources: OpenAI’s repository, the atlas’s own checks, and public work by {people} other people, with {findings} of their findings attached to specific results.",
+  "credit": "Other people’s data and findings are folded into the atlas’s own rows and credited at every point of use. Code, data files and prose are copied only where the author’s licence allows; otherwise the atlas cites the finding and links the original.",
+  "base_heading": "The base",
+  "pinned": "pinned at {commit}",
+  "openai_uses": "The catalogue, the {manuscripts} current manuscripts in {families} families with their TeX sources and bibliographies, the {lean} Comparator statements and the Lean library, OpenAI’s Lean notes and its history file.",
+  "atlas_uses": "The atlas’s own extraction and checks: each paper’s headline statements beside its Lean statement, what each Lean statement covers, the Lean claim layer, the citation graph, credit for outside work, and the reconciliation of published counts. The method follows Will Cook’s claim-faithful publication system for his Erdős problem corpus.",
+  "ingested_heading": "Data folded in from other people’s work",
+  "ingested_intro": "Each of these sources adds values to the atlas’s rows. Every value shows its source where it appears.",
+  "snapshot": "snapshot {date}",
+  "licence": "Licence: {licence}",
+  "efforts_heading": "Findings and work cited from other people",
+  "efforts_intro": "Replays, error reports, follow-up results, explanations and commentary, each attached to the results it concerns and credited there.",
+  "used_on": "Cited on {n} findings, on results",
+  "type_words": {
+   "proof": "proof",
+   "counterexample": "counterexample",
+   "algorithm": "algorithm",
+   "construction": "construction"
+  },
+  "also_word": ", also a {what}",
+  "tier_label": "Significance if it holds up: {name}",
+  "problems_heading": "Problems reported",
+  "said_heading": "What people have said",
+  "followups_heading": "Built on outside the collection",
+  "explanations_heading": "Explanations elsewhere",
+  "statement_more": "More about this statement"
  }
 }

@@ -128,7 +128,8 @@
   "external_works_cited": "Distinct cited works outside the collection, identified by DOI, then arXiv id, then normalised title.",
   "most_cited_outside_works": "Outside works ranked by how many current manuscripts cite them (each manuscript counted once).",
   "most_cited_inside_collection": "Current manuscripts ranked by how many other current manuscripts in the collection cite them, with whether each has an accompanying Lean statement.",
-  "scope_coverage": "What each Lean statement certifies relative to its paper's headline result (headline, part of the headline, a consequence, a weaker form, a supporting result), classified by an AI agent from OpenAI's own Lean notes with each row quoting the note (curated/scope_coverage.json). No person has reviewed it yet."
+  "scope_coverage": "What each Lean statement certifies relative to its paper's headline result (headline, part of the headline, a consequence, a weaker form, a supporting result), classified by an AI agent from OpenAI's own Lean notes with each row quoting the note (curated/scope_coverage.json). No person has reviewed it yet.",
+  "lean_count_reconciliation": "Published counts of how much of the release has Lean, side by side: families whose Lean notes link a Comparator statement; families and papers in the sources list of OpenAI's lean/formalization.yaml; OpenAI's own reported share; and counts from other public sources. Each measures a different thing."
  },
  "highlights": {
   "most_cited_outside_works": [
@@ -502,6 +503,46 @@
   ],
   "reviewed_by_people": false,
   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+ },
+ "sources": [
+  {
+   "id": "tier-list",
+   "name": "OpenAI Math Tier List",
+   "url": "https://claude.ai/artifact/JSqNXXfsvRntB6cqoEENaN",
+   "authors": [
+    {
+     "name": "Author not stated (public Claude artifact)"
+    }
+   ],
+   "kind": "tier-list",
+   "licence": "none stated",
+   "reuse": "cite",
+   "snapshot": "2026-10-11",
+   "method": "The page's own judgements and counts, cited with credit; its prose is linked rather than copied. The page says its tiers assume each claim is correct as stated and that nothing on it is verified.",
+   "fields": {
+    "type": "Proof, counterexample, algorithm or construction, as the page classifies each family.",
+    "tier": "How significant the page judges the result would be if it holds up, from 0 (highest) to 7.",
+    "lean_formalisations": "The page's count of Lean formalisations per family."
+   },
+   "tier_names": {
+    "0": "Landmark of the century",
+    "1": "Would win a Fields Medal",
+    "2": "Career-defining publication",
+    "3": "Major math journal",
+    "4": "Solid publication, could lead to tenure",
+    "5": "A strong professor's paper of the year",
+    "6": "Field-specific journal",
+    "7": "Acceptable PhD thesis"
+   }
+  }
+ ],
+ "lean_count_reconciliation": {
+  "families_with_lean_in_scope_notes": 242,
+  "families_with_a_paper_in_formalization_yaml_sources": 136,
+  "papers_in_formalization_yaml_sources": 173,
+  "openai_reported_top_line_formalized": "top-line results formalized to 300 / 719 = ~42%",
+  "tier_list_families_with_lean": 127,
+  "tier_list_lean_formalisations_total": 162
  },
  "lean_claim_layer": {
   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
