@@ -2482,12 +2482,9 @@ def family_claim_macro_ids(fid) -> list:
 
 
 def family_head(root) -> str:
-    """The stylesheet and the small script a page needs to show a bench. A bench always
-    typesets formulas, so KaTeX's two commonest fonts load early; fetched only when KaTeX
-    first draws, they arrived late enough to reflow the lede and move the bench."""
-    fonts = "".join(f'<link rel="preload" href="{root}{KATEX_DIR}/fonts/KaTeX_{name}.woff2" as="font" type="font/woff2" crossorigin>\n'
-                    for name in ("Main-Regular", "Math-Italic"))
-    return f'{fonts}<link rel="stylesheet" href="{root}assets/family.css">\n<script defer src="{root}assets/family.js"></script>'
+    """The sheets and scripts a family page needs (scripts/family_page.py)."""
+    import family_page
+    return family_page.head_assets(sys.modules[__name__], root)
 
 
 def bench_index_html(f, root) -> str:
@@ -2778,160 +2775,9 @@ def explanation_section_html(f, root):
 
 
 def build_family(f):
-    fid = f["id"]
-    rel = f"families/{fid}.html"
-    root = "../"
-    di = DISC_OF[fid]
-    disc = DISCIPLINES[di]["name"]
-    title_plain = tex_plain(f["title"])
-    mss = [MS[s] for s in f["manuscripts"] if s in MS]
-    status, ex = family_exposition_status(fid)
-    for e in reviewed_explanations(fid):
-        build_explanation(f, e)
-    page_url = BASE_URL + rel
-    claim = issue_url("claim", C("issues.claim", id=fid, title=title_plain), family=fid)
-    credit = issue_url("credit", C("issues.credit", id=fid, title=title_plain), family=fid, upstream_commit=COMMIT)
-    suggest = suggest_url(page_url, C("issues.family_name", id=fid, title=title_plain))
-    # Problems are reports from checks, audits, analyses and notices; a commentator's
-    # remark about a problem is listed with what people have said.
-    commentators = {e["id"] for e in COMMUNITY["efforts"].values() if e.get("kind") == "commentary"}
-    reported = findings_for(fid, kinds={"error-reported", "correction", "replay-fail"})
-    problems = [x for x in reported if x["effort"] not in commentators]
-    said = findings_for(fid, kinds={"commentary"}) + [x for x in reported if x["effort"] in commentators]
-    ty, tier = sourced(f, "type"), sourced(f, "tier")
-    if ty and tier and tier.get("value") is not None:
-        tsrc = SOURCES.get(tier["source"]) or {}
-        tname = (tsrc.get("tier_names") or {}).get(str(tier["value"]))
-        what = C("sources.type_words").get(ty["value"], ty["value"])
-        if tname:
-            said.append({"date": tsrc.get("snapshot") or "", "summary": "", "url": tsrc.get("url") or "",
-                         "_html": esc(C("family.tier_said", name=curly(tsrc.get("name") or ""), type=what, tier=curly(tname))),
-                         "_credit": C("family.tier_credit")})
-
-    # 1. The head: trail, title, OpenAI's first sentence, the facts.
-    map_f = f"{root}index.html#o=f%3A{fid}"
-    trail_html = (f'<nav class="trail fhead__trail" aria-label="{esc(C("nav.breadcrumb"))}"><a href="{root}index.html">{esc(C("family.trail_map"))}</a>'
-                  f'<span class="trail__sep" aria-hidden="true">/</span><a href="{root}index.html#o=d%3A{DISC_SLUG[di]}">{esc(disc)}</a>'
-                  f'<span class="trail__sep" aria-hidden="true">/</span><span aria-current="page">{fam_title_html(f)}</span></nav>')
-    lead, rest = head_lede(f["description"])
-    more = (f'<details class="fam-fold fhead__more"><summary>{esc(C("family.description_more"))}</summary>'
-            f'<blockquote class="fhead__q fhead__q--rest"><div class="tex-auto">{glue(rich(rest, "", root, link_results=True))}</div></blockquote></details>') if rest else ""
-    rev = reviewed_explanations(fid)
-    read_btn = f'<a class="btn btn--primary" href="{root}{explanation_rel(rev[0], fid)}">{esc(C("family.read_explanation"))}</a>' if rev else ""
-    head_html = f"""<header class="fhead">
- <div class="fhead__bar">{trail_html}<p class="fhead__tools">{read_btn}<a class="btn btn--ghost" href="{map_f}">{esc(C('words.show_on_map'))}</a></p></div>
- <h1 class="fhead__title{' fhead__title--long' if len(title_plain) > 64 else ''}">{fam_title_html(f)}</h1>
- <figure class="fhead__lede" id="h-desc"><figcaption class="fhead__src">{C('family.description_source', link=f'<a class="ext" href="{BASE_BLOB}CONTENTS.md" rel="noopener">{esc(C("family.catalogue_name"))}</a>')}</figcaption>
-  <blockquote class="fhead__q"><p class="tex-auto">{glue(rich(lead, "", root, link_results=True))}</p></blockquote>{more}</figure>
- {head_facts_html(f, root, mss, problems)}
-</header>"""
-
-    # 2. The bench.
-    bench_h = (C("family.bench_heading_support") if support_mode(f) else C("family.bench_heading")) if f["statements"] else C("family.bench_heading_nolean")
-    bench = f"""<section class="fsec fsec--bench" aria-labelledby="h-bench">
- <span class="fam-alias" id="h-lean"></span>
- <h2 class="fsec__h" id="h-bench">{esc(bench_h)}</h2>
- {family_claim_card(fid, root)}
- {bench_index_html(f, root)}
-</section>"""
-
-    # 3. What has been checked, and what is left to check.
-    fam_claims = CLAIMS_BY_FAMILY.get(fid, [])
-    formulations_html = ""
-    stmts_c = [c for c in fam_claims if c["kind"] == "statement"]
-    thms_c = [c for c in fam_claims if c["kind"] in ("theorem", "lemma")]
-    if stmts_c:
-        items = []
-        for c in stmts_c[:12]:
-            head_lines = lean_lines("\n".join((c.get("text") or c["head"]).split("\n")[:14]))
-            cmp_note = f' <span class="fam-tag">{esc(C("family.formulation_checked", id=c["comparator_statement"]))}</span>' if c.get("comparator_statement") else ""
-            items.append(f'<li><p><code>{esc(c["name"].split(".")[-1])}</code>{cmp_note} <a class="ext small" href="{esc(BASE_BLOB + c["file"] + "#L" + str(c["line"]))}" rel="noopener">{esc(c["file"].split("/")[-1])}:{c["line"]}</a></p><pre class="lean lean--snippet"><code>{"".join(chr(10) + l for l in head_lines).lstrip(chr(10))}</code></pre></li>')
-        more_f = f'<p class="muted small">{esc(C("family.formulations_more", n=len(stmts_c) - 12))}</p>' if len(stmts_c) > 12 else ""
-        thm_line = f'<p class="muted small">{esc(C("family.formulations_theorems", n=len(thms_c)))}</p>' if thms_c else ""
-        formulations_html = (f'<details class="fam-fold fam-fold--section" id="h-form"><summary>{esc(C("family.formulations_heading"))}</summary>'
-                             f'<p class="intro">{esc(C("family.formulations_intro"))}</p><ol class="formulations">{"".join(items)}</ol>{more_f}{thm_line}</details>')
-    checks = f"""<section class="fsec" aria-labelledby="h-checks">
- <h2 class="fsec__h" id="h-checks">{esc(C('family.checks_heading'))}</h2>
- <p class="fsec__intro">{ctext(C('family.checks_intro'))}</p>
- {checks_html(f, root, problems)}
- {formulations_html}
-</section>"""
-
-    # 4. Read the papers.
-    seen_ids: set = set()
-    rows = "".join(paper_row(m, root, LabelTexConv(m, root), seen_ids) for m in mss)
-    rs = f.get("reasoning_summary")
-    reasoning_html = (f'<details class="fam-fold"><summary>{esc(C("family.method_notes"))}</summary><p class="small">{esc(C("family.reasoning_summary"))} '
-                      f'<a class="ext" href="{esc(rs["url"])}" rel="noopener">{esc(rs["title"])}</a></p></details>') if rs else ""
-    papers = f"""<section class="fsec" aria-labelledby="h-ms">
- <h2 class="fsec__h" id="h-ms">{esc(C('family.papers_heading'))}</h2>
- <p class="fsec__intro">{ctext(C('family.papers_intro'))}</p>
- <div class="pps">{rows}</div>
- {reasoning_html}
- {withdrawn_from_family_html(fid, root)}
-</section>"""
-
-    # 5. Connections: what it cites inside the release, what cites it, what others said.
-    cites_items, seen = [], set()
-    for m in mss:
-        for r in m.get("rests_on") or []:
-            if r["manuscript"] not in seen:
-                seen.add(r["manuscript"])
-                cites_items.append((r["manuscript"], r["status"], r["has_lean"]))
-    cited_items, seen = [], set()
-    for m in mss:
-        for c in m.get("cited_by_in_collection") or []:
-            if c not in seen and c not in f["manuscripts"]:
-                seen.add(c)
-                cm = MS.get(c, {})
-                cited_items.append((c, cm.get("status", "current"), cm.get("has_lean", False)))
-    cites = related_list(cites_items, root, fid) if cites_items else f'<p class="muted">{esc(C("family.cites_none"))}</p>'
-    cited = related_list(cited_items, root, fid) if cited_items else f'<p class="muted">{esc(C("family.cited_none"))}</p>'
-    refs_html = []
-    for m in mss:
-        refs = m.get("references") or []
-        if refs:
-            items = guard_labels(f"{m['id']} references", "".join(ref_entry(r) for r in resolved_refs(m["id"], refs)))
-            refs_html.append(f'<details class="fam-fold"><summary>{esc(C("family.refs_summary", count=len(refs), title=tex_plain(m["title"])))}</summary><ol class="refs">{items}</ol></details>')
-        else:
-            refs_html.append(f'<p class="muted small">{esc(C("family.refs_none_in", title=tex_plain(m["title"])))}</p>')
-    connections = f"""<section class="fsec" aria-labelledby="h-cites">
- <h2 class="fsec__h" id="h-cites">{esc(C('family.citations_heading'))}</h2>
- <p class="fsec__intro">{esc(C('family.citations_intro'))}</p>
- <div class="cols2">
-  <div><h3 class="h3">{esc(C('family.cites_heading'))}</h3>{cites}</div>
-  <div><h3 class="h3">{esc(C('family.cited_heading'))}</h3>{cited}</div>
- </div>
- {finds_block(findings_for(fid, kinds={'follow-up-result'}), root, C('sources.followups_heading'), 'h-followups')}
- {finds_block(said, root, C('sources.said_heading'), 'h-said')}
- <div class="fam-refs" id="h-refs"><h3 class="h3">{esc(C('family.refs_heading'))}</h3><p class="intro">{esc(C('family.refs_intro'))}</p>{''.join(refs_html)}</div>
-</section>"""
-
-    # 6. Explain it, check it or correct it.
-    credits = CONTRIB["credits"].get(fid, [])
-    names = [n_ for e in ex for n_ in e["names"]] + [n_ for c_ in credits for n_ in c_["names"]]
-    contributors = f'<h3 class="h3">{esc(C("family.contributors_heading"))}</h3><p>{esc(", ".join(dict.fromkeys(names)))}</p>' if names else ""
-    explain = f"""<section class="fsec fsec--last" aria-labelledby="h-explain">
- <h2 class="fsec__h" id="h-explain">{esc(C('family.explain_heading'))}</h2>
- {explanation_section_html(f, root)}
- <div class="fam-acts" id="h-contrib">
-  <p class="fsec__intro">{esc(C('family.contribute_intro'))}</p>
-  <p class="actions"><a class="btn btn--ghost ext" href="{esc(claim)}" rel="noopener">{esc(C('family.claim_button'))}</a>{check_choice_html(f["statements"], root)}<a class="btn btn--ghost ext" href="{esc(credit)}" rel="noopener">{esc(C('family.credit_button'))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p>
- </div>
- {contributors}
-</section>"""
-
-    body = f"""<div class="frame page fam">
-{head_html}
-{bench}
-{checks}
-{papers}
-{connections}
-{explain}
-</div>
-{macros_script(list(dict.fromkeys([m['id'] for m in mss] + family_claim_macro_ids(fid) + [p[1]['id'] for p in bench_choice(f)[2] if p[1]])))}"""
-    desc = tex_plain(f["description"])
-    write_page(rel, page(rel, title_plain, desc, body, page_type="article", extra_head=family_head(root)))
+    """families/<id>.html, built from the family's reader packet by scripts/family_page.py."""
+    import family_page
+    family_page.build(sys.modules[__name__], f)
 
 
 GLYPH_MACHINE = {"ok": '<svg class="glyph glyph--brick" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.2 6.4 4.9 9 9.8 3.2"/></svg>',

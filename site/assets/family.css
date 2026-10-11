@@ -1,296 +1,234 @@
-/* Plectis Atlas: the family page (build_family in scripts/build_site.py) and the
-   bench (family_claim_card), which other pages may embed with this sheet.
+/* Plectis Atlas: the family page (scripts/family_page.py).
 
-   The page answers DESIGN.md's questions in order: the claim, the Lean statement
-   beside it, the checks, the reading, the connections, the next step. One drawing
-   carries it, the thread: a dot at the paper's theorem, a diamond at the Lean
-   statement, a steel line between, dashed while the pairing is a candidate. It
-   brightens when either card is pointed at or focused, and nothing else moves.
-   Colours come from atlas.css: steel for Lean and formal checks, brick for other
-   machine checks, low-chroma greys for structure, one flat ground. */
+   The reading register of the Plectis maths pages: the mathematics first, set in
+   the serif at reading size, every evidence state said in words. One centrepiece,
+   the theorem; then the Lean beside it with the qualification at the join; then
+   who has checked it, as sentences. No symbols that need a key. A side column on
+   wide screens carries the contents and, when a record is selected, its details
+   (inspect.css). Colours come from atlas.css: steel for Lean, brick for the paper
+   side's own marks, low-chroma greys for structure, one flat ground. */
 
 :root {
-  /* The Lean face: lean.css's stack where that sheet is loaded, the same stack otherwise. */
-  --fam-lean-mono: var(--lean-mono, "Atlas Lean Mono", "JuliaMono", "DejaVu Sans Mono", Menlo, "Cascadia Mono", Consolas,
+  --fx-lean-mono: var(--lean-mono, "Atlas Lean Mono", "JuliaMono", "DejaVu Sans Mono", Menlo, "Cascadia Mono", Consolas,
     "Noto Sans Mono", "Liberation Mono", "Plectis Math", "STIX Two Math", "Cambria Math", "Apple Symbols",
     "Segoe UI Symbol", monospace);
-  --fam-card-r: 4px;
-  --fam-gap: 64px;
+  --fx-measure: 40rem;
 }
 
-/* ---- The head --------------------------------------------------------- */
-.fhead { margin-bottom: 0; }
-.fhead__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; margin-bottom: 26px; }
-.fhead__bar .trail { margin: 0; }
-.fhead__tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
-.fhead__title { font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 1.35rem + 1.9vw, 2.875rem); line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 16px; max-width: 24em; text-wrap: balance; }
-.fhead__lede { max-width: 42em; }
-.fhead__lede { margin: 0; }
-/* OpenAI's catalogue line is a marked quotation, its source first, at body size: the
-   atlas never states a claim in its own voice. */
-.fhead__q { margin: 6px 0 0; padding: 2px 0 2px 16px; border-left: 2px solid var(--rule-strong); }
-.fhead__q p.tex-auto, .fhead__q .tex-auto { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.6; color: var(--ink-soft); margin: 0; text-wrap: pretty; }
-.fhead__q--rest { margin-top: 8px; }
-.fhead__src { display: inline; margin: 0; font-size: var(--fs-small); color: var(--muted); }
-.fhead__src a, .fhead__src a:hover { color: var(--muted); }
-.fhead__lede { display: block; }
-.fhead__lede .fhead__src { display: block; margin: 0; font-size: var(--fs-meta); color: var(--muted); }
-.fhead__lede .fhead__src a { color: var(--ink-soft); }
-.fhead__more { display: inline-block; margin-top: 8px; vertical-align: top; }
-.fhead__more[open] { display: block; }
+/* ---- The head ---------------------------------------------------------- */
+.fx-head { max-width: 62rem; }
+.fx-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; margin-bottom: 22px; }
+.fx-bar .trail { margin: 0; }
+.fx-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
+.fx-title { font-family: var(--serif); font-weight: 500; font-size: clamp(1.9rem, 1.3rem + 1.8vw, 2.75rem); line-height: 1.14; letter-spacing: -0.014em;
+  margin: 0 0 18px; max-width: 24em; text-wrap: balance; overflow-wrap: break-word; }
+.fx-title--long { font-size: clamp(1.7rem, 1.25rem + 1.3vw, 2.25rem); }
+.fx-quote { margin: 0; max-width: var(--fx-measure); }
+.fx-quote__src { margin: 0 0 6px; font-size: var(--fs-meta); color: var(--muted); }
+.fx-quote__src a { color: var(--ink-soft); }
+.fx-quote__q { margin: 0; padding: 2px 0 2px 18px; border-left: 2px solid var(--rule-strong); }
+.fx-quote__q p { font-family: var(--serif); font-size: 1.125rem; line-height: 1.62; color: var(--ink-soft); margin: 0; text-wrap: pretty; }
+.fx-quote__more { margin-top: 8px; }
+.fx-quote__more p { margin-top: 6px; }
+.fx-fact { max-width: var(--fx-measure); margin: 14px 0 0; font-size: var(--fs-body); color: var(--ink-soft); line-height: 1.55; }
 
-.fhead__facts { font-size: var(--fs-body); line-height: 1.65; color: var(--ink-soft); max-width: 46em; margin: 18px 0 0; text-wrap: pretty; }
-.fhead__facts a { color: var(--ink-soft); text-decoration: underline; text-decoration-color: var(--rule-control); text-underline-offset: 0.18em; }
-.fhead__facts a:hover { color: var(--ink); text-decoration-color: currentColor; }
-
-/* ---- Sections --------------------------------------------------------- */
-.fsec { padding-top: 40px; margin-top: 48px; border-top: 1px solid var(--rule); }
-.fsec--bench { margin-top: 30px; padding-top: 0; border-top: 0; }
-.fsec--last { padding-bottom: 24px; }
-.fsec__h { font-family: var(--serif); font-weight: 500; font-size: 1.625rem; line-height: 1.25; letter-spacing: -0.008em; margin: 0 0 10px; scroll-margin-top: 16px; }
-.fsec__intro { color: var(--muted); max-width: 46em; font-size: var(--fs-body); margin: 0 0 18px; }
-.fsec .h3 { margin-top: 30px; scroll-margin-top: 16px; }
-.fam-alias { display: block; height: 0; scroll-margin-top: 16px; }
-.fam-tag { font-size: var(--fs-small); color: var(--steel-text); }
-
-/* Folds hold optional depth only: the rest of a description, abstracts, long lists. */
-.fam-fold > summary { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 28px; font-size: var(--fs-meta); font-weight: 600; color: var(--ink-soft); list-style: none; }
-.fam-fold > summary::-webkit-details-marker { display: none; }
-.fam-fold > summary::before { content: ""; width: 0; height: 0; border-left: 5px solid currentColor; border-block: 4px solid transparent; transition: transform 160ms var(--ease-out); }
-.fam-fold[open] > summary::before { transform: rotate(90deg); }
-.fam-fold > summary:hover { color: var(--ink); }
-.fam-fold[open] > summary { margin-bottom: 6px; }
-.fam-fold--section { margin-top: 28px; }
-.fam-fold--section > summary { font-family: var(--serif); font-size: 1.125rem; font-weight: 600; color: var(--ink); }
-@media (forced-colors: active) { .fam-fold > summary::before { content: "\25B8"; border: 0; width: auto; height: auto; } }
-
-/* ---- The bench -------------------------------------------------------- */
-/* The theorem and the notes about the pairing on the left, the Lean card on the
-   right spanning both, so neither column ends in a dead gap. */
-/* The bench lays itself out by its own width (a container query), so it reads the
-   same on the family page and wherever another page embeds it. Narrow: the cards
-   stack, joined by a short vertical thread in the gap. Wide: side by side, the
-   thread running border to border. The notes always run full width below. */
-.bench-host { container: bench / inline-size; }
-.bench { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "thread" "lean" "notes"; align-items: start; }
-@container bench (min-width: 860px) {
-  .bench { grid-template-columns: minmax(0, 3fr) var(--fam-gap) minmax(0, 2fr); grid-template-areas: "paper thread lean" "notes notes notes"; }
-  .bench--nolean { grid-template-columns: minmax(0, 2fr) var(--fam-gap) minmax(0, 1fr); }
+/* ---- Body and side column ------------------------------------------------ */
+.fx-body { margin-top: 8px; }
+.fx-main { min-width: 0; container-type: inline-size; container-name: fxmain; }
+.fx-aside { display: none; }
+@media (min-width: 1240px) {
+  .fx-body { display: grid; grid-template-columns: minmax(0, 1fr) 264px; gap: 56px; align-items: start; }
+  .fx-aside { display: block; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; padding-top: 28px; }
+  .fx-aside__in { display: grid; gap: 18px; }
 }
-@container bench (min-width: 1180px) {
-  .bench { grid-template-columns: minmax(0, 7fr) var(--fam-gap) minmax(0, 5fr); }
-  .bench--nolean { grid-template-columns: minmax(0, 7fr) var(--fam-gap) minmax(0, 4fr); }
+@media (min-width: 1700px) { .fx-body { grid-template-columns: minmax(0, 1fr) 320px; gap: 72px; } }
+.fx-toc__h { margin: 0 0 6px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.fx-toc ol { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--rule); }
+.fx-toc li a { display: block; padding: 4px 0 4px 12px; margin-left: -1px; border-left: 1px solid transparent; font-size: var(--fs-meta); color: var(--muted); text-decoration: none; line-height: 1.35; }
+.fx-toc li a:hover { color: var(--ink); border-left-color: var(--rule-control); }
+.fx-toc li a[aria-current="true"] { color: var(--ink); border-left-color: var(--ink); }
+
+/* ---- Sections ------------------------------------------------------------ */
+.fx-sec { margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--rule); scroll-margin-top: 12px; }
+.fx-sec--theorem { margin-top: 36px; padding-top: 0; border-top: 0; }
+.fx-sec--quiet .fx-h2 { font-size: 1.375rem; color: var(--ink-soft); }
+.fx-h2 { font-family: var(--serif); font-weight: 500; font-size: 1.75rem; line-height: 1.25; letter-spacing: -0.008em; margin: 0 0 10px; text-wrap: balance; }
+.fx-h3 { font-family: var(--serif); font-weight: 600; font-size: 1.1875rem; line-height: 1.3; margin: 36px 0 8px; scroll-margin-top: 12px; }
+.fx-h4 { font-family: var(--sans); font-weight: 600; font-size: var(--fs-base); margin: 24px 0 6px; }
+.fx-intro { color: var(--muted); max-width: var(--fx-measure); font-size: var(--fs-body); line-height: 1.55; margin: 0 0 16px; text-wrap: pretty; }
+.fx-prose { max-width: var(--fx-measure); font-size: var(--fs-base); line-height: 1.6; color: var(--ink-soft); }
+.fx-lead-s { max-width: var(--fx-measure); font-family: var(--serif); font-size: 1.125rem; line-height: 1.55; color: var(--ink); margin: 0 0 10px; text-wrap: pretty; }
+.fx-muted { color: var(--muted); }
+.fx-alias, .fam-alias { display: block; height: 0; scroll-margin-top: 12px; }
+.fx-tag, .fam-tag { font-size: var(--fs-small); color: var(--steel-text); }
+.fx-plain { margin: 0; padding-left: 1.1em; max-width: 64ch; font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); }
+.fx-plain li { margin: 4px 0; }
+.fx-plain code, .fx-left code, .fx-draft code, .fx-rd code, .fx-join code { font-family: var(--fx-lean-mono); font-size: 0.86em; overflow-wrap: anywhere; }
+
+/* Folds hold optional depth only: the rest of a description, long lists, abstracts. */
+.fx-fold > summary, .fam-fold > summary { cursor: pointer; display: inline-flex; align-items: center; gap: 7px; min-height: 28px; font-size: var(--fs-meta);
+  font-weight: 600; color: var(--ink-soft); list-style: none; }
+.fx-fold > summary::-webkit-details-marker, .fam-fold > summary::-webkit-details-marker { display: none; }
+.fx-fold > summary::before, .fam-fold > summary::before { content: ""; width: 0; height: 0; border-left: 5px solid currentColor; border-block: 4px solid transparent;
+  transition: transform 160ms var(--ease-out); }
+.fx-fold[open] > summary::before, .fam-fold[open] > summary::before { transform: rotate(90deg); }
+.fx-fold > summary:hover, .fam-fold > summary:hover { color: var(--ink); }
+.fx-fold[open] > summary, .fam-fold[open] > summary { margin-bottom: 6px; }
+.fx-fold--section { margin-top: 28px; }
+.fx-fold--section > summary { font-family: var(--serif); font-size: 1.125rem; color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .fx-fold > summary::before, .fam-fold > summary::before { transition: none; } }
+
+/* ---- A paper statement, exactly as printed ---------------------------------- */
+.fx-st { margin: 0 0 18px; padding: 18px 22px 12px; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-lg); scroll-margin-top: 12px; max-width: 52rem; }
+.fx-st__head { font-family: var(--serif); font-size: 1.125rem; line-height: 1.35; font-weight: 400; margin: 0 0 2px; }
+.fx-st__kind { font-weight: 700; color: var(--ink); }
+.fx-st__title { font-style: italic; color: var(--ink-soft); }
+.fx-st__src { margin: 0 0 12px; font-size: var(--fs-small); color: var(--muted); }
+.fx-st__src a { color: var(--muted); }
+.fx-st__src a:hover { color: var(--ink); }
+.fx-st__body { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.62; color: var(--ink); overflow-wrap: break-word; }
+.fx-st__body p { margin: 0 0 0.6em; }
+.fx-st__body em { font-style: italic; }
+.fx-st__body .katex-display, .fx-st__body .m[data-d="1"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.fx-st__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); }
+.fx-st__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; }
+.fx-st__foot .texsrc { margin-left: auto; font-size: var(--fs-small); }
+.fx-st--none { background: none; border-style: dashed; padding: 16px 20px; }
+.fx-st__none { margin: 0 0 6px; font-family: var(--serif); font-size: 1.0625rem; color: var(--ink-soft); }
+
+/* The centrepiece: the theorem, set large. */
+.fx-st--big { padding: 30px 36px 18px; max-width: 54rem; border-color: var(--rule-strong); }
+.fx-st--big .fx-st__head { font-size: 1.5rem; margin-bottom: 4px; }
+.fx-st--big .fx-st__src { font-size: var(--fs-meta); margin-bottom: 18px; }
+.fx-st--big .fx-st__body { font-size: 1.3125rem; line-height: 1.6; }
+.fx-st--big .fx-st__foot { margin-top: 18px; padding-top: 14px; }
+@media (max-width: 640px) {
+  .fx-st { padding: 14px 16px 10px; }
+  .fx-st--big { padding: 20px 18px 12px; }
+  .fx-st--big .fx-st__head { font-size: 1.3rem; }
+  .fx-st--big .fx-st__body { font-size: 1.15rem; }
 }
-.bench > .bench__side--paper { grid-area: paper; align-self: stretch; min-width: 0; }
-.bench > .bench__gap { grid-area: thread; height: 36px; }
-.bench > .bench__gap--none { height: 18px; }
-.bench > .bench__side--lean { grid-area: lean; align-self: stretch; min-width: 0; }
-.bench > .bench__notes { grid-area: notes; min-width: 0; }
-.bench__travel { position: relative; }
-.bench__paper { position: relative; }
-.bench__cap--side { display: none; }
-@container bench (min-width: 860px) {
-  .bench__cap--side { display: block; max-width: none; }
-  .bench__cap--stack { display: none; }
+.fx-cand { max-width: 36rem; margin: 12px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
+.fx-cand--open { font-family: var(--serif); font-size: 1.125rem; color: var(--ink-soft); margin: 0 0 18px; }
+.fx-h2--theorem { margin-bottom: 6px; }
+.fx-others { margin-top: 18px; max-width: 52rem; }
+
+/* Two lines kept apart: the formal status and the readable argument. */
+.fx-status { max-width: 52rem; margin: 22px 0 0; display: grid; gap: 0; }
+.fx-status__row { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 4px 18px; padding: 10px 0; border-top: 1px solid var(--rule); }
+.fx-status__row:last-child { border-bottom: 1px solid var(--rule); }
+.fx-status dt { font-size: var(--fs-meta); font-weight: 600; color: var(--ink-soft); padding-top: 1px; }
+.fx-status dd { margin: 0; font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); }
+.fx-status a { color: var(--ink-soft); }
+.fx-status a:hover { color: var(--ink); }
+@media (max-width: 560px) { .fx-status__row { grid-template-columns: 1fr; } }
+
+/* Compact rows of statements (alternatives). */
+.fx-alts { list-style: none; margin: 4px 0 0; padding: 0; max-width: 52rem; }
+.fx-alt { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; padding: 7px 0; border-top: 1px solid var(--rule); font-size: var(--fs-body); }
+.fx-alt__k { font-family: var(--serif); font-weight: 600; font-size: 1rem; color: var(--ink); }
+.fx-alt__p { color: var(--ink-soft); flex: 1 1 18rem; min-width: 0; }
+.fx-alt__s { color: var(--muted); font-size: var(--fs-small); white-space: nowrap; }
+.fx-alt__go { font-size: var(--fs-small); white-space: nowrap; }
+
+/* ---- The Lean beside the theorem ---------------------------------------------- */
+.fx-idx { margin: 18px 0 26px; }
+.fx-idx .fx-h3 { margin-top: 0; }
+.fx-idx__list { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
+.fx-idx__list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; padding: 6px 0; border-top: 1px solid var(--rule); }
+.fx-idx__a { display: inline-flex; align-items: center; min-height: 24px; color: var(--ink-soft); text-decoration: none; }
+.fx-idx__a code { font-family: var(--fx-lean-mono); font-size: 0.875rem; }
+.fx-idx__a:hover code { color: var(--ink); text-decoration: underline; }
+.fx-idx__a[aria-current="true"] code { color: var(--ink); font-weight: 700; text-decoration: underline; text-decoration-color: var(--steel-text); text-underline-offset: 0.25em; }
+.fx-idx__m { font-size: var(--fs-small); color: var(--muted); flex: 1 1 22rem; }
+
+.fx-cmp { margin-top: 26px; scroll-margin-top: 12px; }
+.fx-cmp:first-child { margin-top: 8px; }
+.fx-cmp__h { margin: 0 0 10px; font-family: var(--sans); font-size: var(--fs-base); font-weight: 600; color: var(--ink-soft); }
+.fx-cmp__h code { font-family: var(--fx-lean-mono); font-size: 0.95em; color: var(--ink); overflow-wrap: anywhere; }
+.fx-cmp__side { margin: 0 0 6px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.fx-cmp__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+.fx-cmp__grid .fx-st { margin-bottom: 0; max-width: none; }
+.fx-cmp__why { margin: 6px 0; font-size: var(--fs-small); color: var(--muted); }
+/* The join: the words that qualify the two statements' being side by side. */
+.fx-join { margin: 14px 0; padding: 10px 14px; border-left: 2px solid var(--steel); font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); max-width: var(--fx-measure); }
+.fx-join--unavailable { border-left-color: var(--rule-control); background: none; }
+.fx-join__quote { display: block; margin-top: 6px; font-size: var(--fs-small); color: var(--muted); }
+@container fxmain (min-width: 1000px) {
+  .fx-cmp__grid { grid-template-columns: minmax(0, 1fr) 190px minmax(0, 1fr); gap: 0 18px; align-items: start; }
+  .fx-join { margin: 30px 0 0; max-width: none; border-left: 0; border-top: 2px solid var(--steel); border-radius: 0 0 var(--r-sm) var(--r-sm); padding: 10px 2px; font-size: var(--fs-meta); background: none; }
+  .fx-join--unavailable { border-top-color: var(--rule-control); }
 }
-/* A formula and its trailing punctuation stay on one line; a long formula still breaks
-   between its own terms, as KaTeX allows. */
-/* Only once KaTeX has rendered: raw TeX held on one line would wrap differently and
-   shift the page when it renders. */
-.m-glue:has(.katex) { white-space: nowrap; }
-.m-glue .katex, .m-glue .katex-html, .m-glue .m { white-space: normal; }
-/* Where the Lean states a supporting step, the headline theorem stands first as the claim. */
-.bench-claim { margin: 0 0 30px; max-width: 58rem; }
-.bench-claim__note { font-size: var(--fs-meta); color: var(--muted); margin: 10px 0 0; max-width: 62ch; }
-.bench__sub { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; line-height: 1.3; margin: 0 0 4px; scroll-margin-top: 16px; }
-.bench__subnote { font-size: var(--fs-meta); color: var(--muted); margin: 0 0 16px; max-width: 62ch; }
-/* The shorter card travels beside the longer one (family.js sets is-travel only when
-   it fits the window), so neither column shows a tall empty stretch. */
-.bench__side.is-travel > .bench__travel { position: sticky; top: 16px; }
-@container bench (min-width: 860px) { .bench > .bench__gap { height: auto; } }
-.bp, .bl { background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--fam-card-r); min-width: 0; transition: border-color 160ms var(--ease-out); }
 
-/* The paper card: the theorem as the paper prints it. */
-.bp { padding: 26px 32px 16px; }
-.bp__head { font-family: var(--serif); font-size: 1.125rem; font-weight: 400; line-height: 1.45; margin: 0 0 8px; }
-.bp__kind { font-weight: 700; }
-.bp__title { font-style: normal; color: var(--ink-soft); }
-.bp__body { font-family: var(--serif); font-size: 1.1875rem; line-height: 1.62; font-style: italic; overflow-wrap: anywhere; }
-.bp__body em, .bp__body i { font-style: normal; }
-.bp__body p { margin: 0 0 0.55em; }
-.bp__body p:last-child { margin-bottom: 0; }
-/* The theorem keeps a reading measure inside a wide card; display formulas may run wider. */
-.bp__body > p, .bp__body li { max-width: 32em; }
-.fam .stmt__body > p, .fam .stmt__body li { max-width: 36em; }
-.bp__body .m-d { margin: 0.6em 0; }
-.bp__body ol, .bp__body ul { padding-left: 1.4em; margin: 0.3em 0 0.6em; }
-.bp__foot { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--rule); font-size: var(--fs-small); color: var(--muted); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 18px; }
-.bp__src { margin: 0 0 10px; font-size: var(--fs-small); color: var(--muted); line-height: 1.45; }
-.bp__src a { color: var(--ink-soft); }
-.bp__acts { display: flex; flex-wrap: wrap; gap: 4px 18px; margin: 0; }
-.bp__acts a { color: var(--muted); }
-.bp__acts a:hover { color: var(--ink); }
-.bp__acts .bp__go { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: var(--rule-control); text-underline-offset: 0.2em; }
-.bp__acts .bp__go:hover { text-decoration-color: currentColor; }
-/* Hit areas of at least 24px for the bench's small links, the look unchanged: inline
-   padding grows the target without moving the line. */
-.bench-host a:not(.term), .fam a.ext { padding-block: 3px; }
-.bench-host .bp__acts a { display: inline-block; padding-block: 3px; margin-block: -3px; }
-.bp .texsrc { margin-left: auto; }
-.bp .texsrc[open] { margin-left: 0; flex-basis: 100%; }
-.bp--none { padding: 22px 26px; color: var(--muted); font-size: var(--fs-body); }
-.fam-numstate { font-weight: 400; font-style: italic; color: var(--muted); font-size: 0.92em; }
+.fx-lean { padding: 16px 18px 12px; background: var(--surface); border: 1px solid color-mix(in oklab, var(--steel) 40%, var(--rule-strong)); border-radius: var(--r-lg); }
+.fx-lean__head { margin: 0 0 2px; font-family: var(--serif); font-size: 1.125rem; font-weight: 600; line-height: 1.35; }
+.fx-lean__head a { color: var(--ink); text-decoration: none; }
+.fx-lean__head a:hover { text-decoration: underline; }
+.fx-lean__file { margin: 0 0 10px; font-size: var(--fs-small); color: var(--muted); }
+.fx-lean__file code { font-family: var(--fx-lean-mono); color: var(--steel-text); overflow-wrap: anywhere; }
+.fx-lean__code { font-family: var(--fx-lean-mono); margin: 0 0 8px; max-height: 26rem; overflow: auto; }
+.fx-lean__code code { font-family: inherit; }
+.fx-lean__more, .fx-lean__note, .fx-lean__runs, .fx-lean__go { margin: 6px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
+.fx-lean__more code, .fx-lean__note code { font-family: var(--fx-lean-mono); }
+.fx-forms { list-style: none; padding: 0; margin: 0; }
+.fx-forms li { margin: 12px 0; }
 
-/* The Lean card: the statement in Lean's own text, and who has re-run it. */
-.bl { padding: 24px 24px 16px; }
-.bl__title { font-family: var(--serif); font-size: 1.125rem; font-weight: 600; line-height: 1.35; margin: 0 0 4px; }
-.bl__title a { color: var(--ink); text-decoration: none; }
-.bl__title a:hover { color: var(--steel-text); }
-.bl__file { font-size: var(--fs-small); color: var(--muted); margin: 0 0 12px; }
-.bl__fname { font-family: var(--fam-lean-mono); font-size: 0.95em; color: var(--ink-soft); }
-.bl__code.lean { font-family: var(--fam-lean-mono); font-size: 0.8rem; line-height: 1.6; font-variant-ligatures: none; padding: 10px 0; }
-.bl__note { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; margin: 10px 0 0; }
-.bl__more { font-size: var(--fs-small); color: var(--ink-soft); line-height: 1.6; margin: 8px 0 0; }
-.bl__more code { font-family: var(--fam-lean-mono); font-size: 0.95em; }
-/* Lean names break only where family.js-free markup allows: after an underscore or a dot. */
-.bl__code .ln { overflow-wrap: normal; word-break: normal; }
-.bl__go { margin: 14px 0 0; font-size: var(--fs-meta); font-weight: 600; }
-.bl__go a { color: var(--steel-text); }
-.runs { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--rule); }
-.runs__h { font-size: var(--fs-meta); font-weight: 600; color: var(--ink-soft); margin: 0 0 6px; }
-.runs__h a.term { color: inherit; }
-.runs__list { list-style: none; margin: 0; padding: 0; }
-.runs__i { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 0 10px; padding: 6px 0; }
-.runs__i .glyph { margin-top: 5px; }
-.runs__line { margin: 0; font-size: var(--fs-meta); line-height: 1.45; }
-.runs__who a { color: var(--ink); }
-.runs__v { color: var(--ink-soft); }
-.runs__when { color: var(--muted); white-space: nowrap; }
-.runs__rec { font-size: var(--fs-small); color: var(--muted); margin-left: 4px; }
-.runs__fold { margin-top: 6px; }
-.runs__hows { list-style: none; margin: 0; padding: 0; font-size: var(--fs-small); color: var(--muted); line-height: 1.45; }
-.runs__hows li { margin: 0 0 6px; }
-.runs__who2 { color: var(--ink-soft); font-weight: 600; }
-.runs__note, .runs__none { font-size: var(--fs-small); color: var(--muted); margin: 6px 0 0; }
-.bl--none { background: transparent; border-style: solid; border-color: var(--rule); padding: 22px 24px; }
-.bl--none .bl__title { font-family: var(--serif); font-size: 1.125rem; font-weight: 600; color: var(--ink-soft); }
-.bl__none { font-size: var(--fs-body); color: var(--muted); margin: 8px 0 0; max-width: 32em; }
+/* ---- Who has checked it --------------------------------------------------------- */
+.fx-rds { display: grid; gap: 0 32px; max-width: 64rem; }
+@container fxmain (min-width: 760px) { .fx-rds { grid-template-columns: 1fr 1fr; } }
+.fx-rd { padding: 12px 0 8px; border-top: 1px solid var(--rule); min-width: 0; }
+.fx-rd__v { margin: 0 0 8px; font-family: var(--serif); font-size: 1.0625rem; line-height: 1.5; color: var(--ink); }
+.fx-rd--none .fx-rd__v { color: var(--muted); }
+.fx-rd__note { margin: 0 0 6px; font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); overflow-wrap: break-word; }
+.fx-rd__k { font-weight: 600; color: var(--ink-soft); }
+.fx-rd__def, .fx-rd__method { margin: 0 0 6px; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
+.fx-rd__links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 6px 0 0; font-size: var(--fs-small); }
+.fx-draft { margin: 18px 0 0; max-width: var(--fx-measure); font-size: var(--fs-small); color: var(--muted); }
+.fx-draft__h { margin: 0 0 4px; font-weight: 600; }
+.fx-draft__list { margin: 0; padding-left: 1.1em; line-height: 1.5; }
+.fx-draft__list li { margin: 4px 0; }
+.fx-producer { margin-top: 18px; max-width: var(--fx-measure); }
+.fx-producer__h { margin: 0 0 4px; font-size: var(--fs-meta); font-weight: 600; }
+.fx-producer__q { margin: 0; padding-left: 14px; border-left: 2px solid var(--rule-strong); font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); }
 
-.glyph { width: 12px; height: 12px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
-.glyph--ok { stroke: var(--steel); }
-.glyph--brick { stroke: var(--brick); }
-.glyph--open { stroke: var(--faint); stroke-width: 1.4; }
+.fx-rg { margin: 14px 0 0; max-width: 60rem; scroll-margin-top: 12px; }
+.fx-rg__h { margin: 0 0 4px; }
+.fx-rg__h code { font-family: var(--fx-lean-mono); font-size: 0.875rem; color: var(--steel-text); overflow-wrap: anywhere; }
+.fx-runs { list-style: none; margin: 0; padding: 0; }
+.fx-run { padding: 6px 0; border-top: 1px solid var(--rule); font-size: var(--fs-body); line-height: 1.5; color: var(--ink); }
+.fx-run__s { display: block; }
+.fx-run__more { display: block; margin-top: 2px; font-size: var(--fs-small); color: var(--muted); line-height: 1.5; }
+.fx-run__det { color: var(--muted); }
+.fx-run .ins, .fx-rd .ins, .fx-card .ins { font-size: var(--fs-small); color: var(--muted); }
 
-/* The thread. */
-.bench__thread { position: absolute; inset: 0; pointer-events: none; }
-.thread { position: absolute; overflow: visible; pointer-events: none; }
-/* Stacked: the dot's centre sits on the paper card's lower border, the diamond's on
-   the Lean card's upper border, both 28px in from the edge, clear of any text. */
-.thread--v { display: block; top: calc(100% - 4px); left: 22px; width: 14px; height: 44px; }
-.thread--h { display: none; }
-@container bench (min-width: 860px) {
-  .thread--v { display: none; }
-  /* Side by side: centres on the two facing borders, 64px apart, at the height of the cards' headings. */
-  .thread--h { display: block; top: 32px; left: calc(100% - 6px); width: 76px; height: 12px; }
-  /* When the Lean card travels, the thread travels with it, drawn back to the paper card. */
-  .bench__thread--onlean .thread--h { left: auto; right: calc(100% - 6px); }
-}
-.thread__line { fill: none; stroke: var(--steel); stroke-width: 1.5; stroke-dasharray: 5 4; stroke-linecap: round; transition: stroke 160ms var(--ease-out), stroke-width 160ms var(--ease-out); }
-.thread__dot, .thread__end { fill: var(--steel); stroke: var(--page); stroke-width: 1.5; transition: fill 160ms var(--ease-out); }
-.bench:has(.bp:hover, .bl:hover, .bp:focus-within, .bl:focus-within, .bench__cap:hover) .thread__line { stroke: var(--steel-strong); stroke-width: 2.25; }
-.bench:has(.bp:hover, .bl:hover, .bp:focus-within, .bl:focus-within, .bench__cap:hover) :is(.thread__dot, .thread__end) { fill: var(--steel-strong); }
-.bench--paired:has(.bp:hover, .bl:hover, .bp:focus-within, .bl:focus-within, .bench__cap:hover) :is(.bp, .bl) { border-color: color-mix(in oklab, var(--steel) 60%, var(--rule-strong)); }
-.bench__cap { font-size: var(--fs-meta); color: var(--muted); line-height: 1.55; max-width: 52em; margin: 14px 0 0; }
-.bench__cap a.term { color: var(--ink-soft); }
-.bench__draft { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; max-width: 52em; margin: 14px 0 0; }
+.fx-cards { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
+.fx-card { padding: 10px 0; border-top: 1px solid var(--rule); }
+.fx-card__s { margin: 0 0 4px; font-size: var(--fs-body); line-height: 1.5; color: var(--ink); }
+.fx-card__w { margin: 0 0 4px; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
+.fx-card__l { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; margin: 4px 0 0; font-size: var(--fs-small); }
 
-/* The two outside readings of scope, side by side, then OpenAI's own note. */
-.rds { margin-top: 34px; }
-.rds__h { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; line-height: 1.3; margin: 0 0 6px; scroll-margin-top: 16px; }
-.rds__intro { font-size: var(--fs-body); color: var(--muted); max-width: 46em; margin: 0 0 12px; }
-.rds__pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 32px; border-top: 1px solid var(--rule); }
-.rd { padding: 14px 0 6px; min-width: 0; }
-.rd + .rd { border-top: 1px solid var(--rule); }
-@container bench (min-width: 640px) {
-  .rds__pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .rd + .rd { border-top: 0; border-left: 1px solid var(--rule); padding-left: 32px; }
-}
-.rds__lead { font-family: var(--serif); font-size: 1.125rem; line-height: 1.5; color: var(--ink); max-width: 40em; margin: 0 0 14px; }
-.rd__who { font-size: var(--fs-small); font-weight: 600; color: var(--muted); margin: 0 0 4px; }
-.rd__who a { color: var(--ink-soft); }
-.rd__v { display: flex; align-items: baseline; gap: 8px; font-family: var(--serif); font-size: 1.125rem; line-height: 1.35; color: var(--ink); margin: 0 0 6px; }
-.rd__g { width: 14px; height: 14px; flex: none; transform: translateY(1px); }
-.rd__g circle { fill: none; stroke: var(--steel); stroke-width: 1.3; }
-.rd__g .fill { fill: var(--steel); stroke: none; }
-.rd--none .rd__v { color: var(--muted); font-family: var(--sans); font-size: var(--fs-body); }
-.rd__method { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; margin: 0 0 10px; max-width: 60ch; }
-.rd__gloss { font-family: var(--serif); font-size: 1.125rem; color: var(--ink); }
-.rd__termw { font-size: var(--fs-small); color: var(--muted); white-space: nowrap; }
-.rd__term { font-size: 0.95em; color: var(--ink-soft); }
-.rd__note { font-size: var(--fs-body); color: var(--ink); line-height: 1.55; margin: 0 0 8px; max-width: 60ch; }
-.rd__def { font-size: var(--fs-small); color: var(--muted); line-height: 1.5; margin: 0 0 6px; max-width: 60ch; }
-.rd__k { font-weight: 600; }
-.rd__src { font-size: var(--fs-small); margin: 0; }
-.rd-note { margin-top: 20px; max-width: 46em; }
-.rd-note__h { font-size: var(--fs-small); font-weight: 600; color: var(--muted); margin: 0 0 6px; }
-.rd-note__h a { color: var(--ink-soft); }
-.rd-note__q { margin: 0; max-width: 55ch; padding-left: 16px; border-left: 2px solid var(--rule-strong); font-family: var(--serif); font-size: 1rem; line-height: 1.6; color: var(--ink-soft); }
-.rd-note__q p { margin: 0 0 0.5em; }
-.rd-note__q .fam-fold > summary { font-family: var(--sans); }
-.rd-note__src { font-size: var(--fs-small); margin: 6px 0 0; }
-.rd-note__src a { color: var(--muted); }
+.fx-finds { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
+.fx-find { padding: 9px 0; border-top: 1px solid var(--rule); }
+.fx-find__what { margin: 0; font-size: var(--fs-body); line-height: 1.55; color: var(--ink); max-width: 64ch; }
+.fx-find__who { margin: 3px 0 0; font-size: var(--fs-small); color: var(--muted); }
+#problems + .fx-intro + .fx-finds .fx-find { border-top-color: color-mix(in oklab, var(--brick) 35%, var(--rule)); }
 
-/* Every other theorem and Lean statement, compact. */
-.bx { margin-top: 36px; }
-.bx__h { font-family: var(--serif); font-size: 1.125rem; font-weight: 600; margin: 0 0 8px; scroll-margin-top: 16px; }
-.bx__list { list-style: none; margin: 0; padding: 0; }
-.bx__i { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 0 14px; align-items: start; padding: 10px 0; border-top: 1px solid var(--rule); }
-.bx__i > p { margin: 0; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 2px 28px; font-size: var(--fs-body); line-height: 1.5; }
-.bx__i--same > p, .bx__i--loose > p, .bx__i--rest > p { display: block; }
-.bx__thm { min-width: 0; }
-.bx__in { color: var(--muted); font-size: var(--fs-meta); }
-.bx__in a, .bx__in .tex-auto { color: var(--muted); }
-.bx__to { min-width: 0; }
-.bx__to--none { color: var(--faint); font-size: var(--fs-meta); }
-.bx__runs { color: var(--muted); font-size: var(--fs-small); }
-.mthread { width: 34px; height: 10px; margin-top: 7px; overflow: visible; }
-.mthread circle { fill: var(--steel); }
-.mthread path:not(.mthread__end) { fill: none; stroke: var(--steel); stroke-width: 1.4; stroke-dasharray: 3 2.5; stroke-linecap: round; }
-.mthread .mthread__end { fill: var(--steel); }
-.mthread--none .mthread__end { fill: none; stroke: var(--faint); stroke-width: 1.2; }
+/* Rows of prose keep a reading measure, whatever the column's width. */
+.fx-run, .fx-find__what, .fx-find__who, .fx-left__i, .fx-card__s, .fx-card__w, .fx-alt, .fx-idx__list li, .fx-plain li, .fx-draft__list li, .fx-rd__note { max-width: 46rem; }
+.fx-run__more, .fx-left__names { max-width: 52rem; }
 
-/* ---- Checks ------------------------------------------------------------- */
-.rt-wrap { overflow-x: auto; max-width: 100%; margin-top: 8px; }
-.rt { border-collapse: collapse; font-size: var(--fs-meta); min-width: 100%; }
-.rt th, .rt td { text-align: left; vertical-align: top; padding: 9px 22px 9px 0; border-top: 1px solid var(--rule); }
-.rt thead th { border-top: 0; font-weight: 600; color: var(--muted); font-size: var(--fs-small); padding-top: 0; }
-.rt thead th a { color: var(--ink-soft); }
-.rt tbody th { font-weight: 400; font-family: var(--serif); font-size: var(--fs-base); }
-.rt tbody th a { color: var(--ink); }
-.rt__a { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); }
-.rt__d { display: block; color: var(--muted); font-size: var(--fs-micro); padding-left: 18px; }
-.rt__c--none { color: var(--faint); }
-.fcs { list-style: none; margin: 4px 0 0; padding: 0; }
-.fc { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 0 12px; padding: 12px 0; border-top: 1px solid var(--rule); }
-.fc .glyph { margin-top: 6px; }
-.fc__v { margin: 0; font-size: var(--fs-body); max-width: 48em; }
-.fc__v a { color: var(--ink-soft); }
-.fc__text { margin: 4px 0 0; font-size: var(--fs-meta); color: var(--ink-soft); max-width: 48em; }
-.fc__plain { color: var(--muted); }
-.fc__src { margin: 4px 0 0; font-size: var(--fs-small); color: var(--muted); }
-.ff { list-style: none; margin: 4px 0 0; padding: 0; }
-.ff__i { padding: 10px 0; border-top: 1px solid var(--rule); }
-.ff__what { margin: 0; font-size: var(--fs-body); line-height: 1.55; max-width: 56ch; }
-.ff__who { margin: 3px 0 0; font-size: var(--fs-small); color: var(--muted); }
-.fam-problems .h3 { color: var(--brick-text); }
-.fam-problems .ff__i { border-top-color: color-mix(in oklab, var(--brick) 35%, var(--rule)); }
-.left__list { list-style: none; margin: 4px 0 0; padding: 0; max-width: 52em; }
-.left__list > li { position: relative; padding: 9px 0 9px 22px; border-top: 1px solid var(--rule); font-size: var(--fs-body); line-height: 1.55; }
-.left__list > li::before { content: ""; position: absolute; left: 1px; top: 1.05em; width: 7px; height: 7px; border: 1.4px solid var(--faint); border-radius: 50%; }
+/* ---- What is left to check --------------------------------------------------------- */
+.fx-left__g .fx-h3 { font-size: 1.0625rem; margin-top: 24px; }
+.fx-left { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
+.fx-left__i { padding: 7px 0; border-top: 1px solid var(--rule); font-size: var(--fs-body); line-height: 1.5; color: var(--ink-soft); }
+.fx-left__t { font-weight: 600; color: var(--ink); }
+.fx-left__r { overflow-wrap: break-word; }
+.fx-left__names { display: block; font-size: var(--fs-small); color: var(--muted); }
+.fx-left__go { font-size: var(--fs-small); white-space: nowrap; }
 
-/* ---- Papers ------------------------------------------------------------- */
+/* ---- Papers (paper_row in build_site.py), connections, explain ---------------------- */
 .pps { margin-top: 4px; }
-.pp { padding: 18px 0 16px; border-top: 1px solid var(--rule); scroll-margin-top: 16px; }
+.pp { padding: 18px 0 16px; border-top: 1px solid var(--rule); scroll-margin-top: 12px; }
 .pp__title { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; line-height: 1.3; margin: 0 0 4px; max-width: 40em; }
 .pp__title a { color: var(--ink); }
 .pp__title a:hover { color: var(--steel-text); }
@@ -299,62 +237,37 @@
 .pp__prev { font-size: var(--fs-meta); color: var(--muted); margin: 6px 0; }
 .pp__abstract { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.6; color: var(--ink-soft); max-width: 42em; margin: 4px 0 14px; }
 .pp__more .stmts { max-width: 56em; }
+.fam-numstate { font-weight: 400; font-style: italic; color: var(--muted); font-size: 0.92em; }
+.fx-pps { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
+.fx-pp { padding: 8px 0; border-top: 1px solid var(--rule); font-family: var(--serif); font-size: 1.0625rem; scroll-margin-top: 12px; }
+.fx-pp a:first-child { color: var(--ink); }
+.fx-pp__m { font-family: var(--sans); font-size: var(--fs-small); color: var(--muted); }
+.fx-pp__pdf { font-family: var(--sans); font-size: var(--fs-small); }
 .wds { margin-top: 30px; }
-.wd { padding: 14px 0; border-top: 1px solid color-mix(in oklab, var(--brick) 35%, var(--rule)); scroll-margin-top: 16px; }
+.wd { padding: 14px 0; border-top: 1px solid color-mix(in oklab, var(--brick) 35%, var(--rule)); scroll-margin-top: 12px; }
 .wd__title { font-family: var(--serif); font-size: 1.125rem; font-weight: 500; margin: 0 0 6px; }
 .wd__title a { color: var(--ink); }
-.wd__note { font-size: var(--fs-meta); color: var(--ink-soft); max-width: 46em; }
+.wd__note { font-size: var(--fs-meta); color: var(--ink-soft); max-width: 62ch; }
 .wd__when { font-size: var(--fs-small); color: var(--muted); margin: 4px 0 0; }
-
-/* ---- Connections and next steps ----------------------------------------- */
-.fam-refs { margin-top: 30px; scroll-margin-top: 16px; }
-.fam-refs .h3 { margin-top: 0; }
-.fam-refs .fam-fold { margin-top: 4px; }
-.fam-invite { font-family: var(--serif); font-size: 1.125rem; line-height: 1.55; color: var(--ink-soft); max-width: 38em; margin: 0; }
-.fam-acts { margin-top: 26px; scroll-margin-top: 16px; }
-.fam-acts .actions { margin-top: 8px; }
-
-/* ---- Narrow screens ----------------------------------------------------- */
-@media (max-width: 900px) {
-  .bx__i > p { grid-template-columns: minmax(0, 1fr); }
-}
-@media (max-width: 640px) {
-  .bp { padding: 20px 18px 14px; }
-  .bl { padding: 18px 16px 14px; }
-  .bp__body { font-size: 1.0938rem; }
-  
-  .bx__i { grid-template-columns: 26px minmax(0, 1fr); gap: 0 10px; }
-  .mthread { width: 26px; }
-  .fsec { margin-top: 36px; padding-top: 30px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .bp, .bl, .thread__line, .thread__dot, .thread__end, .fam-fold > summary::before { transition: none; }
-}
-@media (forced-colors: active) {
-  .thread__line, .mthread path { stroke: CanvasText; }
-  .thread__dot, .thread__end, .mthread circle, .mthread .mthread__end { fill: CanvasText; }
-}
-.bx__list--plain .bx__i { grid-template-columns: minmax(0, 1fr); }
-.bx__list--plain .bx__pad { display: none; }
-.bx__i--plain > p { display: block; }
-.fhead__title--long { font-size: clamp(1.75rem, 1.3rem + 1.3vw, 2.375rem); line-height: 1.16; max-width: 30em; }
-.rd__fold { margin: 0 0 6px; }
-/* Measure: sans prose stays under about 80 characters a line at every width. */
-.bench__cap, .bench__draft, .fhead__facts, .ff__who, .fc__v, .fc__text, .fc__src, .left__list, .fsec__intro, .rds__intro { max-width: 66ch; }
-.rd-note__q { max-width: 55ch; }
-.bp__body { max-width: 40em; }
-.fhead__lede { max-width: 38em; }
-.fhead__q--rest .tex-auto { max-width: 38em; }
-.fhead__facts { max-width: 62ch; }
-.rd-note__q { max-width: 55ch; }
-
-.fam-invite { max-width: 34em; }
-.fsec .intro, .left__list { max-width: 62ch; }
-.wd__note { max-width: 62ch; }
+.fx-cols2 { display: grid; gap: 0 40px; }
+@container fxmain (min-width: 760px) { .fx-cols2 { grid-template-columns: 1fr 1fr; } }
+.fx-cols2 .fx-h3 { margin-top: 12px; }
+.fx-refs { margin-top: 30px; scroll-margin-top: 12px; }
+.fx-refs .fx-fold { margin-top: 4px; }
+.fam-invite { font-family: var(--serif); font-size: 1.125rem; line-height: 1.55; color: var(--ink-soft); max-width: 34em; margin: 0; }
+.fx-contrib { margin-top: 26px; scroll-margin-top: 12px; }
+.fx-contrib .actions { margin-top: 8px; }
 .rel li { max-width: 70ch; }
-@media (max-width: 640px) {
-  .fhead__title { font-size: 1.875rem; }
-  .fhead__title--long { font-size: 1.5rem; }
+
+/* ---- No shift while the formulas are typeset ---------------------------------------
+   The statements and the catalogue's words carry TeX that KaTeX typesets once the
+   deferred scripts run; raw TeX is wider, so the text would reflow and move what is
+   below it. With scripting on, those parts wait (invisibly, keeping their space) until
+   atlas.js marks the document typeset, or 1.5 s at most, so nothing moves under the
+   reader. With scripting off they show at once, as plain TeX. */
+@media (scripting: enabled) {
+  html:not([data-math]) .fx-quote__q, html:not([data-math]) .fx-fact, html:not([data-math]) .fx-body {
+    visibility: hidden; animation: fx-typeset 0s linear 1.5s forwards;
+  }
 }
-/* The thread's ends sit on the borders: its card column paints above the other, so neither card covers an end. */
-.bench__travel:has(> .bench__thread) { z-index: 1; }
+@keyframes fx-typeset { to { visibility: visible; } }

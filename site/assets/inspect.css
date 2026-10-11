@@ -1,0 +1,63 @@
+/* Plectis Atlas: the inspection pattern (inspect.js). A light preview beside what
+   is pointed at or focused, and a rail where a selected record stays: beside the
+   reading column on wide screens, a sheet from the bottom on phones, a floating
+   panel on pages that have no rail of their own. Reads the atlas.css tokens only. */
+
+/* A trigger set in running text: the words, with a dotted underline that says
+   "there is more here". Buttons look like the text they sit in. */
+.ins { font: inherit; color: inherit; background: none; border: 0; padding: 0; margin: 0; cursor: pointer; text-align: inherit;
+  text-decoration: underline dotted; text-decoration-color: var(--rule-control); text-underline-offset: 0.2em; min-height: 24px; }
+.ins:hover { text-decoration-color: currentColor; color: var(--ink); }
+.ins.is-pinned { text-decoration-style: solid; text-decoration-color: var(--steel-text); }
+.ins:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; border-radius: 2px; }
+
+/* One record, wherever it is shown. */
+.ins-rec { font-family: var(--sans); font-size: var(--fs-meta); line-height: 1.5; color: var(--ink-soft); }
+.ins-rec__kind { margin: 0 0 2px; font-size: var(--fs-small); color: var(--muted); }
+.ins-rec__title { margin: 0 0 8px; font-family: var(--serif); font-size: 1.0625rem; line-height: 1.35; color: var(--ink); overflow-wrap: anywhere; }
+.ins-rec__title code { font-family: var(--lean-mono, var(--mono)); font-size: 0.9em; }
+.ins-rec__note { font-family: var(--sans); font-size: var(--fs-small); color: var(--muted); }
+.ins-rec__body { margin: 0 0 8px; font-family: var(--serif); font-size: 1rem; line-height: 1.55; color: var(--ink); overflow-wrap: anywhere; }
+.ins-rec__body p { margin: 0 0 0.5em; }
+.ins-rec__dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 3px 12px; margin: 0 0 8px; }
+.ins-rec__dl dt { color: var(--muted); font-size: var(--fs-small); padding-top: 1px; }
+.ins-rec__dl dd { margin: 0; overflow-wrap: anywhere; }
+.ins-rec__dl code { font-family: var(--lean-mono, var(--mono)); font-size: 0.85em; }
+.ins-rec__links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.ins-rec__links a { display: inline-flex; align-items: center; min-height: 24px; }
+.ins-rec .katex-display { overflow-x: auto; overflow-y: hidden; }
+
+/* The preview: light, beside its trigger, never covering it. */
+.ins-pop { position: absolute; z-index: 60; box-sizing: border-box; width: max-content; max-height: min(360px, 60vh); overflow: auto;
+  padding: 12px 14px 10px; background: var(--surface); color: var(--ink); border: 1px solid var(--rule-strong); border-radius: var(--r-md, 8px);
+  box-shadow: 0 1px 2px rgba(25, 21, 32, 0.08), 0 6px 18px -8px rgba(25, 21, 32, 0.18); }
+.ins-pop[hidden] { display: none; }
+.ins-pop__hint { margin: 6px 0 0; padding-top: 6px; border-top: 1px solid var(--rule); font-family: var(--sans); font-size: var(--fs-micro, 0.75rem); color: var(--muted); }
+@media (hover: none) { .ins-pop__hint { display: none; } }
+
+/* The rail. In its page it sits at the top of a sticky side column. */
+.ins-rail { box-sizing: border-box; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-md, 8px); padding: 10px 14px 14px; }
+.ins-rail[hidden] { display: none; }
+.ins-rail__bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 0 0 8px; padding-bottom: 6px; border-bottom: 1px solid var(--rule); }
+.ins-rail__h { margin: 0; font-family: var(--sans); font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.ins-rail__h:focus { outline: none; }
+.ins-rail__h:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+.ins-rail__close { font: inherit; font-size: var(--fs-small); min-height: 28px; padding: 2px 10px; border: 1px solid var(--rule-control); border-radius: var(--r-sm, 6px); background: var(--surface); color: var(--ink); cursor: pointer; }
+.ins-rail__close:hover { border-color: var(--ink); }
+.ins-rail__close:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+.ins-rail__body { max-height: calc(100vh - 160px); overflow: auto; overscroll-behavior: contain; }
+
+/* With no side column (a page without its own rail, or any narrow screen): a sheet. */
+.ins-rail--float { position: fixed; z-index: 70; right: 16px; bottom: 16px; width: min(400px, calc(100vw - 32px)); max-height: 70vh;
+  box-shadow: 0 2px 4px rgba(25, 21, 32, 0.08), 0 14px 32px -12px rgba(25, 21, 32, 0.32); }
+.ins-rail--float .ins-rail__body { max-height: calc(70vh - 60px); }
+@media (max-width: 1099px) {
+  .ins-rail { position: fixed; z-index: 70; left: 0; right: 0; bottom: 0; width: auto; max-height: 72vh; border-radius: var(--r-lg, 10px) var(--r-lg, 10px) 0 0;
+    border-width: 1px 0 0; padding: 10px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -2px 4px rgba(25, 21, 32, 0.06), 0 -14px 32px -12px rgba(25, 21, 32, 0.3); }
+  .ins-rail__body { max-height: calc(72vh - 64px); }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ins-pop, :root:not([data-theme="light"]) .ins-rail--float { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 10px 26px -10px rgba(0, 0, 0, 0.6); }
+}
+:root[data-theme="dark"] .ins-pop, :root[data-theme="dark"] .ins-rail--float { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 10px 26px -10px rgba(0, 0, 0, 0.6); }
