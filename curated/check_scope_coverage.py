@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import os
 import subprocess
 import sys
@@ -142,6 +143,9 @@ def main() -> int:
         if sid not in stmt_family:
             err(f"{where}: not a statement id in data/statements.json")
             continue
+        # An unreviewed reading says what a statement states; "certify" would claim a check nobody made.
+        if re.search(r"\b[Cc]ertif(?:y|ies|ied)\b", str(row.get("explanation") or "")):
+            err(f"{where}: explanation says 'certif...'; a draft reading says what the statement states")
         seen[sid] += 1
         fid = row.get("family")
         if fid != stmt_family[sid]:
