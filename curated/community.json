@@ -229,7 +229,7 @@
    "kind": "analysis",
    "authors": [
     {
-     "name": "BenKnill",
+     "name": "Ben Knill",
      "handle": "BenKnill",
      "url": "https://github.com/BenKnill"
     }
@@ -240,11 +240,16 @@
    "traction": "0 stars, 0 forks, last push 2026-10-08 (GitHub API, 11 Oct 2026)",
    "reuse": "link",
    "families": [
-    "158",
-    "354",
-    "049",
-    "353",
     "017",
+    "028",
+    "049",
+    "150",
+    "158",
+    "188",
+    "196",
+    "325",
+    "353",
+    "354",
     "369"
    ],
    "statements": [],
@@ -2905,11 +2910,36 @@
    "traction": "not measured",
    "reuse": "link",
    "families": [
-    "004",
-    "196",
-    "005",
-    "234",
-    "197"
+    "002",
+    "003",
+    "017",
+    "032",
+    "080",
+    "087",
+    "102",
+    "107",
+    "122",
+    "130",
+    "159",
+    "213",
+    "216",
+    "218",
+    "221",
+    "260",
+    "264",
+    "268",
+    "269",
+    "271",
+    "272",
+    "274",
+    "275",
+    "276",
+    "279",
+    "281",
+    "284",
+    "287",
+    "362",
+    "376"
    ],
    "statements": [],
    "source_seed": "C_community_seed.curated.json"
@@ -5065,6 +5095,52 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "id": "github-mayixinphy-openai-math-physics-notes",
+   "name": "OpenAI mathematical physics, 25 families: a Chinese guided reading",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/",
+   "kind": "explanation",
+   "authors": [
+    {
+     "name": "Yixin Ma",
+     "handle": "MaYixinPhy",
+     "url": "https://github.com/MaYixinPhy"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "A Chinese guided reading of every mathematical-physics family (260 to 284, 59 manuscripts), drafted with Codex, that states its evidence layer: abstracts and main theorems compared, boundary conditions and limit orders checked, nothing re-proved or run.",
+   "reuse": "link",
+   "families": [
+    "260",
+    "261",
+    "262",
+    "263",
+    "264",
+    "265",
+    "266",
+    "267",
+    "268",
+    "269",
+    "270",
+    "271",
+    "272",
+    "273",
+    "274",
+    "275",
+    "276",
+    "277",
+    "278",
+    "279",
+    "280",
+    "281",
+    "282",
+    "283",
+    "284"
+   ],
+   "statements": [],
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "id": "woett-short-egyptian-fractions-writeup",
    "name": "Short Egyptian fractions (a simplified write-up)",
    "url": "https://github.com/Woett/Mathematical-shorts/blob/main/Short%20Egyptian%20fractions.pdf",
@@ -5230,6 +5306,28 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "id": "github-zlisto-openai-math-navigator",
+   "name": "zlisto/openai_math: Paper Navigator",
+   "url": "https://github.com/zlisto/openai_math",
+   "kind": "explorer",
+   "authors": [
+    {
+     "name": "Tauhid Zaman",
+     "handle": "zlisto",
+     "url": "https://github.com/zlisto"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "A single-page navigator for browsing the manuscripts by subject and family, loading the PDFs from a public CDN mirror of the release.",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "id": "gokayfem-openai-math-explained",
    "name": "gokayfem/openai-math-explained",
    "url": "https://gokayfem.github.io/openai-math-explained/",
@@ -5251,6 +5349,29 @@
    ],
    "statements": [],
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "github-foocker-openaimath",
+   "name": "foocker/openaimath: Chinese reading index of the release",
+   "url": "https://github.com/foocker/openaimath",
+   "kind": "explorer",
+   "authors": [
+    {
+     "name": "foocker",
+     "handle": "foocker",
+     "url": "https://github.com/foocker"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "A Chinese-language reading index by subject and family with search, a self-hosted PDF reader, a checked English-Chinese terminology list of 85 terms and two narrated video explainers; its data snapshot is the 6 October commit.",
+   "reuse": "link",
+   "families": [
+    "003",
+    "002"
+   ],
+   "statements": [],
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "id": "hajlasz-searchable-catalogue",
@@ -5676,7 +5797,7 @@
    "kind": "follow-up",
    "authors": [
     {
-     "name": "jzuiddam",
+     "name": "Jeroen Zuiddam",
      "handle": "jzuiddam",
      "url": "https://github.com/jzuiddam"
     }
@@ -5811,6 +5932,30 @@
    ],
    "statements": [],
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "id": "github-eliottcassidy2000-math-thm-4568",
+   "name": "eliottcassidy2000/math: THM-4568, the 9/4 growth lemma is exactly sharp",
+   "url": "https://github.com/eliottcassidy2000/math/blob/5966360a9c69b6bb0f3da39dc219f4a6c5dc3244/01-canon/theorems/THM-4568-the-nine-fourths-growth-lemma-is-exactly-sharp.md",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Eliott Cassidy",
+     "handle": "eliottcassidy2000",
+     "url": "https://github.com/eliottcassidy2000"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "A note in an AI-assisted research notebook proving that the profile properties behind the 9/4 matrix multiplication bound have a least element meeting the rank bound exactly at t = 3/4, so the argument cannot give an exponent below 9/4.",
+   "reuse": "link",
+   "families": [
+    "107"
+   ],
+   "statements": [
+    "MatrixMultiplication"
+   ],
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "id": "github-erayyap-integer-multiplication-kappa-improvi-3182b",
@@ -7336,6 +7481,37 @@
    ],
    "statements": [],
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "walker-lech-equal-characteristic",
+   "name": "Lech's conjecture in equal characteristic: exposition of a proof found with ChatGPT Astra",
+   "url": "https://mark-walker-22.github.io/Lech.html",
+   "kind": "paper",
+   "authors": [
+    {
+     "name": "Srikanth B. Iyengar"
+    },
+    {
+     "name": "Linquan Ma"
+    },
+    {
+     "name": "Mark Walker",
+     "handle": "mark-walker-22",
+     "url": "https://github.com/mark-walker-22"
+    },
+    {
+     "name": "Alex Gerko"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-06",
+   "summary": "A preliminary exposition by Iyengar, Ma and Walker of a proof of Lech's conjecture in equal characteristic that Alex Gerko found with ChatGPT Astra, posted with the original AI-written manuscript and two AI-generated retrospectives; the page says it was first posted on 5 October.",
+   "reuse": "link",
+   "families": [
+    "194"
+   ],
+   "statements": [],
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "id": "institutions-ten-advances-in-mathematics-and-theoretical--30d77",
@@ -9210,6 +9386,28 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "id": "github-wardalxndr-openai-math-explorer-rag",
+   "name": "wardalxndr/openai-math-explorer: question answering with page citations",
+   "url": "https://github.com/wardalxndr/openai-math-explorer",
+   "kind": "tooling",
+   "authors": [
+    {
+     "name": "wardalxndr",
+     "handle": "wardalxndr",
+     "url": "https://github.com/wardalxndr"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "A small retrieval-augmented question-answering app over the release overview, the ten reasoning traces and family metadata that cites file and page for every answer, shows a Lean-status badge and carries a 30-question retrieval test set.",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "id": "forster-own-your-specs",
    "name": "own-your-specs",
    "url": "https://github.com/yforster/own-your-specs",
@@ -9233,6 +9431,50 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "id": "github-mathcommunity-oai-math-revised",
+   "name": "mathcommunity/oai-math-revised: a community fork for better citations and exposition",
+   "url": "https://github.com/mathcommunity/oai-math-revised",
+   "kind": "tooling",
+   "authors": [
+    {
+     "name": "mathcommunityadmin",
+     "handle": "mathcommunity",
+     "url": "https://github.com/mathcommunity"
+    }
+   ],
+   "licence": "Apache-2.0 (fork of the release)",
+   "date": "2026-10-10",
+   "summary": "A fork of the release that invites students, postdocs, professors and enthusiasts to submit pull requests improving the manuscripts' citations and readability, pseudonymous contributions allowed; no contributions merged by 11 October.",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "id": "github-mrorigo-openai-math-wiki",
+   "name": "mrorigo/openai-math-wiki: the release as an Open Knowledge Format bundle",
+   "url": "https://github.com/mrorigo/openai-math-wiki",
+   "kind": "tooling",
+   "authors": [
+    {
+     "name": "mrorigo",
+     "handle": "mrorigo",
+     "url": "https://github.com/mrorigo"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-10",
+   "summary": "The release as an agent-readable knowledge bundle: one typed Markdown document per discipline, result family and paper, with tags for Lean formalisation and reasoning traces, built for hybrid search.",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "id": "hugetim-openai-math-mirror",
    "name": "openai_math: unofficial mirror with Issues and Discussion enabled",
    "url": "https://github.com/hugetim/openai_math",
@@ -9254,6 +9496,28 @@
    "reuse": "link",
    "statements": [],
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "github-proofsearch-errata",
+   "name": "ProofSearch errata: a public report tracker for the release",
+   "url": "https://github.com/ProofSearch/errata",
+   "kind": "tracker",
+   "authors": [
+    {
+     "name": "Paras Koundal",
+     "handle": "ProofSearch",
+     "url": "https://github.com/ProofSearch"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "An issue tracker with one report per manuscript in seven types (suspected error, gap in a proof, Lean statement differs from paper, citation, typo, independent check with no problem found, question) and maintainer labels acknowledged, fixed and disputed; no reports filed by 11 October.",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "id": "bloom-erdos-problems-in-the-openai-proofs",
@@ -9411,6 +9675,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "002",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/26-002-bsd-formula.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "blogs-a-brief-digest-of-some-new-openai-results-a4506",
    "family": "002",
    "statement": null,
@@ -9420,6 +9694,26 @@
    "date": "2026-10-08",
    "verified": "read in full via direct HTTP fetch on 11 Oct 2026 including all 8 comments; the Hexagon preprint was not opened; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "jkbennitt-math-release-atlas",
+   "family": "002",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The math-release-atlas shows a fixed caution on this family: it is BSD for low Selmer corank, not the full Birch and Swinnerton-Dyer conjecture.",
+   "url": "https://github.com/jkbennitt/math-release-atlas/blob/1ce51351b10bcbb3636a0c1b3df083f1429d92a1/data/fixed-cautions.json",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-foocker-openaimath",
+   "family": "002",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "A narrated Chinese video explainer of about 96 seconds on the low Selmer corank BSD formula paper of 3 October, covering the corank condition, the leading-term formula and the role of every prime factor.",
+   "url": "https://foocker.github.io/openaimath/explainers/bsd-low-corank/",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "institutions-mrconter1-vibemathed-67323",
@@ -9565,6 +9859,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "003",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/24-003-quasi-riemann.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "mo-515849-conventional-wisdom",
    "family": "003",
    "statement": null,
@@ -9708,6 +10012,26 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "jkbennitt-math-release-atlas",
+   "family": "003",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The math-release-atlas shows a fixed caution on this family: the result is a zero-free region for real part above 7/8, a quasi-Riemann hypothesis, and not the Riemann Hypothesis.",
+   "url": "https://github.com/jkbennitt/math-release-atlas/blob/1ce51351b10bcbb3636a0c1b3df083f1429d92a1/data/fixed-cautions.json",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-foocker-openaimath",
+   "family": "003",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "A narrated Chinese video explainer of about 95 seconds, with synchronised subtitles and chapters, for the 30 September quasi-Riemann hypothesis paper.",
+   "url": "https://foocker.github.io/openaimath/explainers/riemann-zero-free/",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "formal-follow-ups-to-the-openai-mathematics-release-bf10a",
    "family": "003",
    "statement": null,
@@ -9783,6 +10107,26 @@
    "date": "2026-10-07",
    "verified": "Read the forum post and the repository metadata on 2026-10-11 (repo exists, MIT, created 2026-10-07 01:36 UTC); not re-run by us; the author notes one run on one machine and that it checks the Lean proof, not the paper; his remark that the second kernel is almost never enabled holds at the pinned commit fd4aeeb (412 of 416 configs set enable_nanoda false, 2 set it true)",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "davegoldblatt-openai-zeta-proof-check",
+   "family": "003",
+   "statement": "QuasiRiemannHypothesis",
+   "kind": "explanation",
+   "summary": "The theorem also covers s = 1, where Mathlib assigns the zeta function a conventional value that Mathlib already proves nonzero, and Mathlib already proves non-vanishing for real part at least 1, so the new content is the strip 7/8 < Re(s) < 1.",
+   "url": "https://github.com/davegoldblatt/openai-zeta-proof-check/blob/3f11b2203b76902f1b6b234115437302a94b79c3/README.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-eigendash-openai-math-visualised-numerical-p-c7109",
+   "family": "003",
+   "statement": "QuasiRiemannHypothesis",
+   "kind": "commentary",
+   "summary": "The first 600 zeta zeros show no zero with real part above 7/8, but the author states this cannot test the theorem: the zero finder only finds zeros on the critical line, so the figure is a drawing of the claimed region, not evidence.",
+   "url": "https://github.com/eigendash/openai-math-visualised/blob/021c0f8f6ea88d9d4fdaca98ff661a2eb4c24861/README.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "george-lean-statements-review",
@@ -9961,6 +10305,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-eigendash-openai-math-visualised-numerical-p-c7109",
+   "family": "011",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Sieving all 1,857,858 primes up to 3 times 10^7, the first two normalised prime-factor statistics of p - 1 agree with the predicted PD(1) law within a few per cent and drift toward it, but components 3 onward exceed their predicted means by factors growing with the index (KS distances 0.27 to 0.43); the author reports the gap rather than calling it noise and suspects slow convergence.",
+   "url": "https://github.com/eigendash/openai-math-visualised/blob/021c0f8f6ea88d9d4fdaca98ff661a2eb4c24861/README.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "github-jbaelaw-erdos928-erd-s-problem-928-as-a-coro-aba62",
    "family": "012",
    "statement": null,
@@ -10014,6 +10368,16 @@
    "date": "2026-10-08",
    "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 371 matched to this family by linked challenge file",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "github-eigendash-openai-math-visualised-numerical-p-c7109",
+   "family": "012",
+   "statement": "JointDickman",
+   "kind": "commentary",
+   "summary": "Over 59,999,998 consecutive pairs up to 6 times 10^7, the density of n whose largest prime factor is below that of n + 1 is 0.499983, against the predicted 1/2.",
+   "url": "https://github.com/eigendash/openai-math-visualised/blob/021c0f8f6ea88d9d4fdaca98ff661a2eb4c24861/README.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-audit-00-audit-the-formal-trust-surface-of-t-cff10",
@@ -10126,6 +10490,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "017",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/25-017-pi-irrationality.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "github-aidilamrym-ops-the-asymmetric-wager-msaf-fam-4e854",
    "family": "017",
    "statement": null,
@@ -10146,6 +10520,16 @@
    "date": "2026-10-07",
    "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "github-eigendash-openai-math-visualised-numerical-p-c7109",
+   "family": "017",
+   "statement": "PiExponent",
+   "kind": "commentary",
+   "summary": "Over the first 40 continued-fraction convergents of pi, q^2 |pi - p/q| stays below 0.94 and the empirical exponent settles at 2.0, consistent with irrationality exponent 2.",
+   "url": "https://github.com/eigendash/openai-math-visualised/blob/021c0f8f6ea88d9d4fdaca98ff661a2eb4c24861/README.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "arxiv-2610-12344",
@@ -10190,6 +10574,16 @@
    "date": "2026-10-07",
    "verified": "issue body read via the GitHub API on 2026-10-11; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "github-eigendash-openai-math-visualised-numerical-p-c7109",
+   "family": "021",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "For the primorials P_k with k up to 10, the ratio of Jacobsthal's function to k^2/(log log 3k)^2 rises to about 0.71 and then stays flat, consistent with the quadratic bound over that small range.",
+   "url": "https://github.com/eigendash/openai-math-visualised/blob/021c0f8f6ea88d9d4fdaca98ff661a2eb4c24861/README.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-conjectures-pr-6898",
@@ -10291,6 +10685,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-eigendash-openai-math-visualised-numerical-p-c7109",
+   "family": "025",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "For denominators b up to 220, the shortest Egyptian-fraction length divided by log log b stays between 2.43 and 4.80, consistent with the predicted order log log b over that range.",
+   "url": "https://github.com/eigendash/openai-math-visualised/blob/021c0f8f6ea88d9d4fdaca98ff661a2eb4c24861/README.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "woett-short-egyptian-fractions-writeup",
    "family": "025",
    "statement": null,
@@ -10377,6 +10781,16 @@
    "date": "2026-10-08",
    "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 968 matched to this family by linked challenge file",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "github-eigendash-openai-math-visualised-numerical-p-c7109",
+   "family": "026",
+   "statement": "PrimeGaps",
+   "kind": "commentary",
+   "summary": "For primes up to 2 times 10^8, the proportion of gaps exceeding C log p is about 0.60, 0.34 and 0.11 at C = 0.5, 1 and 2, positive as the theorem predicts for every fixed C.",
+   "url": "https://github.com/eigendash/openai-math-visualised/blob/021c0f8f6ea88d9d4fdaca98ff661a2eb4c24861/README.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-add-three-variants-of-erd-s-problem-952-issu-1a806",
@@ -10555,6 +10969,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "032",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/27-032-hodge-conjecture.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "glazer-weil-classes-flaw",
    "family": "032",
    "statement": null,
@@ -10632,6 +11056,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "jkbennitt-math-release-atlas",
+   "family": "032",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The math-release-atlas shows a fixed caution on this family: it is the Hodge conjecture for CM abelian varieties, not the full Hodge conjecture.",
+   "url": "https://github.com/jkbennitt/math-release-atlas/blob/1ce51351b10bcbb3636a0c1b3df083f1429d92a1/data/fixed-cautions.json",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "institutions-vibemathed-math-problems-solved-with-ai-7e2de",
    "family": "034",
    "statement": null,
@@ -10707,6 +11141,16 @@
    "date": "2026-10-07",
    "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "github-volmax-studio-p10-openai-math-verification-p-90ef8",
+   "family": "049",
+   "statement": "AbhyankarSathaye",
+   "kind": "commentary",
+   "summary": "At the 6 October commit the family headline (a stable-coordinate counterexample) was not what AbhyankarSathaye states, and the scope note did not link the 5 October manuscript. Both were resolved at fd4aeeb2, which links that manuscript and adds StableCoordinateFour.",
+   "url": "https://github.com/VolMax-Studio/p10-openai-math-verification-pilot/blob/1ba4f0d800d937a69ee8ec8d721dcd392f2ebdef/candidate_results.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-remarks-on-proofs-in-openai-s-mathematics-re-f5c02",
@@ -10874,6 +11318,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "080",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/15-080-schrodinger-convergence.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "institutions-hexagon-a-repository-for-research-in-the-mat-b7cd9",
    "family": "084",
    "statement": null,
@@ -10951,6 +11405,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "087",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/28-087-mahler-conjecture.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "formal-series-of-15-issues-and-15-draft-prs-adding--43693",
    "family": "087",
    "statement": null,
@@ -10971,6 +11435,56 @@
    "date": "2026-10-07",
    "verified": "read the paper text (arXiv PDF via r.jina.ai); URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "formal-independent-comparator-lean-audit-of-two-ope-1faad",
+   "family": "087",
+   "statement": "MahlerConjecture",
+   "kind": "replay-pass",
+   "summary": "SUNNY99's Comparator replay accepted OAI.SymmetricMahler.symmetric_mahler with exit 0, the default Lean kernel only and the three standard axioms, in 11 min 21 s. It ran at openai/math adc7f124; the challenge file, its configuration, lean-toolchain and lake-manifest are byte-identical at fd4aeeb2.",
+   "url": "https://github.com/sunnyspot114514/openai-math-audit/blob/e787b84668d18365874dc5392ff29a5584db1732/audit-summary.json",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "formal-independent-comparator-lean-audit-of-two-ope-1faad",
+   "family": "087",
+   "statement": "MahlerConjecture",
+   "kind": "explanation",
+   "summary": "A definition-by-definition statement check against Theorem 1.1 of the symmetric Mahler paper finds no added hypothesis or weakened conclusion; the challenge states the inequality for every n at least 1, and the equality classification is a separate challenge (SymmetricMahlerEquality).",
+   "url": "https://github.com/sunnyspot114514/openai-math-audit/blob/e787b84668d18365874dc5392ff29a5584db1732/evidence/machine/SEMANTICS.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "formal-independent-comparator-lean-audit-of-two-ope-1faad",
+   "family": "087",
+   "statement": "SymmetricPolar",
+   "kind": "replay-pass",
+   "summary": "SUNNY99's Comparator replay accepted OAI.SymmetricPolar.symmetric_polar_main with exit 0, the default Lean kernel only and the three standard axioms, in 47 min 52 s, at adc7f124, where the challenge file is byte-identical to the pinned release.",
+   "url": "https://github.com/sunnyspot114514/openai-math-audit/blob/e787b84668d18365874dc5392ff29a5584db1732/evidence/machine/REPORT.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "formal-independent-comparator-lean-audit-of-two-ope-1faad",
+   "family": "087",
+   "statement": "SymmetricPolar",
+   "kind": "explanation",
+   "summary": "A statement check against Theorem 1.1 of the polar-products paper finds a full match: the Lean spells out the symplectic form, capacity balls and Gromov width by hand because Mathlib has no symplectic API, and it claims embeddings for every capacity below 4, nothing at exactly 4.",
+   "url": "https://github.com/sunnyspot114514/openai-math-audit/blob/e787b84668d18365874dc5392ff29a5584db1732/evidence/machine/SEMANTICS.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "formal-independent-comparator-lean-audit-of-two-ope-1faad",
+   "family": "087",
+   "statement": "SymmetricPolar",
+   "kind": "explanation",
+   "summary": "A five-step reading map of the polar-product construction behind the Gromov width 4 result, in English and Chinese.",
+   "url": "https://github.com/sunnyspot114514/openai-math-audit/blob/e787b84668d18365874dc5392ff29a5584db1732/docs/EXPLANATION.en.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-openai-math-counterexamples-do-the-counterex-f6598",
@@ -11193,6 +11707,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "102",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/01-102-unique-games.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "sciam-most-exciting",
    "family": "102",
    "statement": null,
@@ -11347,6 +11871,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "blogs-openai-math-comparator-fixes-mirror-of-opena-bafb3",
+   "family": "103",
+   "statement": "LogspaceEquality",
+   "kind": "replay-pass",
+   "summary": "With all 20 definition holes removed from the configuration, so that Comparator compares the definition bodies too, the release's solution still passes; run with the Lean kernel only, on macOS without Comparator's sandbox.",
+   "url": "https://github.com/Deicyde/math/commit/957d8171d3e861f181f3ae6fa6baf0ac8f858c32",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "institutions-palomar-a-registry-of-lean-verified-mathemat-7f78d",
    "family": "107",
    "statement": null,
@@ -11457,6 +11991,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "107",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/02-107-matrix-multiplication.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "formal-matrix-multiplication-exponent-at-most-9-4-o-14cda",
    "family": "107",
    "statement": null,
@@ -11523,6 +12067,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "formal-lean-proof-that-the-matrix-multiplication-ex-cfe65",
+   "family": "107",
+   "statement": "MatrixFields",
+   "kind": "follow-up-result",
+   "summary": "The release's all-fields Lean statement bounds omega(F) only by about 2.371055 for every field, and its 9/4 statement is over the complex numbers. Zuiddam's derived Lean proof gives omega(F) at most 9/4 over every field, with a non-vacuity theorem and the three standard axioms; Sela Navot's fork reached the all-fields bound a day earlier.",
+   "url": "https://github.com/jzuiddam/omega-nine-quarters-all-fields/blob/615b591cddd8792173c17b58558ef3b9f11a702c/README.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "george-lean-statements-review",
    "family": "107",
    "statement": "MatrixMultiplication",
@@ -11567,6 +12121,26 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "formal-lean-proof-that-the-matrix-multiplication-ex-cfe65",
+   "family": "107",
+   "statement": "MatrixMultiplication",
+   "kind": "explanation",
+   "summary": "Only one step of the complex 9/4 proof uses more than algebraic closure: Proposition 3.1 (Fourier separation) needs a primitive 5M-th root of unity, which fails when the characteristic divides 5M; a separation period of 3M-2 or 3M-1 keeps the downstream bound unchanged.",
+   "url": "https://github.com/jzuiddam/omega-nine-quarters-all-fields/blob/615b591cddd8792173c17b58558ef3b9f11a702c/NOTICE",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-eliottcassidy2000-math-thm-4568",
+   "family": "107",
+   "statement": "MatrixMultiplication",
+   "kind": "follow-up-result",
+   "summary": "The symmetric, separately concave profiles satisfying the tripling inequality used in the 9/4 proof have an explicit least element, built from Gamma(m+1/3)/(Gamma(4/3)Gamma(m)), that meets the rank bound exactly at t = 3/4: 9/4 is the ceiling of this argument, and the paper's shift a - 1 is the smallest valid one. Checked in exact rationals for small cases.",
+   "url": "https://github.com/eliottcassidy2000/math/blob/5966360a9c69b6bb0f3da39dc219f4a6c5dc3244/01-canon/theorems/THM-4568-the-nine-fourths-growth-lemma-is-exactly-sharp.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "sciam-most-exciting",
    "family": "107",
    "statement": "MatrixMultiplication",
@@ -11576,6 +12150,16 @@
    "date": "2026-10-08",
    "verified": "read the full article text via r.jina.ai; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "github-acprk-openai-math-followups-follow-up-result-20c2e",
+   "family": "107",
+   "statement": "MatrixMultiplication",
+   "kind": "follow-up-result",
+   "summary": "Independently of THM-4568 (credited as first), an explicit extremal profile satisfies all five properties the 9/4 proof uses with 1/t = 4/3, so they cannot yield an exponent below 9/4, and the diagonal-growth lemma is exactly optimal; the note extends the barrier to further valid inequalities and extractions.",
+   "url": "https://github.com/acprk/openai-math-followups/blob/884a363738c1c91d1232698e6c35091ac023c34c/results/01-omega94-profile-barrier.md",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "github-erayyap-integer-multiplication-kappa-improvi-3182b",
@@ -11655,6 +12239,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "crocswap-integer-mult-bounds",
+   "family": "109",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "The maintainer-reviewed selection on 10 October gives T(n) = O(n (log n)^(1 - kappa)) with kappa = 90446448750933/125000000000000000, about 0.000724 or 2^-10.43, against the manuscript's 2^-182; it remains conditional on the original framework's interfaces and is checked by finite replay and written review, not a complete Lean proof.",
+   "url": "https://github.com/CrocSwap/integer-mult-bounds/blob/12a4934d15006e8c10f9b2264f13f8f341be802b/certificates/selected-result.json",
+   "date": "2026-10-10",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "formal-campaign-integer-multiplication-below-n-log--11c10",
    "family": "109",
    "statement": null,
@@ -11688,6 +12282,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-benknill-openai-math-hol-cards-hol-light-pro-fbd8f",
+   "family": "110",
+   "statement": "KServer",
+   "kind": "replay-pass",
+   "summary": "Strict Comparator re-check with the definition holes removed, so hole bodies are compared too, accepted the solution with the three standard axioms. All 9 of its hole bodies, including MainStatement, matched the challenge. Run at adc7f124; the challenge file is unchanged at fd4aeeb2.",
+   "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/docs/comparator-recheck.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "mccarthy-comparator-strict-rerun",
    "family": "110",
    "statement": "KServer",
@@ -11697,6 +12301,16 @@
    "date": "2026-10-09",
    "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "blogs-openai-math-comparator-fixes-mirror-of-opena-bafb3",
+   "family": "110",
+   "statement": "KServer",
+   "kind": "replay-pass",
+   "summary": "With all 9 definition holes removed from the configuration, so that Comparator compares the definition bodies too, the release's solution still passes; run with the Lean kernel only, on macOS without Comparator's sandbox.",
+   "url": "https://github.com/Deicyde/math/commit/957d8171d3e861f181f3ae6fa6baf0ac8f858c32",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "github-bottlebrushes-math-lean-sharpening-of-the-on-fea81",
@@ -11743,6 +12357,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "122",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/07-122-trace-reconstruction.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "github-chris1234555-ncc-certificate-lean-certificat-57ddf",
    "family": "130",
    "statement": null,
@@ -11752,6 +12376,16 @@
    "date": "2026-10-07",
    "verified": "GitHub search API metadata and the README head read on 11 Oct 2026; contents not audited; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "130",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/03-130-fourier-transform.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "shea256-fourier-below-nlogn",
@@ -11809,6 +12443,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "shea256-fourier-below-nlogn",
+   "family": "130",
+   "statement": "UniformFourier",
+   "kind": "follow-up-result",
+   "summary": "The project rebuilt the Lean proof of Sussman and Boukhalfa's five-stage theorem: the release's UniformFourier statement with the saving raised from 10^-13 to 0.000754736. Its 91 imported OpenAI files are byte-identical at fd4aeeb2. The comparison used Sussman's Compare.lean rather than OpenAI's Comparator, and human review is pending.",
+   "url": "https://github.com/shea256/fourier-transform-below-nlogn/blob/62554f945b58454fb8452f4daaca1222ce5ca58e/verification/FIVE_STAGE_AUDIT.md",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "mo-515849-conventional-wisdom",
    "family": "131",
    "statement": null,
@@ -11862,6 +12506,16 @@
    "date": "2026-10-07",
    "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "github-acprk-openai-math-followups-follow-up-result-20c2e",
+   "family": "132",
+   "statement": "SensitivitySeparation",
+   "kind": "follow-up-result",
+   "summary": "Any explicit seed for a superquadratic separation of block sensitivity from sensitivity needs sensitivity at least 4 and at least 31 variables (using Amano 2017 and SAT refutations checked by an independent RUP checker); the release's displayed parameters guarantee an exponent of only about 2.000252.",
+   "url": "https://github.com/acprk/openai-math-followups/blob/884a363738c1c91d1232698e6c35091ac023c34c/results/04-sensitivity-seed.md",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "arxiv-2610-10514",
@@ -11952,6 +12606,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-benknill-openai-math-hol-cards-hol-light-pro-fbd8f",
+   "family": "145",
+   "statement": "Rokhlin",
+   "kind": "replay-pass",
+   "summary": "Strict Comparator re-check with the definition holes removed, so hole bodies are compared too, accepted the solution with the three standard axioms. All 4 of its hole bodies matched the challenge. Run at adc7f124; the challenge file is unchanged at fd4aeeb2.",
+   "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/docs/comparator-recheck.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "mccarthy-comparator-strict-rerun",
    "family": "145",
    "statement": "Rokhlin",
@@ -11961,6 +12625,16 @@
    "date": "2026-10-09",
    "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "blogs-openai-math-comparator-fixes-mirror-of-opena-bafb3",
+   "family": "145",
+   "statement": "Rokhlin",
+   "kind": "replay-pass",
+   "summary": "With all 4 definition holes removed from the configuration, so that Comparator compares the definition bodies too, the release's solution still passes; run with the Lean kernel only, on macOS without Comparator's sandbox.",
+   "url": "https://github.com/Deicyde/math/commit/957d8171d3e861f181f3ae6fa6baf0ac8f858c32",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "ahm-statement",
@@ -12159,6 +12833,16 @@
    "date": "2026-10-07",
    "verified": "read in full via direct HTTP fetch on 11 Oct 2026, including all 8 comments; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "github-acprk-openai-math-followups-follow-up-result-20c2e",
+   "family": "156",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Numerical, not yet interval-certified: the projector set of CP^2 in its 8-dimensional space splits into 9 pieces of smaller diameter, so it is not an 8-dimensional Borsuk counterexample, and the RP^3 projector set behind the dimension-nine result has Borsuk number 11, leaving no slack for cutting it down to dimension 8.",
+   "url": "https://github.com/acprk/openai-math-followups/blob/884a363738c1c91d1232698e6c35091ac023c34c/results/03-borsuk.md",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-conjectures-pr-6898",
@@ -12425,6 +13109,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-benknill-openai-math-hol-cards-hol-light-pro-fbd8f",
+   "family": "158",
+   "statement": "EuclideanFiveColor",
+   "kind": "replay-pass",
+   "summary": "Strict Comparator re-check with the definition holes removed, so hole bodies are compared too, accepted the solution with the three standard axioms. Its one hole, ProperColoring, matched, and a control changing the statement to Fin 6 was rejected. Run at adc7f124; the challenge file is unchanged at fd4aeeb2.",
+   "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/docs/comparator-recheck.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "mccarthy-comparator-strict-rerun",
    "family": "158",
    "statement": "EuclideanFiveColor",
@@ -12434,6 +13128,26 @@
    "date": "2026-10-09",
    "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "blogs-openai-math-comparator-fixes-mirror-of-opena-bafb3",
+   "family": "158",
+   "statement": "EuclideanFiveColor",
+   "kind": "replay-pass",
+   "summary": "With all 1 definition hole removed from the configuration, so that Comparator compares the definition bodies too, the release's solution still passes; run with the Lean kernel only, on macOS without Comparator's sandbox.",
+   "url": "https://github.com/Deicyde/math/commit/957d8171d3e861f181f3ae6fa6baf0ac8f858c32",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "159",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/29-159-erdos-conjecture.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "github-plasma-ai-erdos-an-open-record-of-the-erd-s--56caf",
@@ -12819,6 +13533,26 @@
    "date": "2026-10-08",
    "verified": "Read the post on 2026-10-11; confirmed in the pinned upstream files (commit fd4aeeb) that the named definition is listed in definition_names in this challenge's JSON while the Lean file already gives it a body; per the Comparator README, listed definitions are holes the solver fills and Comparator checks only name and type; Comparator not run by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "github-benknill-openai-math-hol-cards-hol-light-pro-fbd8f",
+   "family": "169",
+   "statement": "ElementaryPositivity",
+   "kind": "replay-pass",
+   "summary": "Passed its release configuration, whose challenge leaves the witness body as sorry by design; whether the witness type expresses the intended theorem remains a separate reading task.",
+   "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/docs/comparator-recheck.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "blogs-openai-math-comparator-fixes-mirror-of-opena-bafb3",
+   "family": "169",
+   "statement": "ElementaryPositivity",
+   "kind": "correction",
+   "summary": "The configuration had no theorem target, only a definition hole; the fork states the claim as a theorem that a witness exists (elementaryPositivityWitness_nonempty) and the release's construction proves it.",
+   "url": "https://github.com/Deicyde/math/commit/fcccdda6a55de9bc8e8075c9298f9494603e2438",
+   "date": "2026-10-11",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-remarks-on-proofs-in-openai-s-mathematics-re-f5c02",
@@ -13239,6 +13973,26 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-volmax-studio-p10-openai-math-verification-p-90ef8",
+   "family": "185",
+   "statement": "InfiniteMatroid",
+   "kind": "replay-pass",
+   "summary": "Human-ratified pilot: provenance binding, an independent lake build, Comparator with the default kernel and dependency-integrity checks all passed for OAI.InfiniteMatroidCounterexample.main; a changed statement, a sorry, a wrong binding and an injected axiom were each rejected. Run at adc7f124, where this challenge file is unchanged at the atlas's pin.",
+   "url": "https://github.com/VolMax-Studio/p10-openai-math-verification-pilot/blob/1ba4f0d800d937a69ee8ec8d721dcd392f2ebdef/RATIFICATION.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-volmax-studio-p10-openai-math-verification-p-90ef8",
+   "family": "185",
+   "statement": "InfiniteMatroid",
+   "kind": "commentary",
+   "summary": "A binding chain classes each link from the catalogue entry to kernel acceptance by enforcement: the paper is bound by nothing, the scope note and catalogue entry by prose only, and only the configuration, solution and declaration links are machine-enforced.",
+   "url": "https://github.com/VolMax-Studio/p10-openai-math-verification-pilot/blob/1ba4f0d800d937a69ee8ec8d721dcd392f2ebdef/subject.lock.json",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "openai-forum-first-look-thread",
    "family": "187",
    "statement": null,
@@ -13325,6 +14079,26 @@
    "date": "2026-10-07",
    "verified": "issue body read via the GitHub API on 2026-10-11; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "walker-lech-equal-characteristic",
+   "family": "194",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Independently of the release, a proof of Lech's conjecture in equal characteristic found by Alex Gerko with ChatGPT Astra was written up by Iyengar, Ma and Walker, who say they believe the proofs correct but read them more as referees than as authors; the release's family 194 claims the conjecture in full generality.",
+   "url": "https://mark-walker-22.github.io/Lech.html",
+   "date": "2026-10-06",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "mahrud-openai-math-comments",
+   "family": "194",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Points readers of the Lech family to a separate, human-written exposition of an AI-found proof of Lech's conjecture in equal characteristic posted on 6 October.",
+   "url": "https://github.com/mahrud/openai-math-comments/pull/194#issuecomment-6082336855",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-wikipedia-smallcohenmacaulaymodules-exists-i-dba5a",
@@ -13580,6 +14354,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "213",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/19-213-percolation.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "proofs-and-prompts-100-reactions",
    "family": "214",
    "statement": null,
@@ -13602,6 +14386,36 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "216",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/20-216-bkt-universality.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "218",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/18-218-ising-universality.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "221",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/21-221-spin-glass.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "github-jnshi-math-lineage-precedence-reviews-of-mis-f377e",
    "family": "227",
    "statement": null,
@@ -13611,6 +14425,26 @@
    "date": "2026-10-08",
    "verified": "GitHub REST API (forks list, repository metadata, compare against openai/math main) on 11 Oct 2026; compare API file list read; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "github-jnshi-math-lineage-precedence-reviews-of-mis-f377e",
+   "family": "227",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An agent-run precedence review of the critical-mixing SK paper lists 12 earlier works whose techniques it uses without citation (9 unattributed reuse, 2 same-problem precedence, 1 structural), each with locators in both papers, for example the El Alaoui, Montanari and Sellke planted stochastic-localization framework.",
+   "url": "https://github.com/jnshi/math-lineage/blob/87cb523c8d6494bf0759149de92107432e6bfd70/preprints/Critical-mixing-in-the-Sherrington-Kirkpatrick-model-September-25-2026/precedence-findings.json",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-jnshi-math-lineage-precedence-reviews-of-mis-f377e",
+   "family": "227",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An agent-run precedence review of the high-temperature SK spectral-gap paper lists 8 earlier works used without citation (7 unattributed reuse, 1 same-problem precedence), including Kac-Rice complexity methods for TAP critical points, each with locators in both papers.",
+   "url": "https://github.com/jnshi/math-lineage/blob/87cb523c8d6494bf0759149de92107432e6bfd70/preprints/A-spectral-gap-throughout-the-high-temperature-Sherrington-Kirkpatrick-phase-September-24-2026/precedence-findings.json",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-audit-00-audit-the-formal-trust-surface-of-t-cff10",
@@ -13701,6 +14535,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-benknill-openai-math-hol-cards-hol-light-pro-fbd8f",
+   "family": "238",
+   "statement": "OccupiedOverlap",
+   "kind": "replay-pass",
+   "summary": "Passed its release configuration; a strict re-check without holes was refused because one hole differs in a proof argument for the instance behind the literal 2, which Lean's proof irrelevance makes definitionally equal. Explained, not resolved: strict comparison still refuses.",
+   "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/docs/comparator-recheck.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "mccarthy-comparator-strict-rerun",
    "family": "238",
    "statement": "OccupiedOverlap",
@@ -13710,6 +14554,16 @@
    "date": "2026-10-09",
    "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "blogs-openai-math-comparator-fixes-mirror-of-opena-bafb3",
+   "family": "238",
+   "statement": "OccupiedOverlap",
+   "kind": "correction",
+   "summary": "Removing the five definition holes broke the check on an auxiliary-lemma mismatch; a small fix to the solution makes it pass with no holes (Lean kernel only, no sandbox).",
+   "url": "https://github.com/Deicyde/math/commit/3aed70691e5357d2c8c0b7ed57425c127b6aedf3",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "george-lean-statements-review",
@@ -13734,6 +14588,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-benknill-openai-math-hol-cards-hol-light-pro-fbd8f",
+   "family": "238",
+   "statement": "SpinAngle",
+   "kind": "replay-pass",
+   "summary": "Passed its release configuration; a strict re-check without holes was refused because two definitions agree only after renaming universe parameters by position. The three holes themselves match structurally.",
+   "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/docs/comparator-recheck.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "mccarthy-comparator-strict-rerun",
    "family": "238",
    "statement": "SpinAngle",
@@ -13743,6 +14607,16 @@
    "date": "2026-10-09",
    "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "blogs-openai-math-comparator-fixes-mirror-of-opena-bafb3",
+   "family": "238",
+   "statement": "SpinAngle",
+   "kind": "correction",
+   "summary": "Removing the three definition holes broke the check on a universe-name mismatch; a small fix to the solution makes it pass with no holes (Lean kernel only, no sandbox).",
+   "url": "https://github.com/Deicyde/math/commit/dad1b2e618ca0447dcf24175ac2f3a56a6680ce1",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "george-lean-statements-review",
@@ -13932,6 +14806,26 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "260",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/16-260-penrose-inequality.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "260",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/260.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "george-lean-statements-review",
    "family": "260",
    "statement": "CKSBondiPenrose",
@@ -13954,6 +14848,36 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "261",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/261.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "262",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/262.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "263",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/263.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "george-lean-statements-review",
    "family": "263",
    "statement": "CoulombIonization",
@@ -13963,6 +14887,26 @@
    "date": "2026-10-07",
    "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "264",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/17-264-cosmic-censorship.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "264",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/264.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "blogs-post-listing-quantum-information-results-in--822e2",
@@ -13987,6 +14931,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "265",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/265.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "formal-openquantumproblems-13-mutuallyunbiasedbases-18448",
    "family": "266",
    "statement": null,
@@ -13996,6 +14950,16 @@
    "date": "2026-10-07",
    "verified": "issue body read via the GitHub API on 2026-10-11; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "266",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/266.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-tracking-re-running-the-computer-checks-of-o-1224b",
@@ -14031,6 +14995,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "267",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/267.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "blogs-post-listing-quantum-information-results-in--822e2",
    "family": "268",
    "statement": null,
@@ -14040,6 +15014,46 @@
    "date": "2026-10-06",
    "verified": "tweet text, date and counts read via X's public syndication endpoint on 11 Oct 2026; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "268",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/10-268-haldane-gap.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "268",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/268.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "269",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/09-269-laughlin-gap.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "269",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/269.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-def-eq-unfolds-proofs-when-proof-irrelevance-cee8e",
@@ -14053,6 +15067,56 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "270",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/270.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "271",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/11-271-heisenberg-bloch.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "271",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/271.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "272",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/13-272-entanglement-no-key.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "272",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/272.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "formal-openai-math-counterexamples-do-the-counterex-f6598",
    "family": "272",
    "statement": null,
@@ -14062,6 +15126,16 @@
    "date": "2026-10-09",
    "verified": "README and row table read via the GitHub API; scripts not re-run; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "273",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/273.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "blogs-post-listing-quantum-information-results-in--822e2",
@@ -14075,6 +15149,26 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "274",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/06-274-parity-qac0.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "274",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/274.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "george-lean-statements-review",
    "family": "274",
    "statement": "QACParity",
@@ -14086,6 +15180,56 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "275",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/12-275-qma-coulomb.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "275",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/275.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "276",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/14-276-channel-capacity.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "276",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/276.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "277",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/277.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "george-lean-statements-review",
    "family": "277",
    "statement": "EntangledGames",
@@ -14095,6 +15239,76 @@
    "date": "2026-10-07",
    "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "278",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/278.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "279",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/04-279-quantum-factoring.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "279",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/279.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "280",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/280.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "281",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/08-281-qaoa.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "281",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/281.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "282",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/282.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "aaronson-mathocalypse",
@@ -14119,6 +15333,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "283",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/283.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "blogs-how-many-of-the-results-released-by-openai-w-fee6c",
    "family": "283",
    "statement": null,
@@ -14139,6 +15363,36 @@
    "date": "2026-10-10",
    "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515911, 5 votes); the mathematics was not checked by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "284",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/05-284-query-separation.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-mayixinphy-openai-math-physics-notes",
+   "family": "284",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese guided reading of this family that compares the manuscripts' main theorems with their abstracts and flags boundary conditions and limit orders that change the physical reading; drafted with Codex and not a re-proof.",
+   "url": "https://mayixinphy.github.io/-OpenAI-math-Mathematical-physics-notes/problems/284.html",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "287",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/30-287-free-group-factors.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "proofs-and-prompts-100-reactions",
@@ -14240,6 +15494,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-benknill-openai-math-hol-cards-hol-light-pro-fbd8f",
+   "family": "297",
+   "statement": "Naimark",
+   "kind": "replay-pass",
+   "summary": "Strict Comparator re-check with the definition holes removed, so hole bodies are compared too, accepted the solution with the three standard axioms. All 7 of its hole bodies matched the challenge. Run at adc7f124; the challenge file is unchanged at fd4aeeb2.",
+   "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/docs/comparator-recheck.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "mccarthy-comparator-strict-rerun",
    "family": "297",
    "statement": "Naimark",
@@ -14260,6 +15524,16 @@
    "date": "2026-10-09",
    "verified": "Read the message (Zulip id 630329116) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "blogs-openai-math-comparator-fixes-mirror-of-opena-bafb3",
+   "family": "297",
+   "statement": "Naimark",
+   "kind": "replay-pass",
+   "summary": "With all 7 definition holes removed from the configuration, so that Comparator compares the definition bodies too, the release's solution still passes; run with the Lean kernel only, on macOS without Comparator's sandbox.",
+   "url": "https://github.com/Deicyde/math/commit/957d8171d3e861f181f3ae6fa6baf0ac8f858c32",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "arxiv-2610-11143",
@@ -14658,6 +15932,16 @@
    "source_seed": "C_community_seed.curated.json"
   },
   {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "362",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/22-362-vlasov-maxwell.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "formal-follow-ups-to-the-openai-mathematics-release-bf10a",
    "family": "369",
    "statement": null,
@@ -14700,6 +15984,16 @@
    "date": "2026-10-07",
    "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "github-benknill-openai-math-hol-cards-hol-light-pro-fbd8f",
+   "family": "371",
+   "statement": "DefocusingNLS",
+   "kind": "commentary",
+   "summary": "Not re-run, but the configuration review notes that the hole sobolevProduct contains a sorry membership proof inside an otherwise written definition, and Comparator's hole comparison leaves all three hole bodies uncompared.",
+   "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/docs/comparator-recheck.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "george-lean-statements-review",
@@ -14746,6 +16040,16 @@
    "source_seed": "B_community_seed.json"
   },
   {
+   "effort": "github-benknill-openai-math-hol-cards-hol-light-pro-fbd8f",
+   "family": "374",
+   "statement": "Brenier",
+   "kind": "replay-pass",
+   "summary": "Strict Comparator re-check with the definition holes removed, so hole bodies are compared too, accepted the solution with the three standard axioms. All 12 of its hole bodies matched the challenge. Run at adc7f124; the challenge file is unchanged at fd4aeeb2.",
+   "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/docs/comparator-recheck.md",
+   "date": "2026-10-08",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
    "effort": "mccarthy-comparator-strict-rerun",
    "family": "374",
    "statement": "Brenier",
@@ -14755,6 +16059,16 @@
    "date": "2026-10-09",
    "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "blogs-openai-math-comparator-fixes-mirror-of-opena-bafb3",
+   "family": "374",
+   "statement": "Brenier",
+   "kind": "replay-pass",
+   "summary": "With all 12 definition holes removed from the configuration, so that Comparator compares the definition bodies too, the release's solution still passes; run with the Lean kernel only, on macOS without Comparator's sandbox.",
+   "url": "https://github.com/Deicyde/math/commit/957d8171d3e861f181f3ae6fa6baf0ac8f858c32",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "formal-paper-degiorgi-de-giorgi-s-conjecture-holds--02414",
@@ -14810,6 +16124,26 @@
    "date": "2026-10-06",
    "verified": "full thread read through the forum's public JSON on 11 Oct 2026; the linked GitHub repositories' metadata and READMEs were checked, the checks themselves were not re-run by me; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "github-seaworld008-openai-math-top30-thirty-selecte-d60fc",
+   "family": "376",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Chinese-language explainer for general readers, with a beginner's section, a specialist section, background on why the problem was hard and a diagram; it ends by saying it paraphrases OpenAI's summary and does not represent consensus.",
+   "url": "https://github.com/seaworld008/openai-math-top30/blob/1650bbfaf88a299aca985f86684a89e3dab91366/docs/23-376-fluid-computation.md",
+   "date": "2026-10-07",
+   "source_seed": "A_community_seed.curated.json"
+  },
+  {
+   "effort": "jkbennitt-math-release-atlas",
+   "family": "376",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The math-release-atlas shows a fixed caution on this family: it is a forced Navier-Stokes computation and not the Clay Millennium Navier-Stokes problem.",
+   "url": "https://github.com/jkbennitt/math-release-atlas/blob/1ce51351b10bcbb3636a0c1b3df083f1429d92a1/data/fixed-cautions.json",
+   "date": "2026-10-09",
+   "source_seed": "A_community_seed.curated.json"
   },
   {
    "effort": "institutions-leiden-declaration-on-artificial-intelligenc-a45ad",
