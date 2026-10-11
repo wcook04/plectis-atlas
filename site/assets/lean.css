@@ -177,3 +177,36 @@
 @media (prefers-reduced-motion: reduce) {
   .lx-code { scroll-behavior: auto; }
 }
+
+/* ---- The Lean statement page: pairing, re-runs, readings ------------------- */
+.page--lean .phead__sub { margin: -4px 0 10px; color: var(--ink-soft); font-family: var(--serif); font-size: 1.125rem; }
+.page--lean .phead__sub code { font-family: var(--lean-mono); font-size: 0.82em; color: var(--steel-text); margin-left: 0.4em; }
+.phead__facts--quiet { font-size: var(--fs-small); max-width: 62ch; }
+.claim--paper .claim__src { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink); margin: 0 0 10px; }
+/* The join: the words between the paper theorem and the Lean statement it is paired
+   with. A steel rule runs down from the theorem; dashed for a candidate pairing,
+   solid when the Lean source cites the theorem or the release declares the link. */
+.join { position: relative; max-width: 52em; margin: -6px 0 18px 22px; padding: 12px 0 4px 20px; border-left: 2px dashed var(--steel); }
+.join--cited { border-left-style: solid; }
+.join--none { border-left: 2px solid var(--rule-strong); }
+.join__state { margin: 0 0 2px; font-weight: 700; font-size: var(--fs-meta); color: var(--steel-text); }
+.join--none .join__state { color: var(--muted); }
+.join__words { margin: 0 0 6px; font-size: var(--fs-body); color: var(--ink-soft); max-width: 62ch; }
+.join__how { margin: 0 0 6px; font-size: var(--fs-small); color: var(--muted); max-width: 66ch; }
+.lean--quote { margin: 4px 0 8px; padding: 8px 12px; max-width: 62ch; white-space: pre-wrap; font-family: var(--lean-mono); font-size: var(--lx-fs); background: var(--code-bg); border-radius: var(--r-sm); }
+.alts { margin: 6px 0 0; padding-left: 1.2em; max-width: 66ch; }
+.alts li { margin: 6px 0; font-size: var(--fs-body); }
+.lead-sentence { font-size: var(--fs-lede); font-family: var(--serif); color: var(--ink); max-width: 62ch; }
+.term { display: inline-block; padding: 0 7px; border: 1px solid var(--rule-control); border-radius: 4px; font-size: var(--fs-small); font-weight: 600; color: var(--ink); background: var(--surface); line-height: 1.6; }
+.run { margin: 18px 0 0; max-width: 66ch; }
+.run .h3 { margin-bottom: 4px; }
+.run__list { list-style: none; margin: 8px 0 0; padding: 0; }
+.run__list li { padding: 10px 0; border-top: 1px solid var(--rule); }
+.run__list p { margin: 0 0 4px; }
+.run__state { font-size: var(--fs-meta); color: var(--ink-soft); margin-left: 6px; }
+.readings { list-style: none; margin: 12px 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 16px 28px; max-width: 72rem; }
+.reading { padding-top: 10px; border-top: 1px solid var(--rule-strong); }
+.reading p { margin: 0 0 6px; }
+.reading__who { font-weight: 700; }
+.reading__gloss { display: block; margin-top: 4px; font-size: var(--fs-meta); color: var(--ink-soft); }
+.reading__note { font-size: var(--fs-meta); color: var(--ink-soft); overflow-wrap: anywhere; }

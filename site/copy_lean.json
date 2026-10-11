@@ -111,7 +111,11 @@
   "join_label": "How the paper theorem and the Lean statement are linked",
   "assoc_unresolved": "The Lean source cites labels that do not resolve to a single theorem, so no theorem is paired.",
   "no_record": "The backend records no candidate theorem for this Lean statement.",
-  "reason": "Why none: {reason}"
+  "reason": "Why none: {reason}",
+  "shared_all": "The two share {n} words: {words}.",
+  "alt_shared_all": "Shares {n} words with it: {words}.",
+  "shared_none": "The two share {n} words.",
+  "alt_shared_none": "Shares {n} words with it."
  },
  "runs": {
   "state": {

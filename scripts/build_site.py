@@ -3107,7 +3107,7 @@ def receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pin
         paper_body = conv.blocks(paper_st["text"])
         loc = C("statement.card_locator", label=paper_st["label"], file=paper_st["file"], line=paper_st["line"]) if paper_st.get("label") else C("statement.card_locator_nolabel", file=paper_st["file"], line=paper_st["line"])
         paper_src = f'<p class="rc__src"><span class="tex-auto">{rich(paper_ms["title"])}</span></p><p class="rc__loc">{esc(loc)}</p>'
-        paper_label = evidence.say("pairing_short." + state).capitalize()
+        paper_label = cap(evidence.say("pairing_short." + state))
     else:
         kind = ""
         paper_body = f'<p class="rc__none">{esc(pinfo.get("reason") or evidence.say("pairing.unavailable"))}</p>'
@@ -3259,6 +3259,11 @@ def comparator_box_html(stmt):
 PAIRED_STATES = ("candidate-pairing", "producer-cited-association", "producer-declared-binding")
 
 
+def cap(s: str) -> str:
+    """Capitalise the first letter only ("cited in the Lean source")."""
+    return s[:1].upper() + s[1:]
+
+
 def LW(key: str, **kw) -> str:
     """A string from site/copy_lean.json by dotted key (the Lean page's own words)."""
     node = COPY_LEAN
@@ -3379,15 +3384,14 @@ def join_html(doc, pinfo, root) -> str:
     state = pinfo["state"]
     cls = {"candidate-pairing": "join--candidate", "producer-cited-association": "join--cited",
            "producer-declared-binding": "join--cited"}.get(state, "join--none")
-    parts = [f'<p class="join__state">{esc(evidence.say("pairing_short." + state).capitalize())}</p>',
+    parts = [f'<p class="join__state">{esc(cap(evidence.say("pairing_short." + state)))}</p>',
              f'<p class="join__words">{esc(evidence.say("pairing." + state))}</p>']
     if state == "candidate-pairing":
         alt = next((a for a in pinfo["alternatives"] if a.get("target") == pinfo["target"]), None)
         terms = (alt or {}).get("matched_terms") or []
         n = (alt or {}).get("shared_words") or len(terms)
         if terms:
-            shown = ", ".join(terms[:7]) + (" " + LW("and") + " " + terms[7] if len(terms) > 7 else "")
-            parts.append(f'<p class="join__how">{esc(LW("pairing.shared", n=say(n), words=shown))}</p>')
+            parts.append(f'<p class="join__how">{esc(shared_words_sentence("pairing.shared", n, terms, 8))}</p>')
     elif state == "producer-cited-association" and pinfo.get("association"):
         a = pinfo["association"]
         src = a.get("source") or {}
@@ -3396,6 +3400,16 @@ def join_html(doc, pinfo, root) -> str:
                      f'<a class="ext" href="{esc(url)}" rel="noopener">{esc(LW("pairing.cited_link", line=src.get("start_line")))}</a></p>'
                      f'<pre class="lean lean--quote"><code>{esc(src.get("quote") or "")}</code></pre>')
     return f'<div class="join {cls}" role="note" aria-label="{esc(LW("pairing.join_label"))}">{"".join(parts)}</div>'
+
+
+def shared_words_sentence(key: str, n: int, terms: list, show: int) -> str:
+    """'The two share nine words, among them a, b and c.' or, when every word is listed,
+    'The two share three words: a, b and c.'"""
+    shown = terms[:show]
+    if not shown:
+        return LW(key.replace("shared", "shared_none"), n=say(n))
+    words = ", ".join(shown[:-1]) + (" " + LW("and") + " " if len(shown) > 1 else "") + shown[-1]
+    return LW(key + ("_all" if len(shown) >= n else ""), n=say(n), words=words)
 
 
 def alternatives_html(doc, pinfo, root, limit=4) -> str:
@@ -3407,9 +3421,8 @@ def alternatives_html(doc, pinfo, root, limit=4) -> str:
     items = []
     for a in rows:
         terms = a.get("matched_terms") or []
-        shown = ", ".join(terms[:5]) + (" " + LW("and") + " " + terms[5] if len(terms) > 5 else "")
         items.append(f'<li>{statement_ref_html(doc, a["target"], root)}. '
-                     f'<span class="muted">{esc(LW("pairing.alt_shared", n=say(a.get("shared_words") or len(terms)), words=shown))}</span></li>')
+                     f'<span class="muted">{esc(shared_words_sentence("pairing.alt_shared", a.get("shared_words") or len(terms), terms, 6))}</span></li>')
     return "".join(items)
 
 
@@ -3691,7 +3704,7 @@ def build_statement(stmt):
 </section>
 </div>
 {macros_script(list(dict.fromkeys(([paper_ms['id']] if paper_ms else []) + list(stmt.get('papers') or []))))}"""
-    desc = f"{label}. " + (f"{human_name}. " if human_name and human_name != label else "") + main_line + " " + evidence.say("pairing_short." + pinfo["state"]).capitalize() + "."
+    desc = f"{label}. " + (f"{human_name}. " if human_name and human_name != label else "") + main_line + " " + cap(evidence.say("pairing_short." + pinfo["state"])) + "."
     # Social image: the generic card unless this build renders the statement's own card
     # successfully; main() swaps the block in only after checking the file it produced.
     generic = generic_og_meta()
