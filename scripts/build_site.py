@@ -1229,6 +1229,23 @@ def fam_has_main(f):
     return any(ST[s]["main_result"] for s in f["statements"] if s in ST)
 
 
+def RD():
+    """Statement Map's reader packets, checked against the export (scripts/reader.py).
+    The backend decides every semantic question; the pages render its decisions."""
+    import reader
+    return reader.load()
+
+
+SEARCH_TEXT_KEYS = ("family", "in-paper", "in-family", "discipline-n", "found", "missing-one", "missing-many",
+                    "apart", "failed", "more", "truncated", "kind-family", "kind-lean", "kind-manuscript",
+                    "kind-statement", "kind-discipline")
+
+
+def search_data_attrs() -> str:
+    """The search dialog's words, for the script that fills it (site/copy.json "search")."""
+    return "".join(f' data-{k}="{esc(C("search.js." + k))}"' for k in SEARCH_TEXT_KEYS)
+
+
 def backend_target(alias: str) -> dict | None:
     """Statement Map's contribution target for a reader id ("f:159", "l:ErdosReciprocal"):
     the exact content a contribution concerns, with a fingerprint of its text."""
@@ -1342,25 +1359,31 @@ def header(rel: str, current: str | None) -> str:
     for href, key in NAV:
         cur = ' aria-current="page"' if key == current else ""
         links.append(f'<a href="{root}{href}"{cur}>{esc(C("nav." + key))}</a>')
-    return f"""<body data-root="{root}" data-copied="{esc(C('words.copied'))}" data-copy-failed="{esc(C('words.copy_failed'))}" data-tex-failed="{esc(C('words.tex_failed'))}">
+    return f"""<body data-root="{root}" data-generation="{esc(RD().generation)}" data-copied="{esc(C('words.copied'))}" data-copy-failed="{esc(C('words.copy_failed'))}" data-tex-failed="{esc(C('words.tex_failed'))}">
 <a class="skip" href="#main">{esc(C('site.skip'))}</a>
 <header class="top">
  <div class="frame top__in">
   <a class="brand" href="{root}index.html" aria-label="{esc(C('nav.brand_label'))}">{MARK_SVG}<span class="brand__name" translate="no">{esc(C('site.name'))}</span></a>
   <nav class="nav" aria-label="{esc(C('nav.site_nav'))}">{''.join(links)}</nav>
   <div class="top__tools">
-   <button class="search-open" type="button" aria-haspopup="dialog" aria-controls="search-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg><span class="search-open__label">{esc(C('nav.search'))}</span><kbd>/</kbd></button>
+   <a class="search-open" href="{root}explain.html" aria-haspopup="dialog" aria-controls="search-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg><span class="search-open__label">{esc(C('nav.search'))}</span><kbd aria-hidden="true">/</kbd></a>
    <button class="theme-toggle" type="button" data-label-dark="{esc(C('nav.theme_dark'))}" data-label-light="{esc(C('nav.theme_light'))}" aria-label="{esc(C('nav.theme_dark'))}"><span class="theme-toggle__thumb" aria-hidden="true"></span></button>
   </div>
  </div>
 </header>
-<dialog class="search" id="search-dialog" aria-label="{esc(C('nav.search'))}">
- <form method="dialog" class="search__form" role="search">
-  <input class="search__input" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(C('nav.search_placeholder'))}" aria-label="{esc(C('nav.search_placeholder'))}" role="combobox" aria-expanded="true" aria-controls="search-results" aria-autocomplete="list">
+<dialog class="search" id="search-dialog" aria-labelledby="search-title"{search_data_attrs()}>
+ <form class="search__form" role="search">
+  <label class="search__label" id="search-title" for="search-q">{esc(C('search.title'))}</label>
+  <div class="search__bar">
+   <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg>
+   <input class="search__input" id="search-q" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(C('search.placeholder'))}" role="combobox" aria-expanded="true" aria-controls="search-results" aria-autocomplete="list" aria-describedby="search-help">
+   <button class="search__close" type="button">{esc(C('search.close'))}</button>
+  </div>
+  <p class="search__help" id="search-help">{esc(C('search.help'))}</p>
  </form>
- <ul class="search__results" id="search-results" role="listbox" aria-label="{esc(C('nav.search'))}"></ul>
- <p class="search__empty" hidden>{esc(C('nav.search_empty'))}</p>
- <p class="search__failed" hidden>{esc(C('nav.search_failed'))} <a href="{root}index.html#catalogue">{esc(C('nav.search_failed_link'))}</a></p>
+ <p class="search__status" role="status" aria-live="polite"></p>
+ <div class="search__results" id="search-results" role="listbox" aria-label="{esc(C('search.results_label'))}"></div>
+ <p class="search__keys">{C('search.keys')}</p>
 </dialog>"""
 
 
@@ -4075,18 +4098,68 @@ def build_404():
     write_page(rel, h, index=False)
 
 
-def build_search_index():
-    idx = []
-    for f in FAMILIES:
-        idx.append({"t": tex_plain(f["title"]), "k": C("words.result").capitalize() + " " + f["id"], "u": f"families/{f['id']}.html", "s": DISCIPLINES[DISC_OF[f["id"]]]["name"]})
-    for m in MANUSCRIPTS:
-        if m["status"] not in ("current", "withdrawn"):
-            continue
-        idx.append({"t": tex_plain(m["title"]), "k": C("words.manuscript").capitalize() + (", " + C("words.status_withdrawn").lower() if m["status"] == "withdrawn" else ""), "u": f"papers/{m['id']}.html", "s": m.get("date") or ""})
-    for s in STATEMENTS:
-        idx.append({"t": (s.get("labels") or [s["id"]])[0], "k": C("words.lean_statement"), "u": f"statements/{s['id']}.html", "s": s["id"]})
-    (OUT / "data").mkdir(parents=True, exist_ok=True)
-    (OUT / "data" / "search.json").write_text(json.dumps(idx, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+SEARCH_PACKETS = ("search-index", "search-shard", "search-entries")
+
+
+def search_url(entry_id: str, kind: str) -> str | None:
+    """The Atlas page that reads a search entry (mirrors urlFor in site/assets/atlas.js;
+    scripts/test_search.py checks both against the backend's own reading_page routes)."""
+    head, _, rest = entry_id.partition(":")
+    quote_c = lambda v: quote(v, safe="-_.!~*'()")    # encodeURIComponent
+    if kind == "family":
+        return f"families/{quote_c(rest)}.html"
+    if kind == "lean":
+        return f"statements/{quote_c(rest)}.html"
+    if kind == "manuscript":
+        return f"papers/{quote_c(rest)}.html"
+    if kind == "discipline":
+        return "index.html#o=" + quote_c(entry_id)
+    if kind == "statement":
+        slug, _, anchor = rest.partition(":")
+        return f"papers/{quote_c(slug)}.html#" + quote(anchor, safe=";,/?:@&=+$-_.!~*'()")
+    return None
+
+
+def build_search_data():
+    """Copy Statement Map's compact search into data/search/ at its logical paths, and
+    write labels.json beside it: which index range holds which kind of entry, each
+    paper's title and each family's name, discipline and mark, so a result list can
+    show them without loading the reader packets. Every file carries the generation."""
+    r = RD()
+    dst = OUT / "data" / "search"
+    for logical, path in r.browser_files(SEARCH_PACKETS):
+        r.packet(logical)       # checks bytes, release, pin and generation
+        out = dst / logical
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, out)
+    idx = r.search_index
+    entries = []
+    for k, chunk in enumerate(idx["entry_chunks"]):
+        doc = r.packet(chunk)
+        if doc.get("start") != k * idx["entry_chunk_size"]:
+            raise SystemExit(f"{chunk} starts at {doc.get('start')}")
+        entries.extend(doc["entries"])
+    if len(entries) != idx["entry_count"]:
+        raise SystemExit(f"search entries: {len(entries)} read, the index says {idx['entry_count']}")
+    runs = []
+    for i, e in enumerate(entries):
+        if runs and runs[-1][0] == e["kind"] and runs[-1][2] == i - 1:
+            runs[-1][2] = i
+        else:
+            runs.append([e["kind"], i, i])
+    import evidence
+    import glyphs
+    disc_name = {}
+    for d in r.universe.get("disciplines") or []:
+        for fid in d.get("family_ids") or []:
+            disc_name[fid] = d["name"]
+    fams = {ev.id: {"n": ev.name, "d": disc_name.get(ev.id, ""), "m": glyphs.specimen_parts(ev),
+                    "a": ev.sentence(), "k": ev.key} for ev in evidence.all_families(r)}
+    labels = {"schema": "plectis-atlas-search-labels/1", "generation_id": r.generation,
+              "source": "search-index.json and its entry chunks; family marks from scripts/glyphs.py",
+              "kinds": runs, "papers": {e["id"]: e["name"] for e in entries if e["kind"] == "manuscript"},
+              "families": fams}
+    (dst / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
 
 def build_sitemap():
@@ -4261,7 +4334,7 @@ def main():
     build_contribute()
     build_about()
     build_404()
-    build_search_index()
+    build_search_data()
     (OUT / "cards" / "site.html").write_text(social_card_html(), encoding="utf-8")
     build_sitemap()
 

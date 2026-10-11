@@ -32,6 +32,32 @@
   "glossary": "Glossary",
   "map": "Map"
  },
+ "search": {
+  "title": "Search the atlas",
+  "placeholder": "Whole words, for example Siegel zeros or SiegelZeros",
+  "close": "Close",
+  "help": "Finds the exact words you type in the names and statement text of families, papers, theorems and Lean statements. Each word must appear whole. Capitals do not matter; accents do.",
+  "results_label": "Search results",
+  "keys": "<kbd>↑</kbd> and <kbd>↓</kbd> move, <kbd>Enter</kbd> opens, <kbd>Esc</kbd> closes.",
+  "js": {
+   "family": "Family {n}",
+   "in-paper": "in {title}",
+   "in-family": "in the family {name}",
+   "discipline-n": "{n} families",
+   "found": "{n} entries contain {words}.",
+   "missing-one": "No family, paper, theorem or Lean statement contains the word {words}. Search matches whole words as they are spelled, accents included.",
+   "missing-many": "No family, paper, theorem or Lean statement contains the words {words}. Search matches whole words as they are spelled, accents included.",
+   "apart": "Each of {words} appears somewhere, but no single entry contains them all. Try fewer words.",
+   "failed": "Search could not load. The Families list has every family.",
+   "more": "Show {n} more",
+   "truncated": "Only the first matching statements are listed. Add a word to narrow them.",
+   "kind-family": "Families",
+   "kind-lean": "Lean statements",
+   "kind-manuscript": "Papers",
+   "kind-statement": "Theorems and other statements",
+   "kind-discipline": "Disciplines"
+  }
+ },
  "words": {
   "result": "result",
   "results": "results",
