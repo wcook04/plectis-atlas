@@ -2599,6 +2599,7 @@ def map_data():
             "ti": (sourced(f, "tier") or {}).get("value"),
             "g": grade,
             "gm": 1 if mixed else 0,
+            "rd": f.get("readers_agreement") or "none",
         })
     vocab = sorted(v for v in (x["v"] for x in fams) if v is not None)
     return {
@@ -2672,7 +2673,7 @@ def build_home(md):
     for i, d in enumerate(DISCIPLINES):
         lis = "".join(f'<li><a href="families/{fid}.html">{fam_title_html(FAM[fid])}</a></li>' for fid in d["families"] if fid in FAM)
         idx.append(f'<section class="idx__d" id="idx-{DISC_SLUG[i]}"><h3 class="h3">{esc(d["name"])} <span class="count">{len(d["families"])}</span></h3><ul>{lis}</ul></section>')
-    ov = [("lean", "home.overlay_lean"), ("covers", "home.overlay_covers"), ("type", "home.overlay_type"), ("tier", "home.overlay_tier"), ("community", "home.overlay_community"), ("size", "home.overlay_size"), ("citations", "home.overlay_citations"), ("explained", "home.overlay_explained")]
+    ov = [("lean", "home.overlay_lean"), ("readers", "home.overlay_readers"), ("covers", "home.overlay_covers"), ("type", "home.overlay_type"), ("tier", "home.overlay_tier"), ("community", "home.overlay_community"), ("size", "home.overlay_size"), ("citations", "home.overlay_citations"), ("explained", "home.overlay_explained")]
     ov_btns = "".join(f'<button type="button" class="seg__b" data-overlay="{k}" aria-pressed="{"true" if k == "lean" else "false"}">{esc(C(lab))}</button>' for k, lab in ov)
     strings = {k: v for k, v in COPY["home"].items()}
     strings.update({"manuscript": C("words.manuscript"), "manuscripts": C("words.manuscripts"),

@@ -56,6 +56,13 @@ def numbers_block(s: dict) -> str:
             f"and in {n(len(sc.get('families_partial_headline_only') or []))} more only part of it is covered. "
             "An AI agent classified each file from OpenAI's scope note, quoting the note (`curated/scope_coverage.json`); no person has reviewed it."
         )
+    ra = s.get("readers_agreement") or {}
+    if ra.get("agree-full") is not None:
+        rows.append(
+            f"- **Two independent readers.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine), "
+            f"reading each family's Lean against its headline independently of OpenAI and of each other, agree that {n(ra.get('agree-full', 0))} families' "
+            f"Lean states the headline and {n(ra.get('agree-less', 0))} states less; they disagree on {n(ra.get('disagree', 0))}. "
+            "Their verdicts sit on each family page, credited.")
     rows += [
         "",
         f"Counted from [openai/math at `{s['upstream']['commit'][:12]}`](https://github.com/openai/math/tree/{s['upstream']['commit']}) by "

@@ -1394,6 +1394,27 @@ def build(upstream: Path, out: Path, quiet: bool = False):
                     continue
                 sourced.setdefault(field, []).append({"value": value, "source": sid_})
     summary["sources"] = sources
+    # Do the independent readers agree that a family's challenges state its headline? Each reader's
+    # own top verdict counts as "states it"; everything else as "states less".
+    states_headline = {"mathvet": {"full"}, "cert-machine": {"matches"}}
+    agreement = Counter()
+    for f in families:
+        reads = {v["source"]: v["value"].get("verdict") for v in (f.get("sourced") or {}).get("scope_reading", [])
+                 if v["source"] in states_headline}
+        if not f["statements"]:
+            a = "none"
+        elif len(reads) < 2:
+            a = "one" if reads else "unread"
+        else:
+            full = {s for s, v in reads.items() if v in states_headline[s]}
+            a = "agree-full" if len(full) == len(reads) else ("agree-less" if not full else "disagree")
+        f["readers_agreement"] = a
+        agreement[a] += 1
+    summary["readers_agreement"] = dict(sorted(agreement.items()))
+    summary["definitions"]["readers_agreement"] = (
+        "Whether MathVet and Carlos Toledo's cert-machine, reading independently of OpenAI and of each other, both find "
+        "that a family's challenge statements state its headline (agree-full), both find they state less (agree-less), "
+        "or differ (disagree). Each reader's own rubric decides its verdict.")
     tl = next((x for x in sources if x["id"] == "tier-list"), None)
     yaml_src_slugs = set(re.findall(r"preprints/([^/\s]+)/", read(upstream / "lean" / "formalization.yaml").split("related_formalizations:")[0]))
     recon = {
@@ -1459,6 +1480,11 @@ def build(upstream: Path, out: Path, quiet: bool = False):
             reasons.append((50, "imported-vocabulary", "Adds no local vocabulary but imports OpenAI modules, so its meaning lives in those imported definitions."))
         if c["vocabulary_count"] >= 100:
             reasons.append((20 + min(c["vocabulary_count"], 2000) // 100, "large", f"{c['vocabulary_count']:,} local vocabulary declarations to read."))
+        agree = {fam_by_id[x].get("readers_agreement") for x in c["families"] if x in fam_by_id}
+        if "disagree" in agree:
+            reasons.append((75, "readers-disagree", "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."))
+        if "agree-less" in agree and row and row["class"] == "headline":
+            reasons.append((72, "draft-more-generous", "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."))
         if row and row["class"] != "headline" and any(f in no_full for f in c["families"]):
             reasons.append((5, "family-without-full-headline", "No Lean statement in its family states the paper's full headline theorem."))
         queue.append({"statement": c["id"], "families": c["families"], "priority": sum(p for p, _, _ in reasons),
@@ -1470,7 +1496,8 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         "flagged": sum(1 for r in queue if r["reasons"]),
         "first": [r["statement"] for r in queue[:25]],
         "rule": ("Points per reason, highest first: a configuration with no theorem target 100; definition holes 90 plus one per hole; "
-                 "unclear draft scope 85; a draft scope reading needing a specialist 80; a target theorem shared with another file 70; "
+                 "unclear draft scope 85; a draft scope reading needing a specialist 80; independent readers disagreeing on the family 75; "
+                 "both independent readers finding less than the headline where the atlas's draft says headline 72; a target theorem shared with another file 70; "
                  "an axiom in the challenge 60; no local vocabulary but OpenAI imports 50; 100 or more local declarations 20 plus one per hundred "
                  "(capped); a family with no full-headline statement 5. Ties go alphabetically. The order allocates reading; it is no verdict."),
     }

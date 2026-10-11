@@ -44,14 +44,54 @@
   "families": [
    "103"
   ],
-  "priority": 110,
+  "priority": 185,
   "reasons": [
    {
     "kind": "definition-holes",
     "text": "20 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+   },
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
    }
   ],
   "order": 3
+ },
+ {
+  "statement": "DefocusingNLS",
+  "families": [
+   "371"
+  ],
+  "priority": 168,
+  "reasons": [
+   {
+    "kind": "definition-holes",
+    "text": "3 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+   },
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 4
+ },
+ {
+  "statement": "HarmonicGrowth",
+  "families": [
+   "361"
+  ],
+  "priority": 132,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   },
+   {
+    "kind": "axiom",
+    "text": "States its claim through an axiom in the challenge file; check what the configuration compares."
+   }
+  ],
+  "order": 5
  },
  {
   "statement": "Brenier",
@@ -65,7 +105,7 @@
     "text": "12 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
    }
   ],
-  "order": 4
+  "order": 6
  },
  {
   "statement": "KServer",
@@ -79,7 +119,7 @@
     "text": "9 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
    }
   ],
-  "order": 5
+  "order": 7
  },
  {
   "statement": "Naimark",
@@ -93,7 +133,25 @@
     "text": "7 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
    }
   ],
-  "order": 6
+  "order": 8
+ },
+ {
+  "statement": "CKSBondiPenrose",
+  "families": [
+   "260"
+  ],
+  "priority": 95,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   },
+   {
+    "kind": "large",
+    "text": "310 local vocabulary declarations to read."
+   }
+  ],
+  "order": 9
  },
  {
   "statement": "OccupiedOverlap",
@@ -107,7 +165,25 @@
     "text": "5 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
    }
   ],
-  "order": 7
+  "order": 10
+ },
+ {
+  "statement": "CoarseAssembly",
+  "families": [
+   "307"
+  ],
+  "priority": 94,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   },
+   {
+    "kind": "large",
+    "text": "216 local vocabulary declarations to read."
+   }
+  ],
+  "order": 11
  },
  {
   "statement": "Rokhlin",
@@ -121,21 +197,25 @@
     "text": "4 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
    }
   ],
-  "order": 8
+  "order": 12
  },
  {
-  "statement": "DefocusingNLS",
+  "statement": "CharacterCriterion",
   "families": [
-   "371"
+   "299"
   ],
   "priority": 93,
   "reasons": [
    {
-    "kind": "definition-holes",
-    "text": "3 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   },
+   {
+    "kind": "large",
+    "text": "146 local vocabulary declarations to read."
    }
   ],
-  "order": 9
+  "order": 13
  },
  {
   "statement": "SpinAngle",
@@ -149,7 +229,7 @@
     "text": "3 definition holes: Comparator compares these by name and type only, so a reader checks what each solution body means."
    }
   ],
-  "order": 10
+  "order": 14
  },
  {
   "statement": "EuclideanFiveColor",
@@ -163,7 +243,7 @@
     "text": "1 definition hole: Comparator compares it by name and type only, so a reader checks what each solution body means."
    }
   ],
-  "order": 11
+  "order": 15
  },
  {
   "statement": "MatchingEntropy",
@@ -177,7 +257,7 @@
     "text": "The draft scope reading depends on mathematics a specialist should settle."
    }
   ],
-  "order": 12
+  "order": 16
  },
  {
   "statement": "MemoryPrecision",
@@ -191,7 +271,1659 @@
     "text": "The draft scope reading depends on mathematics a specialist should settle."
    }
   ],
-  "order": 13
+  "order": 17
+ },
+ {
+  "statement": "BarnetteHamiltonian",
+  "families": [
+   "180"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 18
+ },
+ {
+  "statement": "BoundedTreewidthL1",
+  "families": [
+   "089"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 19
+ },
+ {
+  "statement": "Brennan",
+  "families": [
+   "072"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 20
+ },
+ {
+  "statement": "BrennanSharp",
+  "families": [
+   "072"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 21
+ },
+ {
+  "statement": "CirculantHadamard",
+  "families": [
+   "179"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 22
+ },
+ {
+  "statement": "CoboundaryExpanders",
+  "families": [
+   "177"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 23
+ },
+ {
+  "statement": "Cotype",
+  "families": [
+   "326"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 24
+ },
+ {
+  "statement": "EntropyPhotonNumber",
+  "families": [
+   "273"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 25
+ },
+ {
+  "statement": "EvenBarker",
+  "families": [
+   "179"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 26
+ },
+ {
+  "statement": "ExactInfiniteness",
+  "families": [
+   "303"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 27
+ },
+ {
+  "statement": "GaussianPropeller",
+  "families": [
+   "096"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 28
+ },
+ {
+  "statement": "GeneralMahler",
+  "families": [
+   "087"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 29
+ },
+ {
+  "statement": "IndividualStrongInfiniteness",
+  "families": [
+   "303"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 30
+ },
+ {
+  "statement": "InterpolatedFactors",
+  "families": [
+   "287"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 31
+ },
+ {
+  "statement": "KahlerSplitting",
+  "families": [
+   "052"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 32
+ },
+ {
+  "statement": "MahlerConjecture",
+  "families": [
+   "087"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 33
+ },
+ {
+  "statement": "MatrixFields",
+  "families": [
+   "107"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 34
+ },
+ {
+  "statement": "MatrixMultiplication",
+  "families": [
+   "107"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 35
+ },
+ {
+  "statement": "PiExponent",
+  "families": [
+   "017"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 36
+ },
+ {
+  "statement": "PlanarL1",
+  "families": [
+   "089"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 37
+ },
+ {
+  "statement": "QACParity",
+  "families": [
+   "274"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 38
+ },
+ {
+  "statement": "RegularParity",
+  "families": [
+   "274"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 39
+ },
+ {
+  "statement": "SingleFold",
+  "families": [
+   "242"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 40
+ },
+ {
+  "statement": "SplitTangentIntegrability",
+  "families": [
+   "052"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 41
+ },
+ {
+  "statement": "SteinitzBergstrom",
+  "families": [
+   "097"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 42
+ },
+ {
+  "statement": "StrictMeans",
+  "families": [
+   "072"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 43
+ },
+ {
+  "statement": "SubpolynomialLp",
+  "families": [
+   "094"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 44
+ },
+ {
+  "statement": "SwitchChain",
+  "families": [
+   "131"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 45
+ },
+ {
+  "statement": "SymmetricMahlerEquality",
+  "families": [
+   "087"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 46
+ },
+ {
+  "statement": "SymmetricPolar",
+  "families": [
+   "087"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 47
+ },
+ {
+  "statement": "TorsionFreeHyperbolic",
+  "families": [
+   "252"
+  ],
+  "priority": 75,
+  "reasons": [
+   {
+    "kind": "readers-disagree",
+    "text": "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."
+   }
+  ],
+  "order": 48
+ },
+ {
+  "statement": "AffineBernstein",
+  "families": [
+   "353"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 49
+ },
+ {
+  "statement": "AmplitudeDamping",
+  "families": [
+   "276"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 50
+ },
+ {
+  "statement": "ArnoldCounterexample",
+  "families": [
+   "347"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 51
+ },
+ {
+  "statement": "AsymptoticallyMinimalLittlewood",
+  "families": [
+   "076"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 52
+ },
+ {
+  "statement": "AtomicGaussian",
+  "families": [
+   "090"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 53
+ },
+ {
+  "statement": "AuslanderReiten",
+  "families": [
+   "199"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 54
+ },
+ {
+  "statement": "BalancedRyser",
+  "families": [
+   "162"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 55
+ },
+ {
+  "statement": "BassTrace",
+  "families": [
+   "207"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 56
+ },
+ {
+  "statement": "BoltzmannNonuniqueness",
+  "families": [
+   "363"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 57
+ },
+ {
+  "statement": "BufferedIsing",
+  "families": [
+   "218"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 58
+ },
+ {
+  "statement": "CHObstruction",
+  "families": [
+   "240"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 59
+ },
+ {
+  "statement": "ClassicalON",
+  "families": [
+   "215"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 60
+ },
+ {
+  "statement": "CliqueFreeLog",
+  "families": [
+   "184"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 61
+ },
+ {
+  "statement": "CommonBasesFPRAS",
+  "families": [
+   "114"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 62
+ },
+ {
+  "statement": "ComplexCancellation",
+  "families": [
+   "047"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 63
+ },
+ {
+  "statement": "Conductivity",
+  "families": [
+   "365"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 64
+ },
+ {
+  "statement": "CoulombCounterexample",
+  "families": [
+   "373"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 65
+ },
+ {
+  "statement": "CoulombIonization",
+  "families": [
+   "263"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 66
+ },
+ {
+  "statement": "CoulombRadii",
+  "families": [
+   "263"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 67
+ },
+ {
+  "statement": "CriticalSK",
+  "families": [
+   "227"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 68
+ },
+ {
+  "statement": "CriticalSKMixing",
+  "families": [
+   "227"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 69
+ },
+ {
+  "statement": "CriticalStripMass",
+  "families": [
+   "237"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 70
+ },
+ {
+  "statement": "DimensionTenChannel",
+  "families": [
+   "272"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 71
+ },
+ {
+  "statement": "DimensionTenPair",
+  "families": [
+   "272"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 72
+ },
+ {
+  "statement": "DirectionalBallisticity",
+  "families": [
+   "220"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 73
+ },
+ {
+  "statement": "DirectionalWalk",
+  "families": [
+   "220"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 74
+ },
+ {
+  "statement": "DixmierAllDiscrete",
+  "families": [
+   "251"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 75
+ },
+ {
+  "statement": "DukePrimeDegree",
+  "families": [
+   "015"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 76
+ },
+ {
+  "statement": "DyadicAvoidance",
+  "families": [
+   "084"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 77
+ },
+ {
+  "statement": "EinsteinFour",
+  "families": [
+   "348"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 78
+ },
+ {
+  "statement": "EuclideanRamsey",
+  "families": [
+   "172"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 79
+ },
+ {
+  "statement": "FKCRT",
+  "families": [
+   "211"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 80
+ },
+ {
+  "statement": "FixedClauseThreshold",
+  "families": [
+   "235"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 81
+ },
+ {
+  "statement": "FoulkesHowe",
+  "families": [
+   "210"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 82
+ },
+ {
+  "statement": "GammaPassage",
+  "families": [
+   "212"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 83
+ },
+ {
+  "statement": "GrothendieckElementaryExpansion",
+  "families": [
+   "312"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 84
+ },
+ {
+  "statement": "GroupRingDeterminant",
+  "families": [
+   "197"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 85
+ },
+ {
+  "statement": "HalvingLines",
+  "families": [
+   "183"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 86
+ },
+ {
+  "statement": "HardSphere",
+  "families": [
+   "267"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 87
+ },
+ {
+  "statement": "Heisenberg",
+  "families": [
+   "271"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 88
+ },
+ {
+  "statement": "HyperbolicCones",
+  "families": [
+   "095"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 89
+ },
+ {
+  "statement": "IrrationalTriangleBilliard",
+  "families": [
+   "150"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 90
+ },
+ {
+  "statement": "KaplanskyFinitelyPresented",
+  "families": [
+   "197"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 91
+ },
+ {
+  "statement": "Kervaire",
+  "families": [
+   "256"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 92
+ },
+ {
+  "statement": "LaughlinFock",
+  "families": [
+   "269"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 93
+ },
+ {
+  "statement": "LiebThirring",
+  "families": [
+   "262"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 94
+ },
+ {
+  "statement": "ListHadwiger",
+  "families": [
+   "157"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 95
+ },
+ {
+  "statement": "LogBrunnMinkowski",
+  "families": [
+   "091"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 96
+ },
+ {
+  "statement": "MassAction",
+  "families": [
+   "149"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 97
+ },
+ {
+  "statement": "MaximalSeshadriConstants",
+  "families": [
+   "039"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 98
+ },
+ {
+  "statement": "Nagata",
+  "families": [
+   "039"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 99
+ },
+ {
+  "statement": "NodalLength",
+  "families": [
+   "350"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 100
+ },
+ {
+  "statement": "OddKaplansky",
+  "families": [
+   "197"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 101
+ },
+ {
+  "statement": "PartitionConsistency",
+  "families": [
+   "244"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 102
+ },
+ {
+  "statement": "PerceptronFreeEnergy",
+  "families": [
+   "222"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 103
+ },
+ {
+  "statement": "PeriodicGroup",
+  "families": [
+   "247"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 104
+ },
+ {
+  "statement": "PettyProjectionVolume",
+  "families": [
+   "088"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 105
+ },
+ {
+  "statement": "PinchedKahler",
+  "families": [
+   "359"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 106
+ },
+ {
+  "statement": "PlanarPacking",
+  "families": [
+   "090"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 107
+ },
+ {
+  "statement": "ProjectionVolume",
+  "families": [
+   "088"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 108
+ },
+ {
+  "statement": "QuinticLienard",
+  "families": [
+   "143"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 109
+ },
+ {
+  "statement": "RandomizedMeanPayoff",
+  "families": [
+   "104"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 110
+ },
+ {
+  "statement": "RationalHitting",
+  "families": [
+   "116"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 111
+ },
+ {
+  "statement": "RyserOddExtensions",
+  "families": [
+   "162"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 112
+ },
+ {
+  "statement": "SATComputability",
+  "families": [
+   "235"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 113
+ },
+ {
+  "statement": "SATVariance",
+  "families": [
+   "235"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 114
+ },
+ {
+  "statement": "SKBarriers",
+  "families": [
+   "227"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 115
+ },
+ {
+  "statement": "SKFullSupport",
+  "families": [
+   "281"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 116
+ },
+ {
+  "statement": "SKHighTemperature",
+  "families": [
+   "227"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 117
+ },
+ {
+  "statement": "SensitivitySeparation",
+  "families": [
+   "132"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 118
+ },
+ {
+  "statement": "SharpThreshold",
+  "families": [
+   "186"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 119
+ },
+ {
+  "statement": "SidorenkoCounterexample",
+  "families": [
+   "161"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 120
+ },
+ {
+  "statement": "SmoothYau",
+  "families": [
+   "350"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 121
+ },
+ {
+  "statement": "SoftChannel204",
+  "families": [
+   "119"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 122
+ },
+ {
+  "statement": "SquareDifference",
+  "families": [
+   "182"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 123
+ },
+ {
+  "statement": "StrongKadisonKastler",
+  "families": [
+   "289"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 124
+ },
+ {
+  "statement": "SymmetricDomains",
+  "families": [
+   "058"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 125
+ },
+ {
+  "statement": "Tachikawa",
+  "families": [
+   "199"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 126
+ },
+ {
+  "statement": "TalagrandDiscreteConvexity",
+  "families": [
+   "175"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 127
+ },
+ {
+  "statement": "TalagrandExpectationThreshold",
+  "families": [
+   "175"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 128
+ },
+ {
+  "statement": "TraceReconstruction",
+  "families": [
+   "122"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 129
+ },
+ {
+  "statement": "TriangularEnergy",
+  "families": [
+   "090"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 130
+ },
+ {
+  "statement": "TriangularGaussian",
+  "families": [
+   "090"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 131
+ },
+ {
+  "statement": "TriangularHilbert",
+  "families": [
+   "082"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 132
+ },
+ {
+  "statement": "UniformGamma",
+  "families": [
+   "291"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 133
+ },
+ {
+  "statement": "UniformSparsestCut",
+  "families": [
+   "117"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 134
+ },
+ {
+  "statement": "WeakHessian",
+  "families": [
+   "356"
+  ],
+  "priority": 72,
+  "reasons": [
+   {
+    "kind": "draft-more-generous",
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+   }
+  ],
+  "order": 135
  },
  {
   "statement": "BalancedThreeStack",
@@ -205,7 +1937,7 @@
     "text": "Checks the same target theorem as ForcedNavierStokesComputation; compare the two files before counting them as separate results."
    }
   ],
-  "order": 14
+  "order": 136
  },
  {
   "statement": "ForcedNavierStokesComputation",
@@ -219,21 +1951,7 @@
     "text": "Checks the same target theorem as BalancedThreeStack; compare the two files before counting them as separate results."
    }
   ],
-  "order": 15
- },
- {
-  "statement": "HarmonicGrowth",
-  "families": [
-   "361"
-  ],
-  "priority": 60,
-  "reasons": [
-   {
-    "kind": "axiom",
-    "text": "States its claim through an axiom in the challenge file; check what the configuration compares."
-   }
-  ],
-  "order": 16
+  "order": 137
  },
  {
   "statement": "CharacterVarietiesAllSeamsSupport",
@@ -251,7 +1969,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 17
+  "order": 138
  },
  {
   "statement": "EditApproximation",
@@ -265,7 +1983,7 @@
     "text": "1,212 local vocabulary declarations to read."
    }
   ],
-  "order": 18
+  "order": 139
  },
  {
   "statement": "SnakyCertificate",
@@ -279,49 +1997,7 @@
     "text": "670 local vocabulary declarations to read."
    }
   ],
-  "order": 19
- },
- {
-  "statement": "CKSBondiPenrose",
-  "families": [
-   "260"
-  ],
-  "priority": 23,
-  "reasons": [
-   {
-    "kind": "large",
-    "text": "310 local vocabulary declarations to read."
-   }
-  ],
-  "order": 20
- },
- {
-  "statement": "CoarseAssembly",
-  "families": [
-   "307"
-  ],
-  "priority": 22,
-  "reasons": [
-   {
-    "kind": "large",
-    "text": "216 local vocabulary declarations to read."
-   }
-  ],
-  "order": 21
- },
- {
-  "statement": "CharacterCriterion",
-  "families": [
-   "299"
-  ],
-  "priority": 21,
-  "reasons": [
-   {
-    "kind": "large",
-    "text": "146 local vocabulary declarations to read."
-   }
-  ],
-  "order": 22
+  "order": 140
  },
  {
   "statement": "CylinderCovering",
@@ -335,7 +2011,7 @@
     "text": "108 local vocabulary declarations to read."
    }
   ],
-  "order": 23
+  "order": 141
  },
  {
   "statement": "IrrationalRotation",
@@ -349,7 +2025,7 @@
     "text": "114 local vocabulary declarations to read."
    }
   ],
-  "order": 24
+  "order": 142
  },
  {
   "statement": "NavierStokesVelocity",
@@ -363,7 +2039,7 @@
     "text": "196 local vocabulary declarations to read."
    }
   ],
-  "order": 25
+  "order": 143
  },
  {
   "statement": "RecursivePotentials",
@@ -377,7 +2053,7 @@
     "text": "159 local vocabulary declarations to read."
    }
   ],
-  "order": 26
+  "order": 144
  },
  {
   "statement": "ThomasonModelStructures",
@@ -391,7 +2067,7 @@
     "text": "110 local vocabulary declarations to read."
    }
   ],
-  "order": 27
+  "order": 145
  },
  {
   "statement": "BernoulliNonflatInSeven",
@@ -405,7 +2081,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 28
+  "order": 146
  },
  {
   "statement": "BogomolovPopInjectivity",
@@ -419,7 +2095,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 29
+  "order": 147
  },
  {
   "statement": "BoundedRecovery",
@@ -433,7 +2109,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 30
+  "order": 148
  },
  {
   "statement": "CartierChartCompactnessSupport",
@@ -447,7 +2123,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 31
+  "order": 149
  },
  {
   "statement": "DuttaDomain",
@@ -461,7 +2137,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 32
+  "order": 150
  },
  {
   "statement": "EntangledGames",
@@ -475,7 +2151,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 33
+  "order": 151
  },
  {
   "statement": "ErdosReciprocal",
@@ -489,7 +2165,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 34
+  "order": 152
  },
  {
   "statement": "FillingCoefficient",
@@ -503,7 +2179,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 35
+  "order": 153
  },
  {
   "statement": "FiniteCongruenceGraph",
@@ -517,7 +2193,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 36
+  "order": 154
  },
  {
   "statement": "HadamardCubeFiber",
@@ -531,7 +2207,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 37
+  "order": 155
  },
  {
   "statement": "HeilbronnTriangle",
@@ -545,7 +2221,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 38
+  "order": 156
  },
  {
   "statement": "HyperbolicObstruction",
@@ -559,7 +2235,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 39
+  "order": 157
  },
  {
   "statement": "LogKodairaFiberNegative",
@@ -573,7 +2249,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 40
+  "order": 158
  },
  {
   "statement": "MUBSix",
@@ -587,7 +2263,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 41
+  "order": 159
  },
  {
   "statement": "MatchingAffineLift",
@@ -601,7 +2277,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 42
+  "order": 160
  },
  {
   "statement": "MatchingPSD",
@@ -615,7 +2291,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 43
+  "order": 161
  },
  {
   "statement": "MatrixRemoval",
@@ -629,7 +2305,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 44
+  "order": 162
  },
  {
   "statement": "PlanarAndersonSpectrum",
@@ -643,7 +2319,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 45
+  "order": 163
  },
  {
   "statement": "SLELowerPositivity",
@@ -657,7 +2333,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 46
+  "order": 164
  },
  {
   "statement": "SeparableQuotientNegative",
@@ -671,7 +2347,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 47
+  "order": 165
  },
  {
   "statement": "SharpCAT0Filling",
@@ -685,7 +2361,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 48
+  "order": 166
  },
  {
   "statement": "SmoothObstruction",
@@ -699,7 +2375,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 49
+  "order": 167
  },
  {
   "statement": "SurfaceConeCandidateSupport",
@@ -713,7 +2389,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 50
+  "order": 168
  },
  {
   "statement": "ThreeStateSupercritical",
@@ -727,7 +2403,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 51
+  "order": 169
  },
  {
   "statement": "ThreeStateTreeClauses",
@@ -741,7 +2417,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 52
+  "order": 170
  },
  {
   "statement": "TraceIdealTransportSupport",
@@ -755,7 +2431,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 53
+  "order": 171
  },
  {
   "statement": "VertexAlgebraNet",
@@ -769,7 +2445,7 @@
     "text": "No Lean statement in its family states the paper's full headline theorem."
    }
   ],
-  "order": 54
+  "order": 172
  },
  {
   "statement": "AbhyankarSathaye",
@@ -778,16 +2454,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 55
- },
- {
-  "statement": "AffineBernstein",
-  "families": [
-   "353"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 56
+  "order": 173
  },
  {
   "statement": "AlgorithmicThinTrees",
@@ -796,25 +2463,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 57
- },
- {
-  "statement": "AmplitudeDamping",
-  "families": [
-   "276"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 58
- },
- {
-  "statement": "ArnoldCounterexample",
-  "families": [
-   "347"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 59
+  "order": 174
  },
  {
   "statement": "ArtinCAT0",
@@ -823,7 +2472,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 60
+  "order": 175
  },
  {
   "statement": "ArtinParabolicIntersections",
@@ -832,34 +2481,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 61
- },
- {
-  "statement": "AsymptoticallyMinimalLittlewood",
-  "families": [
-   "076"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 62
- },
- {
-  "statement": "AtomicGaussian",
-  "families": [
-   "090"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 63
- },
- {
-  "statement": "AuslanderReiten",
-  "families": [
-   "199"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 64
+  "order": 176
  },
  {
   "statement": "BackwardIntertwiners",
@@ -868,7 +2490,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 65
+  "order": 177
  },
  {
   "statement": "BalancedBoxRouting",
@@ -877,16 +2499,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 66
- },
- {
-  "statement": "BalancedRyser",
-  "families": [
-   "162"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 67
+  "order": 178
  },
  {
   "statement": "BallPacking",
@@ -895,7 +2508,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 68
+  "order": 179
  },
  {
   "statement": "BallPackingNecessity",
@@ -904,16 +2517,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 69
- },
- {
-  "statement": "BarnetteHamiltonian",
-  "families": [
-   "180"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 70
+  "order": 180
  },
  {
   "statement": "BassTorsionFree",
@@ -922,16 +2526,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 71
- },
- {
-  "statement": "BassTrace",
-  "families": [
-   "207"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 72
+  "order": 181
  },
  {
   "statement": "BenjaminiSchramm",
@@ -940,7 +2535,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 73
+  "order": 182
  },
  {
   "statement": "BiholderTransport",
@@ -949,7 +2544,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 74
+  "order": 183
  },
  {
   "statement": "BinPackingGap",
@@ -958,7 +2553,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 75
+  "order": 184
  },
  {
   "statement": "BinaryEditLower",
@@ -967,7 +2562,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 76
+  "order": 185
  },
  {
   "statement": "BinaryMatching",
@@ -976,7 +2571,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 77
+  "order": 186
  },
  {
   "statement": "BinarySweep",
@@ -985,7 +2580,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 78
+  "order": 187
  },
  {
   "statement": "BipartiteCrossing",
@@ -994,16 +2589,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 79
- },
- {
-  "statement": "BoltzmannNonuniqueness",
-  "families": [
-   "363"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 80
+  "order": 188
  },
  {
   "statement": "BooneHigman",
@@ -1012,7 +2598,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 81
+  "order": 189
  },
  {
   "statement": "BorsukNine",
@@ -1021,7 +2607,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 82
+  "order": 190
  },
  {
   "statement": "BoundedTreePotentials",
@@ -1030,43 +2616,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 83
- },
- {
-  "statement": "BoundedTreewidthL1",
-  "families": [
-   "089"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 84
- },
- {
-  "statement": "Brennan",
-  "families": [
-   "072"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 85
- },
- {
-  "statement": "BrennanSharp",
-  "families": [
-   "072"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 86
- },
- {
-  "statement": "BufferedIsing",
-  "families": [
-   "218"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 87
+  "order": 191
  },
  {
   "statement": "C0Absorption",
@@ -1075,7 +2625,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 88
+  "order": 192
  },
  {
   "statement": "C1EntropyCounterexample",
@@ -1084,16 +2634,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 89
- },
- {
-  "statement": "CHObstruction",
-  "families": [
-   "240"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 90
+  "order": 193
  },
  {
   "statement": "CannonGeometricAction",
@@ -1102,7 +2643,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 91
+  "order": 194
  },
  {
   "statement": "Catalan",
@@ -1111,7 +2652,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 92
+  "order": 195
  },
  {
   "statement": "CayleyPercolation",
@@ -1120,7 +2661,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 93
+  "order": 196
  },
  {
   "statement": "ChoicelessPolynomialTime",
@@ -1129,52 +2670,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 94
- },
- {
-  "statement": "CirculantHadamard",
-  "families": [
-   "179"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 95
- },
- {
-  "statement": "ClassicalON",
-  "families": [
-   "215"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 96
- },
- {
-  "statement": "CliqueFreeLog",
-  "families": [
-   "184"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 97
- },
- {
-  "statement": "CoboundaryExpanders",
-  "families": [
-   "177"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 98
- },
- {
-  "statement": "CommonBasesFPRAS",
-  "families": [
-   "114"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 99
+  "order": 197
  },
  {
   "statement": "CommutingDerivations",
@@ -1183,7 +2679,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 100
+  "order": 198
  },
  {
   "statement": "CompactBanach",
@@ -1192,7 +2688,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 101
+  "order": 199
  },
  {
   "statement": "CompleteCrossing",
@@ -1201,7 +2697,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 102
+  "order": 200
  },
  {
   "statement": "CompleteCrouzeix",
@@ -1210,25 +2706,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 103
- },
- {
-  "statement": "ComplexCancellation",
-  "families": [
-   "047"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 104
- },
- {
-  "statement": "Conductivity",
-  "families": [
-   "365"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 105
+  "order": 201
  },
  {
   "statement": "ConjugatePoints",
@@ -1237,7 +2715,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 106
+  "order": 202
  },
  {
   "statement": "ContingencyTables",
@@ -1246,7 +2724,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 107
+  "order": 203
  },
  {
   "statement": "ContinuousCircleWeight",
@@ -1255,7 +2733,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 108
+  "order": 204
  },
  {
   "statement": "ContinuumCoulombHardness",
@@ -1264,7 +2742,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 109
+  "order": 205
  },
  {
   "statement": "ContinuumTransition",
@@ -1273,7 +2751,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 110
+  "order": 206
  },
  {
   "statement": "CoordinateSweeps",
@@ -1282,7 +2760,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 111
+  "order": 207
  },
  {
   "statement": "CoordinateTrace",
@@ -1291,43 +2769,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 112
- },
- {
-  "statement": "Cotype",
-  "families": [
-   "326"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 113
- },
- {
-  "statement": "CoulombCounterexample",
-  "families": [
-   "373"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 114
- },
- {
-  "statement": "CoulombIonization",
-  "families": [
-   "263"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 115
- },
- {
-  "statement": "CoulombRadii",
-  "families": [
-   "263"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 116
+  "order": 208
  },
  {
   "statement": "CourtadeKumar",
@@ -1336,7 +2778,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 117
+  "order": 209
  },
  {
   "statement": "CoveringDensity",
@@ -1345,7 +2787,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 118
+  "order": 210
  },
  {
   "statement": "CriticalPercolation",
@@ -1354,34 +2796,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 119
- },
- {
-  "statement": "CriticalSK",
-  "families": [
-   "227"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 120
- },
- {
-  "statement": "CriticalSKMixing",
-  "families": [
-   "227"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 121
- },
- {
-  "statement": "CriticalStripMass",
-  "families": [
-   "237"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 122
+  "order": 211
  },
  {
   "statement": "CriticalZ3",
@@ -1390,7 +2805,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 123
+  "order": 212
  },
  {
   "statement": "CrouzeixHilbert",
@@ -1399,7 +2814,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 124
+  "order": 213
  },
  {
   "statement": "CubicTorus",
@@ -1408,7 +2823,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 125
+  "order": 214
  },
  {
   "statement": "CycleCliqueRamsey",
@@ -1417,7 +2832,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 126
+  "order": 215
  },
  {
   "statement": "CycleDecomposition",
@@ -1426,7 +2841,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 127
+  "order": 216
  },
  {
   "statement": "DaugavetModuli",
@@ -1435,7 +2850,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 128
+  "order": 217
  },
  {
   "statement": "DegreeRigidity",
@@ -1444,7 +2859,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 129
+  "order": 218
  },
  {
   "statement": "DeligneDrinfeld",
@@ -1453,7 +2868,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 130
+  "order": 219
  },
  {
   "statement": "DepthFive",
@@ -1462,7 +2877,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 131
+  "order": 220
  },
  {
   "statement": "DepthThree",
@@ -1471,7 +2886,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 132
+  "order": 221
  },
  {
   "statement": "DiamondDistortion",
@@ -1480,7 +2895,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 133
+  "order": 222
  },
  {
   "statement": "DilutedSpin",
@@ -1489,25 +2904,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 134
- },
- {
-  "statement": "DimensionTenChannel",
-  "families": [
-   "272"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 135
- },
- {
-  "statement": "DimensionTenPair",
-  "families": [
-   "272"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 136
+  "order": 223
  },
  {
   "statement": "DirectCrouzeix",
@@ -1516,7 +2913,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 137
+  "order": 224
  },
  {
   "statement": "DirectedFeedback",
@@ -1525,25 +2922,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 138
- },
- {
-  "statement": "DirectionalBallisticity",
-  "families": [
-   "220"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 139
- },
- {
-  "statement": "DirectionalWalk",
-  "families": [
-   "220"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 140
+  "order": 225
  },
  {
   "statement": "DirichletSevenEighths",
@@ -1552,7 +2931,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 141
+  "order": 226
  },
  {
   "statement": "DiscreteLipschitzFree",
@@ -1561,7 +2940,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 142
+  "order": 227
  },
  {
   "statement": "DiskMaximal",
@@ -1570,7 +2949,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 143
+  "order": 228
  },
  {
   "statement": "Dixmier",
@@ -1579,16 +2958,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 144
- },
- {
-  "statement": "DixmierAllDiscrete",
-  "families": [
-   "251"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 145
+  "order": 229
  },
  {
   "statement": "DoublingHilbert",
@@ -1597,25 +2967,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 146
- },
- {
-  "statement": "DukePrimeDegree",
-  "families": [
-   "015"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 147
- },
- {
-  "statement": "DyadicAvoidance",
-  "families": [
-   "084"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 148
+  "order": 230
  },
  {
   "statement": "EditDistance",
@@ -1624,7 +2976,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 149
+  "order": 231
  },
  {
   "statement": "EgyptianFractions",
@@ -1633,7 +2985,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 150
+  "order": 232
  },
  {
   "statement": "EilenbergGanea",
@@ -1642,16 +2994,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 151
- },
- {
-  "statement": "EinsteinFour",
-  "families": [
-   "348"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 152
+  "order": 233
  },
  {
   "statement": "ElasticityUniqueness",
@@ -1660,25 +3003,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 153
- },
- {
-  "statement": "EntropyPhotonNumber",
-  "families": [
-   "273"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 154
- },
- {
-  "statement": "EuclideanRamsey",
-  "families": [
-   "172"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 155
+  "order": 234
  },
  {
   "statement": "EuclideanRamseyCircle",
@@ -1687,7 +3012,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 156
+  "order": 235
  },
  {
   "statement": "EuclideanRamseyNine",
@@ -1696,7 +3021,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 157
+  "order": 236
  },
  {
   "statement": "EuclideanRamseyQuadratic",
@@ -1705,7 +3030,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 158
+  "order": 237
  },
  {
   "statement": "EuclideanRamseySpherical",
@@ -1714,7 +3039,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 159
+  "order": 238
  },
  {
   "statement": "EuclideanRamseyTransitive",
@@ -1723,16 +3048,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 160
- },
- {
-  "statement": "EvenBarker",
-  "families": [
-   "179"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 161
+  "order": 239
  },
  {
   "statement": "ExactFourier",
@@ -1741,16 +3057,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 162
- },
- {
-  "statement": "ExactInfiniteness",
-  "families": [
-   "303"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 163
+  "order": 240
  },
  {
   "statement": "ExactQuantumFactoring",
@@ -1759,16 +3066,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 164
- },
- {
-  "statement": "FKCRT",
-  "families": [
-   "211"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 165
+  "order": 241
  },
  {
   "statement": "FactorGeneration",
@@ -1777,7 +3075,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 166
+  "order": 242
  },
  {
   "statement": "FalconerAllDimensions",
@@ -1786,7 +3084,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 167
+  "order": 243
  },
  {
   "statement": "FiniteCircle",
@@ -1795,7 +3093,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 168
+  "order": 244
  },
  {
   "statement": "FiniteEntropySeparation",
@@ -1804,7 +3102,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 169
+  "order": 245
  },
  {
   "statement": "FiniteFactor",
@@ -1813,7 +3111,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 170
+  "order": 246
  },
  {
   "statement": "FinitisticAsymmetry",
@@ -1822,16 +3120,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 171
- },
- {
-  "statement": "FixedClauseThreshold",
-  "families": [
-   "235"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 172
+  "order": 247
  },
  {
   "statement": "ForestSpace",
@@ -1840,7 +3129,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 173
+  "order": 248
  },
  {
   "statement": "FormulaHitting",
@@ -1849,16 +3138,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 174
- },
- {
-  "statement": "FoulkesHowe",
-  "families": [
-   "210"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 175
+  "order": 249
  },
  {
   "statement": "FourRowPermanent",
@@ -1867,7 +3147,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 176
+  "order": 250
  },
  {
   "statement": "FourierLLogL",
@@ -1876,7 +3156,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 177
+  "order": 251
  },
  {
   "statement": "FreeIsing",
@@ -1885,7 +3165,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 178
+  "order": 252
  },
  {
   "statement": "FreeUniformSpanningForest",
@@ -1894,16 +3174,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 179
- },
- {
-  "statement": "GammaPassage",
-  "families": [
-   "212"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 180
+  "order": 253
  },
  {
   "statement": "GaussianFiniteEntropy",
@@ -1912,7 +3183,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 181
+  "order": 254
  },
  {
   "statement": "GaussianInformation",
@@ -1921,7 +3192,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 182
+  "order": 255
  },
  {
   "statement": "GaussianMoat",
@@ -1930,16 +3201,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 183
- },
- {
-  "statement": "GaussianPropeller",
-  "families": [
-   "096"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 184
+  "order": 256
  },
  {
   "statement": "GaussianReplacement",
@@ -1948,16 +3210,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 185
- },
- {
-  "statement": "GeneralMahler",
-  "families": [
-   "087"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 186
+  "order": 257
  },
  {
   "statement": "GeneralizedStarHeight",
@@ -1966,7 +3219,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 187
+  "order": 258
  },
  {
   "statement": "GotsmanLinial",
@@ -1975,7 +3228,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 188
+  "order": 259
  },
  {
   "statement": "GrahamSpherical",
@@ -1984,25 +3237,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 189
- },
- {
-  "statement": "GrothendieckElementaryExpansion",
-  "families": [
-   "312"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 190
- },
- {
-  "statement": "GroupRingDeterminant",
-  "families": [
-   "197"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 191
+  "order": 260
  },
  {
   "statement": "HadwigerCounterexample",
@@ -2011,25 +3246,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 192
- },
- {
-  "statement": "HalvingLines",
-  "families": [
-   "183"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 193
- },
- {
-  "statement": "HardSphere",
-  "families": [
-   "267"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 194
+  "order": 261
  },
  {
   "statement": "HarmonicArtin",
@@ -2038,7 +3255,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 195
+  "order": 262
  },
  {
   "statement": "HeckeSevenEighths",
@@ -2047,16 +3264,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 196
- },
- {
-  "statement": "Heisenberg",
-  "families": [
-   "271"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 197
+  "order": 263
  },
  {
   "statement": "HenonEmden",
@@ -2065,7 +3273,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 198
+  "order": 264
  },
  {
   "statement": "HilbertCrouzeix",
@@ -2074,7 +3282,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 199
+  "order": 265
  },
  {
   "statement": "HoneycombBridgeFiniteness",
@@ -2083,7 +3291,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 200
+  "order": 266
  },
  {
   "statement": "HoneycombBridgeMassSupport",
@@ -2092,7 +3300,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 201
+  "order": 267
  },
  {
   "statement": "HoneycombFreeEnergy",
@@ -2101,7 +3309,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 202
+  "order": 268
  },
  {
   "statement": "HotSpots",
@@ -2110,16 +3318,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 203
- },
- {
-  "statement": "HyperbolicCones",
-  "families": [
-   "095"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 204
+  "order": 269
  },
  {
   "statement": "HyperinvariantSubspaces",
@@ -2128,7 +3327,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 205
+  "order": 270
  },
  {
   "statement": "IndependentProducts",
@@ -2137,7 +3336,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 206
+  "order": 271
  },
  {
   "statement": "IndependentSets",
@@ -2146,16 +3345,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 207
- },
- {
-  "statement": "IndividualStrongInfiniteness",
-  "families": [
-   "303"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 208
+  "order": 272
  },
  {
   "statement": "InfiniteMatroid",
@@ -2164,7 +3354,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 209
+  "order": 273
  },
  {
   "statement": "InfiniteMatroidCorollaries",
@@ -2173,16 +3363,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 210
- },
- {
-  "statement": "InterpolatedFactors",
-  "families": [
-   "287"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 211
+  "order": 274
  },
  {
   "statement": "InvariantIsing",
@@ -2191,16 +3372,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 212
- },
- {
-  "statement": "IrrationalTriangleBilliard",
-  "families": [
-   "150"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 213
+  "order": 275
  },
  {
   "statement": "IsingFiniteness",
@@ -2209,7 +3381,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 214
+  "order": 276
  },
  {
   "statement": "IsometricImmersion",
@@ -2218,7 +3390,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 215
+  "order": 277
  },
  {
   "statement": "Jacobsthal",
@@ -2227,7 +3399,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 216
+  "order": 278
  },
  {
   "statement": "JacobsthalImproved",
@@ -2236,7 +3408,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 217
+  "order": 279
  },
  {
   "statement": "JointDickman",
@@ -2245,7 +3417,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 218
+  "order": 280
  },
  {
   "statement": "KLInvariance",
@@ -2254,7 +3426,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 219
+  "order": 281
  },
  {
   "statement": "KMedianRecovery",
@@ -2263,7 +3435,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 220
+  "order": 282
  },
  {
   "statement": "KMedianRefinedRecovery",
@@ -2272,7 +3444,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 221
+  "order": 283
  },
  {
   "statement": "KMedianThreshold",
@@ -2281,7 +3453,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 222
+  "order": 284
  },
  {
   "statement": "KadisonRingrose",
@@ -2290,7 +3462,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 223
+  "order": 285
  },
  {
   "statement": "KadisonSimilarity",
@@ -2299,16 +3471,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 224
- },
- {
-  "statement": "KahlerSplitting",
-  "families": [
-   "052"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 225
+  "order": 286
  },
  {
   "statement": "KaplanskyDirectFiniteness",
@@ -2317,16 +3480,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 226
- },
- {
-  "statement": "KaplanskyFinitelyPresented",
-  "families": [
-   "197"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 227
+  "order": 287
  },
  {
   "statement": "KaplanskyQuasitrace",
@@ -2335,7 +3489,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 228
+  "order": 288
  },
  {
   "statement": "KaplanskyStableFiniteness",
@@ -2344,16 +3498,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 229
- },
- {
-  "statement": "Kervaire",
-  "families": [
-   "256"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 230
+  "order": 289
  },
  {
   "statement": "KoebeCircleDomains",
@@ -2362,7 +3507,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 231
+  "order": 290
  },
  {
   "statement": "Laughlin",
@@ -2371,16 +3516,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 232
- },
- {
-  "statement": "LaughlinFock",
-  "families": [
-   "269"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 233
+  "order": 291
  },
  {
   "statement": "LaughlinGap",
@@ -2389,7 +3525,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 234
+  "order": 292
  },
  {
   "statement": "LaughlinPlanar",
@@ -2398,16 +3534,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 235
- },
- {
-  "statement": "LiebThirring",
-  "families": [
-   "262"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 236
+  "order": 293
  },
  {
   "statement": "LipschitzEquivalence",
@@ -2416,7 +3543,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 237
+  "order": 294
  },
  {
   "statement": "LipschitzHilbert",
@@ -2425,16 +3552,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 238
- },
- {
-  "statement": "ListHadwiger",
-  "families": [
-   "157"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 239
+  "order": 295
  },
  {
   "statement": "LittleFinitistic",
@@ -2443,7 +3561,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 240
+  "order": 296
  },
  {
   "statement": "LittlewoodFiniteFlatness",
@@ -2452,16 +3570,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 241
- },
- {
-  "statement": "LogBrunnMinkowski",
-  "families": [
-   "091"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 242
+  "order": 297
  },
  {
   "statement": "LogConcaveQuery",
@@ -2470,16 +3579,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 243
- },
- {
-  "statement": "MahlerConjecture",
-  "families": [
-   "087"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 244
+  "order": 298
  },
  {
   "statement": "MarkovType",
@@ -2488,16 +3588,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 245
- },
- {
-  "statement": "MassAction",
-  "families": [
-   "149"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 246
+  "order": 299
  },
  {
   "statement": "MatchingEntropyBounds",
@@ -2506,7 +3597,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 247
+  "order": 300
  },
  {
   "statement": "MatchingFPRAS",
@@ -2515,25 +3606,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 248
- },
- {
-  "statement": "MatrixFields",
-  "families": [
-   "107"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 249
- },
- {
-  "statement": "MatrixMultiplication",
-  "families": [
-   "107"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 250
+  "order": 301
  },
  {
   "statement": "MatroidProphet",
@@ -2542,7 +3615,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 251
+  "order": 302
  },
  {
   "statement": "MatroidSecretary",
@@ -2551,16 +3624,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 252
- },
- {
-  "statement": "MaximalSeshadriConstants",
-  "families": [
-   "039"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 253
+  "order": 303
  },
  {
   "statement": "MetricEntropyDuality",
@@ -2569,7 +3633,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 254
+  "order": 304
  },
  {
   "statement": "MetricKMedian",
@@ -2578,7 +3642,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 255
+  "order": 305
  },
  {
   "statement": "MidpointLenses",
@@ -2587,7 +3651,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 256
+  "order": 306
  },
  {
   "statement": "MinUncut",
@@ -2596,16 +3660,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 257
- },
- {
-  "statement": "Nagata",
-  "families": [
-   "039"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 258
+  "order": 307
  },
  {
   "statement": "NavierStokesAlternating",
@@ -2614,16 +3669,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 259
- },
- {
-  "statement": "NodalLength",
-  "families": [
-   "350"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 260
+  "order": 308
  },
  {
   "statement": "NoiselessRegression",
@@ -2632,7 +3678,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 261
+  "order": 309
  },
  {
   "statement": "NuclearUltrapower",
@@ -2641,16 +3687,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 262
- },
- {
-  "statement": "OddKaplansky",
-  "families": [
-   "197"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 263
+  "order": 310
  },
  {
   "statement": "OneTapeSpace",
@@ -2659,7 +3696,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 264
+  "order": 311
  },
  {
   "statement": "OneWayLiveness",
@@ -2668,7 +3705,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 265
+  "order": 312
  },
  {
   "statement": "OptimalMaxCut",
@@ -2677,7 +3714,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 266
+  "order": 313
  },
  {
   "statement": "OrdinaryElliott",
@@ -2686,7 +3723,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 267
+  "order": 314
  },
  {
   "statement": "OrdinaryTwoPointCorrelations",
@@ -2695,7 +3732,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 268
+  "order": 315
  },
  {
   "statement": "OstmannComplete",
@@ -2704,7 +3741,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 269
+  "order": 316
  },
  {
   "statement": "OstmannPrimes",
@@ -2713,7 +3750,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 270
+  "order": 317
  },
  {
   "statement": "ParityLifts",
@@ -2722,7 +3759,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 271
+  "order": 318
  },
  {
   "statement": "PartialPermutation",
@@ -2731,16 +3768,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 272
- },
- {
-  "statement": "PartitionConsistency",
-  "families": [
-   "244"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 273
+  "order": 319
  },
  {
   "statement": "PartitionPrinciple",
@@ -2749,7 +3777,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 274
+  "order": 320
  },
  {
   "statement": "PattersonFirstMoment",
@@ -2758,16 +3786,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 275
- },
- {
-  "statement": "PerceptronFreeEnergy",
-  "families": [
-   "222"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 276
+  "order": 321
  },
  {
   "statement": "PerfectCompleteness",
@@ -2776,16 +3795,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 277
- },
- {
-  "statement": "PeriodicGroup",
-  "families": [
-   "247"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 278
+  "order": 322
  },
  {
   "statement": "PeriodicTilingThree",
@@ -2794,7 +3804,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 279
+  "order": 323
  },
  {
   "statement": "PermanentCubic",
@@ -2803,34 +3813,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 280
- },
- {
-  "statement": "PettyProjectionVolume",
-  "families": [
-   "088"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 281
- },
- {
-  "statement": "PiExponent",
-  "families": [
-   "017"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 282
- },
- {
-  "statement": "PinchedKahler",
-  "families": [
-   "359"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 283
+  "order": 324
  },
  {
   "statement": "PinnedDistances",
@@ -2839,7 +3822,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 284
+  "order": 325
  },
  {
   "statement": "PlanarFalconer",
@@ -2848,7 +3831,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 285
+  "order": 326
  },
  {
   "statement": "PlanarFirstPassage",
@@ -2857,25 +3840,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 286
- },
- {
-  "statement": "PlanarL1",
-  "families": [
-   "089"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 287
- },
- {
-  "statement": "PlanarPacking",
-  "families": [
-   "090"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 288
+  "order": 327
  },
  {
   "statement": "PlanarUnitDistances",
@@ -2884,7 +3849,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 289
+  "order": 328
  },
  {
   "statement": "PlaneColoring",
@@ -2893,7 +3858,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 290
+  "order": 329
  },
  {
   "statement": "PolycyclicRecognition",
@@ -2902,7 +3867,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 291
+  "order": 330
  },
  {
   "statement": "PosteriorReplicas",
@@ -2911,7 +3876,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 292
+  "order": 331
  },
  {
   "statement": "PowerFreeValues",
@@ -2920,7 +3885,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 293
+  "order": 332
  },
  {
   "statement": "PrimeGaps",
@@ -2929,7 +3894,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 294
+  "order": 333
  },
  {
   "statement": "ProductBrown",
@@ -2938,7 +3903,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 295
+  "order": 334
  },
  {
   "statement": "ProjectionCounterexample",
@@ -2947,7 +3912,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 296
+  "order": 335
  },
  {
   "statement": "ProjectionMoments",
@@ -2956,25 +3921,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 297
- },
- {
-  "statement": "ProjectionVolume",
-  "families": [
-   "088"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 298
- },
- {
-  "statement": "QACParity",
-  "families": [
-   "274"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 299
+  "order": 336
  },
  {
   "statement": "QuadricBundles",
@@ -2983,7 +3930,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 300
+  "order": 337
  },
  {
   "statement": "QuantitativeVanDerWaerden",
@@ -2992,7 +3939,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 301
+  "order": 338
  },
  {
   "statement": "QuasiRiemannHypothesis",
@@ -3001,16 +3948,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 302
- },
- {
-  "statement": "QuinticLienard",
-  "families": [
-   "143"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 303
+  "order": 339
  },
  {
   "statement": "RadialDensityInterval",
@@ -3019,7 +3957,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 304
+  "order": 340
  },
  {
   "statement": "RadialTransition",
@@ -3028,7 +3966,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 305
+  "order": 341
  },
  {
   "statement": "RamseyFive",
@@ -3037,25 +3975,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 306
- },
- {
-  "statement": "RandomizedMeanPayoff",
-  "families": [
-   "104"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 307
- },
- {
-  "statement": "RationalHitting",
-  "families": [
-   "116"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 308
+  "order": 342
  },
  {
   "statement": "RealL1Renorming",
@@ -3064,7 +3984,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 309
+  "order": 343
  },
  {
   "statement": "ReflexiveFixedPoints",
@@ -3073,16 +3993,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 310
- },
- {
-  "statement": "RegularParity",
-  "families": [
-   "274"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 311
+  "order": 344
  },
  {
   "statement": "RelativeGeneration",
@@ -3091,7 +4002,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 312
+  "order": 345
  },
  {
   "statement": "RieszQuantitative",
@@ -3100,7 +4011,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 313
+  "order": 346
  },
  {
   "statement": "RuledCovering",
@@ -3109,7 +4020,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 314
+  "order": 347
  },
  {
   "statement": "RyserCovering",
@@ -3118,25 +4029,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 315
- },
- {
-  "statement": "RyserOddExtensions",
-  "families": [
-   "162"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 316
- },
- {
-  "statement": "SATComputability",
-  "families": [
-   "235"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 317
+  "order": 348
  },
  {
   "statement": "SATSharpness",
@@ -3145,43 +4038,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 318
- },
- {
-  "statement": "SATVariance",
-  "families": [
-   "235"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 319
- },
- {
-  "statement": "SKBarriers",
-  "families": [
-   "227"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 320
- },
- {
-  "statement": "SKFullSupport",
-  "families": [
-   "281"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 321
- },
- {
-  "statement": "SKHighTemperature",
-  "families": [
-   "227"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 322
+  "order": 349
  },
  {
   "statement": "SKRatio",
@@ -3190,7 +4047,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 323
+  "order": 350
  },
  {
   "statement": "SKValue",
@@ -3199,7 +4056,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 324
+  "order": 351
  },
  {
   "statement": "Saxl",
@@ -3208,7 +4065,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 325
+  "order": 352
  },
  {
   "statement": "SecondKahnKalai",
@@ -3217,7 +4074,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 326
+  "order": 353
  },
  {
   "statement": "SelfSimilar",
@@ -3226,7 +4083,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 327
+  "order": 354
  },
  {
   "statement": "SelfSimilarCorollaries",
@@ -3235,16 +4092,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 328
- },
- {
-  "statement": "SensitivitySeparation",
-  "families": [
-   "132"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 329
+  "order": 355
  },
  {
   "statement": "SeymourSecondNeighborhood",
@@ -3253,7 +4101,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 330
+  "order": 356
  },
  {
   "statement": "SharpLogRamsey",
@@ -3262,16 +4110,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 331
- },
- {
-  "statement": "SharpThreshold",
-  "families": [
-   "186"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 332
+  "order": 357
  },
  {
   "statement": "ShortEgyptianFractions",
@@ -3280,16 +4119,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 333
- },
- {
-  "statement": "SidorenkoCounterexample",
-  "families": [
-   "161"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 334
+  "order": 358
  },
  {
   "statement": "SiegelZeros",
@@ -3298,7 +4128,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 335
+  "order": 359
  },
  {
   "statement": "SignedFiniteBand",
@@ -3307,7 +4137,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 336
+  "order": 360
  },
  {
   "statement": "SignedSweepMoment",
@@ -3316,7 +4146,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 337
+  "order": 361
  },
  {
   "statement": "SimpleAmenable",
@@ -3325,7 +4155,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 338
+  "order": 362
  },
  {
   "statement": "SimpleOvergroups",
@@ -3334,16 +4164,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 339
- },
- {
-  "statement": "SingleFold",
-  "families": [
-   "242"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 340
+  "order": 363
  },
  {
   "statement": "SingleLatticeCovering",
@@ -3352,7 +4173,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 341
+  "order": 364
  },
  {
   "statement": "SingletonLoopMatching",
@@ -3361,7 +4182,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 342
+  "order": 365
  },
  {
   "statement": "SmoothInitialForm",
@@ -3370,16 +4191,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 343
- },
- {
-  "statement": "SmoothYau",
-  "families": [
-   "350"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 344
+  "order": 366
  },
  {
   "statement": "SnakyConditional",
@@ -3388,7 +4200,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 345
+  "order": 367
  },
  {
   "statement": "SnakyTwentyOne",
@@ -3397,16 +4209,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 346
- },
- {
-  "statement": "SoftChannel204",
-  "families": [
-   "119"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 347
+  "order": 368
  },
  {
   "statement": "SolenoidalSheetPrograms",
@@ -3415,7 +4218,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 348
+  "order": 369
  },
  {
   "statement": "SphericalField",
@@ -3424,25 +4227,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 349
- },
- {
-  "statement": "SplitTangentIntegrability",
-  "families": [
-   "052"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 350
- },
- {
-  "statement": "SquareDifference",
-  "families": [
-   "182"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 351
+  "order": 370
  },
  {
   "statement": "SquareRootDegree",
@@ -3451,7 +4236,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 352
+  "order": 371
  },
  {
   "statement": "StableCoordinateFour",
@@ -3460,7 +4245,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 353
+  "order": 372
  },
  {
   "statement": "StandardMapComponents",
@@ -3469,7 +4254,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 354
+  "order": 373
  },
  {
   "statement": "StandardMapEntropy",
@@ -3478,7 +4263,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 355
+  "order": 374
  },
  {
   "statement": "StandardMapLyapunov",
@@ -3487,34 +4272,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 356
- },
- {
-  "statement": "SteinitzBergstrom",
-  "families": [
-   "097"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 357
- },
- {
-  "statement": "StrictMeans",
-  "families": [
-   "072"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 358
- },
- {
-  "statement": "StrongKadisonKastler",
-  "families": [
-   "289"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 359
+  "order": 375
  },
  {
   "statement": "StrongThinTree",
@@ -3523,7 +4281,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 360
+  "order": 376
  },
  {
   "statement": "StronglyRayleighDPP",
@@ -3532,7 +4290,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 361
+  "order": 377
  },
  {
   "statement": "StructuralCrouzeix",
@@ -3541,16 +4299,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 362
- },
- {
-  "statement": "SubpolynomialLp",
-  "families": [
-   "094"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 363
+  "order": 378
  },
  {
   "statement": "SubsphereCurrent",
@@ -3559,7 +4308,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 364
+  "order": 379
  },
  {
   "statement": "Superstring",
@@ -3568,7 +4317,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 365
+  "order": 380
  },
  {
   "statement": "SurfaceImmersion",
@@ -3577,70 +4326,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 366
- },
- {
-  "statement": "SwitchChain",
-  "families": [
-   "131"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 367
- },
- {
-  "statement": "SymmetricDomains",
-  "families": [
-   "058"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 368
- },
- {
-  "statement": "SymmetricMahlerEquality",
-  "families": [
-   "087"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 369
- },
- {
-  "statement": "SymmetricPolar",
-  "families": [
-   "087"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 370
- },
- {
-  "statement": "Tachikawa",
-  "families": [
-   "199"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 371
- },
- {
-  "statement": "TalagrandDiscreteConvexity",
-  "families": [
-   "175"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 372
- },
- {
-  "statement": "TalagrandExpectationThreshold",
-  "families": [
-   "175"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 373
+  "order": 381
  },
  {
   "statement": "TamingCompatibility",
@@ -3649,7 +4335,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 374
+  "order": 382
  },
  {
   "statement": "ThompsonNonamenability",
@@ -3658,7 +4344,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 375
+  "order": 383
  },
  {
   "statement": "ThorpFirstReciprocal",
@@ -3667,7 +4353,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 376
+  "order": 384
  },
  {
   "statement": "ThorpRemaining",
@@ -3676,7 +4362,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 377
+  "order": 385
  },
  {
   "statement": "ThorpWeightedCompatibility",
@@ -3685,7 +4371,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 378
+  "order": 386
  },
  {
   "statement": "ThreeMachine",
@@ -3694,7 +4380,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 379
+  "order": 387
  },
  {
   "statement": "ThreeTorus",
@@ -3703,7 +4389,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 380
+  "order": 388
  },
  {
   "statement": "TingleySphereIsometry",
@@ -3712,16 +4398,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 381
- },
- {
-  "statement": "TorsionFreeHyperbolic",
-  "families": [
-   "252"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 382
+  "order": 389
  },
  {
   "statement": "TorsionFreeZeroDivisors",
@@ -3730,7 +4407,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 383
+  "order": 390
  },
  {
   "statement": "TotientAsymptotic",
@@ -3739,7 +4416,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 384
+  "order": 391
  },
  {
   "statement": "TotientCompanionZero",
@@ -3748,16 +4425,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 385
- },
- {
-  "statement": "TraceReconstruction",
-  "families": [
-   "122"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 386
+  "order": 392
  },
  {
   "statement": "TreeEdit",
@@ -3766,7 +4434,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 387
+  "order": 393
  },
  {
   "statement": "TriangleFace",
@@ -3775,7 +4443,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 388
+  "order": 394
  },
  {
   "statement": "TriangleRemoval",
@@ -3784,7 +4452,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 389
+  "order": 395
  },
  {
   "statement": "TriangularCovering",
@@ -3793,34 +4461,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 390
- },
- {
-  "statement": "TriangularEnergy",
-  "families": [
-   "090"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 391
- },
- {
-  "statement": "TriangularGaussian",
-  "families": [
-   "090"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 392
- },
- {
-  "statement": "TriangularHilbert",
-  "families": [
-   "082"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 393
+  "order": 396
  },
  {
   "statement": "TruffetCounterexample",
@@ -3829,7 +4470,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 394
+  "order": 397
  },
  {
   "statement": "TwoWayComplementation",
@@ -3838,7 +4479,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 395
+  "order": 398
  },
  {
   "statement": "TwoWayDeterminization",
@@ -3847,7 +4488,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 396
+  "order": 399
  },
  {
   "statement": "TypeSystemNormalization",
@@ -3856,7 +4497,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 397
+  "order": 400
  },
  {
   "statement": "UniformCommutator",
@@ -3865,7 +4506,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 398
+  "order": 401
  },
  {
   "statement": "UniformFourier",
@@ -3874,16 +4515,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 399
- },
- {
-  "statement": "UniformGamma",
-  "families": [
-   "291"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 400
+  "order": 402
  },
  {
   "statement": "UniformKServer",
@@ -3892,16 +4524,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 401
- },
- {
-  "statement": "UniformSparsestCut",
-  "families": [
-   "117"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 402
+  "order": 403
  },
  {
   "statement": "UniqueGamesTheorem",
@@ -3910,7 +4533,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 403
+  "order": 404
  },
  {
   "statement": "UniversalFInfinity",
@@ -3919,7 +4542,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 404
+  "order": 405
  },
  {
   "statement": "UniversalTensorSquares",
@@ -3928,7 +4551,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 405
+  "order": 406
  },
  {
   "statement": "VariableWL",
@@ -3937,7 +4560,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 406
+  "order": 407
  },
  {
   "statement": "VelocityHemisphere",
@@ -3946,7 +4569,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 407
+  "order": 408
  },
  {
   "statement": "VertexCover",
@@ -3955,7 +4578,7 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 408
+  "order": 409
  },
  {
   "statement": "VlasovMaxwell",
@@ -3964,21 +4587,12 @@
   ],
   "priority": 0,
   "reasons": [],
-  "order": 409
+  "order": 410
  },
  {
   "statement": "WLIdentification",
   "families": [
    "133"
-  ],
-  "priority": 0,
-  "reasons": [],
-  "order": 410
- },
- {
-  "statement": "WeakHessian",
-  "families": [
-   "356"
   ],
   "priority": 0,
   "reasons": [],

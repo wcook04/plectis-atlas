@@ -25,7 +25,7 @@
   var searchIn = doc.getElementById('map-search');
   var searchList = doc.getElementById('map-search-list');
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var OVERLAYS = ['lean', 'covers', 'type', 'tier', 'community', 'size', 'citations', 'explained'];
+  var OVERLAYS = ['lean', 'readers', 'covers', 'type', 'tier', 'community', 'size', 'citations', 'explained'];
   var PURE = {};
   (S.pure_ids || []).forEach(function (id) { PURE[id] = true; });
 
@@ -266,6 +266,15 @@
       if (!f.s.length) return { fill: 'var(--t-none)', key: 'none' };
       return f.s.some(function (s) { return s[1]; }) ? { fill: 'var(--t-main)', key: 'main', ink: true } : { fill: 'var(--t-sup)', key: 'sup' };
     }
+    if (o === 'readers') {
+      // Two independent readers (MathVet, cert-machine): both find the headline stated, both find less, or they differ.
+      var r = f.rd || 'none';
+      if (r === 'agree-full') return { fill: 'var(--t-main)', key: 'rdfull', ink: true };
+      if (r === 'agree-less') return { fill: 'var(--t-s1)', key: 'rdless' };
+      if (r === 'disagree') return { fill: HATCH_STEEL, key: 'rddis' };
+      if (r === 'one' || r === 'unread') return { fill: HATCH, key: 'rdone' };
+      return { fill: 'var(--t-none)', key: 'rdnone' };
+    }
     if (o === 'covers') {
       // Four states stay apart: no Lean statement, no classification, unclear, supporting.
       var g = f.g || 'unclassified';
@@ -335,6 +344,12 @@
     }
     if (o === 'lean') {
       row('sw--main', S.legend_lean_main, 'main'); row('sw--sup', S.legend_lean_support, 'sup'); row('sw--none', S.legend_lean_none, 'none');
+    } else if (o === 'readers') {
+      rows.push('<p class="legend__note legend__note--lead">' + esc(S.legend_readers_source) + '</p>');
+      row('sw--main', S.legend_readers_full, 'rdfull'); row('sw--s1', S.legend_readers_less, 'rdless');
+      row('sw--hatch-steel', S.legend_readers_disagree, 'rddis'); row('sw--hatch', S.legend_readers_one, 'rdone');
+      row('sw--none', S.legend_readers_none, 'rdnone');
+      rows.push('<p class="legend__note">' + esc(S.legend_readers_note) + '</p>');
     } else if (o === 'covers') {
       rows.push('<p class="legend__note legend__note--lead">' + esc(D.coverStale ? S.legend_covers_stale : S.legend_covers_source) + '</p>');
       if (!D.coverStale) {

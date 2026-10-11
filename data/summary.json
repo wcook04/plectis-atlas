@@ -144,6 +144,7 @@
   "most_cited_outside_works": "Outside works ranked by how many current manuscripts cite them (each manuscript counted once).",
   "most_cited_inside_collection": "Current manuscripts ranked by how many other current manuscripts in the collection cite them, with whether each has an accompanying Lean statement.",
   "scope_coverage": "A draft classification of how each Comparator challenge file relates to its paper's headline result: it states the headline theorem, part of it, a consequence, a weaker form or a supporting result, or the note leaves it unclear. An AI agent made it from OpenAI's scope note for the family (lean/docs/<family>.md), quoting the note on every row (curated/scope_coverage.json). No person has reviewed it.",
+  "readers_agreement": "Whether MathVet and Carlos Toledo's cert-machine, reading independently of OpenAI and of each other, both find that a family's challenge statements state its headline (agree-full), both find they state less (agree-less), or differ (disagree). Each reader's own rubric decides its verdict.",
   "lean_count_reconciliation": "Published counts of how much of the release has Lean, side by side: families whose Lean notes link a Comparator statement; families and papers in the sources list of OpenAI's lean/formalization.yaml; OpenAI's own reported share; and counts from other public sources. Each measures a different thing."
  },
  "highlights": {
@@ -773,6 +774,12 @@
    "counts": null
   }
  ],
+ "readers_agreement": {
+  "agree-full": 127,
+  "agree-less": 93,
+  "disagree": 22,
+  "none": 130
+ },
  "lean_count_reconciliation": {
   "families_with_lean_in_scope_notes": 242,
   "families_with_a_paper_in_formalization_yaml_sources": 136,
@@ -791,35 +798,35 @@
   "cert_machine_challenges_accepted": 398
  },
  "review_queue": {
-  "flagged": 54,
+  "flagged": 172,
   "first": [
    "ElementaryPositivity",
    "ThorpRouting",
    "LogspaceEquality",
+   "DefocusingNLS",
+   "HarmonicGrowth",
    "Brenier",
    "KServer",
    "Naimark",
+   "CKSBondiPenrose",
    "OccupiedOverlap",
+   "CoarseAssembly",
    "Rokhlin",
-   "DefocusingNLS",
+   "CharacterCriterion",
    "SpinAngle",
    "EuclideanFiveColor",
    "MatchingEntropy",
    "MemoryPrecision",
-   "BalancedThreeStack",
-   "ForcedNavierStokesComputation",
-   "HarmonicGrowth",
-   "CharacterVarietiesAllSeamsSupport",
-   "EditApproximation",
-   "SnakyCertificate",
-   "CKSBondiPenrose",
-   "CoarseAssembly",
-   "CharacterCriterion",
-   "CylinderCovering",
-   "IrrationalRotation",
-   "NavierStokesVelocity"
+   "BarnetteHamiltonian",
+   "BoundedTreewidthL1",
+   "Brennan",
+   "BrennanSharp",
+   "CirculantHadamard",
+   "CoboundaryExpanders",
+   "Cotype",
+   "EntropyPhotonNumber"
   ],
-  "rule": "Points per reason, highest first: a configuration with no theorem target 100; definition holes 90 plus one per hole; unclear draft scope 85; a draft scope reading needing a specialist 80; a target theorem shared with another file 70; an axiom in the challenge 60; no local vocabulary but OpenAI imports 50; 100 or more local declarations 20 plus one per hundred (capped); a family with no full-headline statement 5. Ties go alphabetically. The order allocates reading; it is no verdict."
+  "rule": "Points per reason, highest first: a configuration with no theorem target 100; definition holes 90 plus one per hole; unclear draft scope 85; a draft scope reading needing a specialist 80; independent readers disagreeing on the family 75; both independent readers finding less than the headline where the atlas's draft says headline 72; a target theorem shared with another file 70; an axiom in the challenge 60; no local vocabulary but OpenAI imports 50; 100 or more local declarations 20 plus one per hundred (capped); a family with no full-headline statement 5. Ties go alphabetically. The order allocates reading; it is no verdict."
  },
  "lean_distinct_target_theorems": 536,
  "metric_receipts": [

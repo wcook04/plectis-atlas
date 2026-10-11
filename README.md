@@ -16,6 +16,7 @@ The atlas is independent of OpenAI. It is built from the public collection at a 
 - **16,078 resolved references** to work outside the collection, which group automatically into 11,020 works (by DOI, then arXiv identifier, then title; the grouping is unaudited).
 - The TeX sources of the current manuscripts contain 2,255 theorem, 4,745 proposition, 1,267 corollary and 12,397 lemma environments, repeated statements included.
 - **Draft scope reading.** Of 416 challenge files, 307 state a paper's headline theorem as stated, 21 part of one, 28 a consequence, 24 a weaker form and 35 a supporting result; for 1 the note leaves it unclear. In 14 families with Lean statements, no statement covers the headline result or part of it, and in 10 more only part of it is covered. An AI agent classified each file from OpenAI's scope note, quoting the note (`curated/scope_coverage.json`); no person has reviewed it.
+- **Two independent readers.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine), reading each family's Lean against its headline independently of OpenAI and of each other, agree that 127 families' Lean states the headline and 93 states less; they disagree on 22. Their verdicts sit on each family page, credited.
 
 Counted from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb) by `scripts/build_data.py`. The unit, universe and rule behind each number are in `data/summary.json` under `metric_receipts`.
 <!-- numbers:end -->
