@@ -1,14 +1,10 @@
 {
- "_note": "The words for every evidence state, one place for every page and the map. scripts/evidence.py maps Statement Map's recorded states to these keys; scripts/glyphs.py draws the same states. Statement Map decides each state; these words only name it. Sentence case, plain, no em dashes. A state that is unknown is said to be unknown.",
+ "_note": "The words for every evidence state, one place for every page and the map. scripts/evidence.py maps Statement Map's recorded states to these keys. Statement Map decides each state; these words only name it. Sentence case, plain, no em dashes. A state that is unknown is said to be unknown. No symbol stands in for these words anywhere on the site.",
  "readers": {
   "order": [
    "mathvet",
    "cert-machine"
-  ],
-  "side": {
-   "0": "left",
-   "1": "right"
-  }
+  ]
  },
  "tone": {
   "full": "finds the whole headline stated",
@@ -21,12 +17,6 @@
   "part": "part of it",
   "other": "a supporting or different result",
   "none": "not read"
- },
- "tone_mark": {
-  "full": "filled",
-  "part": "pale",
-  "other": "open",
-  "none": "dotted"
  },
  "agreement": {
   "agree": "The two outside readers agree.",
@@ -68,20 +58,6 @@
   "previous-edition": "previous edition",
   "withdrawn": "withdrawn"
  },
- "legend": {
-  "title": "How to read a family",
-  "papers": "Each short line is one of the family's papers. At most four are drawn.",
-  "diamond": "A diamond: the release has a Lean statement for the family. A second outline behind it: more than one.",
-  "halves": "Each half of the diamond is one outside reader's finding on whether that Lean states the family's headline result. Left half: {left}. Right half: {right}.",
-  "full": "Filled: all of it.",
-  "part": "Pale: part of it, or a narrower or weaker statement.",
-  "other": "Open: a supporting or a different result.",
-  "none": "Dotted: not read.",
-  "thread_candidate": "Dashed line: the theorem and the Lean statement were paired by shared words, and nobody has reviewed the pairing.",
-  "thread_cited": "Solid line: the Lean source cites the theorem, or the release declares the link.",
-  "ring": "Brick ring around the papers: an outside check of the paper's result by another method, HOL Light or exact computation.",
-  "no_lean": "No diamond: the release has no Lean statement for this family. The papers can still be read and checked."
- },
  "sentence": {
   "papers_one": "one paper",
   "papers_many": "{n} papers",
@@ -97,5 +73,6 @@
   "different-scope-descriptions:agree": "The two outside readers agree on how much of the headline the Lean states, and describe it in different terms.",
   "different-scope-descriptions:disagree": "The two outside readers disagree on how much of the headline the Lean states.",
   "unavailable:unknown": "No outside reader has compared a Lean statement with this family's headline."
- }
+ },
+ "no_lean": "The release has no Lean statement for this family. The papers can still be read and checked."
 }
