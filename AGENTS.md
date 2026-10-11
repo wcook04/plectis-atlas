@@ -55,6 +55,8 @@ Begin with a bounded note when the person has fifteen minutes. A short Lean file
 | `scripts/sync_skills.py` | Regenerates the skill mirrors |
 | `scripts/build_data.py`, `scripts/build_site.py` | The data and site builders |
 | `scripts/build_papers.py`, `data/paper_acceptance.json` | Each paper's full reading page, and whether it was accepted (every formula, reference and statement anchor checked) |
+| `data/statement_numbers.json` | What each extracted statement prints on its reading page ("Theorem", "1.1"), bound to its file, line and sha256; written by `scripts/build_papers.py` |
+| `scripts/lean_render.py`, `scripts/build_lean_xref.py`, `data/lean_xref.json` | The Lean file view: Lean's tokens, name resolution, and each declaration's counterpart in OpenAI's library and Mathlib at the pinned commits |
 
 Links in the data point at github.com/openai/math at the pinned commit. To print one statement's Lean text and configuration:
 

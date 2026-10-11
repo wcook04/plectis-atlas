@@ -46,13 +46,16 @@ We have $A\hookrightarrow B$ and $x\mapsto y$, and $C\lhook\joinrel\longrightarr
 
 
 class MacroExpansion(unittest.TestCase):
-    def convert(self, tex: str):
+    def convert(self, tex: str, statements=None):
         bp.import_site()
         with tempfile.TemporaryDirectory() as d:
             folder = Path(d) / "preprints" / "fixture"
             folder.mkdir(parents=True)
             (folder / "paper.tex").write_text(tex, encoding="utf-8")
-            p = bp.Paper({"id": "fixture", "title": "Fixture", "tex": {"main": "paper.tex"}}, Path(d))
+            m = {"id": "fixture", "title": "Fixture", "tex": {"main": "paper.tex"}}
+            if statements is not None:
+                m["statements"] = statements
+            p = bp.Paper(m, Path(d))
             signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(TimeoutError("conversion runs away")))
             signal.alarm(30)
             try:
@@ -91,6 +94,21 @@ class MacroExpansion(unittest.TestCase):
         self.assertNotIn("<6", p.body_html)
         self.assertNotIn("pagegoal", "".join(p.unknown_cmds))
         self.assertIn("After.", p.body_html)
+
+    def test_printed_numbers_follow_the_papers_counters(self):
+        # data/statement_numbers.json: the head each statement prints, bound to its source line
+        tex = ("\\documentclass{article}\n\\newtheorem{theorem}{Theorem}[section]\n\\newtheorem{lemma}[theorem]{Lemma}\n"
+               "\\newtheorem*{claim}{Claim}\n\\begin{document}\n\\section{One}\n"
+               "\\begin{theorem}\\label{t:a}\nA.\n\\end{theorem}\n\\begin{lemma}\nB.\n\\end{lemma}\n"
+               "\\begin{claim}\nC.\n\\end{claim}\n\\end{document}\n")
+        sts = [{"file": "paper.tex", "line": 7, "label": "t:a", "sha256": "sha256:a"},
+               {"file": "paper.tex", "line": 10, "label": None, "sha256": "sha256:b"},
+               {"file": "paper.tex", "line": 13, "label": None, "sha256": "sha256:c"},
+               {"file": "paper.tex", "line": 99, "label": None, "sha256": "sha256:absent"}]
+        p = self.convert(tex, statements=sts)
+        got = [(r["line"], r["kind"], r["number"], r["statement_sha256"]) for r in p.printed_numbers()]
+        self.assertEqual(got, [(7, "Theorem", "1.1", "sha256:a"), (10, "Lemma", "1.2", "sha256:b"),
+                               (13, "Claim", None, "sha256:c")])
 
     def test_csname_spells_a_let_name(self):
         s = r"\csname PaperOriginalmapsto\endcsname\mapsto"
