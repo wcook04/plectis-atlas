@@ -759,9 +759,9 @@
    "institution": "Organisations"
   },
   "finding_kinds": {
-   "replay-pass": "Replay passed",
-   "replay-fail": "Replay failed",
-   "error-reported": "Error reported",
+   "replay-pass": "Replay reported passing",
+   "replay-fail": "Replay reported failing",
+   "error-reported": "Problem reported",
    "correction": "Correction",
    "follow-up-result": "Follow-up result",
    "explanation": "Explanation",

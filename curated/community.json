@@ -1,1 +1,4044 @@
-{"schema": "community_v1", "efforts": [], "findings": []}
+{
+ "schema": "community_v1",
+ "efforts": [
+  {
+   "id": "citedbyagi",
+   "name": "Cited by AGI",
+   "url": "https://citedbyagi.com",
+   "kind": "analysis",
+   "authors": [
+    {
+     "name": "Will DePue",
+     "handle": "",
+     "url": "https://willdepue.net"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-06",
+   "summary": "An independent ranking of the human authors cited in the bibliographies of the 722 manuscripts, counting 9,399 authors and 16,576 attributed references at the 6 October commit, with each count traceable to a manuscript.",
+   "traction": "Hacker News 1 point and 0 comments (item 49987255) on 2026-10-11",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "riehl-lean-coverage-audit",
+   "name": "Lean coverage by subject and a note on the globular expansion statement",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630138764",
+   "kind": "analysis",
+   "authors": [
+    {
+     "name": "Emily Riehl",
+     "handle": "",
+     "url": "https://emilyriehl.github.io"
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-08",
+   "summary": "A quick audit of claimed Lean coverage by subject for a talk, finding topology lowest, with a first reading of one Comparator file that a Lean maintainer corrected within minutes.",
+   "traction": "1 reaction on the message (read 2026-10-11); slides at emilyriehl.github.io/files/proof-paradigm-bergen.pdf",
+   "families": [
+    "312"
+   ],
+   "statements": [
+    "GrothendieckElementaryExpansion"
+   ],
+   "reuse": "link",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "mathinsid-bridge-layer",
+   "name": "MathINsiD: bridge layer between bibliographic and formalised mathematics",
+   "url": "https://mathinsid.org",
+   "kind": "atlas",
+   "authors": [
+    {
+     "name": "Arnaud Mayeux",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-09-05",
+   "summary": "An index of about five million records that runs from published papers to the Lean artifacts that formalise them, announced a month before the release and offered on 9 October as an answer to the request for a paper-to-Lean map, where a Lean maintainer replied it does not explain why OpenAI left the mapping out.",
+   "traction": "announcement on the Lean Zulip 2026-09-05 with 2 reactions; mentioned again on 2026-10-09 (message 630339583) and answered the same day (message 630343294); the site showed no counts when loaded on 2026-10-11",
+   "families": [
+    "release"
+   ],
+   "reuse": "link",
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "jkbennitt-math-release-atlas",
+   "name": "jkbennitt/math-release-atlas",
+   "url": "https://github.com/jkbennitt/math-release-atlas",
+   "kind": "atlas",
+   "authors": [
+    {
+     "name": "Jason Bennitt",
+     "handle": "jkbennitt",
+     "url": "https://github.com/jkbennitt"
+    }
+   ],
+   "licence": "apache-2.0",
+   "date": "2026-10-07",
+   "summary": "An unofficial static atlas of result families across three labs' public catalogues showing Lean status and community status with sources, committed largely by a coding agent.",
+   "traction": "0 stars, 0 forks on 2026-10-11 (GitHub, read by the projects desk); launch post had 30 views on X",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "alexsergy-mathopenai",
+   "name": "AlexSergy/MathOpenAi",
+   "url": "https://alexsergy.github.io/MathOpenAi/",
+   "kind": "atlas",
+   "authors": [
+    {
+     "name": "Aleksandr Sergeev",
+     "handle": "AlexSergy",
+     "url": "https://github.com/AlexSergy"
+    }
+   ],
+   "licence": "none stated (README says upstream Apache-2.0)",
+   "date": "2026-10-10",
+   "summary": "A Russian-language static atlas giving plain-language explanations of 719 manuscripts, with a speculative set of 25 commercial product blueprints.",
+   "traction": "4 stars, 0 forks on 2026-10-11 (GitHub, read by the projects desk)",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "george-lean-statements-review",
+   "name": "Do the Lean statements in openai/math match their papers?",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf",
+   "kind": "audit",
+   "authors": [
+    {
+     "name": "Robert Joseph George",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "A 19-page review of all 405 Comparator challenges against their papers, produced by an AI agent (Claude Opus 5.5) under human oversight, posted to the Lean Zulip the morning after the release.",
+   "traction": "Posted to the Lean Zulip on 2026-10-07 06:50 UTC (message 629750737) with 8 reactions, about nine hours after the repository appeared; the author says he is not an expert in most of the areas and asks field experts to check; the PDF is linked from the kisonecat index and its headline was quoted in later threads (read 2026-10-11)",
+   "reuse": "cite",
+   "families": [
+    "003",
+    "005",
+    "017",
+    "049",
+    "095",
+    "100",
+    "102",
+    "107",
+    "110",
+    "121",
+    "132",
+    "143",
+    "145",
+    "156",
+    "157",
+    "158",
+    "160",
+    "161",
+    "162",
+    "169",
+    "173",
+    "179",
+    "180",
+    "187",
+    "197",
+    "210",
+    "230",
+    "238",
+    "244",
+    "260",
+    "263",
+    "274",
+    "277",
+    "291",
+    "297",
+    "307",
+    "327",
+    "331",
+    "347",
+    "350",
+    "360",
+    "371",
+    "374"
+   ],
+   "statements": [
+    "AbhyankarSathaye",
+    "ArnoldCounterexample",
+    "BarnetteHamiltonian",
+    "BorsukNine",
+    "Brenier",
+    "CKSBondiPenrose",
+    "Catalan",
+    "CirculantHadamard",
+    "CoarseAssembly",
+    "CoulombIonization",
+    "CylinderCovering",
+    "DefocusingNLS",
+    "DirichletSevenEighths",
+    "EditApproximation",
+    "ElementaryPositivity",
+    "EntangledGames",
+    "EuclideanFiveColor",
+    "ForestSpace",
+    "FoulkesHowe",
+    "HeckeSevenEighths",
+    "HyperbolicCones",
+    "KServer",
+    "KaplanskyDirectFiniteness",
+    "KaplanskyFinitelyPresented",
+    "ListHadwiger",
+    "MarkovType",
+    "MatrixFields",
+    "MatrixMultiplication",
+    "MidpointLenses",
+    "Naimark",
+    "OccupiedOverlap",
+    "PartitionPrinciple",
+    "PiExponent",
+    "QACParity",
+    "QuantitativeVanDerWaerden",
+    "QuasiRiemannHypothesis",
+    "QuinticLienard",
+    "Rokhlin",
+    "RuledCovering",
+    "RyserCovering",
+    "SLELowerPositivity",
+    "SensitivitySeparation",
+    "SeymourSecondNeighborhood",
+    "SidorenkoCounterexample",
+    "SiegelZeros",
+    "SnakyConditional",
+    "SpinAngle",
+    "ThorpFirstReciprocal",
+    "ThorpRouting",
+    "UniformGamma",
+    "UniqueGamesTheorem",
+    "WeakMTWGlobalSupport",
+    "YauCounterexample"
+   ],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "mathvet-fidelity-review",
+   "name": "mathvet/mathvet",
+   "url": "https://math.vet",
+   "kind": "audit",
+   "authors": [
+    {
+     "name": "MathVet maintainers (not named on the pages read)",
+     "handle": "mathvet",
+     "url": "https://github.com/mathvet/mathvet"
+    }
+   ],
+   "licence": "apache-2.0",
+   "date": "2026-10-08",
+   "summary": "A pre-referee review of whether each Lean statement says what its paper's headline claims, produced by AI agents with mechanical checks and one maintainer's hand reading of six families; its site reports 149 families matching in full, 93 narrower and 130 with no Lean.",
+   "traction": "2 stars, 0 forks on 2026-10-11 (GitHub, read by the projects desk); no shares by people with reach were found; site numbers read by the desk, not re-checked by us",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "timeroot-comparator-definition-holes",
+   "name": "Several of the comparator challenges in the OpenAI release are broken and hackable",
+   "url": "https://blog.ohaithe.re/post/829974396980641792/id-like-to-alert-people-that-several-of-the",
+   "kind": "audit",
+   "authors": [
+    {
+     "name": "Alex Meiburg",
+     "handle": "Timeroot",
+     "url": "https://blog.ohaithe.re"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "A blog post, posted with the same text to the Lean Zulip, listing nine challenge files whose Comparator configuration lets a solver replace definitions, so the checked statement can be made trivial.",
+   "traction": "Lean Zulip message of 2026-10-09 with 20 reactions (15 surprised, 4 thanks, 1 plus one); Hacker News 3 points and 0 comments (item 50017143) and 2 points and 1 comment (item 50022754) on 2026-10-11; no note counts shown on the blog; no OpenAI response visible",
+   "reuse": "link",
+   "families": [
+    "103",
+    "110",
+    "145",
+    "158",
+    "169",
+    "238",
+    "297",
+    "374"
+   ],
+   "statements": [
+    "Brenier",
+    "ElementaryPositivity",
+    "EuclideanFiveColor",
+    "KServer",
+    "LogspaceEquality",
+    "Naimark",
+    "OccupiedOverlap",
+    "Rokhlin",
+    "SpinAngle"
+   ],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "ityonemo-openai-wiles",
+   "name": "openai-wiles",
+   "url": "https://github.com/ityonemo/openai-wiles",
+   "kind": "audit",
+   "authors": [
+    {
+     "name": "ityonemo",
+     "handle": "ityonemo",
+     "url": "https://github.com/ityonemo"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-09",
+   "summary": "An audit of the withdrawn manuscript on Weil classes in the author's own proof checker, showing that the sign convention decides whether the stabilisation-trace step passes.",
+   "traction": "0 stars and 0 forks on 2026-10-11 (GitHub API); Hacker News 2 points and 5 comments (item 50023433)",
+   "reuse": "link",
+   "families": [
+    "032"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "tao-math-2-0",
+   "name": "Math 2.0 (Mathstodon thread and blog post)",
+   "url": "https://mathstodon.xyz/@tao/117395269325940185",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Terence Tao",
+     "handle": "@tao@mathstodon.xyz",
+     "url": "https://mathstodon.xyz/@tao"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-06",
+   "summary": "A four-part thread arguing that mathematics needs to value exposition, community building and new directions above being first to a solution.",
+   "traction": "Final post of the thread: 173 favourites, 58 boosts, 19 replies on Mathstodon on 2026-10-11 (API); Hacker News 611 points and 649 comments (item 50002008)",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "aaronson-mathocalypse",
+   "name": "The Mathocalypse (Shtetl-Optimized)",
+   "url": "https://scottaaronson.blog/?p=10169",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Scott Aaronson",
+     "handle": "",
+     "url": "https://scottaaronson.blog"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "An enthusiastic overview by a complexity theorist listing the results that caught his eye, criticising the Association for Human Mathematics statement, and contrasting a lab that releases undigested proofs with one that pays authors to write them up.",
+   "traction": "247 comments on the page when read on 2026-10-11",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "ang-bsd-comment",
+   "name": "Comment on the Birch and Swinnerton-Dyer results",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629763471",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "David Ang",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-07",
+   "summary": "A reading of the BSD results as completing the analytic rank zero and one cases by removing the assumptions of recent papers, with no Lean, and doing nothing for higher rank.",
+   "traction": "3 reactions on the Zulip message (read 2026-10-11)",
+   "families": [
+    "002"
+   ],
+   "reuse": "link",
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "baez-homotopy-hypothesis-comment",
+   "name": "Mathstodon: paper 312 proves a version of the homotopy hypothesis",
+   "url": "https://mathstodon.xyz/@johncarlosbaez/117400538833558833",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "John Baez",
+     "handle": "@johncarlosbaez@mathstodon.xyz",
+     "url": "https://mathstodon.xyz/@johncarlosbaez"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "A mathematician who named the homotopy hypothesis notes that the release proves one version of it, that the hypothesis has easy and hard versions depending on how its terms are made precise, and that none of the papers will affect his work.",
+   "traction": "47 favourites, 21 boosts and 9 replies on 2026-10-11 (Mastodon API)",
+   "reuse": "cite",
+   "families": [
+    "312"
+   ],
+   "statements": [
+    "GrothendieckElementaryExpansion"
+   ],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "buzzard-ant-results-comment",
+   "name": "Algebraic number theory results without Lean",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629814059",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Kevin Buzzard",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-07",
+   "summary": "A list of six algebraic number theory results in the release that have no Lean, with the judgement that they look like the last mile of known programmes.",
+   "traction": "3 reactions on the message and 7 on his follow-up that without Lean one cannot tell whether such results are right (read 2026-10-11)",
+   "families": [
+    "002",
+    "004",
+    "006",
+    "010",
+    "030",
+    "032"
+   ],
+   "reuse": "link",
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "chu-pure-type-systems-comment",
+   "name": "Comment on weak and strong normalisation in pure type systems",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629763855",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Fernando Chu",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-07",
+   "summary": "A type theorist notes the problem was important when pure type systems were fashionable, reports an unsuccessful attempt with AI models, and calls the result nice and impressive.",
+   "traction": "no reactions on the Zulip message (read 2026-10-11)",
+   "families": [
+    "245"
+   ],
+   "statements": [
+    "TypeSystemNormalization"
+   ],
+   "reuse": "link",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "litt-think-in-the-vicinity",
+   "name": "Tweet: think in its general vicinity",
+   "url": "https://x.com/littmath/status/2107827516367110211",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Daniel Litt",
+     "handle": "@littmath",
+     "url": "https://x.com/littmath"
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-07",
+   "summary": "A widely cited suggestion that mathematicians who dislike reading machine output can engage with a result by thinking in its general vicinity rather than reading it line by line.",
+   "traction": "495 likes and a conversation count of 18 on 2026-10-11 (X embed API); quoted on the Lean Zulip",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "monk-ramanujan-graphs-comment",
+   "name": "Comment on the deterministic Ramanujan graphs manuscript",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629773892",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Laura Monk",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-07",
+   "summary": "A reading of the nonbipartite Ramanujan graph paper by a researcher who talks about this problem, judging that the title oversells what is an efficient deterministic algorithm.",
+   "traction": "16 reactions on the Zulip message (read 2026-10-11)",
+   "families": [
+    "178"
+   ],
+   "reuse": "link",
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "roberts-homotopy-hypothesis-comment",
+   "name": "Comments on the Grothendieck homotopy hypothesis manuscript",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629699549",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "David Michael Roberts",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-07",
+   "summary": "A category theorist identifies which version of the homotopy hypothesis is proved, calls it a closed problem of mainly historical interest, and advises treating only the formalised part of a partially formalised paper as trustworthy.",
+   "traction": "3 reactions on the first message (read 2026-10-11)",
+   "families": [
+    "312"
+   ],
+   "statements": [
+    "GrothendieckElementaryExpansion"
+   ],
+   "reuse": "link",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "karagila-partition-principle",
+   "name": "OpenAI, the Partition Principle, and Mathematics",
+   "url": "https://karagila.org/2026/openai-pp/",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Asaf Karagila",
+     "handle": "",
+     "url": "https://karagila.org"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "A set theorist's reading of the Partition Principle manuscript, finding the exposition unclear and the references uneven, and arguing that the release shifts verification work onto mathematicians.",
+   "traction": "Hacker News 208 points and 310 comments (item 50013902) on 2026-10-11; 0 comments on the blog page when read",
+   "reuse": "link",
+   "families": [
+    "244"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "myers-tile-155-comments",
+   "name": "Comments on the translational tile manuscript",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630258005",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Joseph Myers",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-08",
+   "summary": "A summary of earlier comments by an expert on this tiling result: it gives weak rather than strong aperiodicity, does not discuss that distinction or the connected-tile literature, and a connected version needs no extra dimensions.",
+   "traction": "1 reaction on the Zulip message (read 2026-10-11)",
+   "families": [
+    "155"
+   ],
+   "statements": [
+    "PeriodicTilingThree"
+   ],
+   "reuse": "link",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "hales-lean-reliability-guest-post",
+   "name": "What mathematicians should know about the Lean theorem prover",
+   "url": "https://terrytao.wordpress.com/2026/10/09/what-mathematicians-should-know-about-the-lean-theorem-proverquestions-of-reliability-and-ai/",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Thomas Hales",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Terence Tao (host)",
+     "handle": "",
+     "url": "https://terrytao.wordpress.com"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-09",
+   "summary": "A guest post on Lean's reliability that tells readers to audit whether the Lean statement and definitions match the intended meaning, which it calls much easier than checking the proof, and notes that Comparator helps.",
+   "traction": "Hacker News 198 points and 58 comments (item 50024090) and 21 blog comments on 2026-10-11",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "mahrud-openai-math-comments",
+   "name": "mahrud/openai-math-comments",
+   "url": "https://github.com/mahrud/openai-math-comments",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Mahrud Sayrafi",
+     "handle": "mahrud",
+     "url": "https://github.com/mahrud"
+    }
+   ],
+   "licence": "none",
+   "date": "2026-10-09",
+   "summary": "A human-only public square for expert commentary with one bot-opened pull request per manuscript group, aimed at belief in correctness, context, exposition and credit.",
+   "traction": "0 stars, 0 forks on 2026-10-11 (GitHub, read by the projects desk)",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "karagila-lean-ai-post",
+   "name": "Why I don't trust Lean code from AI",
+   "url": "https://karagila.org/2026/lean/",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Asaf Karagila",
+     "handle": "",
+     "url": "https://karagila.org"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-10",
+   "summary": "A second post saying he will not rely on AI-generated Lean at scale, while accepting that the formal statement of the Partition Principle is probably easy to get right, and asking labs to consult experts before releasing.",
+   "traction": "comments closed on the page; not separately submitted to Hacker News in our list (read 2026-10-11)",
+   "families": [
+    "244"
+   ],
+   "statements": [
+    "PartitionPrinciple"
+   ],
+   "reuse": "link",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "woett-short-egyptian-fractions-writeup",
+   "name": "Short Egyptian fractions (a simplified write-up)",
+   "url": "https://github.com/Woett/Mathematical-shorts/blob/main/Short%20Egyptian%20fractions.pdf",
+   "kind": "explanation",
+   "authors": [
+    {
+     "name": "Woett",
+     "handle": "Woett",
+     "url": "https://github.com/Woett"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-10",
+   "summary": "A human write-up, made with ChatGPT help, that substantially simplifies the short unit fraction result with an explicit constant far smaller than the manuscript's and derives the two related Erdős problems from it.",
+   "traction": "3 likes on the comment announcing it and a thank-you from the site maintainer (read 2026-10-11)",
+   "reuse": "link",
+   "families": [
+    "025"
+   ],
+   "statements": [
+    "ShortEgyptianFractions"
+   ],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "kisonecat-openai-math-index",
+   "name": "Jim Fowler index",
+   "url": "https://kisonecat.github.io/openai-math/",
+   "kind": "explorer",
+   "authors": [
+    {
+     "name": "Jim Fowler",
+     "handle": "kisonecat",
+     "url": "https://github.com/kisonecat"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-06",
+   "summary": "A human-built static index of the 722 manuscripts by subject with Lean checkmarks as listed upstream, page counts and full-text search of the LaTeX sources, linking to the Zulip statement review, whose README says no paper was read or classified by hand or by a model.",
+   "traction": "0 stars, 0 forks on 2026-10-11 (GitHub, read by the projects desk); X posts of 2,934 and 9,545 views, praised once as a human-made index; Hacker News 1 point, 1 comment",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "valency-hub-openai-math",
+   "name": "Valency Hub collection",
+   "url": "https://hub.valency.io/collections/openai-math",
+   "kind": "explorer",
+   "authors": [
+    {
+     "name": "Valency",
+     "handle": "",
+     "url": "https://hub.valency.io"
+    }
+   ],
+   "licence": "works carry Apache-2.0 upstream",
+   "date": "2026-10-06",
+   "summary": "A company hub that hosts the manuscripts as individual pages with view counts and search, used to promote its platform waitlist.",
+   "traction": "no star count (not a repository); Hacker News 3 points, 1 comment (the comment is the team promoting its waitlist); X replies drew 0 to 4 likes each",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "agentlemma",
+   "name": "AgentLemma",
+   "url": "https://agentlemma.com",
+   "kind": "explorer",
+   "authors": [
+    {
+     "name": "Yassir Laaouach",
+     "handle": "@YassirL2o",
+     "url": "https://x.com/YassirL2o"
+    }
+   ],
+   "licence": "links upstream Apache-2.0; none stated for the site",
+   "date": "2026-10-07",
+   "summary": "A free catalogue of public AI maths releases across labs with search, filters by Lean availability and a discussion thread per paper.",
+   "traction": "no star count (not a repository); announcement had 105,596 views and 56 likes on X on 2026-10-11 (the desk could not explain the ratio)",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "dwootton-openai-math-explorer",
+   "name": "dwootton/openai-math-explorer",
+   "url": "https://github.com/dwootton/openai-math-explorer",
+   "kind": "explorer",
+   "authors": [
+    {
+     "name": "Dylan Wootton",
+     "handle": "dwootton",
+     "url": "https://github.com/dwootton"
+    }
+   ],
+   "licence": "none detected (README retains upstream licences)",
+   "date": "2026-10-07",
+   "summary": "A similarity map and reader for the 372 families with plain-language introductions, linked Lean source and a shared-reference view.",
+   "traction": "0 stars, 0 forks on 2026-10-11 (GitHub, read by the projects desk)",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "emergent-mind-openai-math-explorer",
+   "name": "Emergent Mind OpenAI Math Explorer",
+   "url": "https://www.emergentmind.com/openai-math-explorer",
+   "kind": "explorer",
+   "authors": [
+    {
+     "name": "Matt Mazur",
+     "handle": "@mhmazur",
+     "url": "https://x.com/mhmazur"
+    }
+   ],
+   "licence": "not stated",
+   "date": "2026-10-07",
+   "summary": "A polished explorer with semantic search, a similarity map, an index of about 520 named problems, per-result pages with Lean scope notes and a model-written 'why it matters', and a roundup of reactions; the map and index are labelled as possibly erroneous.",
+   "traction": "no star count (not a repository); founder's announcement had 1,284 views, 26 likes and 8 replies on X on 2026-10-11",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "fortnow-tcs-selection",
+   "name": "Lance Fortnow TCS selection page",
+   "url": "https://lance.fortnow.com/openai-math-tcs.htm",
+   "kind": "explorer",
+   "authors": [
+    {
+     "name": "Lance Fortnow",
+     "handle": "",
+     "url": "https://lance.fortnow.com"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "A complexity theorist's Claude-built page selecting theoretical computer science, combinatorics and other families with Lean badges, and a repository of two Claude-prepared expository rewrites of the Unique Games and L equals RL equals BPL proofs for human review.",
+   "traction": "0 stars, 1 forks on 2026-10-11 (GitHub, read by the projects desk); blog post with 38 comments; the desk read the page and repository metadata",
+   "reuse": "link",
+   "families": [
+    "102",
+    "103",
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "gokayfem-openai-math-explained",
+   "name": "gokayfem/openai-math-explained",
+   "url": "https://gokayfem.github.io/openai-math-explained/",
+   "kind": "explorer",
+   "authors": [
+    {
+     "name": "Gokay Aydogan",
+     "handle": "@gokayfem",
+     "url": "https://x.com/gokayfem"
+    }
+   ],
+   "licence": "none",
+   "date": "2026-10-07",
+   "summary": "An interactive 3D map with a 15-second model-made explainer video for each of the 372 results.",
+   "traction": "1 stars, 0 forks on 2026-10-11 (GitHub, read by the projects desk); announcement had 1,310 views and 27 likes on X",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "hajlasz-searchable-catalogue",
+   "name": "OpenAI Mathematics Preprints: Searchable Catalogue",
+   "url": "https://mathoverflow.net/questions/515874",
+   "kind": "explorer",
+   "authors": [
+    {
+     "name": "Piotr Hajlasz",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-09",
+   "summary": "A single large HTML file with full-text search over the 722 manuscripts, built by a mathematician with an AI model, whose MathOverflow request for ways to publicise it was voted down.",
+   "traction": "MathOverflow question on 2026-10-11: score -4, 534 views, 0 answers, 12 comments; the top comment (15 votes) asks why anyone should publicise the material and another (3 votes) calls it free labour for a corporation",
+   "reuse": "link",
+   "families": [
+    "release",
+    "005"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "crocswap-integer-mult-bounds",
+   "name": "integer-mult-bounds",
+   "url": "https://github.com/CrocSwap/integer-mult-bounds",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Douglas Colkitt",
+     "handle": "@0xdoug",
+     "url": "https://x.com/0xdoug"
+    }
+   ],
+   "licence": "Apache-2.0",
+   "date": "2026-10-07",
+   "summary": "A community repository, maintained with AI assistance, that improves the conditional exponent in OpenAI's integer multiplication result through reviewed pull requests with exact certificates.",
+   "traction": "178 stars, 79 forks, 4 watchers and 338 open issues and pull requests on 2026-10-11 (GitHub API); created 2026-10-07 02:21 UTC; the maintainer's eight X posts on the race total about 1.74 million views, the peak post 742,637 views and 3,331 likes (X embed API and a mirror, read by the projects desk); Hacker News 3 points and 1 comment (item 50007425) and 1 point (item 50018530); r/OpenAI 357 points and 93 comments (archive snapshot)",
+   "reuse": "link",
+   "families": [
+    "109"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "gotrevor-snaky-15x15",
+   "name": "snaky-15x15 and the playable Snaky site",
+   "url": "https://github.com/gotrevor/snaky-15x15",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "gotrevor",
+     "handle": "gotrevor",
+     "url": "https://github.com/gotrevor"
+    }
+   ],
+   "licence": "Apache-2.0",
+   "date": "2026-10-07",
+   "summary": "A certificate, checker and Lean proof that the first player wins Snaky on a 15 by 15 board, plus a site where a reader plays the losing side; the author says the strategy came from a separate search and AI help.",
+   "traction": "1 star on 2026-10-11 (GitHub API); announced in post 8 of the OpenAI forum thread on 2026-10-08",
+   "reuse": "link",
+   "families": [
+    "187"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "selanavot-matrix-multiplication-all-fields",
+   "name": "matrix-multiplication-all-fields",
+   "url": "https://github.com/selanavot/matrix-multiplication-all-fields",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "selanavot",
+     "handle": "selanavot",
+     "url": "https://github.com/selanavot"
+    }
+   ],
+   "licence": "Apache-2.0",
+   "date": "2026-10-07",
+   "summary": "A fork that extends the matrix multiplication exponent 9/4 argument from the complex numbers to every field, with a Lean proof that the author says passes Lean and Comparator.",
+   "traction": "27 stars and 1 fork on 2026-10-11 (GitHub API); announced in post 4 of the OpenAI forum thread on 2026-10-07",
+   "reuse": "link",
+   "families": [
+    "107"
+   ],
+   "statements": [
+    "MatrixMultiplication"
+   ],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "apsiape-hyperbolic-group-not-sofic",
+   "name": "hyperbolic-group-not-sofic",
+   "url": "https://github.com/Apsiape/hyperbolic-group-not-sofic",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Apsiape",
+     "handle": "Apsiape",
+     "url": "https://github.com/Apsiape"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "A paper in a public repository that claims the hyperbolic group which OpenAI shows is not residually finite is also not sofic, pointed out by a topologist the day after the withdrawals.",
+   "traction": "pointer on Mathstodon with 2 favourites on 2026-10-11; repository counts not read",
+   "reuse": "link",
+   "families": [
+    "252"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "argonaut-math-quasi-riemann-boundary",
+   "name": "argonaut-math-quasi-riemann-boundary",
+   "url": "https://github.com/Argonaut-Math/argonaut-math-quasi-riemann-boundary",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Argonaut-Math",
+     "handle": "Argonaut-Math",
+     "url": "https://github.com/Argonaut-Math"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "A paper and Lean sources claiming a refinement of the quasi-Riemann zero-free boundary from 7/8 to 3499999/4000000.",
+   "traction": "3 stars, 0 forks on 2026-10-11 (GitHub search census read by the projects desk)",
+   "reuse": "link",
+   "families": [
+    "003"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "lezeau-hodge-cm-challenge",
+   "name": "Hodge conjecture formalisation and a CM abelian variety challenge",
+   "url": "https://github.com/Paul-Lez/HodgeConjecture",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Paul Lezeau",
+     "handle": "Paul-Lez",
+     "url": "https://github.com/Paul-Lez"
+    },
+    {
+     "name": "Jack McCarthy",
+     "handle": "Deicyde",
+     "url": "https://github.com/Deicyde"
+    },
+    {
+     "name": "Abhijit A J",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "After the release, members of the Formal Conjectures effort agreed to reuse their Hodge conjecture formalisation to state, as a challenge file, the rational Hodge conjecture for CM abelian varieties, which OpenAI had not formalised.",
+   "traction": "the coordination thread had 20 messages on 2026-10-08 (public stream capture read 2026-10-11)",
+   "families": [
+    "032"
+   ],
+   "reuse": "link",
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "liubaiying101-slightly-improved-zero-free",
+   "name": "Slightly-improved-zero-free-half-planes-for-the-quasi-Riemann-hypothesis",
+   "url": "https://github.com/liubaiying101/Slightly-improved-zero-free-half-planes-for-the-quasi-Riemann-hypothesis",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Baiying Liu",
+     "handle": "liubaiying101",
+     "url": "https://github.com/liubaiying101"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "A short note and repository on slightly improved zero-free half-planes for the quasi-Riemann hypothesis, with a companion arXiv paper.",
+   "traction": "2 stars, 1 forks on 2026-10-11 (GitHub search census read by the projects desk)",
+   "reuse": "link",
+   "families": [
+    "003"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "shea256-fourier-below-nlogn",
+   "name": "shea256/fourier-transform-below-nlogn",
+   "url": "https://github.com/shea256/fourier-transform-below-nlogn",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Ryan Shea",
+     "handle": "shea256",
+     "url": "https://github.com/shea256"
+    }
+   ],
+   "licence": "apache-2.0",
+   "date": "2026-10-08",
+   "summary": "A research draft, LaTeX source and verifiers extending the community integer multiplication network to the exact discrete Fourier transform, with a file auditing its dependencies.",
+   "traction": "15 stars, 0 forks on 2026-10-11 (GitHub, read by the projects desk); first X post 61,886 views and 600 likes; Hacker News 2 points, 0 comments",
+   "reuse": "link",
+   "families": [
+    "130"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "swapnil-jain-integer-mult-kappa",
+   "name": "Swapnil-jain/integer-mult-kappa",
+   "url": "https://github.com/Swapnil-jain/integer-mult-kappa",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Swapnil Jain",
+     "handle": "@SJ_Swapnil_Jain",
+     "url": "https://x.com/SJ_Swapnil_Jain"
+    }
+   ],
+   "licence": "apache-2.0",
+   "date": "2026-10-08",
+   "summary": "A parallel series of eleven numbered conditional bounds for integer multiplication that builds on the community repository and adds Lean-checked finite certificates, written with Claude.",
+   "traction": "25 stars, 4 forks on 2026-10-11 (GitHub, read by the projects desk); eleven X posts totalling about 988,000 views, the third with 1,411 likes (X embed API and a mirror, read by the desk)",
+   "reuse": "link",
+   "families": [
+    "109"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "danadran01-exact-dft-power-saving",
+   "name": "exact-dft-power-saving",
+   "url": "https://github.com/danadran01/exact-dft-power-saving",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "danadran01",
+     "handle": "danadran01",
+     "url": "https://github.com/danadran01"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-09",
+   "summary": "A repository claiming a Lean-verified exponent saving for the exact discrete Fourier transform far larger than the manuscript's, extending OpenAI's algorithm and formalisation.",
+   "traction": "1 star on 2026-10-11 (census); a Reddit post of 2026-10-09 announcing it has 146 points and 24 comments in r/mathematics (archive snapshot 2026-10-11)",
+   "reuse": "link",
+   "families": [
+    "130"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "drmurphyisin-qrh-debruijn-newman",
+   "name": "qrh-debruijn-newman",
+   "url": "https://github.com/DrMurphyIsIn/qrh-debruijn-newman",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "DrMurphyIsIn",
+     "handle": "DrMurphyIsIn",
+     "url": "https://github.com/DrMurphyIsIn"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-09",
+   "summary": "A Lean 4 repository describing a kernel-checked bound of 9/32 on the de Bruijn-Newman constant derived from the quasi-Riemann result and judged by Comparator.",
+   "traction": "0 stars, 0 forks on 2026-10-11 (GitHub search census read by the projects desk)",
+   "reuse": "link",
+   "families": [
+    "003"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "offline-ant-wiggums-proof-loop",
+   "name": "wiggums-proof-loop",
+   "url": "https://github.com/offline-ant/wiggums-proof-loop",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "offline-ant",
+     "handle": "offline-ant",
+     "url": "https://github.com/offline-ant"
+    }
+   ],
+   "licence": "Apache-2.0",
+   "date": "2026-10-09",
+   "summary": "A repository that shortens OpenAI's Unique Games Lean proof from about 151,000 to about 114,000 lines with an agent loop, keeping the statement and re-checking the result.",
+   "traction": "1 star and 0 forks on 2026-10-11 (GitHub API); Hacker News 1 point and 0 comments (item 50026202)",
+   "reuse": "link",
+   "families": [
+    "102"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "leanmeanbean-417-writeup",
+   "name": "417 (a short write-up deriving a bound from the Erdős 416 result)",
+   "url": "https://github.com/LeanMeanBean/417/blob/main/417.pdf",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "donteatllamas",
+     "handle": "donteatllamas",
+     "url": "https://github.com/LeanMeanBean"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-10",
+   "summary": "A short write-up, first generated by AI and then edited by the author to be human-readable, that derives an explicit bound of about 2.195 on the limit superior of a ratio in Erdős problem 417 from the totient asymptotic of the release.",
+   "traction": "1 like on the comment announcing it (read 2026-10-11)",
+   "reuse": "link",
+   "families": [
+    "024"
+   ],
+   "statements": [
+    "TotientAsymptotic"
+   ],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "formal-conjectures-pr-6898",
+   "name": "Formal Conjectures: mark problems solved in the OpenAI math release and link formal proofs",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Moritz Firsching",
+     "handle": "mo271",
+     "url": "https://github.com/mo271"
+    },
+    {
+     "name": "anxkhn",
+     "handle": "anxkhn",
+     "url": "https://github.com/anxkhn"
+    },
+    {
+     "name": "Paul Lezeau",
+     "handle": "Paul-Lez",
+     "url": "https://github.com/Paul-Lez"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-11",
+   "summary": "A human-reviewed pull request that links twenty-nine OpenAI Lean theorems in twenty-five files to Formal Conjectures statements after source inspection, recording six differences between the two statements, merged four days after the release.",
+   "traction": "merged 2026-10-11 (approved 2026-10-10), 3 comments; the Formal Conjectures team also opened 15 'solution found' issues on 2026-10-07",
+   "reuse": "cite",
+   "families": [
+    "005",
+    "012",
+    "013",
+    "020",
+    "021",
+    "024",
+    "025",
+    "026",
+    "028",
+    "047",
+    "072",
+    "073",
+    "076",
+    "084",
+    "090",
+    "132",
+    "156",
+    "158",
+    "159",
+    "160",
+    "161",
+    "179",
+    "181",
+    "196",
+    "199",
+    "266"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "agmai-guidelines-and-statement",
+   "name": "Advisory Group on Mathematics and AI: guidelines and statement on the release",
+   "url": "https://agmai.org",
+   "kind": "institution",
+   "authors": [
+    {
+     "name": "Francois Charles",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Camillo De Lellis",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Timothy Gowers",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Martin Hairer",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Nikhil Srivastava",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Ulrike Tillmann",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Ravi Vakil",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Edward Witten",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Melanie Matchett Wood",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-06",
+   "summary": "The independent advisory group hosted at the Institute for Advanced Study published general release guidelines on 29 September (formal links between natural-language and formal versions, community-hosted repositories with comments, disclosure of AI use) and a statement on 6 October that it does not endorse or judge the results.",
+   "traction": "no engagement figures shown on the pages read on 2026-10-11",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "ahm-statement",
+   "name": "AHM statement on OpenAI's 6 October release",
+   "url": "https://terrytao.wordpress.com/2026/10/07/ahm-statement-on-openais-october-6-release-of-mathematical-documents/",
+   "kind": "institution",
+   "authors": [
+    {
+     "name": "Association for Human Mathematics, Communications Working Group",
+     "handle": "",
+     "url": "https://www.ahmath.org/statements"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "A statement from a new association of mathematicians urging colleagues to stop working with OpenAI and the public to treat this publication model with scepticism, hosted on its own site and reposted on a mathematician's blog.",
+   "traction": "151 comments on the blog repost; Hacker News 47 points and 45 comments (item 50003677) and 18 points and 17 comments (item 50000421) on 2026-10-11",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "birkbeck-claude-proofs-and-formalisations-pdf",
+   "name": "OpenAI math repository: proofs and Lean formalisations",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/IY7Vv_M5s2dgEci6Eh1ay_kW/openai-math-proofs-and-formalisations.pdf",
+   "kind": "map",
+   "authors": [
+    {
+     "name": "Chris Birkbeck",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-06",
+   "summary": "A 24-page AI-made table, requested by a Lean mathematician and posted the evening of the release, listing every family with whether the repository links a Lean scope page and which Comparator files cover it; its headline is 235 of 372 families formalised.",
+   "traction": "no reactions on the Zulip message (read 2026-10-11); PDF read in full on 2026-10-11",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "bastounis-navier-stokes-lost-in-translation",
+   "name": "Navier-Stokes lost in translation",
+   "url": "https://arxiv.org/abs/2610.08144",
+   "kind": "paper",
+   "authors": [
+    {
+     "name": "Alexander Bastounis",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Fabian Circelli",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Anders C. Hansen",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-06",
+   "summary": "An arXiv paper arguing that a Lean check of an AI formalisation does not guarantee that the natural-language proof is the one proved, with OpenAI's Navier-Stokes blow-up announcement as the lead example; it concerns that earlier claim, not a family of this collection.",
+   "traction": "Hacker News 359 points and 233 comments (item 49994145) on 2026-10-11",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "glazer-weil-classes-flaw",
+   "name": "Tweet reporting a flaw in the Weil classes manuscript",
+   "url": "https://x.com/ElliotGlazer/status/2108026240582246600",
+   "kind": "post",
+   "authors": [
+    {
+     "name": "Elliot Glazer",
+     "handle": "@ElliotGlazer",
+     "url": "https://x.com/ElliotGlazer"
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-08",
+   "summary": "The earliest public report we found that the manuscript on Weil classes on split abelian eightfolds is flawed, posted about two and a half hours before OpenAI announced its withdrawal.",
+   "traction": "1,112 likes and a conversation count of 56 on 2026-10-11 (X embed API)",
+   "families": [
+    "032"
+   ],
+   "reuse": "link",
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "nature-castelvecchi-news",
+   "name": "OpenAI posts 700 maths preprints online: mathematicians are up in arms",
+   "url": "https://www.nature.com/articles/d41586-026-03196-8",
+   "kind": "press",
+   "authors": [
+    {
+     "name": "Davide Castelvecchi",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "Nature's news report on the release and the reaction of mathematicians.",
+   "traction": "no engagement figures shown (listed by the Zulip desk, 2026-10-11)",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "retraction-watch-withdrawals",
+   "name": "OpenAI withdraws three preprints a day after releasing 722 manuscripts",
+   "url": "https://retractionwatch.com/2026/10/08/openai-withdraws-preprints-722-manuscripts-unsolved-math-problems/",
+   "kind": "press",
+   "authors": [
+    {
+     "name": "Alicia Gallegos",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "Retraction Watch's report on the three withdrawals and OpenAI's explanation of the sign error.",
+   "traction": "10 comments on the page (read by the Zulip desk 2026-10-11); Hacker News 3 points, 0 comments (item 50019947)",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "sciam-howlett-trove",
+   "name": "Mathematicians marvel, and grumble, at OpenAI's trove of new results",
+   "url": "https://www.scientificamerican.com/article/mathematicians-marvel-and-grumble-at-openais-trove-of-new-results/",
+   "kind": "press",
+   "authors": [
+    {
+     "name": "Joseph Howlett",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "Scientific American's report on the release and the mixed reaction.",
+   "traction": "Hacker News 9 points, 2 comments (item 49989115, a variant URL) on 2026-10-11",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "conversation-lee-mathocalypse",
+   "name": "Is this the 'mathocalypse'? Why OpenAI's latest results dump has left mathematicians in shock",
+   "url": "https://theconversation.com/is-this-the-mathocalypse-why-openais-latest-results-dump-has-left-mathematicians-in-shock-293837",
+   "kind": "press",
+   "authors": [
+    {
+     "name": "Melissa Lee",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-09",
+   "summary": "An explainer for general readers on why mathematicians are shocked, including a colleague's view that one paper was unintelligible.",
+   "traction": "Hacker News 4 points, 1 comment (item 50038054) on 2026-10-11",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "quanta-transformation",
+   "name": "Quanta: Cracks appear in OpenAI's wall of proofs (and the 6 October piece)",
+   "url": "https://www.quantamagazine.org/updates/transformation/",
+   "kind": "press",
+   "authors": [
+    {
+     "name": "Konstantin Kakaes",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-09",
+   "summary": "Quanta's running coverage records experts saying some papers are too vague to check, that a three-dimensional tile paper has new ideas but is hard to read, that some Lean statements may prove less than the papers, and that proofs should be treated as raw data.",
+   "traction": "no engagement figures shown on the page (read 2026-10-11)",
+   "reuse": "cite",
+   "families": [
+    "release",
+    "155"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "davegoldblatt-openai-zeta-proof-check",
+   "name": "openai-zeta-proof-check",
+   "url": "https://github.com/davegoldblatt/openai-zeta-proof-check",
+   "kind": "replay",
+   "authors": [
+    {
+     "name": "davegoldblatt",
+     "handle": "davegoldblatt",
+     "url": "https://github.com/davegoldblatt"
+    }
+   ],
+   "licence": "MIT",
+   "date": "2026-10-07",
+   "summary": "An independent re-run, carried out by an AI agent at the author's request, of the Lean check for the quasi-Riemann zeta bound with Comparator and a second kernel, with logs and a container recipe.",
+   "traction": "2 stars and 0 forks on 2026-10-11 (GitHub API); announced in post 2 of the OpenAI forum thread on 2026-10-07",
+   "reuse": "cite",
+   "families": [
+    "003"
+   ],
+   "statements": [
+    "QuasiRiemannHypothesis"
+   ],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "ringer-pts-normalization-replay",
+   "name": "pts-normalization: a confined copy of the OpenAI strong normalisation proof",
+   "url": "https://github.com/Illinois-Theorem-Provers/pts-normalization",
+   "kind": "replay",
+   "authors": [
+    {
+     "name": "Talia Ringer",
+     "handle": "@TaliaRinger@mathstodon.xyz",
+     "url": "https://mathstodon.xyz/@TaliaRinger"
+    },
+    {
+     "name": "Jamie (student, surname not shown)",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "A trimmed copy of the repository holding only the pure type systems normalisation proof, on which a student ran Comparator with the second kernel enabled and reports acceptance, with the caveat that an AI model extracted the files.",
+   "traction": "3 stars and 0 forks on 2026-10-11 (page read); the announcing Mastodon post has 4 favourites, 2 boosts and 2 replies",
+   "reuse": "link",
+   "families": [
+    "245"
+   ],
+   "statements": [
+    "TypeSystemNormalization"
+   ],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "fineenvs-openai-math-dataset",
+   "name": "FineEnvs/openai-math",
+   "url": "https://huggingface.co/datasets/FineEnvs/openai-math",
+   "kind": "replay",
+   "authors": [
+    {
+     "name": "FineEnvs",
+     "handle": "FineEnvs",
+     "url": "https://huggingface.co/FineEnvs"
+    }
+   ],
+   "licence": "apache-2.0",
+   "date": "2026-10-08",
+   "summary": "A Hugging Face dataset of 369 reinforcement-learning environments built from the Lean challenges whose official proofs were verified end to end in a sandbox, out of 405.",
+   "traction": "no star count (not a repository); 21 likes and about 1,300 to 1,800 downloads on 2026-10-11 (Hugging Face APIs)",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "mccarthy-comparator-strict-rerun",
+   "name": "Re-running Comparator with the definition holes pinned",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630360393",
+   "kind": "replay",
+   "authors": [
+    {
+     "name": "Jack McCarthy",
+     "handle": "Deicyde",
+     "url": "https://github.com/Deicyde"
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-09",
+   "summary": "A re-run of Comparator on the challenges named as hackable after fixing the definition_names field, followed by a fork that repairs the affected proofs.",
+   "traction": "1 reaction on the re-run message and 8 on the fork announcement (Zulip, read 2026-10-11)",
+   "families": [
+    "103",
+    "110",
+    "145",
+    "158",
+    "238",
+    "297",
+    "374"
+   ],
+   "statements": [
+    "Brenier",
+    "EuclideanFiveColor",
+    "KServer",
+    "LogspaceEquality",
+    "Naimark",
+    "Rokhlin",
+    "OccupiedOverlap",
+    "SpinAngle"
+   ],
+   "reuse": "link",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "openai-forum-first-look-thread",
+   "name": "OpenAI Developer Community thread: First look at mathematics manuscripts",
+   "url": "https://community.openai.com/t/first-look-at-mathematics-manuscripts-from-an-internal-frontier-model-at-openai/1403886",
+   "kind": "thread",
+   "authors": [
+    {
+     "name": "sps",
+     "handle": "sps",
+     "url": "https://community.openai.com/u/sps"
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-06",
+   "summary": "OpenAI's own forum post for the release; the replies carry several independent re-checks, an extension of one result, a request for a commenting wiki and a note that the repository's issue and pull-request routes are closed.",
+   "traction": "17,051 views, 8 posts, 7 participants on 2026-10-11 (Discourse JSON read that day)",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "zulip-openai-releases-thread",
+   "name": "Lean Zulip: OpenAI releases solutions to hundreds of problems",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629684611",
+   "kind": "thread",
+   "authors": [
+    {
+     "name": "Joseph Myers",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Jack McCarthy",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "David Michael Roberts",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Chris Henson",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Kevin Buzzard",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "David Ang",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Johan Commelin",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Alex Meiburg",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "n/a",
+   "date": "2026-10-06",
+   "summary": "The main Lean community discussion of the release, opened within an hour of the announcement, where members asked for a paper-to-Lean map, reviewed statements, found and repaired the Comparator definition holes, and argued about norms for releases of formal proofs.",
+   "traction": "117 messages from 39 posters between 2026-10-06 22:34 UTC and 2026-10-10 23:27 UTC; the most-reacted message has 25 reactions (counted from the public capture on 2026-10-11)",
+   "families": [
+    "release"
+   ],
+   "reuse": "link",
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "bloom-post-comments",
+   "name": "Comments on 'Erdős problems in the OpenAI proofs'",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10#comments",
+   "kind": "thread",
+   "authors": [
+    {
+     "name": "MalekZ",
+     "handle": "MalekZ",
+     "url": ""
+    },
+    {
+     "name": "jleng01",
+     "handle": "jleng01",
+     "url": ""
+    },
+    {
+     "name": "NicoV",
+     "handle": "NicoV",
+     "url": ""
+    },
+    {
+     "name": "efiebig",
+     "handle": "efiebig",
+     "url": ""
+    },
+    {
+     "name": "Thomas Bloom",
+     "handle": "",
+     "url": "https://www.erdosproblems.com"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "Nine comments on the maintainer's list, which record a reading experience of the longest manuscript, an opinion that its length is useful mainly to another AI, consequences for a Ramsey problem and two earlier claims of the same decomposition result.",
+   "traction": "9 comments visible on 2026-10-11; comments suspended by the site",
+   "reuse": "cite",
+   "families": [
+    "159",
+    "170",
+    "181"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "mo-515845-contact-the-authors",
+   "name": "MathOverflow: how can one contact the authors regarding corrections or missing references?",
+   "url": "https://mathoverflow.net/questions/515845",
+   "kind": "thread",
+   "authors": [
+    {
+     "name": "Jialong Deng",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Sam Hopkins",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Emil Jerabek",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "David White",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Timothy Chow",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Dimitri Vulis",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "TimH",
+     "handle": "hugetim",
+     "url": "https://github.com/hugetim"
+    }
+   ],
+   "licence": "CC BY-SA (Stack Exchange network default)",
+   "date": "2026-10-08",
+   "summary": "A question from a mathematician who says two families generalise his results without citing them and who could not find any address for the authors; the comments ask for human authors and a correspondence address, and an answer proposes venues and a fork that accepts issues.",
+   "traction": "107 votes, about 3,100 views, 22 comments and 2 answers on 2026-10-11 (StackExchange API capture); the top comment has 49 votes",
+   "reuse": "cite",
+   "families": [
+    "335",
+    "336",
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "mo-515849-conventional-wisdom",
+   "name": "MathOverflow: how many of the released results went against the conventional wisdom?",
+   "url": "https://mathoverflow.net/questions/515849",
+   "kind": "thread",
+   "authors": [
+    {
+     "name": "tparker",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Philip Weiss",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Will Sawin",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Nik Weaver",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Pace Nielsen",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "mathworker21",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Joshua P. Swanson",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Timothy Chow",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Daniel Soltesz",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "CC BY-SA (Stack Exchange network default)",
+   "date": "2026-10-08",
+   "summary": "A community-wiki style question whose answers name which released results contradicted expert expectations, with experts commenting field by field and a close vote that was reversed.",
+   "traction": "63 votes, 6,586 views and 9 answers on 2026-10-11 (StackExchange API); reopened after close votes of 29 and 31 on comments",
+   "reuse": "cite",
+   "families": [
+    "release",
+    "003",
+    "076",
+    "109",
+    "131",
+    "132",
+    "168",
+    "169",
+    "205",
+    "283",
+    "297"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "proofs-and-prompts-100-reactions",
+   "name": "100+ reactions to 100+ solutions (Proofs and Prompts)",
+   "url": "https://proofsandprompts.com/2026/10/08/100-reactions-to-100-solutions/",
+   "kind": "thread",
+   "authors": [
+    {
+     "name": "Hosts of Proofs and Prompts",
+     "handle": "",
+     "url": "https://proofsandprompts.com"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "A communal blog post gathering roughly one hundred signed reactions from mathematicians to the release, covering awe, grief, anger at unreadable papers, calls for neutral reading groups and a platform for discussion, and new norms for credit.",
+   "traction": "Hacker News 101 points and 102 comments (item 50019499) and 9 points and 2 comments (item 50014527) on 2026-10-11; page states last update 2026-10-11 and that the collection stays open another week",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "proofatlas-open-problems",
+   "name": "Top Open Problems in Math by LLM-Assessed Importance",
+   "url": "https://www.proofatlas.ai/open-problems/",
+   "kind": "tier-list",
+   "authors": [
+    {
+     "name": "zone411",
+     "handle": "zone411",
+     "url": "https://news.ycombinator.com/user?id=zone411"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-06",
+   "summary": "An LLM-ranked list of 500 open problems whose maintainer counted, in the main Hacker News thread, how many the release addresses; readers asked for a disclosure of how the ranking was made.",
+   "traction": "Hacker News story 4 points and 0 comments (item 49984311); the maintainer's comment in the main thread drew about 65 replies (item 49985540), counted 2026-10-11",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "saha-four-categories",
+   "name": "Abhishek Saha four-category scheme",
+   "url": "https://x.com/ObhishekSaha/status/2107801342722928899",
+   "kind": "tier-list",
+   "authors": [
+    {
+     "name": "Abhishek Saha",
+     "handle": "@ObhishekSaha",
+     "url": "https://x.com/ObhishekSaha"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-07",
+   "summary": "A professor's four-category rubric from non-breakthrough to shock breakthrough applied loosely to the release, naming the quasi-Riemann result as the single shock.",
+   "traction": "no star count (not a repository); 129,081 views, 993 likes and 127 reposts on X on 2026-10-11; a derivative hype post got 166,429 views",
+   "reuse": "cite",
+   "families": [
+    "003",
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "forster-own-your-specs",
+   "name": "own-your-specs",
+   "url": "https://github.com/yforster/own-your-specs",
+   "kind": "tooling",
+   "authors": [
+    {
+     "name": "Yannick Forster",
+     "handle": "yforster",
+     "url": "https://github.com/yforster"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-09",
+   "summary": "A minimal example showing how a definition listed as overridable lets a Comparator check pass for a changed statement, with a proposal to rename the field so the risk is obvious.",
+   "traction": "5 reactions on the Zulip message announcing it (read 2026-10-11)",
+   "families": [
+    "release"
+   ],
+   "reuse": "link",
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "hugetim-openai-math-mirror",
+   "name": "openai_math: unofficial mirror with Issues and Discussion enabled",
+   "url": "https://github.com/hugetim/openai_math",
+   "kind": "tooling",
+   "authors": [
+    {
+     "name": "hugetim",
+     "handle": "hugetim",
+     "url": "https://github.com/hugetim"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-10",
+   "summary": "A mirror of the release repository with issues and discussions switched on, proposed in a MathOverflow answer as a place to file corrections because the official repository takes none.",
+   "traction": "1 star and 0 issues on 2026-10-11 (read by the Zulip desk); the proposing MathOverflow answer has 7 votes",
+   "families": [
+    "release"
+   ],
+   "reuse": "link",
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "bloom-erdos-problems-in-the-openai-proofs",
+   "name": "Erdős problems in the OpenAI proofs",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "kind": "tracker",
+   "authors": [
+    {
+     "name": "Thomas Bloom",
+     "handle": "",
+     "url": "https://www.erdosproblems.com"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "The Erdős problems site maintainer's list of 25 problems with claims in the release, giving for each the problem, the OpenAI PDF, the Lean challenge or its absence, earlier work he names and a short remark, with a disclaimer that he has checked neither the proofs nor the Lean statements.",
+   "traction": "9 comments visible and commenting suspended on 2026-10-11; he reports 21 of the 25 formalised and the PDFs totalling 1,347 pages",
+   "reuse": "cite",
+   "families": [
+    "011",
+    "012",
+    "013",
+    "021",
+    "024",
+    "025",
+    "026",
+    "028",
+    "076",
+    "084",
+    "158",
+    "159",
+    "160",
+    "164",
+    "166",
+    "167",
+    "170",
+    "171",
+    "172",
+    "181",
+    "184",
+    "189"
+   ],
+   "statements": [
+    "AsymptoticallyMinimalLittlewood",
+    "CliqueFreeLog",
+    "CycleCliqueRamsey",
+    "CycleDecomposition",
+    "DyadicAvoidance",
+    "ErdosReciprocal",
+    "EuclideanRamsey",
+    "GaussianMoat",
+    "JacobsthalImproved",
+    "JointDickman",
+    "OstmannComplete",
+    "PinnedDistances",
+    "PlanarUnitDistances",
+    "PrimeGaps",
+    "QuantitativeVanDerWaerden",
+    "SharpLogRamsey",
+    "ShortEgyptianFractions",
+    "TotientAsymptotic"
+   ],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "prosz-problem-109-tracker",
+   "name": "Paureel/beyond-n-log-n",
+   "url": "https://beyond-n-log-n.netlify.app",
+   "kind": "tracker",
+   "authors": [
+    {
+     "name": "Aurel Prosz",
+     "handle": "@aurel_pr",
+     "url": "https://x.com/aurel_pr"
+    }
+   ],
+   "licence": "apache-2.0",
+   "date": "2026-10-08",
+   "summary": "A live tracker page for the community race on the integer multiplication exponent.",
+   "traction": "5 stars, 3 forks on 2026-10-11 (GitHub, read by the projects desk); announcement had 59,555 views and 444 likes on X; Hacker News 2 points, 0 comments (item 50015710)",
+   "reuse": "link",
+   "families": [
+    "109"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "zjukop3-openai-math-tracker",
+   "name": "zjukop3/openai-math-tracker",
+   "url": "https://github.com/zjukop3/openai-math-tracker",
+   "kind": "tracker",
+   "authors": [
+    {
+     "name": "zjukop3",
+     "handle": "zjukop3",
+     "url": "https://github.com/zjukop3"
+    }
+   ],
+   "licence": "Apache-2.0 per README (GitHub shows no licence file)",
+   "date": "2026-10-08",
+   "summary": "A bilingual machine-readable catalogue of the manuscripts with a pull-request based verification tracker.",
+   "traction": "0 stars, 1 forks on 2026-10-11 (GitHub, read by the projects desk)",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "B_community_seed.json"
+  }
+ ],
+ "findings": [
+  {
+   "effort": "buzzard-ant-results-comment",
+   "family": "002",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An expert flags that the release gives no Lean for rank at most one Birch and Swinnerton-Dyer and suggests it may be the last mile of a programme already close to done rather than a new idea.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629814059",
+   "date": "2026-10-07",
+   "verified": "Read the message (Zulip id 629814059) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "ang-bsd-comment",
+   "family": "002",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A number theorist reads the family as finishing the analytic rank zero and one case of BSD over the rationals by removing earlier assumptions, with nothing formalised and nothing for higher rank or number fields.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629763471",
+   "date": "2026-10-07",
+   "verified": "Read the message (Zulip id 629763471) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "003",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An answerer says the most surprising feature is that conventional techniques narrow the critical strip, with three proofs of such a zero-free region.",
+   "url": "https://mathoverflow.net/a/515854",
+   "date": "2026-10-08",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515854, 12 votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "liubaiying101-slightly-improved-zero-free",
+   "family": "003",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "A small repository claims a slightly smaller zero-free half-plane than the manuscript's 7/8; this is the owner's claim and has had almost no outside attention.",
+   "url": "https://github.com/liubaiying101/Slightly-improved-zero-free-half-planes-for-the-quasi-Riemann-hypothesis",
+   "date": "2026-10-08",
+   "verified": "Read the repository description in the census on 2026-10-11; the mathematics and any Lean were not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "argonaut-math-quasi-riemann-boundary",
+   "family": "003",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "A small repository claims a refinement from 7/8 to 3499999/4000000; this is the owner's claim and has had almost no outside attention.",
+   "url": "https://github.com/Argonaut-Math/argonaut-math-quasi-riemann-boundary",
+   "date": "2026-10-08",
+   "verified": "Read the repository description in the census on 2026-10-11; the mathematics and any Lean were not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "drmurphyisin-qrh-debruijn-newman",
+   "family": "003",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "A small repository claims a bound of 9/32 on the de Bruijn-Newman constant; this is the owner's claim and has had almost no outside attention.",
+   "url": "https://github.com/DrMurphyIsIn/qrh-debruijn-newman",
+   "date": "2026-10-09",
+   "verified": "Read the repository description in the census on 2026-10-11; the mathematics and any Lean were not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "003",
+   "statement": "DirichletSevenEighths",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "003",
+   "statement": "HeckeSevenEighths",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "003",
+   "statement": "QuasiRiemannHypothesis",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "davegoldblatt-openai-zeta-proof-check",
+   "family": "003",
+   "statement": "QuasiRiemannHypothesis",
+   "kind": "replay-pass",
+   "summary": "Comparator printed that the solution is okay with the default kernel and again with the independent nanoda kernel on a challenge file the author wrote, all 2,924 modules compiled, and only the three standard axioms appear.",
+   "url": "https://github.com/davegoldblatt/openai-zeta-proof-check",
+   "date": "2026-10-07",
+   "verified": "Read the forum post and the repository metadata on 2026-10-11 (repo exists, MIT, created 2026-10-07 01:36 UTC); not re-run by us; the author notes one run on one machine and that it checks the Lean proof, not the paper; his remark that the second kernel is almost never enabled holds at the pinned commit fd4aeeb (412 of 416 configs set enable_nanoda false, 2 set it true)",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "003",
+   "statement": "SiegelZeros",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "buzzard-ant-results-comment",
+   "family": "004",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An expert flags that the release gives no Lean for Hilbert's tenth problem over the rationals and suggests it may be the last mile of a programme already close to done rather than a new idea.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629814059",
+   "date": "2026-10-07",
+   "verified": "Read the message (Zulip id 629814059) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "005",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the irrationality of Catalan's constant.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "005",
+   "statement": "Catalan",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "hajlasz-searchable-catalogue",
+   "family": "005",
+   "statement": "Catalan",
+   "kind": "error-reported",
+   "summary": "A reader of the catalogue thread notes that OpenAI's formalisation catalogue does not list the Catalan paper although a formalisation exists; at the pinned commit the YAML file indeed omits it while a Comparator challenge and a scope page are present.",
+   "url": "https://mathoverflow.net/questions/515874",
+   "date": "2026-10-09",
+   "verified": "Read the comment on 2026-10-11 and checked the pinned upstream files (commit fd4aeeb): lean/formalization.yaml has no Catalan entry, while ComparatorChallenges/Catalan.json and lean/docs/005.md exist",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "buzzard-ant-results-comment",
+   "family": "006",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An expert flags that the release gives no Lean for Goldfeld's conjecture on quadratic twists and suggests it may be the last mile of a programme already close to done rather than a new idea.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629814059",
+   "date": "2026-10-07",
+   "verified": "Read the message (Zulip id 629814059) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "buzzard-ant-results-comment",
+   "family": "010",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An expert flags that the release gives no Lean for Fontaine-Mazur modularity at the prime two and suggests it may be the last mile of a programme already close to done rather than a new idea.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629814059",
+   "date": "2026-10-07",
+   "verified": "Read the message (Zulip id 629814059) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "011",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 821 (totient values), says it is not formalised, and notes the PDF gets there through results on prime factors of p minus one.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 821 matched to this family by matched by manuscript title; he links no Lean",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "012",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the joint Dickman result to Erdos problem 371, recording that the density is taken over a closed interval rather than below a bound.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "012",
+   "statement": "JointDickman",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 371 (density one half for consecutive largest prime factors), names Lü and Wang and Teräväinen, and notes it is a corollary of a joint distribution law in 84 pages.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 371 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "013",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links Ostmann's inverse Goldbach result to Erdos problem 431.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "013",
+   "statement": "OstmannComplete",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 431 (primes are not a sumset, Ostmann's conjecture) in an 80-page PDF with the formalisation linked.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 431 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "017",
+   "statement": "PiExponent",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "020",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the power-free values result to Erdos problem 978.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "021",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the Jacobsthal bounds to Erdos problem 970 and adds an iterated-log variant.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "021",
+   "statement": "JacobsthalImproved",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 970 (a quadratic-type bound for Jacobsthal's function), names Iwaniec's earlier bound, and links the formalisation.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 970 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "024",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the totient asymptotic to part of Erdos problem 416 and leaves another part open.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "024",
+   "statement": "TotientAsymptotic",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 416 (counting totient values) and notes the methods resemble Ford's existing work, with the formalisation linked.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 416 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "leanmeanbean-417-writeup",
+   "family": "024",
+   "statement": "TotientAsymptotic",
+   "kind": "follow-up-result",
+   "summary": "A consequence of the totient asymptotic gives an explicit upper bound near 2.195 for the limit superior in a related Erdős problem, in a write-up the author says started as AI output and was edited into a short human-readable form; he may also write an exposition of the 416 proof.",
+   "url": "https://github.com/LeanMeanBean/417/blob/main/417.pdf",
+   "date": "2026-10-10",
+   "verified": "Read the author's comment on Bloom's page on 2026-10-11; the write-up and the bound were not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "025",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the short Egyptian fractions result to Erdos problem 304.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "025",
+   "statement": "ShortEgyptianFractions",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 148, 293 and 304 as three unit fraction results from one 33-page PDF, names the previous best bounds, and links one formalisation.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 148, 293 and 304 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "woett-short-egyptian-fractions-writeup",
+   "family": "025",
+   "statement": "ShortEgyptianFractions",
+   "kind": "explanation",
+   "summary": "A simplified human-written proof gives an explicit constant of about 23 for the number of unit fractions against about 371 in the manuscript, and the same argument yields the two related Erdős problems.",
+   "url": "https://github.com/Woett/Mathematical-shorts/blob/main/Short%20Egyptian%20fractions.pdf",
+   "date": "2026-10-10",
+   "verified": "Read the author's comment on Bloom's page on 2026-10-11 (the constants are his); the write-up PDF itself was not opened by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "woett-short-egyptian-fractions-writeup",
+   "family": "025",
+   "statement": "ShortEgyptianFractions",
+   "kind": "commentary",
+   "summary": "The same author reports that the manuscript proves the main bound in a hard twenty-page argument and then uses a different, easier argument for one corollary, and that the formalisations of two of the problems go through the hard proof while the third modifies the easy one to avoid a deep prime number theorem.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10#comments",
+   "date": "2026-10-10",
+   "verified": "Read the comment on 2026-10-11; he says he has not tried to understand the hard proof; not checked against the Lean by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "026",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the large prime gaps result to Erdos problem 968.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "026",
+   "statement": "PrimeGaps",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 968 (a prime gap density question), notes it follows from a stronger large gaps result using sieve tools of Goldston, Pintz and Yildirim and Maynard and Tao, and links the formalisation.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 968 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "028",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the Gaussian-prime moat result to Erdos problem 952, recording a norm against distance difference.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "028",
+   "statement": "GaussianMoat",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 952 (bounded step walks on Gaussian primes), notes the problem likely began with Gordon and Motzkin, and links the formalisation.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 952 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "buzzard-ant-results-comment",
+   "family": "030",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An expert flags that the release gives no Lean for modularity of elliptic curves over imaginary quadratic fields and suggests it may be the last mile of a programme already close to done rather than a new idea.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629814059",
+   "date": "2026-10-07",
+   "verified": "Read the message (Zulip id 629814059) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "buzzard-ant-results-comment",
+   "family": "032",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An expert flags that the release gives no Lean for the Hodge conjecture for CM abelian varieties and suggests it may be the last mile of a programme already close to done rather than a new idea.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629814059",
+   "date": "2026-10-07",
+   "verified": "Read the message (Zulip id 629814059) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "glazer-weil-classes-flaw",
+   "family": "032",
+   "statement": null,
+   "kind": "error-reported",
+   "summary": "A tweet says an AI check of the Weil classes manuscript, which had no Lean, found it flawed, about two and a half hours before OpenAI's withdrawal notice; whether OpenAI acted on it is not stated.",
+   "url": "https://x.com/ElliotGlazer/status/2108026240582246600",
+   "date": "2026-10-08",
+   "verified": "Read the tweet through the public embed API on 2026-10-11 (2026-10-08 02:46 UTC; OpenAI's withdrawal tweet is 05:20 UTC); the withdrawn manuscript has no family in data/manuscripts.json, so family 032 (nearest) is a placement choice",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "ityonemo-openai-wiles",
+   "family": "032",
+   "statement": null,
+   "kind": "replay-fail",
+   "summary": "In a non-Lean checker the withdrawn Weil-classes argument fails at the stabilisation-trace count when the sign given in the withdrawal notice is used and passes only with the manuscript's sign, matching OpenAI's account of the error.",
+   "url": "https://github.com/ityonemo/openai-wiles",
+   "date": "2026-10-09",
+   "verified": "Read the repository page summary and the author's Hacker News replies on 2026-10-11; the checker is the author's own and was not run by us; the withdrawn manuscript has no family in data/manuscripts.json, so family 032 (the nearest Hodge and Weil-class family) is a placement choice",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "047",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the proof for Zariski cancellation over the complex numbers.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "049",
+   "statement": "AbhyankarSathaye",
+   "kind": "commentary",
+   "summary": "The headline claims a stable-coordinate counterexample, but the formalised polynomial has a critical point, so it is not a stable coordinate.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=5",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "072",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the integral means result to Brennan's conjecture at the endpoint value.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "073",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the Falconer distance results for the plane and all dimensions.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "076",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An answerer says many people expected that no ultraflat Littlewood polynomial would exist.",
+   "url": "https://mathoverflow.net/a/515866",
+   "date": "2026-10-09",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515866, 10 votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "076",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the Littlewood polynomial result to Erdos problem 1150, recording a length against degree difference.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "076",
+   "statement": "AsymptoticallyMinimalLittlewood",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 1150 (ultraflat Littlewood polynomials), names Balister, Bollobás, Morris, Sahasrabudhe and Tiba, and notes it relies on two other PDFs of the release.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 1150 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "084",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the dyadic avoidance result to Green's problem 94.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "084",
+   "statement": "DyadicAvoidance",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 120 (the similarity problem for geometric sequences) and notes the Lean covers only the ratio one half.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 120 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "090",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the planar packing result to Green's problem 42, recording a dilation by two.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "095",
+   "statement": "HyperbolicCones",
+   "kind": "commentary",
+   "summary": "The headline claims no exact semidefinite lift, but only non-spectrahedrality is formalised, and a companion paper constructs such a lift for the same cone.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=5",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "100",
+   "statement": "CylinderCovering",
+   "kind": "commentary",
+   "summary": "The Lean statement treats one regime at a time and leaves the regular tetrahedron statement outside the checked theorem.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=3",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "100",
+   "statement": "RuledCovering",
+   "kind": "commentary",
+   "summary": "The Lean statement treats one regime at a time, so it is weaker than the paper's theorem for fields that mix the two regimes.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=3",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "offline-ant-wiggums-proof-loop",
+   "family": "102",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "The Lean proof for the Unique Games result was reduced by about a quarter in line count by AI agents; the author reports a clean rebuild with only the standard axioms.",
+   "url": "https://github.com/offline-ant/wiggums-proof-loop",
+   "date": "2026-10-09",
+   "verified": "Read the README summary and GitHub API metadata on 2026-10-11 (Apache-2.0, created 2026-10-09); the build was not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "102",
+   "statement": "UniqueGamesTheorem",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "timeroot-comparator-definition-holes",
+   "family": "103",
+   "statement": "LogspaceEquality",
+   "kind": "error-reported",
+   "summary": "Reported as broken in the same way: its machine definitions are listed as holes, so a trivial replacement makes the checked statement vacuous.",
+   "url": "https://blog.ohaithe.re/post/829974396980641792/id-like-to-alert-people-that-several-of-the",
+   "date": "2026-10-08",
+   "verified": "Read the post on 2026-10-11; confirmed in the pinned upstream files (commit fd4aeeb) that the named definition is listed in definition_names in this challenge's JSON while the Lean file already gives it a body; per the Comparator README, listed definitions are holes the solver fills and Comparator checks only name and type; Comparator not run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mccarthy-comparator-strict-rerun",
+   "family": "103",
+   "statement": "LogspaceEquality",
+   "kind": "replay-pass",
+   "summary": "With the definition holes pinned so the solver's definitions must match the challenge, Comparator reports the solution is okay for this challenge, so the hole was not being abused by OpenAI's own solution.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630360393",
+   "date": "2026-10-09",
+   "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "107",
+   "statement": "MatrixFields",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "107",
+   "statement": "MatrixMultiplication",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "107",
+   "statement": "MatrixMultiplication",
+   "kind": "commentary",
+   "summary": "The Lean statement gives the exponent bound 9/4 over the complex numbers, which is stronger than the 2.258 bound in the paper the documentation links; the nine-fourths manuscript it actually follows is not linked.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=3",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "selanavot-matrix-multiplication-all-fields",
+   "family": "107",
+   "statement": "MatrixMultiplication",
+   "kind": "follow-up-result",
+   "summary": "Using an AI coding agent, the author extended the 9/4 exponent bound from the complex numbers to every field in Lean, and reports that Lean and Comparator checks pass.",
+   "url": "https://github.com/selanavot/matrix-multiplication-all-fields",
+   "date": "2026-10-07",
+   "verified": "Read the forum post and repository metadata on 2026-10-11 (created 2026-10-07 00:02 UTC, Apache-2.0); the Lean proof and the claimed checks were not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "109",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An answerer says a deterministic integer multiplication algorithm faster than n log n overturns what experts, including the authors of the best earlier algorithm, expected to be optimal.",
+   "url": "https://mathoverflow.net/a/515855",
+   "date": "2026-10-08",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515855, 55 votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "swapnil-jain-integer-mult-kappa",
+   "family": "109",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "A second team posted a series of conditional exponent improvements for the integer multiplication result, reaching about 2 to the power minus 10.5 in eleven rounds on 8 and 9 October, with Lean files for finite certificates and analytic premises assumed.",
+   "url": "https://github.com/Swapnil-jain/integer-mult-kappa",
+   "date": "2026-10-09",
+   "verified": "Read the README summary, repository metadata and X post counts through the projects desk on 2026-10-11; the bounds and the Lean files were not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "crocswap-integer-mult-bounds",
+   "family": "109",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "A community effort has pushed the conditional exponent for integer multiplication well beyond the manuscript's, with merged pull requests, exact certificates and partial Lean transfer; the claims remain conditional and are not a complete Lean proof.",
+   "url": "https://github.com/CrocSwap/integer-mult-bounds",
+   "date": "2026-10-10",
+   "verified": "Read the README summary and GitHub API metadata on 2026-10-11 (178 stars, Apache-2.0); bounds and certificates not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "110",
+   "statement": "KServer",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "timeroot-comparator-definition-holes",
+   "family": "110",
+   "statement": "KServer",
+   "kind": "error-reported",
+   "summary": "Reported as broken in the same way: its cost and policy definitions are listed as holes, so a trivial replacement makes the checked statement vacuous.",
+   "url": "https://blog.ohaithe.re/post/829974396980641792/id-like-to-alert-people-that-several-of-the",
+   "date": "2026-10-08",
+   "verified": "Read the post on 2026-10-11; confirmed in the pinned upstream files (commit fd4aeeb) that the named definition is listed in definition_names in this challenge's JSON while the Lean file already gives it a body; per the Comparator README, listed definitions are holes the solver fills and Comparator checks only name and type; Comparator not run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mccarthy-comparator-strict-rerun",
+   "family": "110",
+   "statement": "KServer",
+   "kind": "replay-pass",
+   "summary": "With the definition holes pinned so the solver's definitions must match the challenge, Comparator reports the solution is okay for this challenge, so the hole was not being abused by OpenAI's own solution.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630360393",
+   "date": "2026-10-09",
+   "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "121",
+   "statement": "EditApproximation",
+   "kind": "commentary",
+   "summary": "The review marks this statement as possibly weaker: it bounds a work counter built from hand-written costs rather than a machine model, with no undercount found but not every cost audited.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=3",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "shea256-fourier-below-nlogn",
+   "family": "130",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "A conditional exponent saving for the exact discrete Fourier transform built on the community integer multiplication network, published as an unreviewed research draft with verifiers.",
+   "url": "https://github.com/shea256/fourier-transform-below-nlogn",
+   "date": "2026-10-08",
+   "verified": "Read the repository metadata and X post counts through the projects desk on 2026-10-11; AI use is not stated; not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "danadran01-exact-dft-power-saving",
+   "family": "130",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "A repository claims an exact discrete Fourier transform saving of about 3.2 millionths in the exponent against the manuscript's one ten-trillionth, verified in Lean; it is a claim by the owner and not independently checked.",
+   "url": "https://github.com/danadran01/exact-dft-power-saving",
+   "date": "2026-10-09",
+   "verified": "Read the repository description in the census and the Reddit announcement counts on 2026-10-11; the Lean verification was not run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "131",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A researcher who worked on switch chain mixing says the team was convinced it mixes rapidly and is glad the release proved it.",
+   "url": "https://mathoverflow.net/a/515910",
+   "date": "2026-10-10",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515910, 3 votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "132",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An answerer reads the sensitivity result as disproving the stronger quadratic conjecture proposed in the 1990s while leaving the known fourth-power bound untouched.",
+   "url": "https://mathoverflow.net/a/515856",
+   "date": "2026-10-08",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515856, 13 votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "132",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the superquadratic sensitivity separation to the strong sensitivity conjecture, stated as a negation.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "132",
+   "statement": "SensitivitySeparation",
+   "kind": "commentary",
+   "summary": "The doc and headline claim a power separation, but the theorem Comparator checks gives only a weaker bound that implies none.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "143",
+   "statement": "QuinticLienard",
+   "kind": "commentary",
+   "summary": "The family headline says it resolves the uniform boundedness assertion in Hilbert's sixteenth problem, but only quintic Lienard systems are formalised.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "145",
+   "statement": "Rokhlin",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "timeroot-comparator-definition-holes",
+   "family": "145",
+   "statement": "Rokhlin",
+   "kind": "error-reported",
+   "summary": "Listed as broken in the same way, without further detail in the post.",
+   "url": "https://blog.ohaithe.re/post/829974396980641792/id-like-to-alert-people-that-several-of-the",
+   "date": "2026-10-08",
+   "verified": "Read the post on 2026-10-11; confirmed in the pinned upstream files (commit fd4aeeb) that the named definition is listed in definition_names in this challenge's JSON while the Lean file already gives it a body; per the Comparator README, listed definitions are holes the solver fills and Comparator checks only name and type; Comparator not run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mccarthy-comparator-strict-rerun",
+   "family": "145",
+   "statement": "Rokhlin",
+   "kind": "replay-pass",
+   "summary": "With the definition holes pinned so the solver's definitions must match the challenge, Comparator reports the solution is okay for this challenge, so the hole was not being abused by OpenAI's own solution.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630360393",
+   "date": "2026-10-09",
+   "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "myers-tile-155-comments",
+   "family": "155",
+   "statement": "PeriodicTilingThree",
+   "kind": "commentary",
+   "summary": "An expert notes that the result is weak aperiodicity rather than strong, that the paper does not mention that distinction or the work on connected tiles, and that a connected tile in three dimensions follows without extra dimensions.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630258005",
+   "date": "2026-10-08",
+   "verified": "Read the message (Zulip id 630258005) in the public stream capture on 2026-10-11; the original comments were on a members-only list; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "quanta-transformation",
+   "family": "155",
+   "statement": "PeriodicTilingThree",
+   "kind": "commentary",
+   "summary": "A tiling expert quoted by Quanta says the three-dimensional aperiodic tile paper has novel ideas but is hard to read and would not be publishable by traditional standards.",
+   "url": "https://www.quantamagazine.org/updates/transformation/",
+   "date": "2026-10-09",
+   "verified": "Read the Quanta page on 2026-10-11 (quote relayed by the magazine); not re-checked with the expert",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "156",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the nine-dimensional counterexample to Borsuk's conjecture, recording a diameter convention difference and that the cover is intersected with the set.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "156",
+   "statement": "BorsukNine",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "157",
+   "statement": "ListHadwiger",
+   "kind": "commentary",
+   "summary": "The headline claims counterexamples to Hadwiger's conjecture, but the formalised statement is only a list-colouring bound.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "158",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 508, the five-colour impossibility for the plane, marks it formalised but gives no link, and notes it implies the chromatic number is 6 or 7.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 508 matched to this family by matched by manuscript title; he marks it formalised without a link",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "158",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the five-colour result for the plane to the chromatic number of the plane problem, leaving the full value open.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "158",
+   "statement": "EuclideanFiveColor",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "timeroot-comparator-definition-holes",
+   "family": "158",
+   "statement": "EuclideanFiveColor",
+   "kind": "error-reported",
+   "summary": "A reader replaced the proper-colouring definition by false and Comparator accepted a trivial proof, because that definition is listed as a hole.",
+   "url": "https://blog.ohaithe.re/post/829974396980641792/id-like-to-alert-people-that-several-of-the",
+   "date": "2026-10-08",
+   "verified": "Read the post on 2026-10-11; confirmed in the pinned upstream files (commit fd4aeeb) that the named definition is listed in definition_names in this challenge's JSON while the Lean file already gives it a body; per the Comparator README, listed definitions are holes the solver fills and Comparator checks only name and type; Comparator not run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mccarthy-comparator-strict-rerun",
+   "family": "158",
+   "statement": "EuclideanFiveColor",
+   "kind": "replay-pass",
+   "summary": "With the definition holes pinned so the solver's definitions must match the challenge, Comparator reports the solution is okay for this challenge, so the hole was not being abused by OpenAI's own solution.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630360393",
+   "date": "2026-10-09",
+   "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "159",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the quasipolynomial Szemeredi bound to Erdos problem 3.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "159",
+   "statement": "ErdosReciprocal",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 3 as a claimed proof in a 198-page PDF, names Kelley and Meka (three-term case) and Leng, Sah and Sawhney as earlier work, and notes that the challenge file states only the reciprocal-sum consequence while the Lean code appears to prove a weaker quantitative bound than the PDF.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 3 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-post-comments",
+   "family": "159",
+   "statement": "ErdosReciprocal",
+   "kind": "commentary",
+   "summary": "One commenter who spent an hour on this manuscript found notation with several meanings that needed back-tracking, and another who has worked on the problem says the 200 pages are mainly useful for another AI to explain to a human.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10#comments",
+   "date": "2026-10-09",
+   "verified": "Read the comment on the page on 2026-10-11; comments on that site are not verified for correctness",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "160",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the superexponential van der Waerden bound to Erdos problem 138.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "160",
+   "statement": "QuantitativeVanDerWaerden",
+   "kind": "commentary",
+   "summary": "Finiteness and the boundary values are claimed in the doc but are not among the theorems Comparator checks.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "160",
+   "statement": "QuantitativeVanDerWaerden",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 138 (superexponential van der Waerden numbers), names Fox and Hunter's earlier result for three or more colours, and links the formalisation.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 138 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "161",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the counterexample to Sidorenko's conjecture in its finite form and marks the graphon form refuted without a proof link.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "161",
+   "statement": "SidorenkoCounterexample",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "162",
+   "statement": "RyserCovering",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "164",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 172 (Hindman's conjecture on sums and products), notes Alweiss proved it over the rationals, and says it is not formalised and the PDF has 70 pages.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 172 matched to this family by matched by manuscript title; he links no Lean",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "166",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 1083 (distinct distances in higher dimensions), names Tidor, Yu and Zakharov, and says it is not formalised, heavily algebraic and 103 pages long.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 1083 matched to this family by matched by manuscript title; he links no Lean",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "167",
+   "statement": "PinnedDistances",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 604 on pinned distances, a result with a weak exponent, with the formalisation linked and no earlier work named.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 604 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "167",
+   "statement": "PlanarUnitDistances",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 90, a power saving over the Spencer, Szemerédi and Trotter unit distance bound, notes the PDF gives no value for the saving, and links the formalisation.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 90 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "168",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An algebraic combinatorialist says the proof of combinatorial invariance for Kazhdan-Lusztig polynomials agrees with the majority expectation.",
+   "url": "https://mathoverflow.net/a/515897",
+   "date": "2026-10-10",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515897, 9 votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "169",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The same expert has read this family in detail and finds the key step clever and quick, relating an existing programme to a highly structured setting with powerful tools, but not a new technique.",
+   "url": "https://mathoverflow.net/a/515897",
+   "date": "2026-10-10",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515897, 9 votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "169",
+   "statement": "ElementaryPositivity",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "169",
+   "statement": "ElementaryPositivity",
+   "kind": "commentary",
+   "summary": "The Lean statement leaves the rule as a definition hole that accepts any function meeting the expansion identity, so it certifies positivity but not the paper's explicit rule.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=2",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "timeroot-comparator-definition-holes",
+   "family": "169",
+   "statement": "ElementaryPositivity",
+   "kind": "commentary",
+   "summary": "The post notes a definitional hole here but judges it acceptable, because the main objective is a data-carrying term rather than a proposition.",
+   "url": "https://blog.ohaithe.re/post/829974396980641792/id-like-to-alert-people-that-several-of-the",
+   "date": "2026-10-08",
+   "verified": "Read the post on 2026-10-11; confirmed in the pinned upstream files (commit fd4aeeb) that the named definition is listed in definition_names in this challenge's JSON while the Lean file already gives it a body; per the Comparator README, listed definitions are holes the solver fills and Comparator checks only name and type; Comparator not run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "170",
+   "statement": "SharpLogRamsey",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 986 (off-diagonal Ramsey numbers) and notes that Bradač had already answered the original question earlier in the year, so the claim improves the logarithmic power.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 986 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-post-comments",
+   "family": "170",
+   "statement": "SharpLogRamsey",
+   "kind": "commentary",
+   "summary": "A commenter notes that if the off-diagonal Ramsey manuscripts are correct, Erdős problem 986 benefits and by extension several related problems, which the site maintainer then recorded.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10#comments",
+   "date": "2026-10-09",
+   "verified": "Read the comment on the page on 2026-10-11; comments on that site are not verified for correctness",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "171",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 181 (hypercube Ramsey number of linear order), names Tikhomirov's earlier bound, and says it is not formalised and the PDF has 172 pages.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 181 matched to this family by matched by manuscript title; he links no Lean",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "172",
+   "statement": "EuclideanRamsey",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 174, a classification of finite Ramsey sets, names the 1973 sphere condition and Pálvölgyi's work in preparation, and links the formalisation.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 174 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "173",
+   "statement": "SeymourSecondNeighborhood",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "monk-ramanujan-graphs-comment",
+   "family": "178",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A specialist reports that the paper gives a low-complexity deterministic algorithm rather than the construction its title suggests, notes that a trivial deterministic search already works at poor complexity, and observes that it has 85 pages and no Lean.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629773892",
+   "date": "2026-10-07",
+   "verified": "Read the message (Zulip id 629773892) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "179",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the circulant Hadamard result and records that the human statement uses the product of the matrix and its transpose in the other order.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "179",
+   "statement": "CirculantHadamard",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "180",
+   "statement": "BarnetteHamiltonian",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "181",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the cycle decomposition result to Erdos problem 184.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "181",
+   "statement": "CycleDecomposition",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 184 (linear cycle and edge decomposition), names Bucić and Montgomery's earlier bound, and links the formalisation.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 184 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-post-comments",
+   "family": "181",
+   "statement": "CycleDecomposition",
+   "kind": "commentary",
+   "summary": "A commenter says at least two claimed proofs of the linear cycle and edge decomposition appeared before the announcement, one on the same site on 1 October and one on arXiv at almost the same time.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10#comments",
+   "date": "2026-10-08",
+   "verified": "Read the comment on the page on 2026-10-11; comments on that site are not verified for correctness; the two earlier claims were not opened by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "184",
+   "statement": "CliqueFreeLog",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 802 (independent sets in clique-free graphs), names Shearer and Ajtai, Erdős, Komlós and Szemerédi, and links the formalisation.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 802 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "gotrevor-snaky-15x15",
+   "family": "187",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "An independent search found a first-player win for Snaky on 15 by 15; the author reports that OpenAI's 21-move strategy closed the last three positions the search had not settled, and publishes a Lean proof and a playable site.",
+   "url": "https://github.com/gotrevor/snaky-15x15",
+   "date": "2026-10-08",
+   "verified": "Read the forum post and repository metadata on 2026-10-11 (Apache-2.0, created 2026-10-07 16:10 UTC); the Lean proof and the site were not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "187",
+   "statement": "SnakyConditional",
+   "kind": "commentary",
+   "summary": "The doc row describes conditional winning templates, but the theorem Comparator checks is the unconditional 35-move win, a different statement.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "bloom-erdos-problems-in-the-openai-proofs",
+   "family": "189",
+   "statement": "CycleCliqueRamsey",
+   "kind": "commentary",
+   "summary": "Bloom lists Erdős 551 (the Ramsey numbers of cycles against complete graphs) and links the formalisation.",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "date": "2026-10-08",
+   "verified": "Read the post text on 2026-10-11 (page fetched; he says he has not checked the proofs or that the Lean statements capture the problems); Erdős number 551 matched to this family by linked challenge file",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "196",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the group algebra counterexample to Kaplansky's zero-divisor conjecture, stated as a negation.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "197",
+   "statement": "KaplanskyDirectFiniteness",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "197",
+   "statement": "KaplanskyFinitelyPresented",
+   "kind": "commentary",
+   "summary": "The headline claims a finitely presented torsion-free nonsofic group over the field with two elements; the statements allow any finite field of characteristic two and one needs an element of odd prime order.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "199",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the counterexample to the Auslander-Reiten conjecture, stated as a negation for Artin algebras.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "205",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The same expert notes that Saxl's conjecture was proved true, in line with the universal expectation of those who had heard of it.",
+   "url": "https://mathoverflow.net/a/515897",
+   "date": "2026-10-10",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515897, 9 votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "210",
+   "statement": "FoulkesHowe",
+   "kind": "commentary",
+   "summary": "Only surjectivity is checked; further results the doc calls formalised are proved in solution files but not named in the Comparator configuration.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "230",
+   "statement": "SLELowerPositivity",
+   "kind": "commentary",
+   "summary": "The Lean statement gives positivity only and does not make the quantity an exact gauge as the paper does.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=3",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "238",
+   "statement": "OccupiedOverlap",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "timeroot-comparator-definition-holes",
+   "family": "238",
+   "statement": "OccupiedOverlap",
+   "kind": "error-reported",
+   "summary": "Listed as broken in the same way, without further detail in the post.",
+   "url": "https://blog.ohaithe.re/post/829974396980641792/id-like-to-alert-people-that-several-of-the",
+   "date": "2026-10-08",
+   "verified": "Read the post on 2026-10-11; confirmed in the pinned upstream files (commit fd4aeeb) that the named definition is listed in definition_names in this challenge's JSON while the Lean file already gives it a body; per the Comparator README, listed definitions are holes the solver fills and Comparator checks only name and type; Comparator not run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mccarthy-comparator-strict-rerun",
+   "family": "238",
+   "statement": "OccupiedOverlap",
+   "kind": "replay-fail",
+   "summary": "With the definition holes pinned, Comparator stops on a mismatch between challenge and solution at the endpoint definition; the author suspects a dependent-type technicality with a trivial fix.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630360393",
+   "date": "2026-10-09",
+   "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "238",
+   "statement": "SpinAngle",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "timeroot-comparator-definition-holes",
+   "family": "238",
+   "statement": "SpinAngle",
+   "kind": "error-reported",
+   "summary": "The post notes a sorry inside a definition that is a proof obligation, and that Comparator lets the rest of the definition change.",
+   "url": "https://blog.ohaithe.re/post/829974396980641792/id-like-to-alert-people-that-several-of-the",
+   "date": "2026-10-08",
+   "verified": "Read the post on 2026-10-11; confirmed in the pinned upstream files (commit fd4aeeb) that the named definition is listed in definition_names in this challenge's JSON while the Lean file already gives it a body; per the Comparator README, listed definitions are holes the solver fills and Comparator checks only name and type; Comparator not run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mccarthy-comparator-strict-rerun",
+   "family": "238",
+   "statement": "SpinAngle",
+   "kind": "replay-fail",
+   "summary": "With the definition holes pinned, Comparator stops on a universe difference in a variable block of the challenge file; the author says he is fixing it and re-running.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630360393",
+   "date": "2026-10-09",
+   "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "238",
+   "statement": "ThorpFirstReciprocal",
+   "kind": "commentary",
+   "summary": "The Lean statement covers only powers of two, where the paper's Fourier bound holds for every n divisible by eight.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=3",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "238",
+   "statement": "ThorpRouting",
+   "kind": "commentary",
+   "summary": "The constant in the Lean statement depends on the exact density, so there is no uniform rate over an interval as in the paper.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=2",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "karagila-partition-principle",
+   "family": "244",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The author, who works on this problem, skimmed the manuscript but not the Lean code, found its structure and terminology hard to follow, and made no judgement on whether the result is correct or new.",
+   "url": "https://karagila.org/2026/openai-pp/",
+   "date": "2026-10-08",
+   "verified": "Read the post on 2026-10-11 via a page-reading tool; the comment count was read the same day",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "244",
+   "statement": "PartitionPrinciple",
+   "kind": "commentary",
+   "summary": "The Lean statement assumes an inaccessible cardinal in the ground model and concludes failure of choice without the retained choice for ordinal-indexed families; the documentation discloses the cardinal but not that omission.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=2",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "karagila-lean-ai-post",
+   "family": "244",
+   "statement": "PartitionPrinciple",
+   "kind": "commentary",
+   "summary": "The author says he did not read or run the Lean proof and does not plan to, but is willing to accept that the formal statement of this principle is easy enough to get right.",
+   "url": "https://karagila.org/2026/lean/",
+   "date": "2026-10-10",
+   "verified": "Read the post on 2026-10-11; he reports no checks of his own, and the independent statement review lists this statement as weaker than the paper",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "chu-pure-type-systems-comment",
+   "family": "245",
+   "statement": "TypeSystemNormalization",
+   "kind": "commentary",
+   "summary": "A type theorist gives context that this was a major problem in pure type systems, says his own AI-assisted attempt had made no visible progress, and calls the result impressive.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629763855",
+   "date": "2026-10-07",
+   "verified": "Read the message (Zulip id 629763855) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "ringer-pts-normalization-replay",
+   "family": "245",
+   "statement": "TypeSystemNormalization",
+   "kind": "replay-pass",
+   "summary": "A type theory group reports that Comparator with the nanoda kernel accepts a confined copy of the normalisation proof, assuming the AI-assisted extraction of just that proof was done correctly.",
+   "url": "https://mathstodon.xyz/@TaliaRinger/117400575926007069",
+   "date": "2026-10-07",
+   "verified": "Read the Mastodon status through the public API and the repository page on 2026-10-11; the run was not repeated by us and the Comparator log was not read",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "apsiape-hyperbolic-group-not-sofic",
+   "family": "252",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "A repository claims that the torsion-free hyperbolic group of this family is not sofic, which would be an extraordinary extension; the claim was relayed by a topologist and has not been checked by anyone we have found.",
+   "url": "https://github.com/Apsiape/hyperbolic-group-not-sofic/blob/main/paper/paper.pdf",
+   "date": "2026-10-08",
+   "verified": "Read the Mastodon post that links it on 2026-10-11; the paper itself was not read and the claim is unverified",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "260",
+   "statement": "CKSBondiPenrose",
+   "kind": "commentary",
+   "summary": "The headline claims the sharp spacetime Penrose inequality for every dimension from three, but only a three-dimensional end replacement is formalised.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=5",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "263",
+   "statement": "CoulombIonization",
+   "kind": "commentary",
+   "summary": "The headline claims the ionization conjecture and universal bounds, but only asymptotic laws are formalised.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=5",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "formal-conjectures-pr-6898",
+   "family": "266",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A Formal Conjectures maintainer, after source inspection, links the dimension six result to the open quantum problem on mutually unbiased bases.",
+   "url": "https://github.com/google-deepmind/formal-conjectures/pull/6898",
+   "date": "2026-10-11",
+   "verified": "Read the merged pull request page and its public diff on 2026-10-11; mapped the OpenAI Lean path to a Comparator configuration by its solution module (our mapping, family titles checked); the author states that Comparator and #print axioms were not run",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "274",
+   "statement": "QACParity",
+   "kind": "commentary",
+   "summary": "The doc lists further results as formalised that no Comparator theorem name covers.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "277",
+   "statement": "EntangledGames",
+   "kind": "commentary",
+   "summary": "The Lean statement gives a weaker decay rate than the paper's main theorem, a rate the paper says already follows from it.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=2",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "283",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A reply relays a complexity theorist's remark that the positive unitary synthesis result is the opposite of what most experts expected.",
+   "url": "https://mathoverflow.net/a/515911",
+   "date": "2026-10-10",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515911, 5 votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "291",
+   "statement": "UniformGamma",
+   "kind": "commentary",
+   "summary": "The headline claims equivariant Jiang-Su stability and the unital Toms-Winter conjecture, but only a real-rank-zero implication for uniform property Gamma is formalised.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=5",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "297",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An operator algebraist says the field expected a positive solution to Naimark's problem to be consistent with ZFC, so a ZFC counterexample runs against his expectation.",
+   "url": "https://mathoverflow.net/a/515860",
+   "date": "2026-10-08",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515860, 18 votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "297",
+   "statement": "Naimark",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "timeroot-comparator-definition-holes",
+   "family": "297",
+   "statement": "Naimark",
+   "kind": "error-reported",
+   "summary": "Reported as broken in the same way: its operator-algebra definitions are listed as holes, so a trivial replacement makes the checked statement vacuous.",
+   "url": "https://blog.ohaithe.re/post/829974396980641792/id-like-to-alert-people-that-several-of-the",
+   "date": "2026-10-08",
+   "verified": "Read the post on 2026-10-11; confirmed in the pinned upstream files (commit fd4aeeb) that the named definition is listed in definition_names in this challenge's JSON while the Lean file already gives it a body; per the Comparator README, listed definitions are holes the solver fills and Comparator checks only name and type; Comparator not run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mccarthy-comparator-strict-rerun",
+   "family": "297",
+   "statement": "Naimark",
+   "kind": "replay-pass",
+   "summary": "With the definition holes pinned so the solver's definitions must match the challenge, Comparator reports the solution is okay for this challenge, so the hole was not being abused by OpenAI's own solution.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630360393",
+   "date": "2026-10-09",
+   "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "timeroot-comparator-definition-holes",
+   "family": "297",
+   "statement": "Naimark",
+   "kind": "commentary",
+   "summary": "The same author adds that the Naimark challenge shows only a construction under standard axioms, leaving open that it relies on inaccessible cardinal axioms, whereas the point of the result was to avoid them.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630329116",
+   "date": "2026-10-09",
+   "verified": "Read the message (Zulip id 630329116) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "307",
+   "statement": "CoarseAssembly",
+   "kind": "commentary",
+   "summary": "The headline claims failure for maximal coarse assembly, but the Lean uses the reduced Roe algebra, which gives the weaker result.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=5",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "roberts-homotopy-hypothesis-comment",
+   "family": "312",
+   "statement": "GrothendieckElementaryExpansion",
+   "kind": "commentary",
+   "summary": "A category theorist says the result closes a problem but regards the version proved, coherators after Henry, Ara and Maltsiniotis, as a historical curiosity rather than something people use.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/629699549",
+   "date": "2026-10-07",
+   "verified": "Read the message (Zulip id 629699549) in the public stream capture on 2026-10-11; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "baez-homotopy-hypothesis-comment",
+   "family": "312",
+   "statement": "GrothendieckElementaryExpansion",
+   "kind": "commentary",
+   "summary": "The originator of the name says this family proves one version of the homotopy hypothesis, that the hypothesis has versions ranging from easy to hard depending on how its terms are made precise, and that it does not affect his own work.",
+   "url": "https://mathstodon.xyz/@johncarlosbaez/117400538833558833",
+   "date": "2026-10-07",
+   "verified": "Read the status through the public Mastodon API on 2026-10-11; he does not say which version, and we did not check it",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "riehl-lean-coverage-audit",
+   "family": "312",
+   "statement": "GrothendieckElementaryExpansion",
+   "kind": "explanation",
+   "summary": "A subject-level audit of claimed formalisations found topology lowest, and a first reading of this family's Comparator file saw only a sorry; a Lean maintainer replied that it is only the statement file and the proof sits in the solution module.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630138764",
+   "date": "2026-10-08",
+   "verified": "Read the message (Zulip id 630138764) in the public stream capture on 2026-10-11; the correction is message 630140884; the claim itself was not re-checked by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "327",
+   "statement": "MarkovType",
+   "kind": "commentary",
+   "summary": "The doc lists further results as formalised that no Comparator theorem name covers.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "331",
+   "statement": "ForestSpace",
+   "kind": "commentary",
+   "summary": "The doc lists further results as formalised that no Comparator theorem name covers.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "331",
+   "statement": "MidpointLenses",
+   "kind": "commentary",
+   "summary": "The doc lists further results as formalised that no Comparator theorem name covers.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515845-contact-the-authors",
+   "family": "335",
+   "statement": null,
+   "kind": "error-reported",
+   "summary": "The author of an arXiv paper of 2 September 2026 says this family generalises two of his results without citing it, and that OpenAI Support could not pass his message to the authors; this is his account, and a later preprint makes a separate similarity claim.",
+   "url": "https://mathoverflow.net/questions/515845",
+   "date": "2026-10-08",
+   "verified": "Read the question and comments in the saved StackExchange API capture on 2026-10-11; checked the atlas citation data: no work by the asker and no record of arXiv 2609.02267 is cited by the manuscripts of this family (absence in our extraction, not a reading of the bibliographies)",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515845-contact-the-authors",
+   "family": "336",
+   "statement": null,
+   "kind": "error-reported",
+   "summary": "The author of an arXiv paper of 2 September 2026 says this family generalises two of his results without citing it, and that OpenAI Support could not pass his message to the authors; this is his account, and a later preprint makes a separate similarity claim.",
+   "url": "https://mathoverflow.net/questions/515845",
+   "date": "2026-10-08",
+   "verified": "Read the question and comments in the saved StackExchange API capture on 2026-10-11; checked the atlas citation data: no work by the asker and no record of arXiv 2609.02267 is cited by the manuscripts of this family (absence in our extraction, not a reading of the bibliographies)",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "347",
+   "statement": "ArnoldCounterexample",
+   "kind": "commentary",
+   "summary": "The Lean statement proves only the critical-point lower bound, not the paper's fixed-point count of three against four, though the review says the disproof itself is unaffected.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=3",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "350",
+   "statement": "YauCounterexample",
+   "kind": "commentary",
+   "summary": "The Lean statement drops the fixed power-saving exponent the paper proves, so it states the ratio tends to infinity without that epsilon.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=2",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "360",
+   "statement": "WeakMTWGlobalSupport",
+   "kind": "commentary",
+   "summary": "The doc lists further results as formalised that no Comparator theorem name covers.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=4",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "371",
+   "statement": "DefocusingNLS",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "george-lean-statements-review",
+   "family": "374",
+   "statement": "Brenier",
+   "kind": "replay-pass",
+   "summary": "The review reports that Comparator accepted OpenAI's solution for this challenge, run end to end on Lean 4.34.1 with the default kernel and only the three standard axioms.",
+   "url": "https://leanprover.zulipchat.com/user_uploads/3121/dAZEfE9dCczTF5qxWVF7QZKk/openai-math-lean-statements.pdf#page=8",
+   "date": "2026-10-07",
+   "verified": "Read the full PDF on 2026-10-11 (19 pages, file dated 2026-10-07); challenge names and family numbers cross-checked against data/statements.json (no mismatch); Comparator and the Lean statements not re-run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "timeroot-comparator-definition-holes",
+   "family": "374",
+   "statement": "Brenier",
+   "kind": "error-reported",
+   "summary": "Reported as broken in the same way: its definitions are listed as holes, so a trivial replacement makes the checked statement vacuous.",
+   "url": "https://blog.ohaithe.re/post/829974396980641792/id-like-to-alert-people-that-several-of-the",
+   "date": "2026-10-08",
+   "verified": "Read the post on 2026-10-11; confirmed in the pinned upstream files (commit fd4aeeb) that the named definition is listed in definition_names in this challenge's JSON while the Lean file already gives it a body; per the Comparator README, listed definitions are holes the solver fills and Comparator checks only name and type; Comparator not run by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mccarthy-comparator-strict-rerun",
+   "family": "374",
+   "statement": "Brenier",
+   "kind": "replay-pass",
+   "summary": "With the definition holes pinned so the solver's definitions must match the challenge, Comparator reports the solution is okay for this challenge, so the hole was not being abused by OpenAI's own solution.",
+   "url": "https://leanprover.zulipchat.com/#narrow/channel/583339-AI-authored-projects/topic/OpenAI.20releases.20solutions.20to.20hundreds.20of.20problems/near/630360393",
+   "date": "2026-10-09",
+   "verified": "Read the posted Comparator output in the public stream capture on 2026-10-11 (Zulip id 630360393); the runs themselves were not repeated by us",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "fineenvs-openai-math-dataset",
+   "family": "release",
+   "statement": null,
+   "kind": "replay-pass",
+   "summary": "An automated pipeline reports that 369 of the 405 official Lean proofs were verified end to end inside its environments, with 36 not validated; it names no per-challenge list in the pages the desk read.",
+   "url": "https://huggingface.co/datasets/FineEnvs/openai-math",
+   "date": "2026-10-08",
+   "verified": "Read the dataset description through the projects desk on 2026-10-11; not replayed by us and no per-challenge list was read",
+   "source_seed": "B_community_seed.json"
+  },
+  {
+   "effort": "mo-515849-conventional-wisdom",
+   "family": "release",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "A number theorist who went through the 31 number theory families found none that went against community expectation, though at least one beat expectations about how soon it could be proved.",
+   "url": "https://mathoverflow.net/a/515867",
+   "date": "2026-10-09",
+   "verified": "Read the answer text and score in the saved StackExchange API response on 2026-10-11 (answer id 515867, 35, accepted votes); the mathematics was not checked by us",
+   "source_seed": "B_community_seed.json"
+  }
+ ]
+}
