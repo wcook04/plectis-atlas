@@ -592,7 +592,6 @@
     var viewEl = root.querySelector('[data-u-view]');
     var trailEl = root.querySelector('[data-u-trail]');
     var titleEl = root.querySelector('#u-title');
-    var legendBody = root.querySelector('[data-u-legend-body]');
     var listSec = root.querySelector('.u-listsec');
     var resultsEl = root.querySelector('[data-u-results]');
     var searchIn = root.querySelector('[data-u-search]');
@@ -684,10 +683,14 @@
         plate: get('--u-plate', '#272132'), plateRule: get('--u-plate-rule', '#484251'), focus: get('--u-focus', '#f2e6d4')
       };
       var groundRGB = parseColor(p.ground) || [0, 0, 0, 1];
-      // Lean statements by how many outside groups accepted their re-run: the
-      // steel ink in four steps of lightness toward the ground, so the strongest
-      // evidence is the strongest mark in either theme.
-      p.lean = [null, mixOklab(p.steel, p.ground, 0.62, groundRGB), mixOklab(p.steel, p.ground, 0.3, groundRGB), p.steel];
+      // One meaning for colour: what the two outside readers find the release's
+      // Lean states for a family's headline (the key in the panel says each in words).
+      p.tone = {};
+      ['all', 'part', 'other', 'split', 'none', 'unread'].forEach(function (t) {
+        var c = get('--u-t-' + t, p.struct);
+        p.tone[t] = c;
+        p.tone[t + 'Wash'] = mixOklab(c, p.ground, t === 'none' ? 0.62 : 0.78, groundRGB);
+      });
       p.structFaint = mixOklab(p.struct, p.ground, 0.45, groundRGB);
       p.groundRGB = groundRGB;
       palette = p;
@@ -808,18 +811,13 @@
       var c = fibreCache[bucket];
       if (c) return c;
       var s = 1 / bucket;
-      c = fibreCache[bucket] = { k: bucket, rest: [], lit: {} };
-      fibres.forEach(function (f) {
-        var g = Math.sqrt(f.w);
-        var tp = Loom.taper({ start: 0.3 * s, body: (0.95 + 0.45 * g) * s, end: 0.7 * s * Math.max(1, g * 0.8), rise: 26 * s, fall: 20 * s, swell: 0.22 });
-        c.rest.push(new Path2D(Loom.fibreStroke(f.pts, { width: tp, step: 2 * s, minPiece: 2 * s })));
-      });
+      c = fibreCache[bucket] = { k: bucket, lit: {} };
       return c;
     }
     function litFibre(c, k) {
       if (c.lit[k]) return c.lit[k];
       var s = 1 / c.k, f = fibres[k], g = Math.sqrt(f.w);
-      var tp = Loom.taper({ start: 0.5 * s, body: (1.5 + 0.5 * g) * s, end: 1.1 * s * Math.max(1, g * 0.7), rise: 30 * s, fall: 22 * s, swell: 0.18 });
+      var tp = Loom.taper({ start: 0.6 * s, body: (1.6 + 0.5 * g) * s, end: 1.2 * s * Math.max(1, g * 0.7), rise: 30 * s, fall: 22 * s, swell: 0.18 });
       return (c.lit[k] = new Path2D(Loom.fibreStroke(f.pts, { width: tp, step: 2 * s, minPiece: 2 * s })));
     }
 
@@ -851,13 +849,19 @@
     }
 
     /* ---- Discipline names round the wheel --------------------------------- */
-    var DISC_FONT = '600 13.5px ' + SANS, DISC_COUNT_FONT = '400 12px ' + SANS, DISC_LEAD = 16;
+    // Each discipline named on the drawing in words, with its plain counts
+    // ("31 families, 24 with Lean"), as the Plectis map names each problem.
+    var DISC_FONT = '600 15px ' + SERIF, DISC_COUNT_FONT = '400 13px ' + SANS, DISC_LEAD = 18;
+    function discCounts(d) {
+      var n = d.families.length, k = d.withLean || 0;
+      return T(k === 0 ? 'counts.disc_none' : k === n ? 'counts.disc_all' : 'counts.disc_some', { n: n, k: k });
+    }
     function discLabelText(di) {
       var d = D.disciplines[di];
-      var lines = fitLines(d.name, DISC_FONT, 176, 1) || balancedLines(d.name, 2, DISC_FONT);
-      var countLine = count('families', d.families.length);
+      var lines = fitLines(d.name, DISC_FONT, 196, 1) || balancedLines(d.name, 2, DISC_FONT);
+      var countLine = discCounts(d);
       var w = Math.max(lines.width, textWidth(countLine, DISC_COUNT_FONT));
-      return { lines: lines.lines, count: countLine, w: w, h: lines.lines.length * DISC_LEAD + 15 };
+      return { lines: lines.lines, count: countLine, w: w, h: lines.lines.length * DISC_LEAD + 17 };
     }
     var discText = [], compactLabels = false;
     // Where the names stand for a view: each beside its sector, hugging the
@@ -1119,17 +1123,11 @@
       var fd = focusDisc();
       ctx.save();
       ctx.setTransform(dpr * k, 0, 0, dpr * k, dpr * view.tx, dpr * view.ty);
+      // Citations are drawn only for the family in hand (pointed at, selected or
+      // open), so the release never turns into a hairball.
       var lit = [];
       fibres.forEach(function (f, i) {
-        var mine = focusF >= 0 && (f.from === focusF || f.to === focusF);
-        if (mine) { lit.push(i); return; }
-        var a = 0.85;
-        if (focusF >= 0) a = 0.18;
-        else if (fd >= 0) a = fams[f.from].d === fd || fams[f.to].d === fd ? 0.9 : 0.22;
-        if (matchFam) a *= matchFam[f.from] || matchFam[f.to] ? 1 : 0.3;
-        ctx.globalAlpha = a * ctxA;
-        ctx.fillStyle = palette.fibre;
-        ctx.fill(c.rest[i]);
+        if (focusF >= 0 && (f.from === focusF || f.to === focusF)) lit.push(i);
       });
       lit.forEach(function (i) {
         var f = fibres[i];
@@ -1169,24 +1167,21 @@
       var dr = dotRadius(sr) * (1 + 0.35 * open);
       var hk = hover ? obj(hover) : null, so = sel ? obj(sel) : null;
       var isHot = (hk && famOf(hk) === fi && hk.kind === 'f') || (so && so.kind === 'f' && so.i === fi);
+      var tone = fd.tone || 'none', ink = palette.tone[tone], wash = palette.tone[tone + 'Wash'];
       ctx.save();
       ctx.globalAlpha = a;
-      // The family's ground: a faint disc, so a small map reads as one thing.
+      // The family's ground: a disc washed in its one colour, edged in it, so a small
+      // map reads as one thing and its colour reads from across the room. Opened, the
+      // wash steps back so the papers and results inside it can be read.
       ctx.beginPath();
       ctx.arc(sx, sy, sr, 0, TAU);
-      ctx.fillStyle = palette.cloud;
+      ctx.globalAlpha = a * (1 - 0.7 * open);
+      ctx.fillStyle = wash;
       ctx.fill();
-      if (isHot && open < 0.5) { ctx.lineWidth = 1.2; ctx.strokeStyle = palette.focus; ctx.stroke(); }
-      // Outside checks on the family: HOL Light (a brick ring), finite parts (a dotted one).
-      if (fd.hol) {
-        ctx.beginPath(); ctx.arc(sx, sy, sr + Math.max(1.5, sr * 0.05), 0, TAU);
-        ctx.lineWidth = clamp(sr * 0.022, 0.9, 1.6); ctx.strokeStyle = palette.brick; ctx.stroke();
-      }
-      if (fd.fin) {
-        ctx.beginPath(); ctx.arc(sx, sy, sr + Math.max(3.2, sr * 0.11), 0, TAU);
-        ctx.lineWidth = clamp(sr * 0.022, 0.9, 1.6); ctx.setLineDash([0.1, Math.max(2.6, sr * 0.045)]);
-        ctx.lineCap = 'round'; ctx.strokeStyle = palette.brick; ctx.stroke(); ctx.setLineDash([]); ctx.lineCap = 'butt';
-      }
+      ctx.globalAlpha = a;
+      ctx.lineWidth = isHot && open < 0.5 ? 2 : clamp(sr * 0.03, 0.8, 1.4);
+      ctx.strokeStyle = isHot && open < 0.5 ? palette.focus : ink;
+      ctx.stroke();
       // Paper rings and arcs.
       var ringA = smooth((sr - 5) / 12);
       if (ringA > 0) {
@@ -1212,28 +1207,34 @@
       }
       ctx.globalAlpha = a;
       // Threads at rest, before the marks, only once the map is open (see paintOpenLines).
-      // Headline results: a disc when paired with a Lean statement, a ring when not.
+      // Each result is a dot in its family's one colour; selected or pointed at, it is ringed.
       var dim = function (key) { return matches && !matches[key] ? 0.28 : 1; };
+      var hotKey = function (key) { return (hk && hk.key === key) || (so && so.key === key); };
       fd.papers.forEach(function (pi) {
         D.papers[pi].results.forEach(function (ri) {
           var p = L.results[ri], x = sx + p[0] * sr, y = sy + p[1] * sr, r = D.results[ri];
           ctx.globalAlpha = a * dim(r.id);
           ctx.beginPath();
           ctx.arc(x, y, dr, 0, TAU);
-          if (r.lean.length) { ctx.fillStyle = palette.paired; ctx.fill(); }
-          else { ctx.fillStyle = palette.ground; ctx.fill(); ctx.lineWidth = Math.max(0.8, dr * 0.42); ctx.strokeStyle = palette.struct; ctx.stroke(); }
+          ctx.fillStyle = ink; ctx.fill();
+          if (hotKey(r.id) && dr > 2) {
+            ctx.beginPath(); ctx.arc(x, y, dr + 3, 0, TAU);
+            ctx.lineWidth = 1.6; ctx.strokeStyle = palette.focus; ctx.stroke();
+          }
         });
       });
-      // Lean statements: diamonds filled by how many outside groups accepted their re-run.
+      // Each Lean statement is a small steel diamond, the same for every one: its name
+      // stands beside it once the family is open, and the panel says who re-ran it.
       fd.lean.forEach(function (li) {
-        var p = L.lean[li], x = sx + p[0] * sr, y = sy + p[1] * sr, l = D.lean[li], n = l.acc.length;
-        var s = dr * 1.32;
+        var p = L.lean[li], x = sx + p[0] * sr, y = sy + p[1] * sr, l = D.lean[li];
+        var s = dr * 1.3;
         ctx.globalAlpha = a * dim(l.id);
         ctx.beginPath(); diamond(x, y, s);
-        ctx.fillStyle = n ? palette.lean[n] : palette.ground; ctx.fill();
-        ctx.lineWidth = Math.max(0.8, s * 0.28); ctx.strokeStyle = palette.steel; ctx.stroke();
-        if (l.holes && s > 2.2) {
-          ctx.beginPath(); ctx.arc(x, y, s * 0.34, 0, TAU); ctx.fillStyle = palette.ground; ctx.fill();
+        ctx.fillStyle = palette.ground; ctx.fill();
+        ctx.lineWidth = Math.max(0.9, s * 0.3); ctx.strokeStyle = palette.steel; ctx.stroke();
+        if (hotKey(l.id) && s > 2) {
+          ctx.beginPath(); diamond(x, y, s + 3.5);
+          ctx.lineWidth = 1.6; ctx.strokeStyle = palette.focus; ctx.stroke();
         }
       });
       ctx.restore();
@@ -1242,8 +1243,8 @@
     /* ---- Labels: placed in priority order, none covering another or a mark */
     var PLATE_FONT = '500 13.5px ' + SERIF, PLATE_SUB = '400 12px ' + SANS, PLATE_LEAD = 17;
     var NAME_FONT = '400 12.5px ' + SERIF, NAME_LEAD = 15;
-    var END_FONT = '400 12.5px ' + SERIF, PAPER_FONT = '400 13px ' + SERIF, LEAN_FONT = '400 11.5px ' + MONO;
-    var NUM_FONT = '400 11px ' + SANS, CAP_FONT = 'italic 400 11.5px ' + SANS;
+    var END_FONT = '400 12.5px ' + SERIF, PAPER_FONT = '500 13.5px ' + SERIF, LEAN_FONT = 'italic 400 12.5px ' + SERIF, DATE_FONT = '400 11.5px ' + SANS;
+    var NUM_FONT = '400 11.5px ' + SANS, CAP_FONT = 'italic 400 11.5px ' + SANS;
 
     function planLabels(openF, openA, ctxA, alphas) {
       var plan = { disc: [], names: [], open: [], plates: [], marks: [], lines: [], leaders: [], boxes: [] };
@@ -1435,15 +1436,6 @@
         var p = L.lean[li], x = sx + p[0] * sr, y = sy + p[1] * sr, s = dr * 1.2;
         out.push({ x0: x - s, x1: x + s, y0: y - s, y1: y + s, key: D.lean[li].id });
       });
-      // The outside checks' rings round the family are lines the words keep off too.
-      [f.data.hol ? sr + Math.max(1.5, sr * 0.05) : 0, f.data.fin ? sr + Math.max(3.2, sr * 0.11) : 0].forEach(function (er) {
-        if (!er) return;
-        var me = Math.ceil(TAU * er / 9);
-        for (var e2 = 0; e2 < me; e2++) {
-          var ae = TAU * e2 / me, xe = sx + er * Math.cos(ae), ye = sy + er * Math.sin(ae);
-          out.push({ x0: xe - 3, x1: xe + 3, y0: ye - 3, y1: ye + 3, ring: -2 });
-        }
-      });
       if (L.leanR[fi]) {
         var rl = L.leanR[fi] * sr, m = Math.ceil(TAU * rl / 10);
         for (var q = 0; q < m; q++) {
@@ -1496,15 +1488,21 @@
         item.t = null;
         plan.open.push(item);
       });
-      // The lead paper's title inside its ring, where it stands whole.
+      // Each paper by its short title, with its date under it: the lead paper's
+      // inside its ring where it stands whole, the others just outside their arcs.
+      var paperLabel = function (pi, maxW, maxLines) {
+        var P = D.papers[pi], t = fitLines(P.short, PAPER_FONT, maxW, maxLines);
+        if (!t) return null;
+        var dw = P.date ? textWidth(P.date, DATE_FONT) : 0;
+        return { lines: t.lines, width: Math.max(t.width, dw), date: P.date, h: t.lines.length * 16 + (P.date ? 15 : 0) };
+      };
       f.data.papers.forEach(function (pi, n) {
         var g = L.papers[pi], whole = g[4] - g[3] >= TAU - 1e-3;
-        var title = D.papers[pi].title;
         if (whole) {
           var inner = g[2] * sr * 2 * 0.74;
-          var t = fitLines(title, PAPER_FONT, inner, 4);
-          if (t && t.lines.length * 16 < g[2] * sr * 1.3) {
-            var bh = t.lines.length * 16, b = { x0: sx - t.width / 2, x1: sx + t.width / 2, y0: sy - bh / 2, y1: sy + bh / 2 };
+          var t = paperLabel(pi, inner, 4);
+          if (t && t.h < g[2] * sr * 1.3) {
+            var b = { x0: sx - t.width / 2, x1: sx + t.width / 2, y0: sy - t.h / 2, y1: sy + t.h / 2 };
             if (clear(b)) { take(b); plan.open.push({ kind: 'paper', pi: pi, t: t, box: b, center: true, alpha: openA }); hitTargets.push({ box: b, key: D.papers[pi].id }); return; }
           }
           if (n === 0 && f.data.papers.length > 1) {
@@ -1514,11 +1512,10 @@
           }
           return;
         }
-        // An arc's title just inside its arc, or beside it.
         var mid = (g[3] + g[4]) / 2, rr = g[2] * sr;
-        var t2 = fitLines(title, PAPER_FONT, Math.min(220, Math.max(120, (g[4] - g[3]) * rr)), 3);
+        var t2 = paperLabel(pi, Math.min(220, Math.max(120, (g[4] - g[3]) * rr)), 3);
         if (!t2) return;
-        var bh2 = t2.lines.length * 16;
+        var bh2 = t2.h;
         [1].some(function (side) {
           var rad = rr + side * (14 + bh2 * 0.6 + Math.abs(Math.cos(mid)) * t2.width * 0.5);
           var cxp = sx + rad * Math.cos(mid), cyp = sy + rad * Math.sin(mid);
@@ -1534,7 +1531,7 @@
       // Lean statements by name, beside their diamonds.
       f.data.lean.forEach(function (li) {
         var p = L.lean[li], x = sx + p[0] * sr, y = sy + p[1] * sr, a = Math.atan2(p[1], p[0]);
-        var name = D.lean[li].name, w = textWidth(name, LEAN_FONT);
+        var name = D.lean[li].label || D.lean[li].name, w = textWidth(name, LEAN_FONT);
         var right = Math.cos(a) >= 0, d = dotRadius(sr) * 1.8 + 6;
         var spots = [[right ? x + d : x - d - w, y - 7], [right ? x + d : x - d - w, y - 7 + (Math.sin(a) >= 0 ? 12 : -12)],
                      [x - w / 2, Math.sin(a) >= 0 ? y + d : y - d - 14], [right ? x - d - w : x + d, y - 7],
@@ -1548,8 +1545,7 @@
       f.data.papers.forEach(function (pi) {
         D.papers[pi].results.forEach(function (ri) {
           var r = D.results[ri];
-          if (!r.num) return;
-          var m = /(\d[\w.]*)$/.exec(r.num), text = m ? m[1] : null;
+          var text = r.num || (r.nn ? T('result.unnumbered_label', { kind: r.kind }) : null);
           if (!text) return;
           var p = L.results[ri], x = sx + p[0] * sr, y = sy + p[1] * sr, g = L.papers[pi];
           var ox = x - (sx + g[0] * sr), oy = y - (sy + g[1] * sr), len = Math.hypot(ox, oy) || 1;
@@ -1577,11 +1573,11 @@
     /* ---- Name plates (the Plectis universe's namePlate, least covered of six spots) */
     function plateLines(o) {
       var name = nameOf(o), sub = '';
-      if (o.kind === 'r') sub = D.papers[D.results[o.i].p].title;
+      if (o.kind === 'r') { var rp = D.papers[D.results[o.i].p]; sub = rp.short + (rp.date ? ', ' + rp.date : ''); }
       else if (o.kind === 'l') sub = D.lean[o.i].label !== D.lean[o.i].name ? D.lean[o.i].label : '';
-      else if (o.kind === 'f') sub = T('family.plate', { num: D.families[o.i].num, discipline: D.disciplines[fams[o.i].d].name });
-      else if (o.kind === 'p') sub = T('family.short', { num: D.families[D.papers[o.i].f].num });
-      else if (o.kind === 'd') sub = count('families', D.disciplines[o.i].families.length);
+      else if (o.kind === 'f') sub = T('family.plate', { num: D.families[o.i].num, discipline: D.disciplines[fams[o.i].d].name }) + '. ' + T('key.' + D.families[o.i].tone) + '.';
+      else if (o.kind === 'p') sub = D.papers[o.i].date || T('family.short', { num: D.families[D.papers[o.i].f].num });
+      else if (o.kind === 'd') sub = discCounts(D.disciplines[o.i]);
       var maxW = Math.min(340, W - 40);
       var main = fitLines(name, PLATE_FONT, Math.min(300, maxW), 3) || fitLines(name, PLATE_FONT, maxW, 6) || balancedLines(name, 8, PLATE_FONT);
       var subT = sub ? (fitLines(sub, PLATE_SUB, Math.max(main.width, 220), 3) || balancedLines(sub, 5, PLATE_SUB)) : null;
@@ -1650,7 +1646,7 @@
             var rp = L.results[ri], A = [sx + rp[0] * sr, sy + rp[1] * sr];
             var obs = obstacles.filter(function (o) { return !insideBox(A, o) && !insideBox(B, o); });
             var way = shortestWay(A, B, obs) || [A, B];
-            routes.push({ ink: 'steel', dash: true, w: 1.1, pair: [D.results[ri].id, D.lean[li].id], pts: trimEnds(way, dotRadius(sr) * 1.4 + 2, dotRadius(sr) * 1.7 + 2) });
+            routes.push({ ink: 'steel', dash: D.lean[li].pairing === 'candidate-pairing', w: 1.2, pair: [D.results[ri].id, D.lean[li].id], pts: trimEnds(way, dotRadius(sr) * 1.4 + 2, dotRadius(sr) * 1.7 + 2) });
           });
         });
         // Fibres: from each citing or cited paper to the end that names the other family.
@@ -1841,7 +1837,7 @@
         }
         var align = q.side > 0 ? 'left' : 'right', x = q.side > 0 ? q.x : q.x + q.t.w;
         drawLines(q.t.lines, x, q.y, DISC_FONT, q.hot ? palette.focus : palette.ink, DISC_LEAD, align);
-        drawLines([q.t.count], x, q.y + q.t.lines.length * DISC_LEAD + 1, DISC_COUNT_FONT, palette.muted, 14, align);
+        drawLines([q.t.count], x, q.y + q.t.lines.length * DISC_LEAD + 1, DISC_COUNT_FONT, q.hot ? palette.ink : palette.muted, 16, align);
       });
       // Family names along their radius.
       var hk = hover ? obj(hover) : null;
@@ -1869,10 +1865,11 @@
           drawLines(it.t.lines, it.right ? it.box.x0 : it.box.x1, it.box.y0, END_FONT, hot ? palette.focus : palette.ink, NAME_LEAD, it.right ? 'left' : 'right');
         } else if (it.kind === 'paper') {
           drawLines(it.t.lines, (it.box.x0 + it.box.x1) / 2, it.box.y0, PAPER_FONT, palette.ink, 16, 'center');
+          if (it.t.date) drawLines([it.t.date], (it.box.x0 + it.box.x1) / 2, it.box.y0 + it.t.lines.length * 16 + 1, DATE_FONT, palette.muted, 14, 'center');
         } else if (it.kind === 'lean') {
           drawLines([it.text], it.box.x0, it.box.y0, LEAN_FONT, palette.steel, 14, 'left');
         } else if (it.kind === 'num') {
-          drawLines([it.text], (it.box.x0 + it.box.x1) / 2, it.box.y0, NUM_FONT, palette.muted, 13, 'center');
+          drawLines([it.text], (it.box.x0 + it.box.x1) / 2, it.box.y0, NUM_FONT, palette.ink, 13, 'center');
         } else if (it.kind === 'cap') {
           drawLines([it.text], (it.box.x0 + it.box.x1) / 2, it.box.y0, CAP_FONT, palette.faint, 14, 'center');
         }
@@ -1956,10 +1953,16 @@
       if (o.kind === 'f') return D.disciplines[fams[o.i].d].id;
       return D.families[famOf(o)].id;
     }
-    function updateHash() {
+    // The selection lives in the address. A selection the reader makes is a new entry
+    // in the history, so Back and Forward walk the same steps; one that follows from
+    // the drawing (a zoom settling) or from the history itself replaces it.
+    function updateHash(push) {
       if (!window.history || !window.history.replaceState) return;
       var base = window.location.pathname + window.location.search;
-      window.history.replaceState(null, '', sel ? base + '#o=' + encodeURIComponent(sel) : base);
+      var url = sel ? base + '#o=' + encodeURIComponent(sel) : base;
+      if (url === window.location.pathname + window.location.search + window.location.hash) return;
+      if (push && window.history.pushState) window.history.pushState({ o: sel }, '', url);
+      else window.history.replaceState({ o: sel }, '', url);
     }
     // Select an object: its panel, its plate and, where its level asks, a flight.
     function select(key, opts) {
@@ -1973,7 +1976,7 @@
       routeCache.key = '';
       if (opts.trail) trail.push({ key: key, before: before, prev: prev ? prev.key : null });
       renderPanel();
-      updateHash();
+      updateHash(!!opts.trail && !opts.fromHistory);
       if (o && liveEl) liveEl.textContent = nameOf(o);
       var fly = opts.fly !== false;
       if (fly) {
@@ -2016,14 +2019,6 @@
     function goBtn(key, inner, cls) {
       return '<button type="button" class="u-go ' + (cls || '') + '" data-go="' + escapeHtml(key) + '">' + inner + '</button>';
     }
-    function leanGlyph(n, holes) {
-      var fills = ['u-sw-lean0', 'u-sw-lean1', 'u-sw-lean2', 'u-sw-lean3'];
-      return '<svg class="u-sw ' + fills[n] + (holes ? ' u-sw-holes' : '') + '" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.6 12.4 7 7 12.4 1.6 7Z"/>' +
-        (holes ? '<circle cx="7" cy="7" r="1.8" class="u-sw-hole"/>' : '') + '</svg>';
-    }
-    function resultGlyph(paired) {
-      return '<svg class="u-sw ' + (paired ? 'u-sw-paired' : 'u-sw-unpaired') + '" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="4"/></svg>';
-    }
     function trailHtml() {
       var o = sel ? obj(sel) : null, items = [];
       var chain = [];
@@ -2058,7 +2053,10 @@
       typeset(viewEl, o);
       if (o) {
         var di = discOf(o);
-        if (di >= 0 && !shards[di]) loadShard(di).then(function () { if (sel === (o && o.key)) { viewEl.innerHTML = rerender(o); typeset(viewEl, o); } }, function () {});
+        if (di >= 0 && !shards[di]) {
+          var again = function () { if (sel === (o && o.key)) { viewEl.innerHTML = rerender(o); typeset(viewEl, o); } };
+          loadShard(di).then(again, again);
+        }
       }
     }
     function rerender(o) {
@@ -2077,7 +2075,7 @@
         if (sh.generation_id !== D.generation_id) throw new Error('detail from another build');
         shards[di] = sh;
         return sh;
-      }, function (err) { shardLoading[di] = null; throw err; });
+      }, function (err) { shardLoading[di] = null; failedShards[di] = true; throw err; });
       return shardLoading[di];
     }
     function detail(o) {
@@ -2110,187 +2108,169 @@
       }
       if (window.atlasRenderMath) window.atlasRenderMath(el);
     }
-    function legendHtml() {
-      var acc = [0, 0, 0, 0], holes = 0, paired = 0, hol = 0, fin = 0;
-      D.lean.forEach(function (l) { acc[l.acc.length]++; if (l.holes) holes++; });
-      D.results.forEach(function (r) { if (r.lean.length) paired++; });
-      D.families.forEach(function (f) { if (f.hol) hol++; if (f.fin) fin++; });
-      var groups = Object.keys(D.sources).filter(function (s) { return D.lean.some(function (l) { return l.acc.indexOf(s) >= 0; }); })
-        .map(function (s) { return D.sources[s]; });
-      var row = function (glyph, text, n) {
-        return '<li><span class="u-key__g">' + glyph + '</span><span class="u-key__t">' + escapeHtml(text) + '</span>' +
-          (n == null ? '' : '<span class="u-key__n">' + fmtNum(n) + '</span>') + '</li>';
-      };
-      var ring = function (cls) { return '<svg class="u-sw ' + cls + '" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.4"/></svg>'; };
-      var fib = function (cls) { return '<svg class="u-sw ' + cls + '" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 10 C5 10 9 4 13 4"/></svg>'; };
-      return '<p class="u-note">' + escapeHtml(T('legend.colour_note')) + '</p>' +
-        '<h3 class="u-h3">' + escapeHtml(T('legend.lean_heading')) + '</h3><ul class="u-key">' +
-        row(leanGlyph(3), T('legend.lean_3'), acc[3]) + row(leanGlyph(2), T('legend.lean_2'), acc[2]) +
-        row(leanGlyph(1), T('legend.lean_1'), acc[1]) + row(leanGlyph(0), T('legend.lean_0'), acc[0]) +
-        row(leanGlyph(2, true), T('legend.lean_holes'), holes) + '</ul>' +
-        '<p class="u-note">' + escapeHtml(T('legend.lean_groups', { groups: groups.join('; ') })) + '</p>' +
-        '<h3 class="u-h3">' + escapeHtml(T('legend.result_heading')) + '</h3><ul class="u-key">' +
-        row(resultGlyph(true), T('legend.result_paired'), paired) + row(resultGlyph(false), T('legend.result_unpaired'), D.results.length - paired) + '</ul>' +
-        '<p class="u-note">' + escapeHtml(T('legend.pair_note')) + '</p>' +
-        '<h3 class="u-h3">' + escapeHtml(T('legend.family_heading')) + '</h3><ul class="u-key">' +
-        row(ring('u-sw-hol'), T('legend.family_hol'), hol) + row(ring('u-sw-fin'), T('legend.family_finite'), fin) + '</ul>' +
-        '<h3 class="u-h3">' + escapeHtml(T('legend.fibre_heading')) + '</h3><ul class="u-key">' +
-        row(fib('u-sw-cites'), T('legend.fibre_cites')) + row(fib('u-sw-cited'), T('legend.fibre_cited')) + '</ul>' +
-        '<p class="u-note">' + escapeHtml(T('legend.fibre_note')) + '</p>';
-    }
-    function releaseHtml() {
-      var rows = D.disciplines.map(function (d) {
-        return '<li>' + goBtn(d.id, '<span class="u-row__t">' + escapeHtml(d.name) + '</span><span class="u-row__n">' +
-          escapeHtml(count('families', d.families.length)) + '</span>', 'u-row') + '</li>';
-      }).join('');
-      return restViewHtml;
-    }
-    function famRow(fi) {
-      var f = D.families[fi];
-      return '<li>' + goBtn(f.id, '<span class="u-row__t">' + escapeHtml(f.title) +
-        '</span><span class="u-row__n">' + escapeHtml(count('results', f.papers.reduce(function (s, p) { return s + D.papers[p].results.length; }, 0))) +
-        (f.lean.length ? ' and ' + escapeHtml(count('lean', f.lean.length)) : '') + '</span>', 'u-row') + '</li>';
-    }
-    function disciplineHtml(di) {
-      var d = D.disciplines[di];
-      var out = 0, inn = 0;
-      D.links.forEach(function (row) {
-        var da = fams[row[0]].d, db = fams[row[1]].d;
-        if (da === db) return;
-        if (da === di) { out += row[2]; inn += row[3]; }
-        if (db === di) { out += row[3]; inn += row[2]; }
-      });
-      return '<p class="u-kicker">' + escapeHtml(T('discipline.kicker')) + '</p>' +
-        '<p class="u-facts">' + escapeHtml(T('counts.families_in', { families: count('families', d.families.length), papers: count('papers', d.papers), results: count('results', d.results), lean: count('lean', d.lean) })) + '</p>' +
-        '<p class="u-note">' + escapeHtml(T('discipline.connections', { out: out, 'in': inn })) + '</p>' +
-        '<h2 class="u-h2">' + escapeHtml(T('discipline.families_heading')) + '</h2><ul class="u-rows">' + d.families.map(famRow).join('') + '</ul>';
-    }
+    function releaseHtml() { return restViewHtml; }
+    function dot(tone) { return '<span class="u-dot u-dot--' + escapeHtml(tone || 'none') + '" aria-hidden="true"></span>'; }
     function link(href, text, cls) {
       if (!href) return '';
       var ext = /^https?:/.test(href);
       return '<a class="u-link' + (ext ? ' ext' : '') + (cls ? ' ' + cls : '') + '" href="' + escapeHtml(href) + '"' + (ext ? ' rel="noopener"' : '') + '>' + escapeHtml(text) + '</a>';
     }
-    function findingsHtml(list, heading) {
-      if (!list || !list.length) return '';
-      return '<h3 class="u-h3">' + escapeHtml(heading) + '</h3><ul class="u-finds">' + list.map(function (f) {
-        return '<li><span class="u-pill">' + escapeHtml(f.kind) + '</span> ' + escapeHtml(f.summary) +
-          ' <span class="u-muted">' + escapeHtml([f.who, f.effort].filter(Boolean).join(', ')) + ', ' + escapeHtml(longDate(f.date)) + '.</span> ' +
-          link(f.url, T('family.source')) + '</li>';
+    function door(href, text, primary) {
+      if (!href) return '';
+      return '<a class="u-btn' + (primary ? ' u-btn--primary' : '') + '" href="' + escapeHtml(href) + '">' + escapeHtml(text) + '</a>';
+    }
+    function para(text, cls) { return text ? '<p class="' + (cls || 'u-note') + '">' + escapeHtml(text) + '</p>' : ''; }
+    function plural(n, one, many) { return n === 1 ? T(one) : T(many, { n: n }); }
+    function nRes(fi) { return D.families[fi].papers.reduce(function (s, p) { return s + D.papers[p].results.length; }, 0); }
+    function loadingHtml(di, waiting, failed) {
+      return '<p class="u-note" data-u-loading>' + escapeHtml(failedShards[di] ? T(failed) : T(waiting)) + '</p>';
+    }
+    var failedShards = {};
+
+    /* A discipline: its families as plain entries a person can read. */
+    function entryHtml(fi) {
+      var f = D.families[fi], det = detail(obj(f.id));
+      return '<li><a class="u-entry" href="' + escapeHtml(f.href) + '" data-go="' + escapeHtml(f.id) + '">' +
+        '<span class="u-entry__t">' + dot(f.tone) + '<span class="tex-auto">' + (det ? det.titleHtml : escapeHtml(f.title)) + '</span></span>' +
+        (det && det.first ? '<span class="u-entry__c tex-auto">' + det.first + '</span>' : '') +
+        (det ? '<span class="u-entry__e">' + escapeHtml(det.evidence) + '</span>' : '') + '</a></li>';
+    }
+    function disciplineHtml(di) {
+      var d = D.disciplines[di];
+      var h = para(T('discipline.lede', { counts: discCounts(d) }), 'u-facts');
+      if (!shards[di]) h += loadingHtml(di, 'discipline.loading', 'discipline.failed');
+      h += '<ul class="u-entries">' + d.families.map(entryHtml).join('') + '</ul>';
+      return h;
+    }
+
+    /* A family: what it claims, what its Lean states and who checked it, then its parts. */
+    function readersHtml(det) {
+      if (!det || !det.readers || !det.readers.length) return '';
+      return '<ul class="u-readers">' + det.readers.map(function (rd) {
+        var who = rd.url ? '<a class="ext" href="' + escapeHtml(rd.url) + '" rel="noopener">' + escapeHtml(rd.name) + '</a>' : escapeHtml(rd.name);
+        return '<li><p>' + who + ' ' + escapeHtml(rd.words) + '.' +
+          (rd.term ? ' <span class="u-term">' + escapeHtml(T('family.reader_term', { term: rd.term })) + '</span>' : '') +
+          (rd.rec ? ' ' + link(rd.rec, T('family.record')) : '') + '</p>' +
+          (rd.note ? '<p class="u-readers__note">' + escapeHtml(rd.note) + '</p>' : '') + '</li>';
       }).join('') + '</ul>';
     }
-    function familyEvidenceHtml(fi) {
-      var f = D.families[fi], det = detail(obj(f.id)), bits = [];
-      bits.push('<p><strong>' + escapeHtml(T('family.readers_heading')) + '</strong> ' + escapeHtml(T('family.readers_' + f.readers)) + '</p>');
-      if (f.readers !== 'none') bits.push('<p class="u-note">' + escapeHtml(T('family.readers_source')) + '</p>');
-      if (f.hol) bits.push('<p>' + escapeHtml(f.hol === 1 ? T('family.hol_one') : T('family.hol', { n: f.hol })) + '</p>');
-      if (f.fin) bits.push('<p>' + escapeHtml(f.fin === 1 ? T('family.finite_one') : T('family.finite', { n: f.fin })) +
-        (f.finOther ? ' ' + escapeHtml(T('family.finite_other', { n: f.finOther })) : '') + '</p>');
-      if (det && det.hol && det.hol.length) bits.push('<ul class="u-checks">' + det.hol.map(function (h) { return '<li>' + escapeHtml(h.text) + ' ' + link(h.url, T('family.hol_card', { card: h.card })) + '</li>'; }).join('') + '</ul>');
-      return '<div class="u-evidence">' + bits.join('') + '</div>';
+    function resultRow(ri) {
+      var r = D.results[ri];
+      var label = resultName(r) + (r.lean.length ? '' : '');
+      return '<li>' + goBtn(r.id, '<span class="u-sub__t">' + escapeHtml(label) + '</span>' +
+        (r.lean.length ? '<span class="u-sub__n">' + escapeHtml(r.lean.map(function (li) { return D.lean[li].label; }).join(', ')) + '</span>' : ''), 'u-sub') + '</li>';
+    }
+    function leanRow(li) {
+      var l = D.lean[li], det = detail(obj(l.id));
+      return '<li>' + goBtn(l.id, '<span class="u-sub__t">' + escapeHtml(l.label) + '</span><code class="u-sub__n">' + escapeHtml(l.name) + '</code>', 'u-sub') +
+        (det ? '<p class="u-sub__w">' + escapeHtml(det.reruns) + '</p>' : '') + '</li>';
     }
     function familyHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
-      var nRes = f.papers.reduce(function (s, p) { return s + D.papers[p].results.length; }, 0);
       var h = '<p class="u-kicker">' + escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })) + '</p>';
-      h += '<p class="u-facts">' + escapeHtml(T('counts.papers_with', { papers: count('papers', f.papers.length), results: count('results', nRes), lean: f.lean.length ? count('lean', f.lean.length) : T('counts.lean_none') })) + '</p>';
-      h += '<p class="u-doors">' + link(f.href, T('family.page_link')) + '</p>';
-      if (det) h += '<div class="u-desc tex-auto">' + det.description + '</div>';
-      h += familyEvidenceHtml(fi);
+      if (!det) return h + loadingHtml(f.d, 'discipline.loading', 'discipline.failed');
+      h += '<figure class="u-cat"><figcaption>' + link(D.catalogue_url, T('family.catalogue')) + ' ' + escapeHtml(T('family.catalogue_says')) + '</figcaption>' +
+        '<blockquote class="tex-auto">' + det.desc + '</blockquote>' +
+        (det.descMore ? '<p class="u-cat__more">' + link(f.href + '#h-desc', T('family.catalogue_more')) + '</p>' : '') + '</figure>';
+      h += '<p class="u-doors">' + door(f.href, T('family.page_link'), true) + (f.lean.length ? door(f.href + '#compare', T('family.compare_link')) : '') + '</p>';
+      h += '<h2 class="u-h2">' + escapeHtml(T('family.readers_heading')) + '</h2>';
+      h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(det.evidence) + '</span></p>';
+      h += readersHtml(det);
+      if (f.lean.length) h += para(T('family.readers_scope'));
+      h += para(T(det.headline === 'candidate' ? 'family.headline_candidate' : 'family.headline_unresolved'));
       h += '<h2 class="u-h2">' + escapeHtml(T('family.papers_heading')) + '</h2><ol class="u-papers">';
       f.papers.forEach(function (pi, n) {
         var p = D.papers[pi];
-        h += '<li>' + goBtn(p.id, '<span class="u-row__t">' + escapeHtml(p.title) + '</span>' + (n === 0 && f.papers.length > 1 ? '<span class="u-row__n">' + escapeHtml(T('family.lead')) + '</span>' : ''), 'u-row u-row--paper');
-        if (p.results.length) {
-          h += '<ul class="u-subrows">' + p.results.map(function (ri) {
-            var r = D.results[ri];
-            return '<li>' + goBtn(r.id, resultGlyph(r.lean.length > 0) + '<span>' + escapeHtml(resultName(r) + (r.title ? ' (' + r.title + ')' : '')) + '</span>', 'u-sub') + '</li>';
-          }).join('') + '</ul>';
-        }
+        h += '<li>' + goBtn(p.id, '<span class="u-row__t">' + escapeHtml(p.short) + '</span><span class="u-row__n">' +
+          escapeHtml([p.date, n === 0 && f.papers.length > 1 ? T('family.lead') : ''].filter(Boolean).join(', ')) + '</span>', 'u-row u-row--paper');
+        h += p.results.length ? '<ul class="u-subrows">' + p.results.map(resultRow).join('') + '</ul>' : '';
         h += '</li>';
       });
       h += '</ol>';
-      if (f.lean.length) {
-        h += '<h2 class="u-h2">' + escapeHtml(T('family.lean_heading')) + '</h2><ul class="u-subrows">' + f.lean.map(function (li) {
-          var l = D.lean[li];
-          return '<li>' + goBtn(l.id, leanGlyph(l.acc.length, l.holes) + '<code>' + escapeHtml(l.name) + '</code>', 'u-sub') + '</li>';
-        }).join('') + '</ul>';
-      }
+      if (f.lean.length) h += '<h2 class="u-h2">' + escapeHtml(T('family.lean_list_heading')) + '</h2><ul class="u-subrows u-subrows--lean">' + f.lean.map(leanRow).join('') + '</ul>';
+      var more = [];
+      if (det.checks) more.push(det.checks);
+      if (det.editions) more.push(plural(det.editions, 'family.editions_one', 'family.editions'));
+      if (det.withdrawn) more.push(plural(det.withdrawn, 'family.withdrawn_one', 'family.withdrawn'));
+      if (det.explained) more.push(plural(det.explained, 'family.explained_one', 'family.explained'));
+      if (det.problems) more.push(plural(det.problems, 'family.problems_one', 'family.problems'));
+      if (more.length) h += '<div class="u-more">' + more.map(function (t) { return '<p>' + escapeHtml(t) + '</p>'; }).join('') + '<p>' + link(f.href, T('family.page_link')) + '</p></div>';
       h += '<h2 class="u-h2">' + escapeHtml(T('family.connections_heading')) + '</h2>';
-      if (!f.cites.length && !f.citedBy.length) h += '<p class="u-note">' + escapeHtml(T('family.no_connections')) + '</p>';
-      [['cites', f.cites, 'u-sw-cites'], ['cited_by', f.citedBy, 'u-sw-cited']].forEach(function (part) {
+      if (!f.cites.length && !f.citedBy.length) h += para(T('family.no_connections'));
+      [['cites', f.cites, 'is-cites'], ['cited_by', f.citedBy, 'is-cited']].forEach(function (part) {
         if (!part[1].length) return;
-        h += '<h3 class="u-h3">' + escapeHtml(T('family.' + part[0])) + '</h3><ul class="u-rows">' + part[1].map(function (c) {
+        h += '<h3 class="u-h3 ' + part[2] + '">' + escapeHtml(T('family.' + part[0])) + '</h3><ul class="u-rows">' + part[1].map(function (c) {
           var g = D.families[c[0]];
-          return '<li>' + goBtn(g.id, '<svg class="u-sw ' + part[2] + '" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 10 C5 10 9 4 13 4"/></svg><span class="u-row__t">' + escapeHtml(g.title) + '</span><span class="u-row__n">' + escapeHtml(count('links', c[1])) + '</span>', 'u-row u-row--link') + '</li>';
+          return '<li>' + goBtn(g.id, '<span class="u-row__t">' + dot(g.tone) + escapeHtml(g.title) + '</span><span class="u-row__n">' + escapeHtml(count('links', c[1])) + '</span>', 'u-row') + '</li>';
         }).join('') + '</ul>';
       });
-      if (det) h += findingsHtml(det.findings, T('family.findings_heading'));
+      if (f.cites.length || f.citedBy.length) h += para(T('family.connections_note'));
       return h;
     }
     function paperHtml(pi) {
       var p = D.papers[pi], f = D.families[p.f];
-      var h = '<p class="u-kicker">' + escapeHtml(T('paper.kicker', { num: f.num })) + '</p>';
-      h += '<p class="u-doors">' + link(p.href, T('paper.read')) + link(p.pdf, T('paper.pdf')) + '</p>';
+      var h = '<p class="u-kicker">' + escapeHtml(T('paper.kicker', { num: f.num })) + (p.date ? ', ' + escapeHtml(p.date) : '') + '</p>';
+      h += '<p class="u-paper-title">' + escapeHtml(p.title) + '</p>';
+      h += '<p class="u-doors">' + door(p.href, T('paper.read'), true) + door(p.pdf, T('paper.pdf')) + door(f.href, T('family.page_link')) + '</p>';
       h += '<h2 class="u-h2">' + escapeHtml(T('paper.results_heading')) + '</h2>';
-      if (!p.results.length) h += '<p class="u-note">' + escapeHtml(T('paper.no_results')) + '</p>';
-      else h += '<ul class="u-subrows">' + p.results.map(function (ri) {
-        var r = D.results[ri];
-        return '<li>' + goBtn(r.id, resultGlyph(r.lean.length > 0) + '<span>' + escapeHtml(resultName(r) + (r.title ? ' (' + r.title + ')' : '')) + '</span>', 'u-sub') + '</li>';
-      }).join('') + '</ul>';
+      h += p.results.length ? '<ul class="u-subrows">' + p.results.map(resultRow).join('') + '</ul>' : para(T('family.results_none'));
       return h;
     }
+
+    /* A result: the theorem as printed, the Lean paired with it, and the ways on. */
     function resultHtml(ri) {
       var r = D.results[ri], p = D.papers[r.p], f = D.families[r.f], o = obj(r.id), det = detail(o);
-      var h = '<p class="u-context">' + escapeHtml(T('result.in_paper_lead')) + ' ' + goBtn(p.id, escapeHtml(p.title), 'u-inline u-inline--plain') + '</p>';
-      if (det) {
-        h += '<figure class="u-stmt"><div class="u-stmt__body">' + det.html + '</div><figcaption class="u-note">' + escapeHtml(det.where) + '</figcaption></figure>';
+      var h = '<p class="u-context">' + goBtn(p.id, escapeHtml(T('result.in_paper', { paper: p.short })), 'u-inline u-inline--plain') +
+        (p.date ? ', ' + escapeHtml(p.date) : '') + '</p>';
+      if (det && det.html) {
+        h += '<figure class="u-stmt"><p class="u-stmt__head"><strong>' + escapeHtml(resultName(r)) + '.</strong>' +
+          (det.titleHtml ? ' <span class="u-stmt__title">(' + det.titleHtml + ')</span>' : '') + '</p>' +
+          '<div class="u-stmt__body">' + det.html + '</div><figcaption class="u-note">' + escapeHtml(det.where) +
+          (det.source ? '. ' + link(det.source, T('result.tex_source')) : '') + '</figcaption></figure>';
       } else {
-        h += '<p class="u-note" data-u-loading>' + escapeHtml(shardLoading[discOf(o)] === null ? T('result.load_failed') : T('result.loading')) + '</p>';
+        h += loadingHtml(discOf(o), 'result.loading', 'result.load_failed');
       }
-      h += '<p class="u-doors">' + link(r.href || p.href || p.pdf, T('result.read'));
-      r.lean.forEach(function (li) { h += link(D.lean[li].href, T('result.lean_page') + ': ' + D.lean[li].name); });
-      h += link(f.href, T('result.family_page')) + '</p>';
-      h += '<p class="u-note">' + escapeHtml(r.num ? T('result.numbering_note') : r.nn ? T('result.unnumbered') : T('result.number_unavailable')) + '</p>';
-      h += '<h2 class="u-h2">' + escapeHtml(T('result.evidence_heading')) + '</h2>';
+      h += '<p class="u-doors">' + door(r.href || p.href || p.pdf, T('result.read'), true) +
+        (f.lean.length ? door(f.href + '#compare', T('result.compare')) : '') + door(f.href, T('result.family_page')) + '</p>';
+      h += '<h2 class="u-h2">' + escapeHtml(T('result.paired_heading')) + '</h2>';
       if (r.lean.length) {
-        h += '<p>' + escapeHtml(T('result.paired', { names: r.lean.map(function (li) { return D.lean[li].name; }).join(', ') })) + '</p><ul class="u-subrows">' +
-          r.lean.map(function (li) { var l = D.lean[li]; return '<li>' + goBtn(l.id, leanGlyph(l.acc.length, l.holes) + '<code>' + escapeHtml(l.name) + '</code>', 'u-sub') + '</li>'; }).join('') + '</ul>';
-      } else h += '<p>' + escapeHtml(T('result.unpaired')) + '</p>';
-      h += '<p class="u-h3">' + escapeHtml(T('result.family_evidence')) + ' ' + goBtn(f.id, escapeHtml(T('family.short', { num: f.num })), 'u-inline') + '</p>';
-      h += familyEvidenceHtml(r.f);
+        h += '<ul class="u-subrows u-subrows--lean">' + r.lean.map(function (li) {
+          var l = D.lean[li], ld = detail(obj(l.id));
+          return '<li>' + goBtn(l.id, '<span class="u-sub__t">' + escapeHtml(l.label) + '</span><code class="u-sub__n">' + escapeHtml(l.name) + '</code>', 'u-sub') +
+            (ld ? '<p class="u-sub__w"><span class="u-join u-join--' + (l.pairing === 'candidate-pairing' ? 'candidate' : 'cited') + '" aria-hidden="true"></span>' + escapeHtml(ld.pairing) + '</p><p class="u-sub__w">' + escapeHtml(ld.reruns) + '</p>' : '') + '</li>';
+        }).join('') + '</ul>';
+      } else h += para(T('result.unpaired'));
+      h += para(r.num ? T('result.numbering_note') : r.nn ? T('result.unnumbered') : T('result.number_unavailable'));
       var fd = detail(obj(f.id));
-      if (fd) h += findingsHtml(fd.findings, T('result.findings_heading'));
+      h += '<p class="u-tone">' + dot(f.tone) + '<span>' + goBtn(f.id, escapeHtml(f.title), 'u-inline') + '. ' + escapeHtml(fd ? fd.evidence : T('key.' + f.tone) + '.') + '</span></p>';
       return h;
     }
+
+    /* A Lean statement: what it is, who re-ran it, and the theorem it is paired with. */
     function leanHtml(li) {
       var l = D.lean[li], f = D.families[l.f], det = detail(obj(l.id));
       var h = '<p class="u-kicker">' + escapeHtml(T('lean.kicker', { num: f.num })) + '</p>';
-      h += '<p class="u-lean-label">' + escapeHtml(l.label) + '</p>';
-      if (l.main) h += '<p class="u-note">' + escapeHtml(T('lean.main')) + '</p>';
+      h += '<p class="u-lean-label"><code>' + escapeHtml(l.name) + '</code></p>';
+      if (l.main) h += para(T('lean.main'));
       if (det && det.snippet) h += '<pre class="lean lean--snippet u-lean"><code>' + det.snippet + '</code></pre>';
-      h += '<p class="u-doors">' + link(l.href, T('lean.page')) + link(f.href, T('lean.family_page')) + '</p>';
-      h += '<h2 class="u-h2">' + escapeHtml(T('lean.reruns_heading')) + '</h2>';
-      if (det) {
-        if (!det.reruns.length) h += '<p class="u-note">' + escapeHtml(T('lean.reruns_none')) + '</p>';
-        else h += '<ul class="u-reruns">' + det.reruns.map(function (x) {
-          var ok = x.verdict === 'accepted';
-          return '<li class="' + (ok ? 'is-ok' : 'is-not') + '"><strong>' + escapeHtml(D.sources[x.source] || x.source) + '</strong>: ' +
-            escapeHtml((COPY.lean && COPY.lean.verdicts && COPY.lean.verdicts[x.verdict]) || (ok ? T('lean.accepted') : T('lean.not_accepted'))) + (x.date ? ', ' + escapeHtml(longDate(x.date)) : '') + '. ' +
-            '<span class="u-muted">' + escapeHtml(x.text || '') + '</span> ' + link(x.url, T('lean.record')) + '</li>';
-        }).join('') + '</ul>';
-        if (det.holes.length) h += '<h3 class="u-h3">' + escapeHtml(T('lean.holes_heading')) + '</h3><p class="u-note">' + escapeHtml(T('lean.holes_note')) + '</p><p>' +
-          det.holes.map(function (n) { return '<code>' + escapeHtml(n) + '</code>'; }).join(', ') + '</p>';
-      } else {
-        h += '<p class="u-note">' + escapeHtml(l.acc.map(function (s) { return D.sources[s]; }).join('; ')) + '</p>';
-      }
+      h += '<p class="u-doors">' + door(l.href, T('lean.page'), true) + door(f.href + '#compare', T('result.compare')) + door(f.href, T('lean.family_page')) + '</p>';
       h += '<h2 class="u-h2">' + escapeHtml(T('lean.paired_heading')) + '</h2>';
       if (l.results.length) {
-        h += '<p class="u-note">' + escapeHtml(T('lean.paired_note')) + '</p><ul class="u-subrows">' + l.results.map(function (ri) {
-          var r = D.results[ri];
-          return '<li>' + goBtn(r.id, resultGlyph(true) + '<span>' + escapeHtml(resultName(r) + ', ' + D.papers[r.p].title) + '</span>', 'u-sub') + '</li>';
+        h += '<ul class="u-subrows">' + l.results.map(resultRow).join('') + '</ul>';
+        if (det) h += '<p class="u-sub__w"><span class="u-join u-join--' + (l.pairing === 'candidate-pairing' ? 'candidate' : 'cited') + '" aria-hidden="true"></span>' + escapeHtml(det.pairing) + '</p>';
+      } else h += para(T('lean.paired_none'));
+      h += '<h2 class="u-h2">' + escapeHtml(T('lean.reruns_heading')) + '</h2>';
+      if (det) {
+        h += para(det.reruns, 'u-facts');
+        if (det.runs.length) h += '<ul class="u-reruns">' + det.runs.map(function (x) {
+          var ok = /accepted$/.test(x.state || '');
+          return '<li class="' + (ok ? 'is-ok' : 'is-not') + '"><strong>' + escapeHtml(x.who) + '</strong>: ' +
+            escapeHtml(ok ? T('lean.accepted') : String(x.term || x.state || '').toLowerCase()) + (x.date ? ', ' + escapeHtml(longDate(x.date)) : '') + '. ' +
+            link(x.url, T('lean.record')) + '</li>';
         }).join('') + '</ul>';
-      } else h += '<p class="u-note">' + escapeHtml(T('lean.paired_none')) + '</p>';
-      if (det) h += findingsHtml(det.findings, T('lean.findings_heading'));
+        if (det.holes.length) h += '<h3 class="u-h3">' + escapeHtml(T('lean.holes_heading')) + '</h3>' + para(T('lean.holes_note')) + '<p>' +
+          det.holes.map(function (n) { return '<code>' + escapeHtml(n) + '</code>'; }).join(', ') + '</p>';
+      } else h += loadingHtml(discOf(obj(l.id)), 'result.loading', 'result.load_failed');
       return h;
     }
 
@@ -2319,6 +2299,36 @@
         matches = null; matchFam = null; matchList = [];
         resultsEl.hidden = true; resultsEl.innerHTML = '';
         draw();
+        return;
+      }
+      // The site's own search (assets/atlas.js) answers when it is on the page: its
+      // hits light their families here and list beside the map. The map's own rows
+      // stand in until it is.
+      if (window.AtlasSearch && typeof window.AtlasSearch.query === 'function') {
+        Promise.resolve(window.AtlasSearch.query(q)).then(function (hits) {
+          if (query !== q) return;
+          hits = hits || [];
+          matches = {}; matchFam = {}; matchList = [];
+          hits.forEach(function (hit) {
+            if (obj(hit.id)) { matches[hit.id] = true; matchList.push(hit.id); }
+            (hit.family_ids || []).forEach(function (fid) { var fo = obj(fid); if (fo) matchFam[fo.i] = true; });
+            var own = obj(hit.id), f = famOf(own);
+            if (f >= 0) matchFam[f] = true;
+          });
+          var shown = hits.slice(0, 60);
+          var kindWord = function (k) { return T('search.kind_' + k) !== 'search.kind_' + k ? T('search.kind_' + k) : k; };
+          var head = hits.length ? (hits.length === 1 ? T('search.count_one') : T('search.count', { n: hits.length })) : T('search.none');
+          if (hits.length > shown.length) head += ' ' + T('search.shown', { shown: shown.length });
+          resultsEl.hidden = false;
+          resultsEl.innerHTML = '<p class="u-note" role="status">' + escapeHtml(head) + '</p><ul class="u-rows">' + shown.map(function (hit) {
+            var inner = '<span class="u-row__k">' + escapeHtml(kindWord(hit.kind)) + '</span><span class="u-row__t">' + escapeHtml(hit.name) + '</span>';
+            var fo = obj((hit.family_ids || [])[0]);
+            if (fo) inner += '<span class="u-row__n">' + escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.families[fo.i].title) + '</span>';
+            if (obj(hit.id)) return '<li>' + goBtn(hit.id, inner, 'u-row u-row--hit') + '</li>';
+            return '<li><a class="u-row u-row--hit" href="' + escapeHtml(hit.url) + '">' + inner + '</a></li>';
+          }).join('') + '</ul>';
+          draw();
+        }, function () {});
         return;
       }
       loadSearch().then(function (rows) {
@@ -2513,7 +2523,7 @@
     });
     if (searchIn) {
       var t = 0;
-      searchIn.addEventListener('focus', function () { if (D) loadSearch().catch(function () {}); });
+      searchIn.addEventListener('focus', function () { if (D && !window.AtlasSearch) loadSearch().catch(function () {}); });
       searchIn.addEventListener('input', function () { clearTimeout(t); t = setTimeout(runSearch, 120); });
       searchIn.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
@@ -2554,7 +2564,11 @@
     }, true);
     window.addEventListener('hashchange', function () {
       var key = readHash();
-      if (key !== sel) select(key, {});
+      if (key !== sel) select(key, { fromHistory: true });
+    });
+    window.addEventListener('popstate', function () {
+      var key = readHash();
+      if (key !== sel) { trail = []; select(key, { fromHistory: true }); }
     });
     function readHash() {
       var hash = window.location.hash || '';
@@ -2611,7 +2625,6 @@
         W = H = 0;
         resize();
         computeFit();
-        if (legendBody && !legendBody.querySelector('.u-key')) legendBody.innerHTML = legendHtml();
         var start = readHash();
         sel = start;
         if (start) {

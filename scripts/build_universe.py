@@ -1,27 +1,37 @@
 #!/usr/bin/env python3
-"""Build the release universe: one map of every family of OpenAI's mathematics
-release, each family drawn as a small map of its own, placed by discipline, with
-the citations between families drawn as fibres. A family opens into its own map:
-its papers as rings, each headline result a dot, its Lean statements, threads from
-each paired result to its Lean statement and fibres out to the families it cites.
+"""Build the front door: our map of the release beside a readable list.
 
-Writes, after scripts/build_site.py and scripts/build_papers.py have run (into the
-same --out, default site/_build):
+The map draws every family of OpenAI's mathematics release as a small map of its
+own, placed in its discipline's sector of one wheel; each discipline is named on
+the drawing with plain counts, and each family is coloured by one meaning, what
+the outside readers find the release's Lean states for its headline. A family
+opens into its own map: its papers by short title and date, their results by
+printed number, its Lean statements by name, and the pairings between them.
+Citations are drawn only for the selected family. The panel beside the map is
+the list: the release in sentences, search, the colours in words, the
+disciplines, and inside a discipline its families as plain entries.
 
-    index.html                                    the front page: the map, then its bands
+Statement Map (scripts/reader.py, scripts/evidence.py) decides every fact: the
+disciplines and their families, results and their printed numbers, Lean
+statements and their re-runs, pairings, readings, citations between families
+and every number in a sentence. Statement text is typeset from the Atlas's own
+data/manuscripts.json, joined by the backend statement's manuscript, file and
+line. This script only lays things out and words them through
+site/copy_universe.json and site/copy_evidence.json.
+
+Writes, after scripts/build_site.py has run (into the same --out, default site/_build):
+
+    index.html                                    the map and the list, then the bands
     universe.html                                 a redirect to index.html, kept for old links
     site/_build/data/universe-data.json           what is drawn: ids, names, evidence
-    site/_build/data/universe-layout.json         where it is drawn (same generation id)
-    site/_build/data/universe-detail-<n>.json     the panel's statements, one file per discipline
-    site/_build/data/universe-search.json         the search corpus, loaded on first use
+    site/_build/data/universe-layout.json         where it is drawn
+    site/_build/data/universe-detail-<n>.json     the list's words, one file per discipline
+    site/_build/data/universe-search.json         the map's own search rows
     site/_build/assets/universe.js, universe.css
 
-The geometry is computed here, once, so the map is the same place on every visit.
-Data and geometry are separate files that carry one generation id; the page
-refuses a pair whose ids differ. Every object's id comes from the release's own
-names (family ids, Lean statement ids, manuscript slug plus TeX label, or
-L-<file>-<line> when a statement has no label), so a deep link #o=<id> survives
-a rebuild and a change of layout.
+Every data file carries the backend's generation id; the page refuses a file from
+another generation. Ids are the backend's reader ids, so a deep link #o=<id>
+survives a rebuild and a change of layout.
 
 Layout patterns ported from Will Cook's ai_workflow at commit 4b1ebab611:
   - the radial sectors, hub angles and fibre bundling of the system map's Loom
@@ -58,6 +68,8 @@ COPY_U = json.loads((SITE / "copy_universe.json").read_text(encoding="utf-8"))
 OWN_ASSETS = ("universe.js", "universe.css")
 
 sys.path.insert(0, str(SCRIPTS))
+import evidence as E  # noqa: E402
+import reader as R  # noqa: E402
 S = None
 
 
@@ -213,150 +225,178 @@ def plain(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+
+
 # ---------------------------------------------------------------- the model
 
-def result_id(slug: str, st: dict) -> str:
-    return "r:" + slug + ":" + (st.get("label") or f'L-{st.get("file")}-{st.get("line")}')
+MONTHS = "January February March April May June July August September October November December".split()
 
 
-NUMBERS = ROOT / "data" / "statement_numbers.json"
+def date_british(s: str | None) -> str | None:
+    """"September 24, 2026" (the manuscript record's form) as "24 September 2026"."""
+    m = re.match(r"^([A-Z][a-z]+) (\d{1,2}), (\d{4})$", s or "")
+    if not m or m.group(1) not in MONTHS:
+        return s or None
+    return f"{int(m.group(2))} {m.group(1)} {m.group(3)}"
 
 
-def load_printed_numbers() -> dict:
-    """(manuscript, file, line) -> (kind, number or None) from data/statement_numbers.json,
-    the number each statement prints on its reading page (build_papers.py writes it). A
-    row is used only while its statement_sha256 matches the statement in manuscripts.json,
-    so a changed statement never borrows an old number. A row whose number is null is an
-    unnumbered statement; a statement with no row has no number available."""
-    if not NUMBERS.exists():
-        return {}
-    raw = json.loads(NUMBERS.read_text(encoding="utf-8"))
-    return {(r["manuscript"], r["file"], r["line"]): r for r in raw.get("rows") or []}
+def short_title(title: str) -> str:
+    """A paper's title, cut at its colon when the part before it names it."""
+    t = plain(title)
+    head = t.split(": ", 1)[0]
+    return head if 12 <= len(head) < len(t) else t
 
 
-PRINTED = {}
+def tone_class(ev) -> str:
+    """The one meaning a family's colour carries: what the two outside readers find
+    the release's Lean states for the family's headline, as the backend records it.
+    Disagreement is the backend's own comparison; a reader's term is never merged."""
+    if not ev.has_lean:
+        return "none"
+    if ev.agreement == "disagree":
+        return "split"
+    tones = [t for t in ev.tones if t != "none"]
+    if not tones:
+        return "unread"
+    if all(t == "full" for t in tones):
+        return "all"
+    if "part" in tones:
+        return "part"
+    return "other"
 
 
-def printed_head(slug: str, st: dict):
-    """("Theorem 1.1", False), (None, True) for an unnumbered statement, or (None, False)."""
-    r = PRINTED.get((slug, st.get("file"), st.get("line")))
-    if not r or (r.get("statement_sha256") and st.get("sha256") and r["statement_sha256"] != st["sha256"]):
-        return None, False
-    if r.get("number") is None:
-        return None, True
-    return f'{r.get("kind") or st.get("display") or ""} {r["number"]}'.strip(), False
+TONE_ORDER = ("all", "part", "other", "split", "none", "unread")
 
 
-def build_model():
-    fams, papers, results, leans = [], [], [], []
-    fam_index = {f["id"]: i for i, f in enumerate(S.FAMILIES)}
-    lean_index = {}
-    disc_of = {}
-    disciplines = []
-    for di, d in enumerate(S.DISCIPLINES):
-        disciplines.append({"id": "d:" + S.DISC_SLUG[di], "name": d["name"], "families": []})
-        for fid in d["families"]:
-            disc_of[fid] = di
-    # Families in OpenAI's order: discipline by discipline, as disciplines.json lists them.
-    order = [fid for d in S.DISCIPLINES for fid in d["families"]]
-    assert len(order) == len(set(order)) == len(S.FAMILIES), "every family sits in exactly one discipline"
-    fi_of = {}
-    for fid in order:
-        f = S.FAM[fid]
-        fi = len(fams)
-        fi_of[fid] = fi
-        disciplines[disc_of[fid]]["families"].append(fi)
-        hol = sum(len(v["value"]) for v in S.sourced_all(f, "hol_checks"))
-        fin_c = fin_o = 0
-        for v in S.sourced_all(f, "finite_checks"):
-            for x in v["value"]:
-                if x.get("verdict") == "certified":
-                    fin_c += 1
-                else:
-                    fin_o += 1
-        fams.append({"id": "f:" + fid, "num": fid, "title": plain(f["title"]), "d": disc_of[fid], "papers": [], "lean": [],
-                     "hol": hol, "fin": fin_c, "finOther": fin_o, "readers": f.get("readers_agreement") or "none",
-                     "href": f"families/{fid}.html",
-                     "findings": len(S.COMMUNITY["by_family"].get(fid, []))})
-    for fid in order:
-        f, fi = S.FAM[fid], fi_of[fid]
-        for k, slug in enumerate(f["manuscripts"]):
-            m = S.MS[slug]
-            assert m["status"] == "current", slug
-            pi = len(papers)
-            fams[fi]["papers"].append(pi)
-            href = f"papers/{quote(slug)}.html" if slug in S.PAPER_READING else None
-            papers.append({"id": "p:" + slug, "f": fi, "title": plain(m["title"]), "lead": k == 0, "results": [],
-                           "href": href, "pdf": m["pdf_url"]})
-            for st in S.headline_statements(m):
-                ri = len(results)
-                papers[pi]["results"].append(ri)
-                head, unnumbered = printed_head(slug, st)
-                row = {"id": result_id(slug, st), "p": pi, "f": fi, "kind": st.get("display") or st.get("kind", "").title(),
-                       "num": head, "title": plain(st["title"]) if st.get("title") else None, "lean": [],
-                       "href": S.paper_statement_href(slug, st, "")}
-                if unnumbered:
-                    row["nn"] = 1
-                results.append(row)
-        for sid in f["statements"]:
-            s = S.ST[sid]
-            assert s["families"] == [fid], sid
-            li = len(leans)
-            lean_index[sid] = li
-            fams[fi]["lean"].append(li)
-            acc = sorted({r["source"] for r in S.sourced_all(s, "replay") if r["value"].get("verdict") == "accepted"})
-            leans.append({"id": "l:" + sid, "f": fi, "name": sid, "label": plain((s.get("labels") or [sid])[0]),
-                          "acc": acc, "holes": len(s["comparator"].get("definition_names") or []),
-                          "main": bool(s.get("main_result")), "results": [], "href": f"statements/{quote(sid)}.html"})
-    res_of = {r["id"]: i for i, r in enumerate(results)}
-    assert len(res_of) == len(results), "result ids are unique"
-    # Candidate pairings, chosen automatically by word overlap (build_site.pair_statement).
-    pairs = 0
-    for sid, li in lean_index.items():
-        m, st, why = S.pair_statement(S.ST[sid])
-        if not m:
-            continue
-        ri = res_of.get(result_id(m["id"], st))
-        if ri is None:
-            continue
-        if results[ri]["f"] != leans[li]["f"]:
-            continue
-        results[ri]["lean"].append(li)
-        leans[li]["results"].append(ri)
-        pairs += 1
-    # Citations between families, from the manuscripts' bibliographies (graph.json):
-    # each current-to-current manuscript edge across two families, kept per paper.
-    pi_of = {p["id"][2:]: i for i, p in enumerate(papers)}
-    links = defaultdict(lambda: [0, 0])   # (lo, hi) -> [lo cites hi, hi cites lo]
-    paper_links = []                        # [citing paper, cited paper]
-    seen = set()
-    for e in S.GRAPH:
-        a, b = pi_of.get(e["source"]), pi_of.get(e.get("target_latest") or e["target"])
-        if a is None or b is None:
-            continue
-        fa, fb = papers[a]["f"], papers[b]["f"]
-        if fa == fb or (a, b) in seen:
-            continue
-        seen.add((a, b))
-        paper_links.append([a, b])
-        lo, hi = min(fa, fb), max(fa, fb)
-        links[(lo, hi)][0 if fa == lo else 1] += 1
-    link_rows = [[lo, hi, w[0], w[1]] for (lo, hi), w in sorted(links.items())]
-    for f in fams:
-        f["cites"], f["citedBy"] = [], []
-    for lo, hi, a, b in link_rows:
-        if a:
-            fams[lo]["cites"].append([hi, a])
-            fams[hi]["citedBy"].append([lo, a])
-        if b:
-            fams[hi]["cites"].append([lo, b])
-            fams[lo]["citedBy"].append([hi, b])
-    for d in disciplines:
-        d["results"] = sum(len(papers[p]["results"]) for fi in d["families"] for p in fams[fi]["papers"])
-        d["lean"] = sum(len(fams[fi]["lean"]) for fi in d["families"])
-        d["papers"] = sum(len(fams[fi]["papers"]) for fi in d["families"])
-    return {"disciplines": disciplines, "families": fams, "papers": papers, "results": results, "lean": leans,
-            "links": link_rows, "paperLinks": paper_links, "pairs": pairs}
+def statement_label(st: dict | None, rv: dict | None = None) -> tuple[str, str | None, bool]:
+    """(kind, printed label or None, unnumbered) for a reader statement record."""
+    src = st or rv or {}
+    kind = (st or {}).get("display") or (src.get("statement_kind") or "statement").capitalize()
+    status = src.get("printed_number_status")
+    num = src.get("printed_number") if status == "recorded" else None
+    return kind, (f"{kind} {num}" if num else None), status == "unnumbered"
+
+
+class Model:
+    """What the map draws, read once from Statement Map through scripts/reader.py."""
+
+    def __init__(self, r):
+        self.r = r
+        self.gen = r.generation
+        self.evs = {ev.id: ev for ev in E.all_families(r)}
+        self.docs = {fid: r.family(fid) for fid in self.evs}
+        views = {v["id"]: v for v in r.universe["family_views"]}
+        rviews = {v["id"]: v for v in r.universe["result_views"]}
+        disciplines, fams, papers, results, leans = [], [], [], [], []
+        fi_of, res_of, lean_of = {}, {}, {}
+        self.pairs = 0
+        for di, d in enumerate(r.universe["disciplines"]):
+            disciplines.append({"id": d["id"], "name": d["name"], "families": [], "withLean": 0})
+            for fid in d["family_ids"]:
+                ev, doc, v = self.evs[fid], self.docs[fid], views[fid]
+                fi = len(fams)
+                fi_of[fid] = fi
+                disciplines[di]["families"].append(fi)
+                if ev.has_lean:
+                    disciplines[di]["withLean"] += 1
+                fams.append({"id": fid, "num": ev.num, "title": plain(ev.name), "d": di, "papers": [], "lean": [],
+                             "tone": tone_class(ev), "ring": bool(ev.checks), "href": f"families/{ev.num}.html"})
+                stmts = {s["id"]: s for s in doc.get("statements") or []}
+                names = {p["id"]: p.get("name") or p["id"][2:] for p in doc.get("paper_history") or []}
+                by_ms: dict[str, list] = defaultdict(list)
+                for rid in v.get("results") or []:
+                    rv = rviews.get(rid) or {}
+                    st = stmts.get(rid)
+                    ms = (st or rv).get("manuscript_id")
+                    by_ms[ms].append((rv.get("reading_order", 0), rid, st, rv))
+                # A statement a Lean statement is paired with is drawn too, even when it is
+                # not one of the paper's flagged headline results, so every thread lands.
+                targets = self._pair_targets(doc)
+                for lid, (sid, state) in targets.items():
+                    if sid and sid not in rviews and sid in stmts:
+                        st = stmts[sid]
+                        if not any(sid == x[1] for x in by_ms[st.get("manuscript_id")]):
+                            by_ms[st.get("manuscript_id")].append((10_000 + (st.get("source") or {}).get("line", 0), sid, st, {}))
+                for k, pid in enumerate(v.get("papers") or []):
+                    slug = pid[2:]
+                    m = S.MS.get(slug) or {}
+                    pi = len(papers)
+                    fams[fi]["papers"].append(pi)
+                    href = f"papers/{quote(slug)}.html" if slug in S.PAPER_READING else None
+                    papers.append({"id": pid, "f": fi, "title": plain(names.get(pid) or m.get("title") or slug),
+                                   "short": short_title(names.get(pid) or m.get("title") or slug),
+                                   "date": date_british(m.get("date")), "lead": k == 0, "results": [],
+                                   "href": href, "pdf": m.get("pdf_url")})
+                    for _, rid, st, rv in sorted(by_ms.get(pid, []), key=lambda x: (x[0], x[1])):
+                        if rid in res_of:
+                            continue
+                        kind, label, nn = statement_label(st, rv)
+                        ri = len(results)
+                        res_of[rid] = ri
+                        papers[pi]["results"].append(ri)
+                        row = {"id": rid, "p": pi, "f": fi, "kind": kind, "num": label, "title": None, "lean": [],
+                               "href": (st or {}).get("reading_page") or href}
+                        if nn:
+                            row["nn"] = 1
+                        if rid not in rviews:
+                            row["extra"] = 1
+                        results.append(row)
+                for l in doc.get("lean") or []:
+                    li = len(leans)
+                    lean_of[l["id"]] = li
+                    fams[fi]["lean"].append(li)
+                    lsum = r.lean_summary(l["id"]) or {}
+                    sid, state = targets.get(l["id"], (None, "unavailable"))
+                    leans.append({"id": l["id"], "f": fi, "name": l["id"][2:],
+                                  "label": plain(lsum.get("name_tex") or l.get("name") or l["id"][2:]),
+                                  "acc": list(l.get("accepted_current_sources") or []),
+                                  "main": bool(l.get("main_result")), "results": [], "pairing": state,
+                                  "href": f"statements/{quote(l['id'][2:])}.html"})
+                for lid, (sid, state) in targets.items():
+                    if sid in res_of and lid in lean_of and results[res_of[sid]]["f"] == fi:
+                        results[res_of[sid]]["lean"].append(lean_of[lid])
+                        leans[lean_of[lid]]["results"].append(res_of[sid])
+                        self.pairs += 1
+        # Citations between families: the backend's directed family counts (each a count
+        # of citing pairs of papers; a citation is never a proof dependency).
+        links = defaultdict(lambda: [0, 0])
+        for e in r.universe["family_citations"]:
+            a, b = fi_of[e["source"]], fi_of[e["target"]]
+            lo, hi = min(a, b), max(a, b)
+            links[(lo, hi)][0 if a == lo else 1] += e["value"]
+        link_rows = [[lo, hi, w[0], w[1]] for (lo, hi), w in sorted(links.items())]
+        for f in fams:
+            f["cites"], f["citedBy"] = [], []
+        for lo, hi, a, b in link_rows:
+            if a:
+                fams[lo]["cites"].append([hi, a])
+                fams[hi]["citedBy"].append([lo, a])
+            if b:
+                fams[hi]["cites"].append([lo, b])
+                fams[lo]["citedBy"].append([hi, b])
+        self.data = {"disciplines": disciplines, "families": fams, "papers": papers, "results": results,
+                     "lean": leans, "links": link_rows}
+
+    @staticmethod
+    def _pair_targets(doc) -> dict:
+        """Lean id -> (paper statement id or None, pairing state), as the backend records it:
+        the family's selected Lean statement keeps the selection's own state (a candidate, a
+        citation in the Lean source or a binding the release declares); the others keep their
+        candidate pairing, or none when the backend abstained."""
+        out = {}
+        for p in doc.get("pairing_selections") or []:
+            src = p.get("source")
+            if not src:
+                continue
+            if p.get("status") == "candidate" and p.get("target"):
+                out[src] = (p["target"], "candidate-pairing")
+            else:
+                out[src] = (None, "unavailable")
+        sel = doc.get("selection") or {}
+        if sel.get("lean"):
+            if sel.get("paired_statement") and sel.get("pairing_state") in E.PAIRINGS[:3]:
+                out[sel["lean"]] = (sel["paired_statement"], sel["pairing_state"])
+        return out
 
 
 # ---------------------------------------------------------------- one family's map
@@ -420,7 +460,9 @@ def family_map(model, fi, centre_of):
     outer = 0.72 if has_lean else 0.9
     rings, dots = [], {}
     top = -math.pi / 2
-    if len(P) == 1:
+    if not P:
+        pass
+    elif len(P) == 1:
         r = 0.58 * outer
         rings.append([0.0, 0.0, r4(r), r4(top), r4(top + TAU)])
         res = P[0]["results"]
@@ -461,21 +503,16 @@ def family_map(model, fi, centre_of):
         ang = spread(pref, 0.34)
         for li, a in zip(L, ang):
             lean_xy[li] = [r4(rl * math.cos(a)), r4(rl * math.sin(a))]
-    # Fibres: one end per other family, aimed at that family's place in the release.
+    # Fibres: one end per other family that cites or is cited by this one (the backend's
+    # family citation counts), leaving from the lead paper, aimed at that family's place.
     cx, cy = centre_of(fi)
     ends = {}
-    for pa, pb in model["paperLinks"]:
-        fa, fb = model["papers"][pa]["f"], model["papers"][pb]["f"]
-        if fa == fi:
-            g, own, way = fb, pa, 1
-        elif fb == fi:
-            g, own, way = fa, pb, 2
-        else:
+    for lo, hi, a, b in model["links"]:
+        if fi not in (lo, hi):
             continue
-        e = ends.setdefault(g, {"g": g, "way": 0, "papers": []})
-        e["way"] |= way
-        if own not in e["papers"]:
-            e["papers"].append(own)
+        g = hi if fi == lo else lo
+        out_w, in_w = (a, b) if fi == lo else (b, a)
+        ends[g] = {"g": g, "way": (1 if out_w else 0) | (2 if in_w else 0), "papers": f["papers"][:1]}
     fibres = []
     if ends:
         gs = sorted(ends)
@@ -596,192 +633,6 @@ def build_layout(model):
             "leanR": lean_r, "fibres": fibres}
 
 
-# ---------------------------------------------------------------- panel detail
-
-def source_names():
-    return {k: S.source_credit(k) for k in S.SOURCES}
-
-
-def finding_rows(finds):
-    rows = []
-    for f in sorted(finds, key=lambda x: x["date"]):
-        e = S.COMMUNITY["efforts"].get(f["effort"], {})
-        kinds = S.C("community.finding_kinds") if isinstance(S.C("community.finding_kinds"), dict) else {}
-        rows.append({"kind": kinds.get(f["kind"], f["kind"]), "summary": f["summary"], "who": S.credit_names(e),
-                     "effort": e.get("name", ""), "date": f["date"], "url": f["url"]})
-    return rows
-
-
-def build_detail(model):
-    """The panel's words, one shard per discipline: each result's statement typeset
-    as the family pages typeset it (TeX spans for KaTeX), each Lean statement's
-    re-runs and holes, each family's description and outside checks."""
-    shards = [{"results": {}, "lean": {}, "families": {}, "macros": {}} for _ in model["disciplines"]]
-    for fi, f in enumerate(model["families"]):
-        fid = f["num"]
-        fam = S.FAM[fid]
-        sh = shards[f["d"]]
-        hol = [{"card": c.get("card"), "text": c.get("certifies"), "url": c.get("url")}
-               for v in S.sourced_all(fam, "hol_checks") for c in v["value"]]
-        fin = [{"verdict": c.get("verdict"), "text": c.get("text"), "scope": c.get("scope"), "url": c.get("url") or ""}
-               for v in S.sourced_all(fam, "finite_checks") for c in v["value"]]
-        sh["families"][f["id"]] = {
-            "titleHtml": S.rich(fam["title"]),
-            "description": S.rich(fam["description"]),
-            "hol": hol, "finite": fin,
-            "findings": finding_rows(S.COMMUNITY["by_family"].get(fid, [])),
-        }
-        for pi in f["papers"]:
-            p = model["papers"][pi]
-            slug = p["id"][2:]
-            m = S.MS[slug]
-            sh["macros"][p["id"]] = (m.get("tex") or {}).get("macros") or {}
-            conv = S.TexConv(m, "")
-            stmts = {result_id(slug, st): st for st in S.headline_statements(m)}
-            for ri in p["results"]:
-                r = model["results"][ri]
-                st = stmts[r["id"]]
-                sec = U("result.appendix") if st.get("appendix") else U("result.section", n=st.get("section") or "?")
-                sh["results"][r["id"]] = {
-                    "html": keep_punctuation(conv.blocks(st["text"])),
-                    "titleHtml": conv.text(st["title"], inline=True) if st.get("title") else None,
-                    "where": sec + (f', {st["section_title"]}' if st.get("section_title") else ""),
-                    "paperHtml": S.rich(m["title"]),
-                    "source": f'{S.BASE_BLOB}preprints/{slug}/{st["file"]}#L{st["line"]}',
-                }
-        for li in f["lean"]:
-            L = model["lean"][li]
-            s = S.ST[L["name"]]
-            reruns = [{"source": v["source"], "verdict": v["value"].get("verdict"), "text": v["value"].get("text"),
-                       "date": v["value"].get("date"), "url": v["value"].get("url")} for v in S.sourced_all(s, "replay")]
-            sh["lean"][L["id"]] = {
-                "docs": s.get("docstrings") or [],
-                "labels": s.get("labels") or [],
-                "snippet": S.lean_snippet_html(s, max_lines=14),
-                "reruns": reruns,
-                "holes": [n.split(".")[-1] for n in s["comparator"].get("definition_names") or []],
-                "findings": finding_rows(S.COMMUNITY["by_statement"].get(L["name"], [])),
-            }
-    return shards
-
-
-def build_search(model):
-    rows = []
-    for f in model["families"]:
-        rows.append([f["id"], (f["num"] + " " + f["title"]).lower()])
-    for p in model["papers"]:
-        rows.append([p["id"], p["title"].lower()])
-    for r in model["results"]:
-        p = model["papers"][r["p"]]
-        slug = p["id"][2:]
-        st = next(st for st in S.headline_statements(S.MS[slug]) if result_id(slug, st) == r["id"])
-        text = " ".join(x for x in [r["num"] or r["kind"], r["title"] or "", plain(st["text"]), st.get("label") or ""] if x)
-        rows.append([r["id"], re.sub(r"\s+", " ", text).lower()])
-    for L in model["lean"]:
-        s = S.ST[L["name"]]
-        text = " ".join([L["name"], " ".join(s.get("labels") or []), " ".join(s["comparator"]["theorem_names"]),
-                         " ".join(s.get("docstrings") or []), " ".join(d["name"] for d in s.get("declarations") or [])])
-        rows.append([L["id"], re.sub(r"\s+", " ", text).lower()])
-    return rows
-
-
-# ---------------------------------------------------------------- the page
-
-def index_html(model):
-    """The no-JavaScript map: every family to its results, with links."""
-    out = ['<div class="u-index">']
-    for d in model["disciplines"]:
-        out.append(f'<details class="u-index__d" id="idx-{esc(d["id"][2:])}"><summary><span class="u-index__dn">{esc(d["name"])}</span> '
-                   f'<span class="u-index__dc">{esc(U("counts.families", n=len(d["families"])))}</span></summary><ul class="u-index__fams">')
-        for fi in d["families"]:
-            f = model["families"][fi]
-            fam = S.FAM[f["num"]]
-            out.append(f'<li class="u-index__f" data-o="{esc(f["id"])}"><a href="{esc(f["href"])}"><span class="u-index__num">{esc(f["num"])}</span> '
-                       f'<span class="tex-auto">{S.rich(fam["title"])}</span></a>')
-            out.append('<ul class="u-index__papers">')
-            for pi in f["papers"]:
-                p = model["papers"][pi]
-                link = p["href"] or p["pdf"]
-                out.append(f'<li data-o="{esc(p["id"])}"><a href="{esc(link)}">{esc(p["title"])}</a>')
-                if p["results"]:
-                    out.append('<ul class="u-index__results">')
-                    for ri in p["results"]:
-                        r = model["results"][ri]
-                        name = r["num"] or r["kind"]
-                        if r["title"]:
-                            name += f' ({r["title"]})'
-                        href = r["href"] or link
-                        out.append(f'<li data-o="{esc(r["id"])}"><a href="{esc(href)}">{esc(name)}</a></li>')
-                    out.append("</ul>")
-                out.append("</li>")
-            out.append("</ul>")
-            if f["lean"]:
-                out.append('<ul class="u-index__lean">')
-                for li in f["lean"]:
-                    L = model["lean"][li]
-                    out.append(f'<li data-o="{esc(L["id"])}"><a href="{esc(L["href"])}"><code>{esc(L["name"])}</code></a> {esc(L["label"])}</li>')
-                out.append("</ul>")
-            out.append("</li>")
-        out.append("</ul></details>")
-    out.append("</div>")
-    return "".join(out)
-
-
-# Verdicts that would mean an outside group rejected a Lean file's proof. None of the
-# recorded re-runs uses one today ("not-decided" is cert-machine refusing to decide,
-# "built" is MathVet building without a verdict); the words stay ready if one does.
-REJECTED = {"rejected", "failed", "fail"}
-
-
-def rerun_records():
-    """Per group: files re-run and how many of each verdict; per Lean file: accepted and
-    rejected groups. Read from statements.json's sourced replay records."""
-    by_group, by_file = {}, {}
-    for st in S.STATEMENTS:
-        acc, rej, any_run = set(), set(), False
-        for v in S.sourced_all(st, "replay"):
-            any_run = True
-            g = by_group.setdefault(v["source"], {"runs": 0, "verdicts": {}})
-            g["runs"] += 1
-            verdict = v["value"].get("verdict") or "unknown"
-            g["verdicts"][verdict] = g["verdicts"].get(verdict, 0) + 1
-            if verdict == "accepted":
-                acc.add(v["source"])
-            elif verdict in REJECTED:
-                rej.add(v["source"])
-        by_file[st["id"]] = {"run": any_run, "acc": acc, "rej": rej}
-    return by_group, by_file
-
-
-def verdict_phrase(g) -> str:
-    """"398 accepted and 18 not decided", "192 of 192 accepted": a group's verdicts in words."""
-    parts = []
-    order = ["accepted"] + sorted(k for k in g["verdicts"] if k != "accepted")
-    for k in order:
-        n = g["verdicts"].get(k, 0)
-        if not n:
-            continue
-        if k == "accepted" and n == g["runs"]:
-            parts.append(U("bands.verdict_accepted_all", n=n))
-        elif ("verdict_" + k) in COPY_U["bands"]:
-            parts.append(U("bands.verdict_" + k, n=n))
-        else:
-            parts.append(U("bands.verdict_other", n=n, verdict=k.replace("-", " ")))
-    return parts[0] if len(parts) == 1 else ", ".join(parts[:-1]) + " and " + parts[-1]
-
-
-def ground_sentence() -> str:
-    """The first screen's grounding of "checked": what the outside groups report, counted."""
-    _, by_file = rerun_records()
-    files = len(by_file)
-    rerun = sum(1 for x in by_file.values() if x["run"])
-    accepted = sum(1 for x in by_file.values() if x["acc"])
-    rejected = sum(1 for x in by_file.values() if x["rej"])
-    if rejected:
-        return U("page.ground_rejected", rerun=rerun, files=files, accepted=accepted, rejected=rejected)
-    if rerun == files:
-        return U("page.ground_all", files=files, accepted=accepted)
-    return U("page.ground_some", rerun=rerun, files=files, accepted=accepted)
 
 
 KEEP_PUNCT = re.compile(r'(<span class="m">[^<]*</span>)([.,;:!?)\]]+)')
@@ -802,197 +653,396 @@ def linked(template: str, **parts) -> str:
     return out
 
 
-def num_link(n, href: str) -> str:
-    return f'<a class="u-num" href="{esc(href)}">{n:,}</a>' if isinstance(n, int) else f'<a class="u-num" href="{esc(href)}">{esc(n)}</a>'
+
+# ---------------------------------------------------------------- the panel's words
+
+MATH = re.compile(r"\\\(.*?\\\)|\\\[.*?\\\]|\$[^$]+\$", re.S)
+ABBR = re.compile(r"(?:\b(?:e\.g|i\.e|cf|resp|et al|vs|approx|Thm|Prop|Lem|Cor|Sec|Ch|Fig|Eq|No|St|Jr|Dr|Prof)|\b[A-Z])\.$")
+LEAN_LINK = re.compile(r"\s*\(\[Lean\]\([^)]*\)\)\s*$")
 
 
-def ways_html(model) -> str:
-    """Four ways in, chosen by how widely the problem is known, each a link to its
-    family page that the map turns into a flight."""
-    fam_by = {f["num"]: f for f in model["families"]}
+def sentences(text: str) -> list[str]:
+    """A catalogue description split into sentences. A full stop inside a formula or
+    after a common abbreviation or an initial never ends a sentence."""
+    masks = []
+
+    def keep(m):
+        masks.append(m.group(0))
+        return f"\x00{len(masks) - 1}\x00"
+    t = MATH.sub(keep, text or "")
+    out, start = [], 0
+    for m in re.finditer(r"[.?!](?:\)|”|’)?\s+(?=[A-Z(<\x00“‘\[])", t):
+        if ABBR.search(t[start:m.start() + 1].rstrip()):
+            continue
+        out.append(t[start:m.end()].strip())
+        start = m.end()
+    out.append(t[start:].strip())
+    unmask = lambda s: re.sub(r"\x00(\d+)\x00", lambda mm: masks[int(mm.group(1))], s)
+    return [unmask(LEAN_LINK.sub("", s)) for s in out if LEAN_LINK.sub("", s)]
+
+
+def lead_sentences(text: str, limit: int = 360) -> tuple[str, bool]:
+    """The first sentences of a description, at least one and up to about `limit`
+    characters, and whether anything was left out."""
+    ss = sentences(text)
+    out, n = [], 0
+    for s in ss:
+        if out and n + len(s) > limit:
+            break
+        out.append(s)
+        n += len(s) + 1
+    return " ".join(out), len(out) < len(ss)
+
+
+def no_links(h: str) -> str:
+    """HTML for inside a link (a list entry is one): its own links become plain text."""
+    return re.sub(r"</?a\b[^>]*>", "", h)
+
+
+def join_words(items: list[str]) -> str:
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def run_names(M) -> dict:
+    """Each re-run source's credited name, as the backend's run records give it."""
+    out = {}
+    for doc in M.docs.values():
+        for l in doc.get("lean") or []:
+            for run in l.get("runs") or []:
+                c = run.get("credit") or {}
+                if c.get("source") and c.get("name"):
+                    out[c["source"]] = c["name"]
+    return out
+
+
+def reruns_sentence(accepted, names) -> str:
+    acc = [names.get(s, s) for s in accepted]
+    if not acc:
+        return E.say("reruns.none")
+    return E.say("reruns.one", names=acc[0]) if len(acc) == 1 else E.say("reruns.many", n=len(acc), names=join_words(acc))
+
+
+def evidence_words(M, ev, names) -> str:
+    """One plain sentence or three: what the release's Lean states for the family's
+    headline, by each outside reader's finding, and who re-ran it."""
+    if not ev.has_lean:
+        return U("evidence.no_lean")
+    n = len(ev.lean)
+    parts = [U("evidence.lean_one") if n == 1 else U("evidence.lean_many", n=n)]
+    found = [f"{rd.name} {E.say('tone.' + rd.tone)}" for rd in ev.readers]
+    parts.append(join_words(found)[:1].upper() + join_words(found)[1:] + ".")
+    parts.append(ev.agreement_sentence())
+    if n == 1:
+        parts.append(reruns_sentence(ev.lean[0].accepted, names))
+    else:
+        k = sum(1 for lm in ev.lean if lm.accepted)
+        parts.append(U("evidence.reruns_some", k=k, n=n) if k else E.say("reruns.none").replace("this Lean statement", "these Lean statements"))
+    return " ".join(parts)
+
+
+def statement_html(slug: str, st_backend: dict | None, rid: str):
+    """The statement typeset as the family pages typeset it (TeX spans for KaTeX), from
+    the Atlas's own data/manuscripts.json, joined by the backend statement's manuscript,
+    file and line, or its label."""
+    m = S.MS.get(slug)
+    if not m:
+        return None
+    src = (st_backend or {}).get("source") or {}
+    line, file_ = src.get("line"), (src.get("file") or "")
+    label = (st_backend or {}).get("name")
+    hit = None
+    for st in m.get("statements") or []:
+        if line and st.get("line") == line and file_.endswith("/" + (st.get("file") or "~")):
+            hit = st
+            break
+    if hit is None and label:
+        hit = next((st for st in m.get("statements") or [] if st.get("label") == label), None)
+    if hit is None:
+        return None
+    conv = S.TexConv(m, "")
+    sec = U("result.appendix") if hit.get("appendix") else U("result.section", n=hit.get("section") or "?")
+    return {
+        "html": keep_punctuation(conv.blocks(hit["text"])),
+        "titleHtml": conv.text(hit["title"], inline=True) if hit.get("title") else None,
+        "where": sec + (f', {hit["section_title"]}' if hit.get("section_title") else ""),
+        "source": f'{S.BASE_BLOB}preprints/{slug}/{hit["file"]}#L{hit["line"]}',
+    }
+
+
+def reader_rows(ev, doc) -> list:
+    points = {p.get("reading"): p for p in (doc.get("reader_comparison") or {}).get("points") or []}
+    by_source = {rd["source"]: rd for rd in doc.get("readings") or []}
+    out = []
+    for rd_ev in ev.readers:
+        rd = by_source.get(rd_ev.source)
+        if not rd:
+            out.append({"name": rd_ev.name, "url": rd_ev.url, "words": E.say("tone.none")})
+            continue
+        pt = points.get(rd["id"]) or {}
+        note = pt.get("gap") or pt.get("note") or ""
+        if len(note) > 280:
+            note = note[:279].rsplit(" ", 1)[0].rstrip(",;:.") + "…"
+        out.append({"name": rd_ev.name, "url": rd_ev.url, "term": rd.get("source_term"),
+                    "words": E.say("tone." + rd_ev.tone), "note": note,
+                    "rec": (rd.get("source_value") or {}).get("url")})
+    return out
+
+
+def build_detail(M, names):
+    """The panel's words, one shard per discipline: each family's catalogue sentences and
+    evidence in words, each result's statement typeset as printed, each Lean statement's
+    re-runs and pairing."""
+    D = M.data
+    shards = [{"families": {}, "results": {}, "lean": {}, "macros": {}} for _ in D["disciplines"]]
+    for fi, f in enumerate(D["families"]):
+        ev, doc = M.evs[f["id"]], M.docs[f["id"]]
+        sh = shards[f["d"]]
+        cat = ((doc.get("claim") or {}).get("catalogue_claim") or {}).get("text") or ""
+        ss = sentences(cat)
+        lead, more = lead_sentences(cat)
+        kinds = [E.say("check_kind." + c) for c in ev.checks if c in E.WORDS["check_kind"]]
+        claim = doc.get("claim") or {}
+        sh["families"][f["id"]] = {
+            "titleHtml": no_links(S.rich(ev.name)),
+            "first": no_links(S.rich(ss[0] if ss else "")),
+            "desc": S.rich(lead), "descMore": more,
+            "evidence": evidence_words(M, ev, names),
+            "agree": ev.agreement_sentence() if ev.has_lean else "",
+            "readers": reader_rows(ev, doc) if ev.has_lean else [],
+            "checks": E.say("other_checks", kinds=join_words(kinds)) if kinds else "",
+            "explained": ev.community_count("explanation"),
+            "problems": ev.community_count("error-reported") + ev.community_count("correction"),
+            "headline": "candidate" if claim.get("state") == "candidate" else "unresolved",
+            "candidate": claim.get("primary_candidate") if claim.get("state") == "candidate" else None,
+            "editions": ev.editions, "withdrawn": ev.withdrawn,
+        }
+        stmts = {s["id"]: s for s in doc.get("statements") or []}
+        for pi in f["papers"]:
+            p = D["papers"][pi]
+            slug = p["id"][2:]
+            m = S.MS.get(slug) or {}
+            sh["macros"][p["id"]] = (m.get("tex") or {}).get("macros") or {}
+            for ri in p["results"]:
+                res = D["results"][ri]
+                st = stmts.get(res["id"])
+                det = statement_html(slug, st, res["id"]) or {}
+                det["paperHtml"] = S.rich(m.get("title") or p["title"])
+                det["date"] = p["date"]
+                sh["results"][res["id"]] = det
+        lean_doc = {l["id"]: l for l in doc.get("lean") or []}
+        for li in f["lean"]:
+            L = D["lean"][li]
+            l = lean_doc.get(L["id"]) or {}
+            st = S.ST.get(L["name"]) if hasattr(S, "ST") else None
+            runs = []
+            for run in l.get("runs") or []:
+                c = run.get("credit") or {}
+                runs.append({"who": c.get("name") or run.get("source"), "state": run.get("state"),
+                             "term": run.get("source_term"), "date": run.get("date"),
+                             "url": run.get("receipt") or c.get("url")})
+            holes = l.get("definition_holes") or []
+            sh["lean"][L["id"]] = {
+                "snippet": S.lean_snippet_html(st, max_lines=14) if st else "",
+                "runs": runs,
+                "reruns": reruns_sentence(L["acc"], names),
+                "holes": [h.get("name", h) if isinstance(h, dict) else str(h) for h in holes],
+                "pairing": E.say("pairing." + L["pairing"]),
+            }
+    return shards
+
+
+def build_search(M):
+    """The map's own search rows, [id, lowercase text], used when the site's search
+    (window.AtlasSearch) is not on the page."""
+    D = M.data
+    rows = []
+    for f in D["families"]:
+        rows.append([f["id"], (f["num"] + " " + f["title"]).lower()])
+    for p in D["papers"]:
+        rows.append([p["id"], p["title"].lower()])
+    for r in D["results"]:
+        p = D["papers"][r["p"]]
+        rows.append([r["id"], f'{r["num"] or r["kind"]} {p["short"]}'.lower()])
+    for L in D["lean"]:
+        rows.append([L["id"], f'{L["name"]} {L["label"]}'.lower()])
+    return rows
+
+
+# ---------------------------------------------------------------- the page
+
+def num_link(M, key: str) -> str:
+    """A number in a sentence, from the backend's numbers index, linked to its receipt.
+    A number that is not computed says so; it never shows as zero."""
+    n = M.r.number(key)
+    href = f"numbers.html#n-{quote(key)}"
+    state, value = n.get("state"), n.get("value")
+    if state == "computed" and value is not None:
+        text = f"{value:,}" if isinstance(value, int) else str(value)
+    elif state == "reported" and value is not None:
+        text = U("numbers.reported", value=value)
+    elif n.get("known_value") is not None:
+        text = U("numbers.incomplete", value=n["known_value"])
+    else:
+        text = U("numbers.unavailable")
+    return f'<a class="u-num" href="{esc(href)}">{esc(text)}</a>'
+
+
+def number_sentence(M, key: str) -> str:
+    tpl = COPY_U["release"][key]
+    return linked(tpl, **{k: num_link(M, k) for k in re.findall(r"\{(\w+)\}", tpl)})
+
+
+def key_html(M) -> str:
+    """The colour key: one line for each meaning, with how many families it covers."""
+    counts = {t: 0 for t in TONE_ORDER}
+    for f in M.data["families"]:
+        counts[f["tone"]] += 1
+    rows = []
+    for t in TONE_ORDER:
+        if not counts[t]:
+            continue
+        rows.append(f'<li data-tone="{t}"><span class="u-dot u-dot--{t}" aria-hidden="true"></span>'
+                    f'<span class="u-key__t">{esc(U("key." + t))}</span><span class="u-key__n">{counts[t]}</span></li>')
+    return (f'<h2 class="u-h2" id="u-key-h">{esc(U("key.heading"))}</h2>'
+            f'<p class="u-note">{esc(U("key.intro"))}</p><ul class="u-key" aria-labelledby="u-key-h">{"".join(rows)}</ul>')
+
+
+def discipline_rows(M) -> str:
+    D = M.data
+    rows = []
+    for d in D["disciplines"]:
+        rows.append(f'<li><a class="u-row" href="index.html#o={quote(d["id"], safe="")}" data-go="{esc(d["id"])}">'
+                    f'<span class="u-row__t">{esc(d["name"])}</span>'
+                    f'<span class="u-row__n">{esc(disc_counts(d))}</span></a></li>')
+    return (f'<h2 class="u-h2" id="u-disc-h">{esc(U("release.disciplines_heading"))}</h2>'
+            f'<ul class="u-rows" aria-labelledby="u-disc-h">{"".join(rows)}</ul>')
+
+
+def disc_counts(d) -> str:
+    n, k = len(d["families"]), d["withLean"]
+    if k == 0:
+        return U("counts.disc_none", n=n)
+    if k == n:
+        return U("counts.disc_all", n=n)
+    return U("counts.disc_some", n=n, k=k)
+
+
+def ways_html(M) -> str:
+    """Four ways in, chosen by how widely the problem is known; each line of prose is
+    checked against the backend's records (see copy_universe.json)."""
+    fam_by = {f["num"]: f for f in M.data["families"]}
     rows = []
     for w in COPY_U["ways"]["items"]:
         f = fam_by.get(w["family"])
         if not f:
             continue
         rows.append(f'<li><a class="u-way" href="{esc(f["href"])}" data-go="{esc(f["id"])}">'
-                    f'<span class="u-way__t">{esc(w.get("name") or f["title"])}</span>'
+                    f'<span class="u-way__t"><span class="u-dot u-dot--{f["tone"]}" aria-hidden="true"></span>{esc(w["name"])}</span>'
                     f'<span class="u-way__w">{esc(w["why"])}</span></a></li>')
-    key = (f'<ul class="u-keyline" aria-label="{esc(U("legend.heading"))}">'
-           f'<li><svg class="u-sw u-sw-lean3" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1.6 12.4 7 7 12.4 1.6 7Z"/></svg>{esc(U("ways.key_lean"))}</li>'
-           f'<li><svg class="u-sw u-sw-paired" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="4"/></svg>{esc(U("ways.key_result"))}</li>'
-           f'<li><svg class="u-sw u-sw-hol" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.4"/></svg>{esc(U("ways.key_ring"))}</li>'
-           f'<li class="u-keyline__more"><a href="#u-legend-h">{esc(U("ways.key_more"))}</a></li></ul>')
-    return (f'{key}<h2 class="u-h2 u-h2--ways">{esc(U("ways.heading"))}</h2><ul class="u-ways">{"".join(rows)}</ul>')
+    return f'<h2 class="u-h2 u-h2--ways" id="u-ways-h">{esc(U("ways.heading"))}</h2><ul class="u-ways" aria-labelledby="u-ways-h">{"".join(rows)}</ul>'
 
 
-def exact_bench(f) -> bool:
-    """A family whose bench is exact, the rule for the home page's worked example:
-    - its papers have one headline theorem, and the family has one Lean statement;
-    - the atlas pairs that Lean statement with that theorem (a candidate pairing);
-    - both outside readers class the Lean as stating all of the headline (cert-machine
-      "matches", MathVet "full"), and neither names a missing part: cert-machine records
-      no gap, and MathVet's note says "None" or is empty, with no definitions to check."""
-    if f.get("readers_agreement") != "agree-full" or len(f["statements"]) != 1:
-        return False
-    heads = [st for slug in f["manuscripts"] for st in S.headline_statements(S.MS[slug])]
-    if len(heads) != 1:
-        return False
-    m, st, _ = S.pair_statement(S.ST[f["statements"][0]])
-    if not m or st is not heads[0]:
-        return False
-    for v in S.sourced_all(f, "scope_reading"):
-        val = v["value"]
-        if v["source"] == "cert-machine" and (val.get("verdict") != "matches" or (val.get("gap") or "").strip()):
-            return False
-        if v["source"] == "mathvet":
-            note = (val.get("note") or "").strip()
-            defs = (val.get("definitions_to_check") or "").strip()
-            if val.get("verdict") != "full" or not (note == "" or note.lower().startswith("none")) or defs not in ("", "None", "None."):
-                return False
-    return True
+def index_html(M) -> str:
+    """The list without JavaScript: every discipline and its families, each a link."""
+    D = M.data
+    out = ['<div class="u-index">']
+    for d in D["disciplines"]:
+        out.append(f'<section class="u-index__d" id="idx-{esc(d["id"][2:])}"><h3 class="u-index__dn">{esc(d["name"])} '
+                   f'<span class="u-index__dc">{esc(disc_counts(d))}</span></h3><ul class="u-index__fams">')
+        for fi in d["families"]:
+            f = D["families"][fi]
+            out.append(f'<li><a href="{esc(f["href"])}"><span class="u-dot u-dot--{f["tone"]}" aria-hidden="true"></span>'
+                       f'<span class="tex-auto">{S.rich(M.evs[f["id"]].name)}</span></a></li>')
+        out.append("</ul></section>")
+    out.append("</div>")
+    return "".join(out)
 
 
-def example_family() -> str:
-    """The example family: the copy's preferred family when its bench is exact, else the
-    first exact bench in the release's order, else the second way in."""
-    exact = [f["id"] for d in S.DISCIPLINES for f in (S.FAM[x] for x in d["families"]) if exact_bench(f)]
-    preferred = COPY_U["bands"].get("example_family")
-    if preferred in exact:
-        return preferred
-    return exact[0] if exact else COPY_U["ways"]["items"][1]["family"]
-
-
-def example_band(model) -> str:
-    """One family read in full: the family desk's claim card when it exists, and
-    otherwise the family's title, OpenAI's description and its first headline theorem."""
-    fid = example_family()
-    f = next(x for x in model["families"] if x["num"] == fid)
-    fam = S.FAM[fid]
-    card = ""
-    if hasattr(S, "family_claim_card"):
-        try:
-            card = keep_punctuation(S.family_claim_card(fid, ""))
-        except Exception as e:  # noqa: BLE001  (the other desk's function may be mid-edit)
-            print(f"universe: family_claim_card({fid}) failed, using the fallback: {e}", file=sys.stderr)
-            card = ""
-    macros = ""
-    stacked = bool(card)
-    if card and hasattr(S, "family_claim_macro_ids"):
-        macros = S.macros_script(S.family_claim_macro_ids(fid))
-    if not card:
-        lead = S.MS[fam["manuscripts"][0]]
-        heads = S.headline_statements(lead)
-        theorem = ""
-        if heads:
-            theorem = (f'<h3 class="u-h3">{esc(U("bands.example_theorem"))}</h3>'
-                       + S.render_paper_statement(lead, heads[0], "", S.TexConv(lead, "")))
-            macros = S.macros_script([lead["id"]])
-        card = (f'<div class="u-example__card"><p class="u-example__num">{esc(U("family.short", num=fid))}</p>'
-                f'<h3 class="u-example__title tex-auto">{S.rich(fam["title"])}</h3>'
-                f'<div class="u-example__desc tex-auto">{S.rich(fam["description"])}</div>{theorem}</div>')
-    return f"""<section class="u-band u-band--example{' u-band--bench' if stacked else ''}" id="example" aria-labelledby="h-example">
- <div class="frame u-band__in">
-  <div class="u-band__head">
-   <h2 class="u-band__h" id="h-example">{esc(U('bands.example_heading'))}</h2>
-   <p class="u-band__intro">{esc(U('bands.example_intro'))}</p>
-   <p class="u-band__links"><a href="{esc(f['href'])}">{esc(U('bands.example_read'))}</a><a href="index.html#o={esc(f['id'])}" data-go="{esc(f['id'])}">{esc(U('bands.example_map'))}</a></p>
-  </div>
-  <div class="u-example">{card}</div>
- </div>
- {macros}
-</section>"""
-
-
-def release_band(model, counts) -> str:
-    s = S.SUMMARY
-    acc = [0, 0, 0, 0]
-    for L in model["lean"]:
-        acc[min(3, len(L["acc"]))] += 1
-    n = lambda key: num_link(s[key], f"numbers.html#{key}")
-    sentences = [
-        linked(U("bands.release_s1"), papers=n("manuscripts_current"), families=n("families"), disciplines=n("disciplines")),
-        linked(U("bands.release_s2"), lean=n("statements_lean"), families_with_lean=n("families_with_lean"),
-               main=n("statements_lean_main_results")),
-        linked(U("bands.release_s3"), lean=n("statements_lean"), acc3=num_link(acc[3], "statements.html"),
-               acc0=num_link(acc[0], "statements.html")),
-        esc(runs_sentence()),
-        linked(U("bands.release_s4"), pairs=num_link(counts["pairs"], "statements.html")),
-        linked(U("bands.release_s5"), edges=n("internal_citation_edges"), works=n("external_works_cited")),
-        linked(U("bands.release_s6"), withdrawn=n("manuscripts_withdrawn"), previous=n("manuscripts_previous_editions")),
-    ]
+def release_band(M) -> str:
+    sentences_ = [number_sentence(M, k) for k in ("s3", "s4", "s5")]
     return f"""<section class="u-band u-band--release" id="release" aria-labelledby="h-release">
  <div class="frame u-band__in u-band__in--split">
   <h2 class="u-band__h" id="h-release">{esc(U('bands.release_heading'))}</h2>
-  <div class="u-sentences">{''.join(f'<p>{x}</p>' for x in sentences)}
-   <p class="u-band__links"><a href="numbers.html">{esc(U('bands.release_numbers'))}</a><a href="tiles.html">{esc(U('bands.release_tiles'))}</a></p>
+  <div class="u-sentences">{''.join(f'<p>{x}</p>' for x in sentences_)}
+   <p class="u-band__links"><a href="numbers.html">{esc(U('bands.release_numbers'))}</a></p>
   </div>
  </div>
 </section>"""
 
 
-def runs_sentence() -> str:
-    """Each group's verdicts, then whether any re-run reports a rejection."""
-    by_group, by_file = rerun_records()
-    parts = [U("bands.run_phrase", who=S.source_credit(g), verdicts=verdict_phrase(by_group[g]))
-             for g in ("cert-machine", "mathvet", "nealmcb-lean-tooling") if g in by_group]
-    parts += [U("bands.run_phrase", who=S.source_credit(g), verdicts=verdict_phrase(v))
-              for g, v in sorted(by_group.items()) if g not in ("cert-machine", "mathvet", "nealmcb-lean-tooling")]
-    joined = "; ".join(parts)
-    joined = joined[:1].upper() + joined[1:]
-    rejected = any(x["rej"] for x in by_file.values())
-    return U("bands.release_runs_rejected" if rejected else "bands.release_runs", runs=joined)
-
-
-def checked_band(model) -> str:
-    """Who has checked what, each record credited to the person or group who reports it."""
-    by_group, by_file = rerun_records()
-    runs = {g: v["runs"] for g, v in by_group.items()}
-    verdicts = {g: verdict_phrase(v) for g, v in by_group.items()}
-    scope, finite, hol_fams, erdos_fams = {}, set(), set(), set()
-    for f in S.FAMILIES:
-        for v in S.sourced_all(f, "scope_reading"):
-            scope[v["source"]] = scope.get(v["source"], 0) + 1
-        if any(x.get("verdict") == "certified" for v in S.sourced_all(f, "finite_checks") for x in v["value"]):
-            finite.add(f["id"])
-        if S.sourced_all(f, "hol_checks"):
-            hol_fams.add(f["id"])
-        if S.sourced_all(f, "erdos_problems"):
-            erdos_fams.add(f["id"])
+def checked_band() -> str:
     rows = []
-
-    def row(src, sentence):
+    for src, key in (("cert-machine", "checked_cert"), ("mathvet", "checked_mathvet"),
+                     ("nealmcb-lean-tooling", "checked_neal"), ("hol-cards", "checked_hol"),
+                     ("erdos-problems", "checked_erdos")):
         if src not in S.SOURCES:
-            return
+            continue
         rows.append(f'<li><a class="u-who__n" href="sources.html#src-{esc(src)}">{esc(S.source_credit(src))}</a> '
-                    f'<span class="u-who__w">{esc(sentence)}</span></li>')
-    row("cert-machine", U("bands.checked_cert", runs=runs.get("cert-machine", 0), verdicts=verdicts.get("cert-machine", ""),
-                         finite=len(finite), scope=scope.get("cert-machine", 0)))
-    row("mathvet", U("bands.checked_mathvet", runs=runs.get("mathvet", 0), verdicts=verdicts.get("mathvet", ""),
-                    scope=scope.get("mathvet", 0)))
-    row("nealmcb-lean-tooling", U("bands.checked_neal", runs=runs.get("nealmcb-lean-tooling", 0),
-                                 verdicts=verdicts.get("nealmcb-lean-tooling", "")))
-    row("hol-cards", U("bands.checked_hol", families=len(hol_fams)))
-    none_rejected = "" if any(x["rej"] for x in by_file.values()) else f'<p class="u-band__note">{esc(U("bands.checked_none_rejected"))}</p>'
-    # A link to the problems a family addresses is not a check of it: Thomas Bloom's
-    # erdosproblems.com stands on its own line after the checks.
-    erdos = ""
-    if "erdos-problems" in S.SOURCES:
-        who = f'<a href="sources.html#src-erdos-problems">{esc(S.source_credit("erdos-problems"))}</a>'
-        erdos = f'<p class="u-band__note">{linked(U("bands.checked_erdos", families=len(erdos_fams), who="{who}"), who=who)}</p>'
-    # The same count and definition as the Sources page's own lede.
-    people = len({(a.get("name") or a.get("handle")) for e in S.COMMUNITY["list"] for a in (e.get("authors") or [])})
-    findings = len(S.COMMUNITY["findings"])
+                    f'<span class="u-who__w">{esc(U("bands." + key))}</span></li>')
     return f"""<section class="u-band u-band--checked" id="checked" aria-labelledby="h-checked">
  <div class="frame u-band__in">
   <h2 class="u-band__h" id="h-checked">{esc(U('bands.checked_heading'))}</h2>
   <p class="u-band__intro">{esc(U('bands.checked_intro'))}</p>
   <ul class="u-who">{''.join(rows)}</ul>
-  {none_rejected}
-  {erdos}
-  <p class="u-band__links"><span>{esc(U('bands.checked_more', people=people, findings=findings))}</span><a href="sources.html">{esc(U('bands.checked_more_link'))}</a></p>
+  <p class="u-band__links"><a href="sources.html">{esc(U('bands.checked_more_link'))}</a></p>
  </div>
 </section>"""
+
+
+def page_body(M, gen) -> str:
+    data_v = gen[7:19]
+    copy_json = json.dumps(COPY_U, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    D = M.data
+    canvas_label = U("controls.canvas_label", families=len(D["families"]), disciplines=len(D["disciplines"]))
+    return f"""<div class="u-explorer" data-universe data-view="list"
+ data-universe-data="data/universe-data.json?v={data_v}" data-universe-layout="data/universe-layout.json?v={data_v}"
+ data-universe-detail="data/universe-detail-{{d}}.json?v={data_v}" data-universe-search="data/universe-search.json?v={data_v}"
+ data-generation="{esc(gen)}">
+ <div class="u-switch" role="group" aria-label="{esc(U('switch.label'))}">
+  <button type="button" class="u-switch__b" data-u-show="list" aria-pressed="true">{esc(U('switch.list'))}</button>
+  <button type="button" class="u-switch__b" data-u-show="map" aria-pressed="false">{esc(U('switch.map'))}</button>
+ </div>
+ <aside class="u-panel" aria-labelledby="u-title">
+  <div class="u-panel__head">
+   <nav class="u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail hidden></nav>
+   <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
+   <form class="u-search" role="search" data-u-search-form onsubmit="return false">
+    <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
+    <input id="u-search-in" class="u-search__in" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(U('search.placeholder'))}" data-u-search>
+   </form>
+  </div>
+  <div class="u-panel__body" data-u-scroll>
+   <div class="u-results" data-u-results hidden></div>
+   <div class="u-view" data-u-view>
+    <p class="u-lede">{number_sentence(M, 's1')} {number_sentence(M, 's2')}</p>
+    {key_html(M)}
+    {discipline_rows(M)}
+    {ways_html(M)}
+   </div>
+  </div>
+ </aside>
+ <div class="u-stage" data-u-stage>
+  <canvas class="u-canvas" role="img" aria-label="{esc(canvas_label)}" tabindex="0" data-u-canvas></canvas>
+  <div class="u-visually-hidden" aria-live="polite" data-u-live></div>
+  <div class="u-tools">
+   <button type="button" class="u-tool" data-u-zoom="in" aria-label="{esc(U('controls.zoom_in'))}" title="{esc(U('controls.zoom_in'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button>
+   <button type="button" class="u-tool" data-u-zoom="out" aria-label="{esc(U('controls.zoom_out'))}" title="{esc(U('controls.zoom_out'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/></svg></button>
+   <button type="button" class="u-tool" data-u-zoom="fit" aria-label="{esc(U('controls.fit'))}" title="{esc(U('controls.fit'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="1.4"/></svg></button>
+  </div>
+  <p class="u-status" data-u-status>{esc(U('status.loading'))}</p>
+ </div>
+ <script type="application/json" id="universe-copy">{copy_json}</script>
+</div>
+<section class="u-band u-band--index" id="catalogue" aria-labelledby="h-index" tabindex="-1">
+ <div class="frame u-band__in">
+  <h2 class="u-band__h" id="h-index">{esc(U('bands.index_heading'))}</h2>
+  <p class="u-band__intro">{esc(U('bands.index_intro'))}</p>
+  {index_html(M)}
+ </div>
+</section>
+{release_band(M)}
+{checked_band()}
+{help_band()}"""
 
 
 def help_band() -> str:
@@ -1010,116 +1060,6 @@ def help_band() -> str:
 </section>"""
 
 
-def legend_html(model, sources) -> str:
-    """The map's key, the same marks the canvas draws (universe.js keeps the glyph
-    shapes in step), each with its count across the release."""
-    acc, holes = [0, 0, 0, 0], 0
-    for L in model["lean"]:
-        acc[min(3, len(L["acc"]))] += 1
-        holes += 1 if L["holes"] else 0
-    paired = sum(1 for r in model["results"] if r["lean"])
-    hol = sum(1 for f in model["families"] if f["hol"])
-    fin = sum(1 for f in model["families"] if f["fin"])
-    groups = [sources[k] for k in sources if any(k in L["acc"] for L in model["lean"])]
-    by_group, _ = rerun_records()
-    coverage = ", ".join(f'{sources.get(g, g)} {v["runs"]}' for g, v in by_group.items())
-
-    def lean(n, with_holes=False):
-        hole = '<circle cx="7" cy="7" r="1.8" class="u-sw-hole"/>' if with_holes else ""
-        return (f'<svg class="u-sw u-sw-lean{n}{" u-sw-holes" if with_holes else ""}" viewBox="0 0 14 14" aria-hidden="true">'
-                f'<path d="M7 1.6 12.4 7 7 12.4 1.6 7Z"/>{hole}</svg>')
-
-    def dot(paired_):
-        return f'<svg class="u-sw {"u-sw-paired" if paired_ else "u-sw-unpaired"}" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="4"/></svg>'
-
-    def ring(cls):
-        return f'<svg class="u-sw {cls}" viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.4"/></svg>'
-
-    def fib(cls):
-        return f'<svg class="u-sw {cls}" viewBox="0 0 14 14" aria-hidden="true"><path d="M1 10 C5 10 9 4 13 4"/></svg>'
-
-    def row(glyph, text, n=None):
-        num = "" if n is None else f'<span class="u-key__n">{n:,}</span>'
-        return f'<li><span class="u-key__g">{glyph}</span><span class="u-key__t">{esc(text)}</span>{num}</li>'
-
-    return (f'<p class="u-note">{esc(U("legend.colour_note"))}</p>'
-            f'<h3 class="u-h3">{esc(U("legend.lean_heading"))}</h3><ul class="u-key">'
-            + row(lean(3), U("legend.lean_3"), acc[3]) + row(lean(2), U("legend.lean_2"), acc[2])
-            + row(lean(1), U("legend.lean_1"), acc[1]) + row(lean(0), U("legend.lean_0"), acc[0])
-            + row(lean(2, True), U("legend.lean_holes"), holes) + "</ul>"
-            f'<p class="u-note">{esc(U("legend.lean_groups", groups="; ".join(groups)))}</p>'
-            f'<p class="u-note">{esc(U("legend.coverage", runs=coverage))}</p>'
-            f'<h3 class="u-h3">{esc(U("legend.result_heading"))}</h3><ul class="u-key">'
-            + row(dot(True), U("legend.result_paired"), paired) + row(dot(False), U("legend.result_unpaired"), len(model["results"]) - paired) + "</ul>"
-            f'<p class="u-note">{esc(U("legend.pair_note"))}</p>'
-            f'<h3 class="u-h3">{esc(U("legend.family_heading"))}</h3><ul class="u-key">'
-            + row(ring("u-sw-hol"), U("legend.family_hol"), hol) + row(ring("u-sw-fin"), U("legend.family_finite"), fin) + "</ul>"
-            f'<h3 class="u-h3">{esc(U("legend.fibre_heading"))}</h3><ul class="u-key">'
-            + row(fib("u-sw-cites"), U("legend.fibre_cites")) + row(fib("u-sw-cited"), U("legend.fibre_cited")) + "</ul>"
-            f'<p class="u-note">{esc(U("legend.fibre_note"))}</p>')
-
-
-def page_body(model, gen, counts):
-    data_v = gen[:12]
-    lede = U("page.lede", families=counts["families"])
-    canvas_label = U("controls.canvas_label", families=counts["families"], disciplines=counts["disciplines"])
-    copy_json = json.dumps(COPY_U, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    return f"""<div class="u-explorer" data-universe data-view="list"
- data-universe-data="data/universe-data.json?v={data_v}" data-universe-layout="data/universe-layout.json?v={data_v}"
- data-universe-detail="data/universe-detail-{{d}}.json?v={data_v}" data-universe-search="data/universe-search.json?v={data_v}"
- data-generation="{esc(gen)}">
- <div class="u-switch" role="group" aria-label="{esc(U('switch.label'))}">
-  <button type="button" class="u-switch__b" data-u-show="list" aria-pressed="true">{esc(U('switch.list'))}</button>
-  <button type="button" class="u-switch__b" data-u-show="map" aria-pressed="false">{esc(U('switch.map'))}</button>
- </div>
- <aside class="u-panel" aria-labelledby="u-title">
-  <div class="u-panel__head">
-   <nav class="u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail></nav>
-   <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
-   <p class="u-ground" data-u-ground>{esc(ground_sentence())}</p>
-   <form class="u-search" role="search" data-u-search-form onsubmit="return false">
-    <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
-    <input id="u-search-in" class="u-search__in" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(U('search.placeholder'))}" data-u-search>
-   </form>
-  </div>
-  <div class="u-panel__body" data-u-scroll>
-   <div class="u-results" data-u-results hidden></div>
-   <div class="u-view" data-u-view>
-    <p class="u-lede">{esc(lede)}</p>
-    {ways_html(model)}
-   </div>
-   <section class="u-legend" aria-labelledby="u-legend-h" data-u-legend>
-    <h2 class="u-h2" id="u-legend-h">{esc(U('legend.heading'))}</h2>
-    <noscript><p class="u-note">{esc(U('page.noscript'))} <a href="#catalogue">{esc(U('bands.index_heading'))}</a></p></noscript>
-    <div data-u-legend-body>{legend_html(model, source_names())}</div>
-    <p class="u-note">{esc(U('controls.help'))}</p>
-    <p class="u-note"><a href="tiles.html">{esc(U('legend.tiles'))}</a></p>
-   </section>
-  </div>
- </aside>
- <div class="u-stage" data-u-stage>
-  <canvas class="u-canvas" role="img" aria-label="{esc(canvas_label)}" tabindex="0" data-u-canvas></canvas>
-  <div class="u-plate-live u-visually-hidden" aria-live="polite" data-u-live></div>
-  <div class="u-tools">
-   <button type="button" class="u-tool" data-u-zoom="in" aria-label="{esc(U('controls.zoom_in'))}" title="{esc(U('controls.zoom_in'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button>
-   <button type="button" class="u-tool" data-u-zoom="out" aria-label="{esc(U('controls.zoom_out'))}" title="{esc(U('controls.zoom_out'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/></svg></button>
-   <button type="button" class="u-tool" data-u-zoom="fit" aria-label="{esc(U('controls.fit'))}" title="{esc(U('controls.fit'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="1.4"/></svg></button>
-  </div>
-  <p class="u-status" data-u-status>{esc(U('status.loading'))}</p>
- </div>
- <script type="application/json" id="universe-copy">{copy_json}</script>
-</div>
-{example_band(model)}
-{release_band(model, counts)}
-{checked_band(model)}
-{help_band()}
-<section class="u-band u-band--index" id="catalogue" aria-labelledby="h-index" tabindex="-1">
- <div class="frame u-band__in">
-  <h2 class="u-band__h" id="h-index">{esc(U('bands.index_heading'))}</h2>
-  <p class="u-band__intro">{esc(U('bands.index_intro'))}</p>
-  {index_html(model)}
- </div>
-</section>"""
 
 
 def redirect_stub() -> str:
@@ -1147,44 +1087,48 @@ def canonical(obj) -> bytes:
     return json.dumps(obj, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8")
 
 
+def canonical(obj) -> bytes:
+    return json.dumps(obj, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8")
+
+
 def main():
-    global OUT, PRINTED
+    global OUT
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--out", help="the built site to add the front page to (default site/_build)")
     args = ap.parse_args()
     if args.out:
         OUT = Path(args.out).resolve()
     import_site()
-    if not (OUT / "tiles.html").exists() or not (OUT / "families").is_dir():
-        raise SystemExit(f"{OUT} is not a built site: run scripts/build_site.py (and build_papers.py) with the same --out first")
-    PRINTED = load_printed_numbers()
-    model = build_model()
+    if not (OUT / "families").is_dir():
+        raise SystemExit(f"{OUT} is not a built site: run scripts/build_site.py with the same --out first")
+    M = Model(R.load())
+    model = M.data
     layout = build_layout(model)
-    detail = build_detail(model)
-    search = build_search(model)
+    names = run_names(M)
+    detail = build_detail(M, names)
+    search = build_search(M)
     counts = {"families": len(model["families"]), "disciplines": len(model["disciplines"]),
               "papers": len(model["papers"]), "results": len(model["results"]), "lean": len(model["lean"]),
-              "pairs": model["pairs"], "links": sum(a + b for _, _, a, b in model["links"]),
-              "familyPairs": len(model["links"])}
-    data = {k: model[k] for k in ("disciplines", "families", "papers", "results", "lean", "links")}
-    data["sources"] = source_names()
+              "pairs": M.pairs}
+    data = dict(model)
+    data["sources"] = names
+    data["catalogue_url"] = S.BASE_BLOB + "CONTENTS.md"
     data["counts"] = counts
-    # The generation id is the hash of the data, the geometry and the panel's words,
-    # so an unchanged release rebuilds to the same id and the same links.
+    # The page carries the backend's generation, so every file it fetches is checked
+    # against the backend's records; the drawing's own hash is kept beside it.
+    gen = M.gen
     h = hashlib.sha256()
     h.update(canonical(data))
     h.update(canonical(layout))
-    for sh in detail:
-        h.update(canonical(sh))
-    h.update(canonical(search))
-    gen = h.hexdigest()[:20]
-    contract = [{"generation_id": gen, "upstream_commit": S.COMMIT, "counts": counts,
-                 "ids": "f:<family id>, d:<discipline slug>, p:<manuscript slug>, r:<manuscript slug>:<TeX label or L-<file>-<line>>, l:<Lean statement id>",
-                 "pairing": "build_site.pair_statement: chosen automatically by word overlap, not reviewed"}]
+    contract = [{"generation_id": gen, "drawing_sha256": h.hexdigest()[:20], "upstream_commit": S.COMMIT,
+                 "ids": "Statement Map's reader ids: d:, f:, p:, r:, l:",
+                 "pairing": "Statement Map's pairing_selections and selection; candidate pairings are unreviewed"}]
     data = {"generation_id": gen, "contract": contract, **data}
     layout = {"generation_id": gen, "contract": contract, **layout}
     ddir = OUT / "data"
     ddir.mkdir(parents=True, exist_ok=True)
+    for old in ddir.glob("universe-*.json"):
+        old.unlink()
     dump = lambda o: json.dumps(o, ensure_ascii=False, separators=(",", ":"))
     (ddir / "universe-data.json").write_text(dump(data), encoding="utf-8")
     (ddir / "universe-layout.json").write_text(dump(layout), encoding="utf-8")
@@ -1194,27 +1138,24 @@ def main():
     (OUT / "assets").mkdir(parents=True, exist_ok=True)
     for name in OWN_ASSETS:
         shutil.copy(ASSETS / name, OUT / "assets" / name)
+    v = gen[7:19]
     extra = ('<link rel="stylesheet" href="assets/universe.css">\n'
-             '<link rel="preload" href="data/universe-data.json?v=' + gen[:12] + '" as="fetch" crossorigin>\n'
-             '<link rel="preload" href="data/universe-layout.json?v=' + gen[:12] + '" as="fetch" crossorigin>\n'
+             f'<link rel="preload" href="data/universe-data.json?v={v}" as="fetch" crossorigin>\n'
+             f'<link rel="preload" href="data/universe-layout.json?v={v}" as="fetch" crossorigin>\n'
              '<meta name="format-detection" content="telephone=no">\n'
              '<script defer src="assets/universe.js"></script>')
-    body = page_body(model, gen, counts)
-    if hasattr(S, "family_claim_card") and hasattr(S, "family_head"):
-        extra = S.family_head("") + "\n" + extra
+    body = page_body(M, gen)
     html_text = S.page("index.html", U("page.title"), U("page.description"), body, current="map",
                        extra_head=extra, main_class="u-main")
     (OUT / "index.html").write_text(html_text, encoding="utf-8")
     (OUT / "universe.html").write_text(redirect_stub(), encoding="utf-8")
     sizes = {p.name: p.stat().st_size for p in sorted(ddir.glob("universe-*.json"))}
     total_detail = sum(v for k, v in sizes.items() if "detail" in k)
-    print(f"universe: generation {gen}; {counts['families']} families, {counts['papers']} papers, "
-          f"{counts['results']} headline results, {counts['lean']} Lean statements, {counts['pairs']} candidate pairings, "
-          f"{counts['familyPairs']} family pairs from {counts['links']} citing links")
+    print(f"universe: generation {gen[:19]}; {counts['families']} families, {counts['papers']} papers, "
+          f"{counts['results']} results drawn, {counts['lean']} Lean statements, {counts['pairs']} pairings drawn")
     print(f"universe: data {sizes['universe-data.json']:,} B, layout {sizes['universe-layout.json']:,} B, "
           f"search {sizes['universe-search.json']:,} B, detail {total_detail:,} B in {len(detail)} files; "
-          f"page {(OUT / 'index.html').stat().st_size:,} B; numbered {sum(1 for r in model['results'] if r['num'])}, "
-          f"unnumbered {sum(1 for r in model['results'] if r.get('nn'))}, of {len(model['results'])}")
+          f"page {(OUT / 'index.html').stat().st_size:,} B")
 
 
 if __name__ == "__main__":
