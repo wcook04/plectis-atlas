@@ -1,0 +1,334 @@
+{
+ "schema": "atlas_source_v1",
+ "source": {
+  "id": "erdos-problems",
+  "credit": "Thomas Bloom, erdosproblems.com",
+  "name": "Erdős problems in the OpenAI proofs",
+  "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+  "authors": [
+   {
+    "name": "Thomas Bloom"
+   }
+  ],
+  "kind": "tracker",
+  "licence": "none stated",
+  "reuse": "cite",
+  "snapshot": "2026-10-11",
+  "method": "Bloom's post lists the Erdős problems the release makes claims about, one section per problem, with the manuscript and any Comparator challenge. The atlas maps each manuscript to its family and links Bloom's problem pages; his remarks are linked, not copied. The post makes no judgement about novelty or attribution.",
+  "fields": {
+   "erdos_problems": "The Erdős problems Bloom's post connects to a family, with links to each problem page."
+  },
+  "adopted": [
+   {
+    "kind": "data",
+    "what": "The problem numbers and short titles in his list, with the manuscripts and challenges each section links (facts, cited)",
+    "where": "family pages"
+   }
+  ]
+ },
+ "families": {
+  "159": {
+   "erdos_problems": [
+    {
+     "number": 3,
+     "title": "Arithmetic progressions",
+     "url": "https://www.erdosproblems.com/3",
+     "challenges": [
+      "ErdosReciprocal"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "167": {
+   "erdos_problems": [
+    {
+     "number": 90,
+     "title": "Unit distance problem",
+     "url": "https://www.erdosproblems.com/90",
+     "challenges": [
+      "PlanarUnitDistances"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    },
+    {
+     "number": 604,
+     "title": "Pinned distances",
+     "url": "https://www.erdosproblems.com/604",
+     "challenges": [
+      "PinnedDistances"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "084": {
+   "erdos_problems": [
+    {
+     "number": 120,
+     "title": "Erdős similarity problem",
+     "url": "https://www.erdosproblems.com/120",
+     "challenges": [
+      "DyadicAvoidance"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "160": {
+   "erdos_problems": [
+    {
+     "number": 138,
+     "title": "Lower bound for van der Waerden numbers",
+     "url": "https://www.erdosproblems.com/138",
+     "challenges": [
+      "QuantitativeVanDerWaerden"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "025": {
+   "erdos_problems": [
+    {
+     "number": 148,
+     "title": "Short sums of unit fractions",
+     "url": "https://www.erdosproblems.com/148",
+     "challenges": [
+      "ShortEgyptianFractions"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    },
+    {
+     "number": 293,
+     "title": "Short sums of unit fractions",
+     "url": "https://www.erdosproblems.com/293",
+     "challenges": [
+      "ShortEgyptianFractions"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    },
+    {
+     "number": 304,
+     "title": "Short sums of unit fractions",
+     "url": "https://www.erdosproblems.com/304",
+     "challenges": [
+      "ShortEgyptianFractions"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "164": {
+   "erdos_problems": [
+    {
+     "number": 172,
+     "title": "Hindman's conjecture",
+     "url": "https://www.erdosproblems.com/172",
+     "challenges": [],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "172": {
+   "erdos_problems": [
+    {
+     "number": 174,
+     "title": "Classification of Ramsey configurations",
+     "url": "https://www.erdosproblems.com/174",
+     "challenges": [
+      "EuclideanRamsey"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "171": {
+   "erdos_problems": [
+    {
+     "number": 181,
+     "title": "Ramsey number of the hypercube",
+     "url": "https://www.erdosproblems.com/181",
+     "challenges": [],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "181": {
+   "erdos_problems": [
+    {
+     "number": 184,
+     "title": "Erdős-Gallai cycle decomposition",
+     "url": "https://www.erdosproblems.com/184",
+     "challenges": [
+      "CycleDecomposition"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "012": {
+   "erdos_problems": [
+    {
+     "number": 371,
+     "title": "Largest prime factors of consecutive integers",
+     "url": "https://www.erdosproblems.com/371",
+     "challenges": [
+      "JointDickman"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "024": {
+   "erdos_problems": [
+    {
+     "number": 416,
+     "title": "Counting totient values",
+     "url": "https://www.erdosproblems.com/416",
+     "challenges": [
+      "TotientAsymptotic"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "013": {
+   "erdos_problems": [
+    {
+     "number": 431,
+     "title": "Primes are not a sumset",
+     "url": "https://www.erdosproblems.com/431",
+     "challenges": [
+      "OstmannComplete"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "158": {
+   "erdos_problems": [
+    {
+     "number": 508,
+     "title": "Chromatic number of the plane",
+     "url": "https://www.erdosproblems.com/508",
+     "challenges": [],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "189": {
+   "erdos_problems": [
+    {
+     "number": 551,
+     "title": "Ramsey numbers of cycles and complete graphs",
+     "url": "https://www.erdosproblems.com/551",
+     "challenges": [
+      "CycleCliqueRamsey"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "184": {
+   "erdos_problems": [
+    {
+     "number": 802,
+     "title": "Independence number in clique free graphs",
+     "url": "https://www.erdosproblems.com/802",
+     "challenges": [
+      "CliqueFreeLog"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "011": {
+   "erdos_problems": [
+    {
+     "number": 821,
+     "title": "Totient values",
+     "url": "https://www.erdosproblems.com/821",
+     "challenges": [],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "028": {
+   "erdos_problems": [
+    {
+     "number": 952,
+     "title": "Gaussian moat problem",
+     "url": "https://www.erdosproblems.com/952",
+     "challenges": [
+      "GaussianMoat"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "026": {
+   "erdos_problems": [
+    {
+     "number": 968,
+     "title": "Prime gaps",
+     "url": "https://www.erdosproblems.com/968",
+     "challenges": [
+      "PrimeGaps"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "021": {
+   "erdos_problems": [
+    {
+     "number": 970,
+     "title": "Jacobsthal upper bound",
+     "url": "https://www.erdosproblems.com/970",
+     "challenges": [
+      "JacobsthalImproved"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "170": {
+   "erdos_problems": [
+    {
+     "number": 986,
+     "title": "Off-diagonal Ramsey numbers",
+     "url": "https://www.erdosproblems.com/986",
+     "challenges": [
+      "SharpLogRamsey"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "166": {
+   "erdos_problems": [
+    {
+     "number": 1083,
+     "title": "Distinct distances in higher dimensions",
+     "url": "https://www.erdosproblems.com/1083",
+     "challenges": [],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  },
+  "076": {
+   "erdos_problems": [
+    {
+     "number": 1150,
+     "title": "Ultraflat Littlewood polynomial",
+     "url": "https://www.erdosproblems.com/1150",
+     "challenges": [
+      "AsymptoticallyMinimalLittlewood"
+     ],
+     "post": "https://www.erdosproblems.com/forum/thread/blog:10"
+    }
+   ]
+  }
+ }
+}

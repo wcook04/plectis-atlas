@@ -674,6 +674,36 @@
    }
   },
   {
+   "id": "erdos-problems",
+   "name": "Erdős problems in the OpenAI proofs",
+   "url": "https://www.erdosproblems.com/forum/thread/blog:10",
+   "authors": [
+    {
+     "name": "Thomas Bloom"
+    }
+   ],
+   "kind": "tracker",
+   "licence": "none stated",
+   "reuse": "cite",
+   "snapshot": "2026-10-11",
+   "method": "Bloom's post lists the Erdős problems the release makes claims about, one section per problem, with the manuscript and any Comparator challenge. The atlas maps each manuscript to its family and links Bloom's problem pages; his remarks are linked, not copied. The post makes no judgement about novelty or attribution.",
+   "fields": {
+    "erdos_problems": "The Erdős problems Bloom's post connects to a family, with links to each problem page."
+   },
+   "tier_names": null,
+   "adopted": [
+    {
+     "kind": "data",
+     "what": "The problem numbers and short titles in his list, with the manuscripts and challenges each section links (facts, cited)",
+     "where": "family pages"
+    }
+   ],
+   "upstream_commit": null,
+   "credit": "Thomas Bloom, erdosproblems.com",
+   "repository": null,
+   "counts": null
+  },
+  {
    "id": "mathvet",
    "name": "MathVet fidelity review of openai/math",
    "url": "https://math.vet",

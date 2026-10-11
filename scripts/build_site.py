@@ -1135,6 +1135,12 @@ def family_facets_html(f, root):
     if tier is not None and tier.get("value") is not None:
         names = (SOURCES.get(tier["source"]) or {}).get("tier_names") or {}
         parts.append(f'<span>{esc(C("sources.tier_label", name=names.get(str(tier["value"]), str(tier["value"]))))} <span class="muted small">({source_link(tier["source"], root)})</span></span>')
+    erd = sourced(f, "erdos_problems")
+    if erd and erd.get("value"):
+        probs = ", ".join(f'<a class="ext" href="{esc(p["url"])}" rel="noopener">{esc(C("sources.erdos_number", n=p["number"]))}</a>'
+                          + (f' <span class="muted">({esc(p["title"])})</span>' if p.get("title") else "") for p in erd["value"])
+        credit = f'<a href="{root}sources.html#src-{esc(erd["source"])}">{esc(source_credit(erd["source"]))}</a>'
+        parts.append(f'<span>{probs} <span class="muted small">({credit})</span></span>')
     return ('<p class="phead__facets">' + ' <span class="sep" aria-hidden="true">·</span> '.join(parts) + "</p>") if parts else ""
 
 

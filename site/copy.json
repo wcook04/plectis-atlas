@@ -808,6 +808,7 @@
   "snapshot": "snapshot {date}",
   "licence": "Licence: {licence}",
   "record_link": "Their record",
+  "erdos_number": "Erdős problem #{n}",
   "efforts_heading": "Findings and work cited from other people",
   "efforts_intro": "Replays, error reports, follow-up results, explanations and commentary, each attached to the results it concerns and credited there.",
   "used_on": "Cited on {n} findings, on results",
