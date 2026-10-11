@@ -1570,6 +1570,16 @@
   "target_has_lean": true
  },
  {
+  "source": "Deforming-hypersymplectic-four-manifolds-to-hyperkahler-triples-October-7-2026",
+  "target": "Taming-implies-compatibility-on-four-manifolds-October-6-2026",
+  "target_latest": "Taming-implies-compatibility-on-four-manifolds-October-6-2026",
+  "source_family": "341",
+  "target_family": "342",
+  "target_status": "current",
+  "target_latest_status": "current",
+  "target_has_lean": false
+ },
+ {
   "source": "Determination-of-a-metric-and-a-unitary-connection-from-one-boundary-patch-October-5-2026",
   "target": "Smooth-Anisotropic-Uniqueness-in-the-Calderon-Problem-from-One-Boundary-Patch-September-24-2026",
   "target_latest": "Smooth-Anisotropic-Uniqueness-in-the-Calderon-Problem-from-One-Boundary-Patch-September-24-2026",

@@ -203,6 +203,8 @@
   "readings_heading": "Independent readings of the scope",
   "readings_intro": "People outside OpenAI have read this family's challenge statements against its headline. Their verdicts, in their own terms and credited, sit beside OpenAI's note. Where they differ, both stand.",
   "reading_gap": "What they find missing:",
+  "withdrawn_heading": "Withdrawn from this result",
+  "withdrawn_intro": "These manuscripts were listed under this result when the release was published (CONTENTS.md at its first commit), when it was titled “{title}”. OpenAI has since withdrawn them; each notice is quoted below.",
   "hol_heading": "Checked in another proof assistant",
   "hol_intro": "Ben Knill proved selected steps of this family again in HOL Light, independently of Lean, with negative controls that must fail. The author states that no card proves a headline theorem of the release. Quoted under CC BY 4.0.",
   "hol_card": "HOL Light card {card}:",
@@ -413,6 +415,8 @@
  },
  "paper": {
   "in_result": "Part of result {id}: {title}.",
+  "in_result_withdrawn": "Listed under result {id}, then titled “{title}”, when the release was published; OpenAI has since withdrawn it.",
+  "see_result_now": "See the result as it stands",
   "read_in_result": "Read it with its result",
   "abstract": "Abstract",
   "withdrawn_on": "Withdrawn on {date}.",

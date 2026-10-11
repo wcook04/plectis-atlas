@@ -1095,6 +1095,19 @@ def independent_reruns_html(stmt, root):
             f'<p class="intro small">{esc(C("statement.reruns_intro"))}</p><ul class="cfinds">{"".join(items)}</ul></div>')
 
 
+def withdrawn_from_family_html(fid, root):
+    """Manuscripts listed under this family when the release was published and withdrawn since."""
+    wd = [m for m in MANUSCRIPTS if m["status"] == "withdrawn" and m.get("family") == fid]
+    if not wd:
+        return ""
+    arts = "".join(
+        f'<article class="note note--warn" id="{esc(m["id"])}"><h4 class="h4"><a href="{root}papers/{esc(m["id"])}.html">{ms_title_html(m)}</a></h4>'
+        f'<div class="md-math">{md_paragraphs(m.get("withdrawal_note") or "")}</div>'
+        f'<p class="muted small">{esc(C("paper.withdrawn_on", date=m.get("withdrawn_on") or ""))}</p></article>' for m in wd)
+    then = tex_plain(wd[0].get("family_title_on_release_day") or FAM[fid]["title"])
+    return f'<h3 class="h3">{esc(C("family.withdrawn_heading"))}</h3><p class="intro small">{esc(C("family.withdrawn_intro", title=then))}</p>{arts}'
+
+
 def other_assistant_html(f, root):
     """Checks of this family's steps in another proof assistant, quoted with attribution."""
     items = []
@@ -2170,6 +2183,7 @@ def build_family(f):
   <h2 class="h2" id="h-ms">{esc(C('family.manuscripts_heading'))}</h2>
   <p class="intro">{esc(C('family.headline_note'))}</p>
   {''.join(blocks)}
+  {withdrawn_from_family_html(fid, root)}
  </section>
  <aside class="split__side" aria-labelledby="h-lean">
   <div>
@@ -2219,7 +2233,11 @@ def build_paper(m):
         di = DISC_OF[fam["id"]]
         tr = trail(root, [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#d={DISC_SLUG[di]}'),
                           (fam_title_html(fam), f'{root}families/{fam["id"]}.html'), (ms_title_html(m), None)])
-        items.append(f'<p class="lede">{esc(C("paper.in_result", id=fam["id"], title=tex_plain(fam["title"])))} <a href="{root}families/{fam["id"]}.html#{esc(slug)}">{esc(C("paper.read_in_result"))}</a></p>')
+        if m.get("family_on_release_day"):
+            then = tex_plain(m.get("family_title_on_release_day") or fam["title"])
+            items.append(f'<p class="lede">{esc(C("paper.in_result_withdrawn", id=fam["id"], title=then))} <a href="{root}families/{fam["id"]}.html#{esc(slug)}">{esc(C("paper.see_result_now"))}</a></p>')
+        else:
+            items.append(f'<p class="lede">{esc(C("paper.in_result", id=fam["id"], title=tex_plain(fam["title"])))} <a href="{root}families/{fam["id"]}.html#{esc(slug)}">{esc(C("paper.read_in_result"))}</a></p>')
     else:
         tr = trail(root, [(ms_title_html(m), None)])
     notes = ""

@@ -73009,7 +73009,7 @@
  },
  {
   "id": "Algebraicity-of-Kuga-Satake-Correspondences-for-K3-Surfaces-October-3-2026",
-  "family": null,
+  "family": "032",
   "status": "withdrawn",
   "title": "Algebraicity of Kuga-Satake Correspondences for K3 Surfaces",
   "date": null,
@@ -73022,13 +73022,15 @@
   "withdrawn_on": "October 6, 2026",
   "withdrawal_note": "The proof relies on an adaptation of the flawed stabilization-trace construction in [Algebraicity of Weil classes on split abelian eightfolds](https://github.com/openai/math/blob/main/preprints/Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026/paper.pdf). The sign error in that construction prevents the required signed-double-point cancellation. The resulting gap leaves this paper's claimed algebraicity theorem unproved.\n\nThis withdrawal concerns the proof; it does not assert that the mathematical statement is false.",
   "archived_pdf": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Algebraicity-of-Kuga-Satake-Correspondences-for-K3-Surfaces-October-3-2026/manuscript.pdf",
+  "family_on_release_day": true,
+  "family_title_on_release_day": "Hodge and Kuga–Satake results for all projective K3 surfaces",
   "rests_on": [],
   "has_lean": false,
   "cited_by_in_collection": []
  },
  {
   "id": "Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026",
-  "family": null,
+  "family": "032",
   "status": "withdrawn",
   "title": "Algebraicity of Weil classes on split abelian eightfolds",
   "date": null,
@@ -73041,6 +73043,8 @@
   "withdrawn_on": "October 6, 2026",
   "withdrawal_note": "The proof contains a sign error in the stabilization-trace argument used to obtain negative double points. In the manuscript's signed double-point convention, write $I(f_1)=-m$ with $m>0$. The proof assigns each reverse stabilization trace sign $+1$ and therefore claims that inserting $m$ such traces makes the signed count zero.\n\nAccounting for the opposite source orientations of the two branches of the standard cusp gives sign $-1$ for each reverse trace in this convention. The resulting count is therefore\n\n$$I_{\\mathrm{new}}=I(f_1)-m=-2m\\ne0.$$\n\nThe Eliashberg-Murphy cancellation theorem invoked at this step requires zero signed double-point count, so its hypothesis is not met. The subsequent oriented-surgery and embedded-brane construction is therefore unsupported, and the paper does not establish its claimed algebraicity theorem.\n\nThis withdrawal concerns the proof; it does not assert that the mathematical statement is false.",
   "archived_pdf": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026/paper.pdf",
+  "family_on_release_day": true,
+  "family_title_on_release_day": "Hodge and Kuga–Satake results for all projective K3 surfaces",
   "rests_on": [],
   "has_lean": false,
   "cited_by_in_collection": []
@@ -165071,40 +165075,6 @@
     "work": "doi:10.1007/bf01394312"
    },
    {
-    "key": "OpenAITaming2026",
-    "authors": "OpenAI",
-    "title": "Taming implies compatibility on four-manifolds",
-    "year": "2026",
-    "venue": "OpenAI Math Release preprint OAI:Taming-implies-compatibility-on-four-manifolds-October-6-2026",
-    "uses": [
-     {
-      "file": "build/sections/01-introduction.tex",
-      "line": 175,
-      "context": null,
-      "section": "Introduction"
-     },
-     {
-      "file": "build/sections/03-current-energy.tex",
-      "line": 16,
-      "context": null,
-      "section": "Separation, quadratic mass, and angular energy"
-     },
-     {
-      "file": "build/sections/04-density-splitting.tex",
-      "line": 7,
-      "context": null,
-      "section": "Density splitting and the taming cone"
-     },
-     {
-      "file": "build/sections/04-density-splitting.tex",
-      "line": 48,
-      "context": null,
-      "section": "Density splitting and the taming cone"
-     }
-    ],
-    "work": "title:taming implies compatibility on four manifolds"
-   },
-   {
     "key": "Preiss1987",
     "authors": "Preiss, David",
     "title": "Geometry of measures in $ R^n$: Distribution, rectifiability, and densities",
@@ -166321,9 +166291,50 @@
     "work": "title:nonlinear elliptic equations"
    }
   ],
-  "internal_references": [],
+  "internal_references": [
+   {
+    "key": "OpenAITaming2026",
+    "target": "Taming-implies-compatibility-on-four-manifolds-October-6-2026",
+    "target_latest": "Taming-implies-compatibility-on-four-manifolds-October-6-2026",
+    "uses": [
+     {
+      "file": "build/sections/01-introduction.tex",
+      "line": 175,
+      "context": null,
+      "section": "Introduction"
+     },
+     {
+      "file": "build/sections/03-current-energy.tex",
+      "line": 16,
+      "context": null,
+      "section": "Separation, quadratic mass, and angular energy"
+     },
+     {
+      "file": "build/sections/04-density-splitting.tex",
+      "line": 7,
+      "context": null,
+      "section": "Density splitting and the taming cone"
+     },
+     {
+      "file": "build/sections/04-density-splitting.tex",
+      "line": 48,
+      "context": null,
+      "section": "Density splitting and the taming cone"
+     }
+    ]
+   }
+  ],
   "citations_total": 131,
-  "rests_on": [],
+  "rests_on": [
+   {
+    "manuscript": "Taming-implies-compatibility-on-four-manifolds-October-6-2026",
+    "cited_as": "Taming-implies-compatibility-on-four-manifolds-October-6-2026",
+    "status": "current",
+    "cited_edition_status": "current",
+    "has_lean": false,
+    "family": "342"
+   }
+  ],
   "has_lean": false,
   "cited_by_in_collection": [
    "Taming-implies-compatibility-on-four-manifolds-October-6-2026"
@@ -409725,7 +409736,9 @@
    }
   ],
   "has_lean": false,
-  "cited_by_in_collection": []
+  "cited_by_in_collection": [
+   "Deforming-hypersymplectic-four-manifolds-to-hyperkahler-triples-October-7-2026"
+  ]
  },
  {
   "id": "Taming-implies-compatibility-on-four-manifolds-September-23-2026",
@@ -494948,7 +494961,7 @@
  },
  {
   "id": "The-rational-Hodge-conjecture-for-products-of-K3-surfaces-October-4-2026",
-  "family": null,
+  "family": "032",
   "status": "withdrawn",
   "title": "The rational Hodge conjecture for products of K3 surfaces",
   "date": null,
@@ -494961,6 +494974,8 @@
   "withdrawn_on": "October 6, 2026",
   "withdrawal_note": "The proof relies on an adaptation of the flawed stabilization-trace construction in [Algebraicity of Weil classes on split abelian eightfolds](https://github.com/openai/math/blob/main/preprints/Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026/paper.pdf). The sign error in that construction prevents the required signed-double-point cancellation. The resulting gap leaves this paper's claimed rational Hodge theorem for products of projective K3 surfaces unproved.\n\nThis withdrawal concerns the proof; it does not assert that the mathematical statement is false.",
   "archived_pdf": "https://github.com/openai/math/blob/adc7f1241b42e322a6451854ab7e4b4c146bf78a/preprints/The-rational-Hodge-conjecture-for-products-of-K3-surfaces-October-4-2026/hodge-conjecture-products-k3.pdf",
+  "family_on_release_day": true,
+  "family_title_on_release_day": "Hodge and Kuga–Satake results for all projective K3 surfaces",
   "rests_on": [],
   "has_lean": false,
   "cited_by_in_collection": []

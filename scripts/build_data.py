@@ -77,6 +77,22 @@ def slugs_in(text: str) -> list[str]:
     return out
 
 
+OAI_TOKEN_RE = re.compile(r"\bOAI:([A-Za-z0-9][^\s{}\\,;]*)")
+
+
+def oai_tokens(text: str, known: set) -> list[str]:
+    """Collection slugs written as OAI:<slug> inside a bibliography entry (some entries carry the
+    slug in a howpublished field with no link), kept only when the slug is a preprint folder."""
+    out = []
+    for m in OAI_TOKEN_RE.finditer(text):
+        s = m.group(1)
+        while s and s not in known and s[-1] in ".)]":
+            s = s[:-1]
+        if s in known and s not in out:
+            out.append(s)
+    return out
+
+
 def git_commit(path: Path) -> str:
     try:
         return subprocess.run(
@@ -937,6 +953,11 @@ def build(upstream: Path, out: Path, quiet: bool = False):
     # ---- manuscripts
     pre = upstream / "preprints"
     all_slugs = sorted(p.name for p in pre.iterdir() if p.is_dir())
+    known_slugs = set(all_slugs)
+    # Withdrawn manuscripts leave CONTENTS.md; their release-day family is recorded separately
+    # (scripts/ingest/withdrawn_families.py reads CONTENTS.md at the release's first commit).
+    wf_path = ROOT / "curated" / "withdrawn_families.json"
+    withdrawn_families = json.loads(wf_path.read_text(encoding="utf-8")).get("manuscripts", {}) if wf_path.exists() else {}
     readmes = {s: parse_readme(pre / s / "README.md") for s in all_slugs if (pre / s / "README.md").exists()}
     current = set()
     fam_of = {}
@@ -976,6 +997,9 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         else:
             status = "other"
         fam = fam_of.get(slug) or fam_of.get(latest(slug))
+        fam_on_release_day = None
+        if not fam and status == "withdrawn" and slug in withdrawn_families:
+            fam = fam_on_release_day = withdrawn_families[slug]["family"]
         cm = contents_ms.get(slug, {})
         rec = {
             "id": slug,
@@ -993,6 +1017,9 @@ def build(upstream: Path, out: Path, quiet: bool = False):
             "withdrawal_note": r.get("withdrawal_note"),
             "archived_pdf": r.get("archived_pdf"),
         }
+        if fam_on_release_day:
+            rec["family_on_release_day"] = True
+            rec["family_title_on_release_day"] = withdrawn_families[slug].get("family_title_then")
         tex = None
         if status in ("current", "withdrawn"):
             try:
@@ -1030,6 +1057,8 @@ def build(upstream: Path, out: Path, quiet: bool = False):
                 targets = slugs_in(raw) if ("openai/math" in raw or key.startswith("OAI:")) else []
                 if key.startswith("OAI:") and not targets:
                     targets = [key[4:]]
+                if not targets:
+                    targets = oai_tokens(raw, known_slugs)
                 if targets:
                     for t in targets:
                         t_latest = latest(t)

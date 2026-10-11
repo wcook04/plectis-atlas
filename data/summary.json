@@ -127,13 +127,13 @@
   "remark": 583,
   "theorem": 2255
  },
- "internal_citation_edges": 578,
- "manuscripts_citing_collection": 380,
+ "internal_citation_edges": 579,
+ "manuscripts_citing_collection": 381,
  "manuscripts_citing_withdrawn": [],
  "manuscripts_citing_superseded_editions": [],
- "manuscripts_citing_unformalised_collection_results": 213,
- "external_works_cited": 11020,
- "external_citations": 16078,
+ "manuscripts_citing_unformalised_collection_results": 214,
+ "external_works_cited": 11019,
+ "external_citations": 16077,
  "definitions": {
   "lean_statements_pure_mathlib": "Comparator challenge files that import only Mathlib and in which a textual scan detects no local vocabulary declarations: a reader checks the theorem statement against Mathlib vocabulary alone. Files with no local vocabulary that import OpenAI's own modules are excluded.",
   "lean_vocabulary": "Local vocabulary declarations detected by a textual scan of a Comparator challenge file: definitions, abbreviations, structures, classes, inductive types, instances, notation, macros and axioms. Theorem and lemma declarations, including the target theorem, are excluded. A proof that Comparator accepts proves the statement as phrased in this vocabulary, so each item is something a reader checks means what the paper means.",
@@ -1034,7 +1034,7 @@
   },
   {
    "key": "internal_citation_edges",
-   "value": 578,
+   "value": 579,
    "unit": "citing and cited manuscript pairs",
    "universe": "openai/math at fd4aeeb2ee4f, current manuscripts' bibliographies",
    "rule": "Bibliography entries pointing to another manuscript in the collection. A citation records a reference; it does not establish that a proof uses the cited result.",
@@ -1042,7 +1042,7 @@
   },
   {
    "key": "external_citations",
-   "value": 16078,
+   "value": 16077,
    "unit": "resolved external reference keys",
    "universe": "openai/math at fd4aeeb2ee4f, current manuscripts' bibliographies",
    "rule": "Bibliography keys resolved to a reference outside the collection, each manuscript and key counted once.",
@@ -1050,7 +1050,7 @@
   },
   {
    "key": "external_works_cited",
-   "value": 11020,
+   "value": 11019,
    "unit": "automatically grouped references",
    "universe": "openai/math at fd4aeeb2ee4f, current manuscripts' bibliographies",
    "rule": "References grouped by DOI, then arXiv id, then full title, with exact-title matches joined to their DOI or arXiv record and kept as aliases. Unaudited.",

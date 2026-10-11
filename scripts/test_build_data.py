@@ -94,6 +94,18 @@ class References(unittest.TestCase):
         r = bd.ref_record("sample", None, "Author, Example (doi:10.1234/example).")
         self.assertEqual(r.get("doi"), "10.1234/example")
 
+    def test_oai_slug_written_without_a_link_points_inside_the_collection(self):
+        # Family 341's October edition cites family 342 by an OAI: slug in howpublished, with no
+        # link and a non-OAI key; it was filed as an outside work (found by comparison with
+        # jkbennitt/math-release-atlas's independent citation extraction).
+        known = {"Taming-implies-compatibility-on-four-manifolds-October-6-2026", "Sharp-fillings-in-CAT(0)-spaces-September-23-2026"}
+        raw = ("@misc{OpenAITaming2026, author = {{OpenAI}}, howpublished = {OpenAI Math Release preprint\n"
+               "  OAI:Taming-implies-compatibility-on-four-manifolds-October-6-2026}, year = {2026}}")
+        self.assertEqual(bd.oai_tokens(raw, known), ["Taming-implies-compatibility-on-four-manifolds-October-6-2026"])
+        self.assertEqual(bd.oai_tokens("see OAI:Sharp-fillings-in-CAT(0)-spaces-September-23-2026).", known),
+                         ["Sharp-fillings-in-CAT(0)-spaces-September-23-2026"])
+        self.assertEqual(bd.oai_tokens("OAI:Not-a-preprint-of-the-release", known), [])
+
     def test_doi_keeps_balanced_internal_brackets(self):
         self.assertEqual(bd.clean_doi("10.1002/(SICI)1097-0118(199901)30:1<1::AID-JGT1>3.0.CO;2-#)."),
                          "10.1002/(SICI)1097-0118(199901)30:1<1::AID-JGT1>3.0.CO;2-#")
