@@ -706,6 +706,17 @@ body.social { margin: 0; width: 1200px; height: 675px; overflow: hidden; backgro
 .phead__facets { margin: .25rem 0 0; color: var(--ink-2, inherit); }
 .phead__facets .sep { margin: 0 .5rem; opacity: .6; }
 
+/* Where this result stands: one cell per kind of check. Colour belongs to evidence:
+   steel for Lean, brick for re-runs outside OpenAI, neutral for the rest. */
+.standing__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 8px; }
+.standing__item a { display: flex; flex-direction: column; gap: 2px; height: 100%; padding: 10px 12px; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); color: var(--ink); text-decoration: none; }
+.standing__item a:hover, .standing__item a:focus-visible { border-color: var(--rule-control); }
+.standing__k { font-family: var(--sans); font-size: var(--fs-micro); letter-spacing: 0.02em; text-transform: uppercase; color: var(--muted); }
+.standing__v { font-family: var(--sans); font-size: 0.95rem; line-height: 1.3; }
+.standing__item--lean a { border-left: 3px solid var(--steel-fill); }
+.standing__item--run a { border-left: 3px solid var(--brick-fill); }
+.standing__item--none .standing__v { color: var(--muted); }
+
 /* ---- Map list, legend scope, card -------------------------------------- */
 .legend__scope { font-size: var(--fs-small); color: var(--muted); margin: 0 0 2px; font-weight: 600; }
 .legend__note--lead { margin: 0 0 4px; color: var(--ink-soft); }

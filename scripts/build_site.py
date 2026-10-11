@@ -1097,6 +1097,52 @@ def independent_reruns_html(stmt, root):
             f'<p class="intro small">{esc(C("statement.reruns_intro"))}</p><ul class="cfinds">{"".join(items)}</ul></div>')
 
 
+def standing_html(f, root):
+    """Where this result stands: one line per kind of check, each linking to its section below."""
+    fid = f["id"]
+    items = []
+    stmts = [ST[s] for s in f.get("statements") or [] if s in ST]
+    if stmts:
+        items.append(("lean", "#h-lean", C("family.standing_lean_k"),
+                      C("family.standing_lean_1") if len(stmts) == 1 else C("family.standing_lean_n", n=len(stmts))))
+        runs = [{v["source"] for v in sourced_all(s, "replay") if (v.get("value") or {}).get("verdict") == "accepted"} for s in stmts]
+        rerun = sum(1 for r in runs if r)
+        most = max((len(r) for r in runs), default=0)
+        groups = C("family.standing_groups_1") if most == 1 else C("family.standing_groups_n", n=most)
+        if not rerun:
+            run_text = C("family.standing_run_none")
+        elif len(stmts) == 1:
+            run_text = C("family.standing_run_one", groups=groups)
+        else:
+            run_text = C("family.standing_run_v", k=rerun, n=len(stmts), groups=groups)
+        items.append(("run", "#h-lean", C("family.standing_run_k"), run_text))
+        verdict = C("family.standing_readers").get(f.get("readers_agreement") or "", "")
+        if verdict:
+            items.append(("readers", "#h-readings", C("family.standing_readers_k"), verdict))
+    else:
+        items.append(("none", "#h-lean", C("family.standing_lean_k"), C("family.standing_lean_none")))
+    cards = sum(len(v["value"]) for v in sourced_all(f, "hol_checks"))
+    if cards:
+        items.append(("hol", "#h-hol", C("family.standing_hol_k"), C("family.standing_hol_1") if cards == 1 else C("family.standing_hol_n", n=cards)))
+    fin = Counter(c["verdict"] for v in sourced_all(f, "finite_checks") for c in v["value"])
+    if fin:
+        counts = C("family.standing_finite_counts")
+        order = ["certified", "needs-data", "refused"]
+        items.append(("finite", "#h-finite", C("family.standing_finite_k"),
+                      ", ".join(counts.get(k + "_1" if fin[k] == 1 else k, counts[k]).format(n=fin[k]) for k in order if fin.get(k))))
+    nf = len(COMMUNITY["by_family"].get(fid, []))
+    if nf:
+        items.append(("finds", "#h-desc", C("family.standing_finds_k"), C("family.standing_finds_v", n=nf)))
+    reading = [m for m in f.get("manuscripts") or [] if m in PAPER_READING]
+    if reading:
+        items.append(("read", "#h-ms", C("family.standing_read_k"),
+                      C("family.standing_read_1") if len(reading) == 1 else C("family.standing_read_v", n=len(reading))))
+    lis = "".join(f'<li class="standing__item standing__item--{k}"><a href="{href}"><span class="standing__k">{esc(key)}</span>'
+                  f'<span class="standing__v">{esc(val)}</span></a></li>' for k, href, key, val in items)
+    return (f'<section class="band band--tight standing" aria-labelledby="h-standing"><h2 class="h3" id="h-standing">'
+            f'{esc(C("family.standing_heading"))}</h2><ul class="standing__list">{lis}</ul></section>')
+
+
 def withdrawn_from_family_html(fid, root):
     """Manuscripts listed under this family when the release was published and withdrawn since."""
     wd = [m for m in MANUSCRIPTS if m["status"] == "withdrawn" and m.get("family") == fid]
@@ -1127,7 +1173,7 @@ def finite_checks_html(f, root):
                          f'<a class="ext" href="{esc(c["url"])}" rel="noopener">{esc(C("sources.record_link"))}</a></p></li>')
     if not items:
         return ""
-    return (f'<h3 class="h3">{esc(C("family.finite_heading"))}</h3><p class="intro small">{esc(C("family.finite_intro"))}</p>'
+    return (f'<h3 class="h3" id="h-finite">{esc(C("family.finite_heading"))}</h3><p class="intro small">{esc(C("family.finite_intro"))}</p>'
             f'<ul class="cfinds">{"".join(items)}</ul>')
 
 
@@ -1143,7 +1189,7 @@ def other_assistant_html(f, root):
                 f'{source_link(v["source"], root)}. <a class="ext" href="{esc(c["url"])}" rel="noopener">{esc(C("family.hol_card_link"))}</a></p></li>')
     if not items:
         return ""
-    return (f'<h3 class="h3">{esc(C("family.hol_heading"))}</h3><p class="intro small">{esc(C("family.hol_intro"))}</p>'
+    return (f'<h3 class="h3" id="h-hol">{esc(C("family.hol_heading"))}</h3><p class="intro small">{esc(C("family.hol_intro"))}</p>'
             f'<ul class="cfinds">{"".join(items)}</ul>')
 
 
@@ -1161,7 +1207,7 @@ def scope_readings_html(f, root):
                      f'<p class="small muted">{source_link(v["source"], root)}. <a class="ext" href="{esc(rv["url"])}" rel="noopener">{esc(C("sources.record_link"))}</a></p></li>')
     if not items:
         return ""
-    return (f'<h3 class="h3">{esc(C("family.readings_heading"))}</h3><p class="intro small">{esc(C("family.readings_intro"))}</p>'
+    return (f'<h3 class="h3" id="h-readings">{esc(C("family.readings_heading"))}</h3><p class="intro small">{esc(C("family.readings_intro"))}</p>'
             f'<ul class="cfinds">{"".join(items)}</ul>')
 
 
@@ -2189,6 +2235,7 @@ def build_family(f):
  {family_facets_html(f, root)}
  <p class="actions">{read_btn}<a class="btn btn--ghost" href="{root}index.html#d={DISC_SLUG[di]}&amp;f={fid}">{esc(C('words.show_on_map'))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p>
 </header>
+{standing_html(f, root)}
 {('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}
 <section class="band band--tight" aria-labelledby="h-desc">
  <h2 class="h2" id="h-desc">{esc(C('family.description_heading'))}</h2>
