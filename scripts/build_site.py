@@ -1108,6 +1108,27 @@ def withdrawn_from_family_html(fid, root):
     return f'<h3 class="h3">{esc(C("family.withdrawn_heading"))}</h3><p class="intro small">{esc(C("family.withdrawn_intro", title=then))}</p>{arts}'
 
 
+def finite_checks_html(f, root):
+    """Finite parts of this family's papers decided by exact code, each in the checker's own terms."""
+    words = C("family.finite_words")
+    items = []
+    for v in sourced_all(f, "finite_checks"):
+        for c in v["value"]:
+            m = MS.get(c.get("manuscript") or "")
+            paper = f'<a href="{root}papers/{esc(m["id"])}.html">{ms_title_html(m)}</a>' if m else ""
+            scope = f' <span class="muted">({esc(c["scope"])})</span>' if c.get("scope") else ""
+            detail = (f'<details class="more"><summary>{esc(C("family.finite_detail"))}</summary>'
+                      f'<p class="small">{esc(c["detail"])}</p></details>') if c.get("detail") else ""
+            items.append(f'<li><p><strong>{esc(words.get(c["verdict"], c["code"]) if isinstance(words, dict) else c["code"])}</strong>{scope}. {paper}</p>'
+                         f'<p class="small">{esc(c.get("text") or "")}</p>{detail}'
+                         f'<p class="small muted">{source_link(v["source"], root)}, {esc(c["id"])}. '
+                         f'<a class="ext" href="{esc(c["url"])}" rel="noopener">{esc(C("sources.record_link"))}</a></p></li>')
+    if not items:
+        return ""
+    return (f'<h3 class="h3">{esc(C("family.finite_heading"))}</h3><p class="intro small">{esc(C("family.finite_intro"))}</p>'
+            f'<ul class="cfinds">{"".join(items)}</ul>')
+
+
 def other_assistant_html(f, root):
     """Checks of this family's steps in another proof assistant, quoted with attribution."""
     items = []
@@ -2192,6 +2213,7 @@ def build_family(f):
    {('<h3 class="h3">' + esc(C('family.lean_scope_heading')) + '</h3>' + scope) if scope else ''}
    {scope_readings_html(f, root)}
    {other_assistant_html(f, root)}
+   {finite_checks_html(f, root)}
    {reasoning_html}
   </div>
  </aside>

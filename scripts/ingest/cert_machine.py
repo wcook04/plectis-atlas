@@ -34,6 +34,13 @@ STATEMENT_WORDS = {
 }
 
 
+FINITE_WORDS = {  # lane F, in cert-machine's own definitions (certs/openai-math-finite.json "what")
+    "CERTIFIED": ("certified", "Exact code written independently from the paper confirms that the published object has the claimed property."),
+    "REFUSED": ("refused", "The exact code did not decide it; cert-machine records this as refused, which is no evidence against the claim."),
+    "NEEDS DATA": ("needs-data", "Cannot be decided from the release: the specific object the argument relies on is not published."),
+}
+
+
 def kernel_reading(row: dict, commit: str) -> dict:
     last = (row.get("runs") or [{}])[-1]
     kernels = last.get("kernels") or []
@@ -78,14 +85,26 @@ def main() -> int:
         sys.exit(f"the two ledgers read different releases: {pin} and {s.get('release')}")
     statements = {r["challenge"]: {"replay": kernel_reading(r, commit)} for r in k["rows"]}
     families = {}
+    fpath = co / "certs" / "openai-math-finite.json"
+    finite = json.loads(fpath.read_text(encoding="utf-8")) if fpath.exists() else None
+    if finite and finite.get("release") != pin:
+        sys.exit(f"lane F read a different release: {finite.get('release')}")
+    for r in (finite or {}).get("rows", []):
+        word = r.get("word")
+        decides = r.get("decides") or ""
+        families.setdefault(r["family"], {}).setdefault("finite_checks", []).append({
+            "id": r["id"], "manuscript": r.get("dir"),
+            "verdict": FINITE_WORDS.get(word, (word, None))[0], "code": word, "text": FINITE_WORDS.get(word, (word, None))[1],
+            "scope": decides.split(":", 1)[0].strip() or None, "detail": r.get("why"),
+            "url": f"{REPO}/blob/{commit}/certs/openai-math-finite.json"})
     for r in s["rows"]:
         word = r.get("word")
         code, text = STATEMENT_WORDS.get(word, (word, None))
-        families[r["family"]] = {"scope_reading": {
+        families.setdefault(r["family"], {})["scope_reading"] = {
             "verdict": code, "code": word, "text": text, "gap": r.get("gap"),
             "openai_note_on_gap": r.get("scopeNoteOnGap"), "confidence": r.get("confidence"),
             "second_reading": r.get("secondWord"), "disagreement": r.get("disagreement"),
-            "url": f"{REPO}/blob/{commit}/certs/openai-math-statements.json"}}
+            "url": f"{REPO}/blob/{commit}/certs/openai-math-statements.json"}
     out = {
         "schema": "atlas_source_v1",
         "source": {
@@ -108,11 +127,13 @@ def main() -> int:
             "fields": {
                 "replay": "Per challenge: the audit's Comparator re-run with both kernels, and for files with definition holes whether the displayed statement is proved.",
                 "scope_reading": "Per family: whether the challenge statements state OpenAI's headline, with the gap and whether OpenAI's Lean note declares it.",
+                "finite_checks": "Per family: finite parts of its papers decided by exact code written independently from each paper (lane F), with the verdict and what was decided.",
             },
             "adopted": [
                 {"kind": "data", "what": "Its re-run verdict for each of the 416 challenges, with the held-definition checks for the ten files with definition holes", "where": "the Independent replay line on statement pages"},
                 {"kind": "data", "what": "Its reading of each of the 242 families against OpenAI's headline, with the gap and whether OpenAI's note declares it", "where": "the readings of the scope on family pages"},
                 {"kind": "idea", "what": "Telling apart a gap OpenAI's note declares from one it does not", "where": "family pages"},
+                {"kind": "data", "what": "Its exact decisions of the finite parts of 66 papers' arguments, including those whose objects were never published", "where": "family pages, under finite parts checked by exact computation"},
             ],
         },
         "statements": statements,

@@ -219,6 +219,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/005.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-009",
+       "manuscript": "Catalans-constant-is-irrational-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the three finite components of the proof and their comparison, not the headline. (1) the real-place certificate — for the published trial sequences, the right side of eq:energy-dual is <= -2.290939875 (kappa=2) and -2.296789875 (kappa=1), with every stationary point of the two barrier functions isolated and every printed bracket, variation count and candidate value recomputed; (2) the three fixed 48x48 matrices B0, B0+B1, B0-B1 are invertible (exact determinants over Q, the mod-101 pivot table, the base matrix built two ways); (3) the finite-place constant -8609/4608 - (2809/4608) log 2 > -2.29084 (the loss function and its area 8609/2 from the counting formulas, 505/4608); (4) the strict comparison upper < lower. The analytic framework that makes these imply irrationality is not decided.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -1139,6 +1156,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/020.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-045",
+       "manuscript": "Squarefree-values-of-quartics-and-power-free-values-of-polynomials-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the exact parameter certificate of Proposition prop:parameter-certificate (all 3,989 cells for d = 4..8, Table tab:parameter-certificate, the 150 endpoint derivative inequalities), the printed exponent margins, and the enlarged quartic cell of Proposition prop:cyclotomic-central; not the density theorem, whose other steps are proved in prose",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -2558,6 +2592,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/047.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-103",
+       "manuscript": "An-explicit-failure-of-complex-affine-space-cancellation-September-23-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the cylinder isomorphism A[w] = C^[5] (Proposition prop:stabilization), by the paper's printed maps with inverses; NOT A not = C^[4], which carries the counterexample",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -2678,6 +2729,33 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/049.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-105",
+       "manuscript": "A-stable-coordinate-that-is-not-a-coordinate-in-four-variables-October-5-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: f is a one-stable coordinate (an explicit automorphism of C[x1..x4,w] with exhibited inverse sends f to x1), deg f = 5, and every fibre f = lambda is C^[3]; NOT that f is not a coordinate in four variables, which carries the counterexample",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-106",
+       "manuscript": "An-explicit-noncoordinate-polynomial-with-affine-three-space-zero-fibre-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "the whole headline",
+       "detail": "the whole headline: R/(F) = C^[3] by the paper's printed mutually inverse maps, and grad F vanishes at a point, so F is not a coordinate",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -3180,6 +3258,23 @@
   "statements": [],
   "lean_doc": null,
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-125",
+       "manuscript": "Ambiently-homeomorphic-isolated-hypersurfaces-of-multiplicities-two-and-three-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: Lemma seed:product (the integer relation with E > 0 and both products 1), by the shipped witness and by the printed F_1009 rank certificate, plus the chain arithmetic; not the spectra, the lattice/topology, or the homeomorphism",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "type": [
     {
      "value": "counterexample",
@@ -3447,6 +3542,23 @@
   "statements": [],
   "lean_doc": null,
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-135",
+       "manuscript": "The-Campana-Peternell-conjecture-in-dimension-six-September-25-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: Lemma lem:finite-ratio (from the matrices A, C_1, N defined in Section 4, N(xi_i eta_j) = 0 with xi_0 = eta_0 = 1 forces 32 - 20 eta_1 + 3 eta_1^2 = 0); dim_Q K_3 <= 6 by a rank mod 10007 (a certified lower bound on the rational rank), everything else exact over Q; not the geometry producing these equations, nor the classification",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "type": [
     {
      "value": "proof",
@@ -4609,6 +4721,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/symmetric-and-general-mahler-conjectures.pdf"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-171",
+       "manuscript": "The-Mahler-Conjecture-for-General-Convex-Bodies-September-22-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the finite certificates of Appendices 07-08 (the 152-node profile enclosures and every printed node bound and finite sum; the stable-formula identities; the layer rectangles; the chord-error, tail-vector, interpolation and strip arithmetic; the segment threshold sums and sample tables; the two Bernstein certificates; the cubic and larger-width tables; the tail and short-width budgets) that support Proposition prop:scalar-input. Not the analytic interpolation/tail/segment-reduction arguments, and not sections 01-06 and 09, where the convex-geometric proof of the Mahler inequality lives",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -4697,6 +4826,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/088.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-174",
+       "manuscript": "A-product-counterexample-to-the-simplex-maximum-for-projection-body-volume-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "the whole headline",
+       "detail": "the whole headline: K = T10 x T10 violates the proposed simplex bound in dimension 20, with the exact ratio printed",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -4881,6 +5027,53 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/090.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-177",
+       "manuscript": "An-atomic-certificate-for-triangular-lattice-universal-optimality-September-26-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: every inequality of Lemma lem:finite-certificate (the two 20x20 interval blocks and their inverses, the parameter polytope, the jet / curvature / Taylor envelopes, all 659 Bernstein row minima) and the printed rational consequences; not the analytic interpolation, sign propagation or energy-transfer arguments, hence not the universal-optimality theorem",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-178",
+       "manuscript": "Universal-optimality-of-the-triangular-lattice-September-23-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: Proposition prop:finite-certificate through its three stronger tables (27 power, 30 column, 37310 Bernstein and 10 tail comparisons) on enclosures of the exact quadrature arrays, the same tables on an exact execution of the floor-rounded procedure of Appendix C, the exact node constants, and the scalar budgets; not the analytic interpolation, sign-propagation, energy-transfer or mixture arguments, hence not the theorem",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-179",
+       "manuscript": "A-sharp-Fourier-certificate-for-planar-circle-packing-September-23-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: every finite certificate the proof cites -- Lemma interpolation:finite (the two inverse certificates via W_+-, the exterior block, the 204 residuals, the table norms) and Lemma signs:bernstein (2436 Bernstein coefficients), recomputed with an independent quadrature and error bound, the exact node data and envelope constants, and every scalar substitution of certificates.tex:487-572; NOT the theorem, whose infinite inversion, sign argument and normalisation are analytic",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-180",
+       "manuscript": "Triangular-minimality-for-planar-Coulomb-renormalized-energy-September-23-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component -- the whole finite certificate of Section sec",
+       "detail": "a finite component -- the whole finite certificate of Section sec:computation (Proposition comp:finite-soundness), by an independent route: the 38 lattice coefficients (two ways) and |c_1| < 1; lambda, mu, K, B(l), f_0(l), f(l), -pi B(l) - lambda/2 (closed-form/Fejer route) each inside its saved pair; the exterior signs comp:tail-signs (K < 0 included); the finite-core premise; the global derivative bounds L_1..L_4; the outer primitive assertion (2 g_d(x) > K off int D_0) and the negative-part assertion on the paper's 2186 x 3612 grid; the Hessian assertions on the 601 x 401 cells of D_0; the printed arithmetic of the truncation sections. Not the headline: analytic, not finite: the reduction (sec:reduction), the geometry and dual identity (sec:geometry), Lemma cal:stationarity (used by the Hessian step), the truncation estimates of sec:tails (their printed arithmetic is checked in part 7; the sweeps add their 10^-11 query error, which is conditional on the finite-core premise decided here), Corollary cor:bhs. The paper's own radial table (midpoint propagation) and its K-integral G_ss mesh are not reproduced: the table is built here by another route (closed forms on [b, R_0], Taylor integration on [R_0, l]) and K by Fejer quadrature.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -5296,6 +5489,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/096.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-189",
+       "manuscript": "The-Gaussian-Propeller-Bound-in-Every-Dimension-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: every finite numerical comparison and enclosure of the m >= 5 exclusion (Appendix cert:arithmetic, Tables sc:interval-table, cert:quantiles, elim:small-table, elim:four-table, elim:final-table and the inline bounds), plus the finite algebra of geometry.tex; NOT the case m <= 4 (Heilman-Jagannath-Naor, external, computer-assisted) and not the prose analysis",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -5653,6 +5863,43 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/100.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-195",
+       "manuscript": "Finite-angular-cylinder-covers-below-the-half-area-bound-September-27-2026",
+       "verdict": "refused",
+       "code": "REFUSED",
+       "text": "The exact code did not decide it; cert-machine records this as refused, which is no evidence against the claim.",
+       "scope": "a finite component",
+       "detail": "a finite component: A_min(K) = sqrt 2, the construction's parameters, every polynomial identity of the coverage proof, and the exact total base area at eps = 1/2000 and tau = 1/4000 (strictly below A_min/2, inside the printed remainder bounds); COVERAGE -- the decisive geometric part -- is REFUSED (a continuum covered by 1.6e7 cylinders; ~3.2e13 sector pairs), so the row is REFUSED",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-197",
+       "manuscript": "Slope-field-perturbations-of-the-two-cylinder-covering-September-27-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "NOT PUBLISHED as a specific instance; construction in preprints/Slope-field-perturbations-of-the-two-cylinder-covering-September-27-2026/build/sections/threshold.tex and dictionary.tex with non-explicit smallness thresholds.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-198",
+       "manuscript": "Finite-triangular-approximation-of-radial-sweeps-September-27-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "NOT PUBLISHED as a specific instance; preprints/Finite-triangular-approximation-of-radial-sweeps-September-27-2026/build/beams.tex l.292 ('For every zeta > 0, the tetrahedron K has a finite cylinder cover ...'), coordinates.tex.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -5712,6 +5959,23 @@
   "statements": [],
   "lean_doc": null,
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-199",
+       "manuscript": "A-sharp-entropy-bound-and-the-simplex-inequality-for-isotropic-constants-October-5-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the scalar certificate behind Lemmas sc:bounds and tr:scalar-basic — the central piecewise-polynomial certificate on [-6,10] rebuilt from its eleven seed pairs (residuals, joins, anchors, error budgets, all 44 group bounds), the rational inequalities of both tail arguments at their extreme points, and the finite comparisons of Section sc:scalar; NOT the isotropic-constant headline",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "type": [
     {
      "value": "proof",
@@ -5950,6 +6214,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/104.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-209",
+       "manuscript": "Randomized-quasipolynomial-time-mean-payoff-games-September-25-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component (the appendix side result, not the main theorem)",
+       "detail": "a finite component (the appendix side result, not the main theorem): on the printed two-variable instance the true minimum is exactly 0, while the substitution rule as formalised in the challenge is forced through x2 = h, x1 = h + 1 to value 1; all 13 conjuncts of finite_execution_not_optimal. Faithfulness of the formalisation to Truffet v4 is a reading, not decided.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -6178,6 +6459,33 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/107.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-213",
+       "manuscript": "Complex-Matrix-Multiplication-Below-2.258-and-Rectangular-Bounds-September-24-2026",
+       "verdict": "refused",
+       "code": "REFUSED",
+       "text": "The exact code did not decide it; cert-machine records this as refused, which is no evidence against the claim.",
+       "scope": "finite components only",
+       "detail": "finite components only: the three rectangular witnesses (alpha > 0.465, w(0.709) < 2.092, family omega < 2.267) as finite computations; for omega < 2.258 the barrier, both charts (the 18 MB chart verified as the recursion's output), the residual eps, the chart comparisons and the W-seed polynomial. NOT the interior lemma (cost), NOT the boundary lemma / W-seed library (records not published), hence NOT Theorem thm:certificate; no theory",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-214",
+       "manuscript": "Staggered-extraction-for-exact-matrix-multiplication-over-every-field-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the parameter certificate — the five integer arrays, decoded by the printed rules and contracted by the printed finite formulas, give every printed table value and enclosure and 3(8 log 7 - H_0 - C_*)/S_* < 2.371054886006746 with every feasibility condition; NOT the extraction theory that turns this ratio into a bound on omega",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -7020,6 +7328,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/118.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-232",
+       "manuscript": "Additive-hardness-and-unbounded-configuration-gaps-in-bin-packing-September-24-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "preprints/Additive-hardness-and-unbounded-configuration-gaps-in-bin-packing-September-24-2026/build/source/consequences.tex l.9-24 (proof of Theorem thm:unbounded-gap), /build/source/instance.tex l.26-60 (parameters eq:parameters and geometry). Instance itself NOT PUBLISHED (only its prescription). Lean: lean/ComparatorChallenges/BinPackingGap.lean; proof lean/OAI/Computability/BinPacking/ (284 files).",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -7101,6 +7426,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/119.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-234",
+       "manuscript": "Hellinger-contraction-with-arbitrary-Boolean-output-bias-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the scalar certificates of the proof — the induction parameters, the 17 profiles' five Bernstein sign checks, the three-coordinate base table, the 21-box pair interval certificate, and every finite comparison and Bernstein/table entry of the central, intermediate and large-bias bands; NOT the theorem, whose induction, continuation and norm-inequality arguments are analytic",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -7858,6 +8200,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/130.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-248",
+       "manuscript": "An-explicit-power-saving-for-the-exact-discrete-Fourier-transform-September-25-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "Interface and lemma in build/sections/synthesis.tex lines 18-60 (Lemma syn:local-certificate at lines 39-46), built from the network of build/sections/network.tex (matrix eq. net:C at line 6; Prop. net:finite-interface at line 370; parameters m=10^6, W_*=2^71 at network.tex line 470 and introduction.tex line 71). The 2^b-coordinate word is never printed and is astronomically large.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -8420,6 +8779,23 @@
   "statements": [],
   "lean_doc": null,
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-262",
+       "manuscript": "Subset-Sum-in-Time-2-power-0-49n-October-4-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the numerical certificate of Proposition prop:filtering-moments (Appendix app:numerical) - every printed enclosure, error bound and comparison recomputed in directed rational interval arithmetic; the analytic trapezoid estimate, contour shifts and Parseval monotonicity are read, not run, and the O(2^0.49n) algorithm is theory",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "type": [
     {
      "value": "algorithm",
@@ -9457,6 +9833,23 @@
   "statements": [],
   "lean_doc": null,
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-287",
+       "manuscript": "Arithmetic-classification-and-non-Pisot-singularity-for-Bernoulli-convolutions-October-3-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the root location of the degree-31 polynomial (all 31 roots isolated, beta in (1.8392, 1.8393) the only real root, alpha the only other expanding pair, beta not Pisot) and every printed integer of the rational moment certificate with its coefficient and trigonometric inputs; NOT the singularity of nu_{1/beta}, which rests on the analytic argument",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "type": [
     {
      "value": "proof",
@@ -9693,6 +10086,33 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/157.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-294",
+       "manuscript": "A-counterexample-to-Hadwigers-conjecture-September-23-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "NOT PUBLISHED. Theorem thm:main in build/sections/01-introduction.tex lines 20-27; sampling of raw vertices in build/sections/02-geometry.tex lines 258-320; parameter order in build/sections/14-parameters.tex.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-295",
+       "manuscript": "A-counterexample-to-the-Colin-de-Verdiere-chromatic-conjecture-September-23-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "NOT PUBLISHED. Theorem thm:main at build/sections/01-introduction.tex line 42; base graphs Theorem thm:base-graphs at line 147; 'm=2^{1000gN} is the sampled graph order' at lines 315-317.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -9779,6 +10199,33 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/158.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-297a",
+       "manuscript": "The-Euclidean-plane-is-not-five-colorable-September-23-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: Lemma angular-certificate (all seven placed Moser-spindle vertices strictly in the region 0<l<4, P<P'), the eleven unit edges and non-3-colourability, and every number of the paper's rational verification. NOT the headline (the plane is not 5-colourable), which rests on the transfer theorem and the measurable/angular theory.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-297b",
+       "manuscript": "The-Euclidean-plane-is-not-five-colorable-September-23-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "NOT PUBLISHED. build/sections/introduction.tex lines 31-36 ('an unrestricted lower bound can also be established without first displaying a finite graph witnessing it') and lines 309-313 ('Theorem~\\ref{thm:main} and graph compactness ... give a finite unit-distance graph H that is not five-colorable'). The proof goes through weak measurable colorings (build/sections/transfer.tex) and spectral/ergodic arguments.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -10063,6 +10510,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/161.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-300",
+       "manuscript": "A-counterexample-to-Sidorenkos-conjecture-September-23-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "H: build/sections/complex.tex Table tab:complex at lines 19-56 (Theorem thm:main in build/sections/introduction.tex lines 18-26; Lean ComparatorChallenges/SidorenkoCounterexample.lean def faces). Host: NOT PUBLISHED. build/sections/kernel.tex lines 19, 566 and 673-676 choose D and q 'sufficiently large'; the Lean solution module is OAI.Combinatorics.Sidorenko.RandomHost (existential).",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -10151,6 +10615,33 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/162.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-301",
+       "manuscript": "Balanced-Counterexamples-to-Rysers-Conjecture-at-Prime-Orders-September-27-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "NOT PUBLISHED. Random choices in build/candidates.tex lines 75-140; the random selection procedure in build/selection.tex lines 20-35 ('All subsequent assertions concern sufficiently large q', line 93).",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-302",
+       "manuscript": "A-Counterexample-to-Rysers-Covering-Conjecture-September-23-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "NOT PUBLISHED. build/selection.tex lines 1-60 (independent random shifts; Lemma sel-domination at line 52).",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -12007,6 +12498,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/187.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-336",
+       "manuscript": "Snaky-in-21-Maker-moves-September-25-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "the whole headline (Theorem thm",
+       "detail": "the whole headline (Theorem thm:main, 21 Maker moves on Z^2) and Corollary cor:finite-board, twice: (I) the certificate evaluates to A_727 = {}, h_727 = 21 under the paper's combination rule — sound only with Lemma lem:combination, proved in prose; (II) a rule-free search shows the certificate-guided policy wins within 21 claims against every Breaker line, given three stated monotonicity/locality reductions",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -12168,6 +12676,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/189.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-338",
+       "manuscript": "Cycle-clique-Ramsey-numbers-September-25-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the 3099 published deduction traces of Proposition finite:verified exclude all 3099 (pattern, k, t) instances by the paper's stated rules, applied correctly (the rules' soundness and the reduction of R(C_m,K_n) to these instances are the paper's, not decided here)",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -12257,6 +12782,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/190.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-339",
+       "manuscript": "Polynomial-removal-fails-for-ordered-binary-matrices-September-25-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: Theorem thm:main at h = 1 and h = 2 (A_1 776 x 776, A_2 3,096 x 3,096), both inequalities decided exactly (N_H(A_h) = 2 m^130 by an exhaustive ordered-copy search; dist_H(A_h) >= eps_h by the sampling argument with every finite step checked, for h <= 6), and the finite lemmas of Section 3; the theorem for every h (the headline) rests on the paper's uniform proofs and is not decided here",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -12654,6 +13196,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/196.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-345",
+       "manuscript": "A-Torsion-Free-Group-Algebra-with-Zero-Divisors-September-23-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "NOT PUBLISHED. build/sections/factors.tex lines 31-35: 'The construction is probabilistic: it proves that suitable finite matchings exist, without specifying matchings from which a concrete presentation and zero-divisor factors can be read off.' The Lean solution (OAI.Algebra.GroupRing) is existential.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -12770,6 +13329,43 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/reasoning_traces/kaplansky-direct-finiteness-characteristic-two.pdf"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-346",
+       "manuscript": "A-Torsion-Free-Group-Algebra-That-Is-Not-Directly-Finite-October-4-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "NOT PUBLISHED; the construction is probabilistic. Section sections/random.tex (input at build/paper.tex line 44); build/sections/topology.tex line 3 ('The probabilistic argument has produced finite immersed graphs'); build/sections/assembly.tex line 7 ('sufficiently large').",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-347",
+       "manuscript": "A-Counterexample-to-Kaplanskys-Direct-Finiteness-Conjecture-in-Characteristic-Two-September-23-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "Not in checkable form. build/sections/01-introduction.tex lines 8-15 (theorem and 'terminating prescription'); build/sections/04-hypergraph.tex lines 8-20 and 53 (parameters, random slabs, 'for all sufficiently large h').",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-349",
+       "manuscript": "A-Counterexample-to-Kaplanskys-Direct-Finiteness-Conjecture-in-Odd-Characteristic-September-26-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "Specified but infeasible. Theorem op:main in build/sections/01-introduction.tex lines 14-30; finite data in build/sections/02-finite-data.tex; explicit idempotent eq op:explicit-e in build/sections/03-modular.tex line 191.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -12935,6 +13531,33 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/199.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-351",
+       "manuscript": "An-explicit-counterexample-to-the-Auslander-Reiten-conjecture-September-23-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the ten-dimensional algebra C, its trivial extension T and trace, the 179-entry cochain (cocycle and boundary identities, evaluation q^3), the resolution of s over C for every i, and the finite identities of the lift — not the Ext vanishing over Lambda (F, Lambda, Z are not published)",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-352",
+       "manuscript": "A-counterexample-to-Tachikawas-second-conjecture-September-23-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the ten-dimensional algebra C (and its identity with the companion paper's), T and its symmetrizing form, E = T (x) T symmetric nondegenerate, the corner table of B, the exact sequences of Prop a:dual-dimensions, the resolution of s for every i, the socle element and the finite trace computation — not the Ext vanishing over A (Y, F, Lambda, Z, A, M are not published)",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -13178,6 +13801,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/205.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-360",
+       "manuscript": "Universal-Tensor-Squares-for-Symmetric-Groups-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: Proposition prop:finite-check for every eligible n <= 64 (61 of the 61 degrees), with witnesses supplied and certified here (the release records none: NEEDS DATA for its own certificate); the large-degree theory (n > 64) is not decided",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -13472,6 +14112,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/210.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-369",
+       "manuscript": "Foulkes-Conjecture-for-the-Sixth-Symmetric-Power-September-25-2026",
+       "verdict": "refused",
+       "code": "REFUSED",
+       "text": "The exact code did not decide it; cert-machine records this as refused, which is no evidence against the claim.",
+       "scope": "a finite component",
+       "detail": "decided in part (pre-registration amendment 5): the base range is decided for b = 6..12 in the ledger run (b = 6..15 in a separate run of this session); b = 13..25 (estimated 8-12 CPU-hours) and the partitions outside the band at b = 26..29 (the certificate/flag pipeline, not re-implemented) are not; the band at b = 26..29 is decided whole (467,068 coefficients, none negative)",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -14323,6 +14980,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/222.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-409",
+       "manuscript": "Microscopic-jamming-in-the-negative-spherical-perceptron-September-24-2026",
+       "verdict": "refused",
+       "code": "REFUSED",
+       "text": "The exact code did not decide it; cert-machine records this as refused, which is no evidence against the claim.",
+       "scope": "a finite component",
+       "detail": "a finite component: stage (I) of the certificate — the two final spectral tests (.2936535023 < lambda(.2936533) < .2936535043, .2936533037 < lambda(.2936535) < .2936533057, hence lambda(a) - a changes sign on (.2936533, .2936535)) by own exact integer certificates of the profile and of the Riccati shooting, the numeric steps of the three error lemmas, and the exact exponent arithmetic from the bracket to the printed gamma and theta bounds. NOT stage (II) (the six interval routines: the [0, .410] -> [.285, .303] narrowing and the contraction that make the root unique and equal to the selected coefficient), NOT the theory; hence not the headline",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -14570,6 +15244,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/227.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-426",
+       "manuscript": "Cutoff-throughout-the-high-temperature-Sherrington-Kirkpatrick-phase-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: Lemma rcut:lem:scalar-data and Table rcut:tab:scalar-intervals of the appendix route (the independent beta < 1/2 proof) - the 205 quadrature terms, every finite enclosure, the whole error budget and every interval bound recomputed by the appendix's directed integer recipe; the trapezoid lemma, strip holomorphy and beta-monotonicity are read, not run, and the cutoff headline (all beta < 1) is proved elsewhere in the paper by a different argument",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -14744,6 +15435,33 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/229.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-433",
+       "manuscript": "The-Reconstruction-Threshold-for-the-Ferromagnetic-Four-State-Potts-Model-October-5-2026",
+       "verdict": "refused",
+       "code": "REFUSED",
+       "text": "The exact code did not decide it; cert-machine records this as refused, which is no evidence against the claim.",
+       "scope": "a finite component",
+       "detail": "decided in part (pre-registration amendment 5): the product inequality (b) is decided only on C x S, S x C and C' x C' (about 0.4% of S x S by volume; the rest projected above 20 CPU-hours at ~5 s per cell); the scalar certificate and inequality (a) on all of S x S are decided",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-435",
+       "manuscript": "The-exact-reconstruction-threshold-for-the-three-state-symmetric-channel-September-25-2026",
+       "verdict": "refused",
+       "code": "REFUSED",
+       "text": "The exact code did not decide it; cert-machine records this as refused, which is no evidence against the claim.",
+       "scope": "a finite component",
+       "detail": "decided in part (pre-registration amendment 5): the interval certificate is decided only for q <= 4/5; q > 4/5, which holds the near-uniform corner where P ~ 2e-5, is not (extending band 2 to q <= 9/10 alone took 84,610 boxes and 1,916 s); the pair certificate (all 14 polynomials) and the grid certificate (all 28 stopping iterations) are decided whole",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -15485,6 +16203,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/238.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-467",
+       "manuscript": "Routing-densities-and-representation-contraction-for-Thorp-sweeps-September-26-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the five rational inequalities of Section 4 (H(1/8), H(13/50), H(1) and the two entropy brackets at 7/25 and 1) with every supporting finite fact the text states (closed form of h_j from its definition, h_j <= sqrt(2/M), increasing ratios, the 169/70 tail cap, slopes 7/3 and 3/2, the 25/24 slope bound) — not the probabilistic/asymptotic arguments, and not the headline, which rests on the factorial proof of Section 3; this section is the paper's independent second route",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -17449,6 +18184,33 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/266.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-532",
+       "manuscript": "The-maximum-number-of-mutually-unbiased-bases-in-dimension-six-September-24-2026",
+       "verdict": "needs-data",
+       "code": "NEEDS DATA",
+       "text": "Cannot be decided from the release: the specific object the argument relies on is not published.",
+       "scope": null,
+       "detail": "Algorithm and error analysis in build/sections/{seed,completion,phase-cover,refinement,exclusion,rounding,execution}.tex (5,886 tex lines). The code and data are NOT PUBLISHED in the clone: build/sections/execution.tex:16-20 names verification/code/ (seed.cpp, covout.cpp, ub.cpp, patchx.cpp, atlas.cpp, stageB.cpp, stageC.cpp, extraction.json) and execution.tex:380-387 an execution archive (verification/computation/README.md, full-run-01/...); neither exists anywhere in the clone at fd4aeeb2.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-533",
+       "manuscript": "Exact-Fourier-certificates-for-complex-Hadamard-matrices-of-order-six-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the exact finite core of both theorems — the single-matrix certificate (Prop. pair-certificate, both q), the finite arithmetic of the cubic-pair obstruction (Prop. cubic-exclusion), and the mixed-moment certificate (Prop. mixed-certificate: Z_lambda positive definite and a strictly negative exact bound). Theory (the lemmas behind the identities, the cubic classification, the 2-design identity, Weiner completion) is not decided.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -17590,6 +18352,33 @@
   "statements": [],
   "lean_doc": null,
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-539",
+       "manuscript": "The-periodic-spin-one-Haldane-gap-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the finite inputs of the two initializations — the trial MPS contractions at N = 72, 120 (exact U_N, V_N), the thermal recurrences (all nine t_{n,g} at b = 21/2 and W_{n,g} at b = 49/4 for n <= 12 recomputed exactly, all 27 rational enclosures), and every scalar comparison of prop:seed60, prop:seed2304 and the bootstrap parameters. NOT the gap theorem: the transfer operator, sector decomposition, purity bootstrap, filter/capped-mass lemmas, Fox-Glynn and Horner error arguments and the variational principle are analytic and outside this check",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-540",
+       "manuscript": "A-boundary-field-gap-for-the-spin-one-Heisenberg-chain-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the fifteen thermal integers k_{n,g} recomputed by the printed recurrence and every enclosure built on them (Y_6 < .027, c_0 P_*(lambda_0)^2 < .003745), the four trial-vector certificates (m = 34, 78, 142, 240) recomputed exactly, and every printed scalar comparison of the initialization, periodic extraction and conclusion. NOT the gap theorem: the boundary transfer identity, the averaging identity, the boundary recurrence lemmas, the purity lemma and the variational principle are analytic; the periodic inputs are the companion's (F-539), used here as printed",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "type": [
     {
      "value": "proof",
@@ -17658,6 +18447,33 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/269.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-541",
+       "manuscript": "Uniform-Stability-of-the-Spherical-Laughlin-Gap-October-5-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: this paper's restated seven-row certificate (Appendix A) — 13 three-body margins > 0 with the printed floors, M >= 0 exactly for D = 1..23 with the printed sign table, P^2 eta, 61/4096, 1222 and the final margin 4616733319001/10^14 > 1/25 used for 0 < c_0 < 1/25. NOT the stability theorem: its constants lambda_*, Delta_*, N_* are existential and every analytic step is outside this check.",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-542",
+       "manuscript": "A-Fock-space-inequality-and-the-Laughlin-spectral-gap-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the seven published rows give the 13 three-body margins of eq:3certificate (all > 0, floors as printed) and the 23 four-body certificates of eq:4certificate (M >= 0 exactly, sign table as printed), each re-derived from the definitions and from the paper's rational formulas; plus P^2 eta, 61/4096, 1222 and gamma_* = 4616733319001/10^14 > 1/25. NOT the analytic reduction from these certificates to H_Q^2 >= gamma H_Q or to the 1/25 gap (lemmas, limits, transfer, tail, existential Q_gamma and N_0).",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -17861,6 +18677,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/272.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-549",
+       "manuscript": "Entanglement-with-zero-distillable-secret-key-in-local-dimension-ten-September-27-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the integer pencil and L (PPT), the twenty singular directions with every modular datum the paper prints, Phi_1 and Phi_2 PPT, Z PSD/PPT and nonzero with all twenty xhat x xhat in ker Z, rho = Z/tr Z in the class C, and Theta on M_21 CP, PPT, trace preserving with the corner c1 c2 Z of J(Theta^2). NOT the Galois/Dedekind step to \"every ten span\" (its finite inputs only), and NOT the secret-key bound K_D(rho) = 0 (analytic).",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -18512,6 +19345,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/281.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-561",
+       "manuscript": "Full-support-of-the-zero-temperature-Sherrington-Kirkpatrick-order-parameter-September-27-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the exact rational certificate of Lemma cert:identity-lemma (the identity, every printed constant and the positivity of all 22 remainder coefficients) and the pointwise algebra of Lemma shape:ibp; not the sign lemmas, the integration by parts, nor the curvature and gap arguments that turn the inequality into full support",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -20194,6 +21044,23 @@
   "statements": [],
   "lean_doc": null,
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-605",
+       "manuscript": "The-Kervaire-Invariant-Problem-at-the-Prime-Three-September-24-2026",
+       "verdict": "refused",
+       "code": "REFUSED",
+       "text": "The exact code did not decide it; cert-machine records this as refused, which is no evidence against the claim.",
+       "scope": "a finite component",
+       "detail": "a finite component: the structure constants, the low-degree Ext groups D_{1,27} = <v^26 a, y, t_7'> and D_{6,10} = <v b^3> by an independent ordinary-cobar computation (matching the paper's printed checkpoints), the named cocycles and Bocksteins, the resolution's cochain dimensions and every rational inequality of Section finite; the weight-60/92 tables that carry the stem-322 argument are REFUSED, so the row is REFUSED",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "type": [
     {
      "value": "proof",
@@ -22259,6 +23126,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/347.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-664",
+       "manuscript": "A-degenerate-counterexample-to-the-critical-number-Arnold-bound-September-23-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: f(x,y) = e.x + (x-p).y on S^2 x S^2 has exactly three critical points, q_0 = (p,-e) degenerate (Hessian rank 2); NOT the passage to Hamiltonian fixed points on Q^3 nor Crit(Q^3) = 4",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -22334,6 +23218,33 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/348.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-665",
+       "manuscript": "Zero-Plane-Rigidity-for-Einstein-Four-Manifolds-October-4-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: every exact polynomial certificate the paper prints -- the appendix lemmas scalar (8 interval boxes), matrix-and-boundary (12 triangle rows) and potential F (20 interval boxes), with the polynomials re-derived from Section 6 and the coverings -- plus Section 4's sine minorant, upper-deficit integrals and moment-obstruction coefficient table; not the classification theorem",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      },
+      {
+       "id": "F-667",
+       "manuscript": "Positively-curved-Einstein-four-manifolds-September-23-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: every exact polynomial certificate the paper prints -- the appendix lemmas scalar (8 interval boxes), matrix-and-boundary (12 triangle rows) and potential F (20 interval boxes), with the polynomials re-derived from Section 6 and the coverings -- plus Section 4's sine minorant, upper-deficit integrals and moment-obstruction coefficient table and the conditional lower-volume rows; not the classification theorem of F-667",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -22564,6 +23475,23 @@
   "statements": [],
   "lean_doc": null,
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-675",
+       "manuscript": "A-finite-time-singularity-of-Calabi-flow-on-projective-space-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "the whole of Proposition cert",
+       "detail": "the whole of Proposition cert:shoot (existence on [0,56], 1 + p > 0, |q| <= .25R, ||(Re xi, Im xi) - z*|| <= .13R for every z* in the square), by an independent validated integration; not the tail lemma, the matching or the theorem",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "type": [
     {
      "value": "counterexample",
@@ -22703,6 +23631,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/354.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-678",
+       "manuscript": "The-Isoperimetric-Conjecture-for-the-Cubic-Flat-Three-Torus-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: Proposition num:scalar-positive (B > 0 on [.64,1.02] u [1.62,2.25], B + S > 0 on [1.02,1.62]), decided independently, and the paper's knot and gap tables; NOT the geometric reduction to these inequalities",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -23166,6 +24111,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/361.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-688",
+       "manuscript": "A-counterexample-to-integer-degree-harmonic-dimension-comparison-September-25-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the supplementary exact spectral selection at n = 16, k = 50000 (finite-selection.tex) — every parameter inequality, the eigenvalue data, the multiplicities, every square-root bound and the three printed integers; not the analytic construction of the metric nor the lemmas the eigenvalues and multiplicities come from",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -23544,6 +24506,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/367.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-699",
+       "manuscript": "The-critical-dimension-for-one-phase-Bernoulli-minimizers-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: the exact arithmetic of Proposition cert:universal (the universal algebraic certificate behind the flatness half, d <= 6), from Tables I and II: the interior expansion with its 1714 keys and ten printed D_0 sums, D_0 <= Dbar and the slacks giving eps_*, and the boundary expansion with its eleven coefficients giving delta_*; plus the PSD of the four projection operators. Not the graph bounds L_t (Lemmas cert:tensor-bounds, cert:graph-bound), not the geometric reduction, cutoffs or regularity theory, and not the dimension-7 example, which is cited (De Silva-Jerison 2009)",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {
@@ -23811,6 +24790,23 @@
    "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/371.md"
   },
   "sourced": {
+   "finite_checks": [
+    {
+     "value": [
+      {
+       "id": "F-704",
+       "manuscript": "Stable-Self-Similar-Blowup-for-a-Supercritical-Defocusing-Schrodinger-Equation-on-the-Torus-September-24-2026",
+       "verdict": "certified",
+       "code": "CERTIFIED",
+       "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
+       "scope": "a finite component",
+       "detail": "a finite component: every finite comparison of Appendix cert:arithmetic (integer box, boundary-form positivity, winding sign table and margins, high-angular polynomial, profile enclosures and degree comparisons, exterior positivity), and the low-angular counts 2,1,0,0 for P_l by Routh-Hurwitz; NOT Proposition free:main itself nor the blowup theorem, which rest on the analytic lemmas of Section sec:free",
+       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
+      }
+     ],
+     "source": "cert-machine"
+    }
+   ],
    "scope_reading": [
     {
      "value": {

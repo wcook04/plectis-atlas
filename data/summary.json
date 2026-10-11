@@ -635,7 +635,8 @@
    "method": "Every Comparator challenge re-run on Linux with nanoda switched on, decided by a preregistered rule; every family's challenge statements read against OpenAI's headline, clause by clause. Decider: Comparator (leanprover/comparator d03acab1 = tag v4.34.0, built with the release's toolchain v4.34.1), lean4export 076e8e57, landrun 811cfff5, nanoda_lib 3a240721 — on GitHub's Linux runners (.github/workflows/openai-math-kernel.yml), one j",
    "fields": {
     "replay": "Per challenge: the audit's Comparator re-run with both kernels, and for files with definition holes whether the displayed statement is proved.",
-    "scope_reading": "Per family: whether the challenge statements state OpenAI's headline, with the gap and whether OpenAI's Lean note declares it."
+    "scope_reading": "Per family: whether the challenge statements state OpenAI's headline, with the gap and whether OpenAI's Lean note declares it.",
+    "finite_checks": "Per family: finite parts of its papers decided by exact code written independently from each paper (lane F), with the verdict and what was decided."
    },
    "tier_names": null,
    "adopted": [
@@ -653,6 +654,11 @@
      "kind": "idea",
      "what": "Telling apart a gap OpenAI's note declares from one it does not",
      "where": "family pages"
+    },
+    {
+     "kind": "data",
+     "what": "Its exact decisions of the finite parts of 66 papers' arguments, including those whose objects were never published",
+     "where": "family pages, under finite parts checked by exact computation"
     }
    ],
    "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
