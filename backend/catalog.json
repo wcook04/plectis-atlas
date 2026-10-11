@@ -1,0 +1,123 @@
+{
+  "kind": "catalog",
+  "releases": [
+    {
+      "contributions": "navier-stokes/contributions.json",
+      "counts": {
+        "rows": {
+          "receipt": "sha256:c35fb500fd1c3549f6092ff2f8087bfd81918c95538a7eccfad44753afdff733",
+          "rule": "all emitted rows; a row is not a theorem or a problem",
+          "unit": "statement rows",
+          "universe": 4,
+          "value": 4
+        }
+      },
+      "id": "navier-stokes",
+      "name": "Navier–Stokes and Euler",
+      "pin": "f9e8bc5b38b6e212696e8a30e3e91517af887bbd",
+      "repository": "https://github.com/openai/NavierStokesAndEuler",
+      "summary": "navier-stokes/summary.json",
+      "web": {
+        "generation_id": "sha256:b0f14a8cc66f60baddc01d5538d82a0d0298a94c8c713810036b19edb762b649",
+        "index": "navier-stokes/web/index.json",
+        "navigation": "navier-stokes/web/navigation.json",
+        "overview": "navier-stokes/web/overview.json",
+        "schema": "statement-map-web/1"
+      }
+    },
+    {
+      "contributions": "fermat/contributions.json",
+      "counts": {
+        "rows": {
+          "receipt": "sha256:e1e57a039cbd515e7f4115e9a4a9717e9830571eb585bd23b5c6c7c690d1fb5b",
+          "rule": "all emitted rows; a row is not a theorem or a problem",
+          "unit": "statement rows",
+          "universe": 2,
+          "value": 2
+        }
+      },
+      "id": "fermat",
+      "name": "Fermat's Last Theorem",
+      "pin": "6e837e75355538c7f80bab5b956861e86c4eacc2",
+      "repository": "https://github.com/anthropics/fermats-last-theorem",
+      "summary": "fermat/summary.json",
+      "web": {
+        "generation_id": "sha256:6520b015e67b988416d6287f5932c10735b38e58f6f1ce48d1530a5a40906347",
+        "index": "fermat/web/index.json",
+        "navigation": "fermat/web/navigation.json",
+        "overview": "fermat/web/overview.json",
+        "schema": "statement-map-web/1"
+      }
+    },
+    {
+      "contributions": "openai-math/contributions.json",
+      "counts": {
+        "challenges": {
+          "receipt": "sha256:351d2645d945c030c16fbea3dc6eafc345e51d336aeac170dffdcfb92af3379f",
+          "rule": "all imported challenges",
+          "unit": "challenge files",
+          "universe": 416,
+          "value": 416
+        },
+        "families": {
+          "receipt": "sha256:8ed74e09f236e7161f20afdf552c855ae8416da936a382fa926a02b8d2abb846",
+          "rule": "all imported families",
+          "unit": "families",
+          "universe": 372,
+          "value": 372
+        },
+        "manuscripts": {
+          "receipt": "sha256:a0adcf572f94a3bf44be90d5c3a69f2a6a7f0b93a65a9613995b22bbdb72374f",
+          "rule": "all imported manuscripts",
+          "unit": "manuscripts",
+          "universe": 749,
+          "value": 749
+        },
+        "rows": {
+          "receipt": "sha256:bdc808375072fd6e35607746d2fae686cdf2da119867d6c7e274b5358b9c43e8",
+          "rule": "all emitted rows; a row is not a theorem or a problem",
+          "unit": "statement rows",
+          "universe": 8395,
+          "value": 8395
+        }
+      },
+      "id": "openai-math",
+      "name": "OpenAI mathematics collection",
+      "pin": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+      "repository": "https://github.com/openai/math",
+      "summary": "openai-math/summary.json",
+      "web": {
+        "generation_id": "sha256:e3ab22eb99c426574c4ae906f6142a2ef56f7e4aeac9ff80a79003d3489ef71d",
+        "index": "openai-math/web/index.json",
+        "navigation": "openai-math/web/navigation.json",
+        "overview": "openai-math/web/overview.json",
+        "schema": "statement-map-web/1"
+      }
+    },
+    {
+      "contributions": "plectis-erdos/contributions.json",
+      "counts": {
+        "rows": {
+          "receipt": "sha256:8c956cc947a9f4bec1e91211b0787c7466b560e24637b70271d08344dd20c7d6",
+          "rule": "all emitted rows; a row is not a theorem or a problem",
+          "unit": "statement rows",
+          "universe": 689,
+          "value": 689
+        }
+      },
+      "id": "plectis-erdos",
+      "name": "Plectis Erdős corpus",
+      "pin": "0a66e10d35dba45ca1efcdab1d10d2f6011cc595",
+      "repository": "https://github.com/wcook04/plectis-erdos",
+      "summary": "plectis-erdos/summary.json",
+      "web": {
+        "generation_id": "sha256:4f6b261ddb62316231dbed2b3582e403f561fc0a5a42306966f255433fea929c",
+        "index": "plectis-erdos/web/index.json",
+        "navigation": "plectis-erdos/web/navigation.json",
+        "overview": "plectis-erdos/web/overview.json",
+        "schema": "statement-map-web/1"
+      }
+    }
+  ],
+  "schema": "statement-map/1"
+}

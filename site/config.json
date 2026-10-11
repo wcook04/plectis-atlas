@@ -15,21 +15,25 @@
  },
  "issue_prefill": {
   "claim-an-explanation": {
-   "family": "{family}"
+   "family": "{family}",
+   "target": "{target}"
   },
   "check-a-statement": {
    "statement": "{statement}",
-   "upstream_commit": "{upstream_commit}"
+   "upstream_commit": "{upstream_commit}",
+   "target": "{target}"
   },
   "report-a-problem": {
    "page": "{page}"
   },
   "suggest-a-credit": {
    "family": "{family}",
-   "upstream_commit": "{upstream_commit}"
+   "upstream_commit": "{upstream_commit}",
+   "target": "{target}"
   },
   "share-a-replay": {
-   "statement": "{statement}"
+   "statement": "{statement}",
+   "target": "{target}"
   }
  },
  "upstream_checkout": "../openai-math-upstream",

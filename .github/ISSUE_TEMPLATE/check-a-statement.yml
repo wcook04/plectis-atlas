@@ -19,6 +19,11 @@ body:
     validations:
       required: true
   - type: input
+    id: target
+    attributes:
+      label: Exact version
+      description: Filled in by the link you followed. It names the family or statement and a fingerprint of its current text, so your contribution stays tied to what you read. Leave it as it is.
+  - type: input
     id: upstream_commit
     attributes:
       label: Source commit
