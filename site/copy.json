@@ -92,6 +92,7 @@
   "tex_failed": "Shown as TeX source: the renderer could not typeset it."
  },
  "home": {
+  "tiles_moved": "The tile map has been retired. Open the map of the release.",
   "title": "Every family as a tile",
   "lede": "Every family of the release as one tile, grouped by discipline and coloured by the evidence you choose: {manuscripts} papers in {families} families and {disciplines} disciplines, with {lean} Lean statements in {families_with_lean} families.",
   "cta_browse": "Browse the catalogue",
@@ -627,7 +628,7 @@
   "comparator_box_holes": "This configuration lists {n} [[holes|definition holes]]: {names}. Comparator compares these by name and type only; their bodies come from the solution.",
   "comparator_box_noholes": "This configuration lists no definition holes, so every definition the statement uses is compared as it is written in this file.",
   "comparator_box_axioms": "Allowed axioms:",
-  "comparator_box_not": "An accepted run leaves three questions to a reader: whether this file says what the paper says, whether the paper's other claims are correct, and whether the result is new. Those need a signed statement check, the paper itself and the literature."
+  "comparator_box_not": "An accepted run leaves open whether this file says what the paper says, whether the paper’s other claims are correct, and whether the result is new. Those need a signed statement check, the paper itself and the literature."
  },
  "paper": {
   "in_result": "Part of result {id}: {title}.",

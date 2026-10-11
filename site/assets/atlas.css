@@ -216,7 +216,7 @@ p { margin: 0 0 0.8em; text-wrap: pretty; }
 
 /* ---- Search dialog ---------------------------------------------------- */
 /* Statement Map's exact-word search (atlas.js). Results grouped by kind, each with its
-   count; families carry their mark. */
+   count; each family says what it holds in words. */
 .search { width: min(720px, calc(100% - 24px)); max-height: min(78vh, 760px); margin: 9vh auto auto; padding: 0; border: 1px solid var(--rule-strong); border-radius: var(--r-lg); background: var(--surface); color: var(--ink); box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22); overflow: hidden; }
 .search[open] { display: flex; flex-direction: column; }
 .search::backdrop { background: rgba(20, 14, 28, 0.45); }
@@ -245,7 +245,6 @@ p { margin: 0 0 0.8em; text-wrap: pretty; }
 .sr { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 40px; padding: 6px 10px; border: 0; border-radius: var(--r-sm); background: none; color: var(--ink); text-align: left; cursor: pointer; font-size: var(--fs-body); }
 .sr:hover, .sr[aria-selected="true"] { background: var(--sunk); text-decoration: none; color: var(--ink); }
 .sr[aria-selected="true"] { box-shadow: inset 2px 0 0 var(--steel-text); }
-.sr__mark { flex: none; width: 32px; display: grid; place-items: center; }
 .sr__t { display: grid; min-width: 0; line-height: 1.35; }
 .sr__name { font-family: var(--serif); font-size: 1rem; overflow-wrap: anywhere; }
 .sr__code { font-family: var(--mono); font-size: 0.86rem; color: var(--steel-text); }

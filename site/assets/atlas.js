@@ -598,15 +598,9 @@
     a.tabIndex = -1;
     if (r.kind === 'family') {
       var fam = lab.families[r.id] || {};
-      if (fam.m) {
-        var holder = el('span', 'sr__mark');
-        holder.innerHTML = '<svg class="sp sp--' + (fam.k || '') + '" viewBox="0 0 44 28" width="32" height="20.4" aria-hidden="true" focusable="false">' + fam.m + '</svg>';
-        a.appendChild(holder);
-      }
       var t = el('span', 'sr__t');
       t.appendChild(el('span', 'sr__name md-math', r.name));
-      t.appendChild(el('span', 'sr__k', fmt(T('family'), { n: r.id.slice(2) }) + (fam.d ? ', ' + fam.d : '')));
-      if (fam.a) t.appendChild(el('span', 'vh', fam.a));
+      t.appendChild(el('span', 'sr__k', fmt(T('family'), { n: r.id.slice(2) }) + (fam.d ? ', ' + fam.d : '') + (fam.e ? '. ' + fam.e.charAt(0).toUpperCase() + fam.e.slice(1) + '.' : '')));
       a.appendChild(t);
     } else {
       var tt = el('span', 'sr__t');
