@@ -1320,6 +1320,7 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 <link rel="preload" href="{root}assets/fonts/plectis-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{root}{KATEX_DIR}/katex.min.css">
 <link rel="stylesheet" href="{root}assets/atlas.css">
+<link rel="stylesheet" href="{root}assets/evidence.css">
 <script>(function(){{try{{var t=localStorage.getItem('atlas-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}}catch(e){{}}}})();</script>
 <script defer src="{root}{KATEX_DIR}/katex.min.js"></script>
 <script defer src="{root}{KATEX_DIR}/contrib/auto-render.min.js"></script>

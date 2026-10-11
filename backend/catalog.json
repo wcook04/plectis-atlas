@@ -18,11 +18,12 @@
       "repository": "https://github.com/openai/NavierStokesAndEuler",
       "summary": "navier-stokes/summary.json",
       "web": {
-        "generation_id": "sha256:b0f14a8cc66f60baddc01d5538d82a0d0298a94c8c713810036b19edb762b649",
+        "generation_id": "sha256:284b3dbad7cf0c37f5a2cf770030b267ac3ab58aa6ee3a47dab30bcac0620ebd",
         "index": "navier-stokes/web/index.json",
+        "manifest": "navier-stokes/web/manifest.json",
         "navigation": "navier-stokes/web/navigation.json",
         "overview": "navier-stokes/web/overview.json",
-        "schema": "statement-map-web/1"
+        "schema": "statement-map-web/2"
       }
     },
     {
@@ -42,11 +43,12 @@
       "repository": "https://github.com/anthropics/fermats-last-theorem",
       "summary": "fermat/summary.json",
       "web": {
-        "generation_id": "sha256:6520b015e67b988416d6287f5932c10735b38e58f6f1ce48d1530a5a40906347",
+        "generation_id": "sha256:a24a7e303de6d1f17c27d3569412103a149bac110ba185ac12dc8f4fb1687a50",
         "index": "fermat/web/index.json",
+        "manifest": "fermat/web/manifest.json",
         "navigation": "fermat/web/navigation.json",
         "overview": "fermat/web/overview.json",
-        "schema": "statement-map-web/1"
+        "schema": "statement-map-web/2"
       }
     },
     {
@@ -87,11 +89,12 @@
       "repository": "https://github.com/openai/math",
       "summary": "openai-math/summary.json",
       "web": {
-        "generation_id": "sha256:e3ab22eb99c426574c4ae906f6142a2ef56f7e4aeac9ff80a79003d3489ef71d",
+        "generation_id": "sha256:c2164a5394dc5b957f287938162ede438d28201aa1ad4dfef7782531c4ad7573",
         "index": "openai-math/web/index.json",
+        "manifest": "openai-math/web/manifest.json",
         "navigation": "openai-math/web/navigation.json",
         "overview": "openai-math/web/overview.json",
-        "schema": "statement-map-web/1"
+        "schema": "statement-map-web/2"
       }
     },
     {
@@ -111,11 +114,12 @@
       "repository": "https://github.com/wcook04/plectis-erdos",
       "summary": "plectis-erdos/summary.json",
       "web": {
-        "generation_id": "sha256:4f6b261ddb62316231dbed2b3582e403f561fc0a5a42306966f255433fea929c",
+        "generation_id": "sha256:1f952eedd0270ce3645cca1ca3ad6acb6b751580782e602762985760b7808e43",
         "index": "plectis-erdos/web/index.json",
+        "manifest": "plectis-erdos/web/manifest.json",
         "navigation": "plectis-erdos/web/navigation.json",
         "overview": "plectis-erdos/web/overview.json",
-        "schema": "statement-map-web/1"
+        "schema": "statement-map-web/2"
       }
     }
   ],

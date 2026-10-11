@@ -1,0 +1,89 @@
+{
+ "_note": "The words for every evidence state, one place for every page and the map. scripts/evidence.py maps Statement Map's recorded states to these keys; scripts/glyphs.py draws the same states. Statement Map decides each state; these words only name it. Sentence case, plain, no em dashes. A state that is unknown is said to be unknown.",
+ "readers": {
+  "order": ["mathvet", "cert-machine"],
+  "side": {"0": "left", "1": "right"}
+ },
+ "tone": {
+  "full": "finds the whole headline stated",
+  "part": "finds part of it stated, or a narrower or weaker statement",
+  "other": "finds a supporting or a different result stated",
+  "none": "has not read this family"
+ },
+ "tone_short": {
+  "full": "all of it",
+  "part": "part of it",
+  "other": "a supporting or different result",
+  "none": "not read"
+ },
+ "tone_mark": {
+  "full": "filled",
+  "part": "pale",
+  "other": "open",
+  "none": "dotted"
+ },
+ "agreement": {
+  "agree": "The two outside readers agree.",
+  "disagree": "The two outside readers disagree.",
+  "unknown": "No outside reader has compared a Lean statement with this family's headline."
+ },
+ "pairing": {
+  "candidate-pairing": "Candidate pairing: found by the words the two statements share. Nobody has reviewed whether they state the same thing.",
+  "producer-cited-association": "The Lean source cites this theorem by its label. Nobody has reviewed whether the two state the same thing.",
+  "producer-declared-binding": "The release's manifest binds this declaration to the theorem. Nobody has reviewed whether the two state the same thing.",
+  "unavailable": "No paper theorem is paired with this Lean statement."
+ },
+ "pairing_short": {
+  "candidate-pairing": "candidate pairing",
+  "producer-cited-association": "cited in the Lean source",
+  "producer-declared-binding": "declared by the release",
+  "unavailable": "no pairing"
+ },
+ "claim": {
+  "candidate": "Candidate for the theorem the catalogue describes: of the papers' main statements, it shares the most words with OpenAI's description. Nobody has reviewed the choice.",
+  "unresolved": "No single theorem in the papers has been identified as the one the catalogue describes. These share the most words with it."
+ },
+ "scope_context": {
+  "family-readings": "The outside readers judged the family's Lean statements against the family's headline, as a whole.",
+  "supporting-or-different": "The outside readers find that the release's Lean states a supporting or different result, so the theorem it is paired with is shown under its own heading."
+ },
+ "reruns": {
+  "none": "No outside group reports re-running this Lean statement at the release's pin.",
+  "one": "Re-run and accepted by one outside group at the release's pin: {names}.",
+  "many": "Re-run and accepted by {n} outside groups at the release's pin: {names}."
+ },
+ "other_checks": "Checked by another method: {kinds}.",
+ "check_kind": {
+  "hol_checks": "HOL Light cards",
+  "finite_checks": "exact computation"
+ },
+ "paper_status": {
+  "current": "current",
+  "previous-edition": "previous edition",
+  "withdrawn": "withdrawn"
+ },
+ "legend": {
+  "title": "How to read a family",
+  "papers": "Each short line is one of the family's papers. At most four are drawn.",
+  "diamond": "A diamond: the release has a Lean statement for the family. A second outline behind it: more than one.",
+  "halves": "Each half of the diamond is one outside reader's finding on whether that Lean states the family's headline result. Left half: {left}. Right half: {right}.",
+  "full": "Filled: all of it.",
+  "part": "Pale: part of it, or a narrower or weaker statement.",
+  "other": "Open: a supporting or a different result.",
+  "none": "Dotted: not read.",
+  "thread_candidate": "Dashed line: the theorem and the Lean statement were paired by shared words, and nobody has reviewed the pairing.",
+  "thread_cited": "Solid line: the Lean source cites the theorem, or the release declares the link.",
+  "ring": "Brick ring around the papers: an outside check of the paper's result by another method, HOL Light or exact computation.",
+  "no_lean": "No diamond: the release has no Lean statement for this family. The papers can still be read and checked."
+ },
+ "sentence": {
+  "papers_one": "one paper",
+  "papers_many": "{n} papers",
+  "lean_none": "no Lean statement in the release",
+  "lean_one": "one Lean statement",
+  "lean_many": "{n} Lean statements",
+  "reader": "{name} {tone}",
+  "agree_suffix": "",
+  "ring": "checked by another method"
+ }
+}
