@@ -17,7 +17,7 @@
   "snapshot": "2026-10-10",
   "snapshot_commit": "14c7f918cd336d0da03a02aae5a0eed4a429d4db",
   "upstream_commit": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
-  "method": "An independent, pre-referee review of each family's challenge statements against its headline claim under a published rubric (PROTOCOL.md), with its own Comparator runs per challenge. MathVet publishes the error rate of its own verdicts.",
+  "method": "An independent, model-assisted, pre-referee reading of each family's challenge statements against its headline claim under a published rubric (PROTOCOL.md), with its own Comparator runs per challenge. Its protocol describes a planned error-rate study; this import does not establish that the study has been completed.",
   "counts": {
    "families": {
     "full": 149,
@@ -44,7 +44,7 @@
    },
    {
     "kind": "idea",
-    "what": "A published rubric with a stated error rate for statement-fidelity verdicts",
+    "what": "A published rubric and a protocol for measuring the error rate of statement-fidelity verdicts",
     "where": "the about and numbers pages"
    }
   ]

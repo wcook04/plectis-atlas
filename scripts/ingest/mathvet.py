@@ -81,9 +81,9 @@ def main() -> int:
             "snapshot": date,
             "snapshot_commit": commit,
             "upstream_commit": pin,
-            "method": ("An independent, pre-referee review of each family's challenge statements against its headline "
+            "method": ("An independent, model-assisted, pre-referee reading of each family's challenge statements against its headline "
                        "claim under a published rubric (PROTOCOL.md), with its own Comparator runs per challenge. "
-                       "MathVet publishes the error rate of its own verdicts."),
+                       "Its protocol describes a planned error-rate study; this import does not establish that the study has been completed."),
             "counts": {"families": {k: sum(1 for r in fam_rows if r["verdict"] == k) for k in VERDICTS},
                        "challenges_checked": len(statements)},
             "fields": {
@@ -93,7 +93,7 @@ def main() -> int:
             "adopted": [
                 {"kind": "data", "what": "Its verdict and review note for each of the 242 families with Lean", "where": "the readings of the scope on family pages"},
                 {"kind": "data", "what": "Its Comparator check for each challenge it ran", "where": "the Independent replay line on statement pages"},
-                {"kind": "idea", "what": "A published rubric with a stated error rate for statement-fidelity verdicts", "where": "the about and numbers pages"},
+                {"kind": "idea", "what": "A published rubric and a protocol for measuring the error rate of statement-fidelity verdicts", "where": "the about and numbers pages"},
             ],
         },
         "statements": statements,
