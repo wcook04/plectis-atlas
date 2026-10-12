@@ -28,6 +28,7 @@ from pathlib import Path
 from urllib.parse import quote, urlencode
 
 import evidence
+import attribution
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -1348,6 +1349,7 @@ def footer(rel: str) -> str:
    <p>{esc(C('site.licence', upstream='openai/math', commit_short=COMMIT_SHORT))}</p>
   </div>
   <ul class="foot__links">
+   <li><a href="{root}sources.html#software">{esc(C("site.notices_link"))}</a></li>
    <li><a href="{root}about.html">{esc(C('nav.about'))}</a></li>
    <li><a href="{root}numbers.html">{esc(C('nav.numbers'))}</a></li>
    <li><a href="{root}citations-within.html">{esc(C('citations_within.title'))}</a></li>
@@ -3347,15 +3349,34 @@ def build_sources():
  <p class="muted small">{esc(CFG['author'])}</p>
  <p>{esc(C('sources.atlas_uses'))}</p>
 </article>"""
+    components = []
+    for item in attribution.inventory()["components"]:
+        components.append(f"""<article class="ceff" id="component-{esc(item['id'])}">
+ <h3 class="h3"><a class="ext" href="{esc(item['url'])}" rel="noopener">{esc(item['name'])}</a> {esc(item['version'])}</h3>
+ <p class="muted small">{esc(item['credit'])} · {esc(item['licence'])}</p>
+ <p>{esc(item['use'])} {esc(item['changes'])}</p>
+ <p class="small"><a href="{esc(item['licence_file'])}">{esc(C('sources.licence_copy'))}</a> · <a class="ext" href="{esc(item['source'])}" rel="noopener">{esc(C('sources.component_source'))}</a></p>
+</article>""")
     ingested = []
     for src in s.get("sources", []):
+        # The curated source owner retains the import revision; the older summary
+        # projection records only the capture date.
+        source_meta = json.loads((ROOT / "curated" / "sources" / f"{src['id']}.json").read_text())["source"]
+        provenance = []
+        if source_meta.get("repository") and source_meta.get("snapshot_commit"):
+            pin = source_meta["snapshot_commit"]
+            pinned_url = source_meta["repository"].rstrip("/") + "/tree/" + pin
+            provenance.append(f'<a class="ext" href="{esc(pinned_url)}" rel="noopener">{esc(C("sources.pin_link"))} {esc(pin[:12])}</a>')
+        for licence_file in attribution.inventory()["source_licences"].get(src["id"], []):
+            provenance.append(f'<a href="{esc(licence_file)}">{esc(C("sources.licence_copy"))}</a>')
         fields = src.get("fields") or {}
         flist = "".join(f"<li><strong>{esc(k)}</strong>: {esc(v)}</li>" for k, v in fields.items())
         authors = ", ".join(a.get("name") or a.get("handle") or "" for a in (src.get("authors") or []))
         ingested.append(f"""<article class="ceff" id="src-{esc(src['id'])}">
  <h3 class="h3"><a class="ext" href="{esc(src.get('url') or '')}" rel="noopener">{esc(src.get('name') or src['id'])}</a></h3>
  <p class="muted small">{esc(authors)}, {esc(C('sources.snapshot', date=src.get('snapshot') or ''))}, {esc(C('sources.licence', licence=src.get('licence') or 'n/a'))}</p>
- <p>{esc(short(src.get('method') or '', 400))}</p>
+ {('<p class="small">' + ' · '.join(provenance) + '</p>') if provenance else ''}
+ <p>{esc(src.get('method') or '')}</p>
  <ul class="small">{flist}</ul>
  {adopted_list_html(src.get('adopted'))}
 </article>""")
@@ -3378,9 +3399,11 @@ def build_sources():
  <h1 class="phead__title">{esc(C('sources.title'))}</h1>
  <p class="lede">{esc(lede)}</p>
  <p>{esc(C('sources.credit'))}</p>
+ <p><a href="NOTICE">{esc(C('sources.notices_link'))}</a> · <a href="#software">{esc(C('sources.components_heading'))}</a> · <a href="CITATION.cff">{esc(C('sources.citation_link'))}</a></p>
  <p class="muted small">{esc(C('community.how'))} <a class="ext" href="{esc(issue_url('problem', C('community.add_title'), page=BASE_URL + rel))}" rel="noopener">{esc(C('community.add'))}</a></p>
 </header>
 <section class="band band--tight"><h2 class="h2">{esc(C('sources.base_heading'))}</h2><div class="ceffs">{up}{own}</div></section>
+<section class="band band--tight" id="software"><h2 class="h2">{esc(C("sources.components_heading"))}</h2><p class="intro">{esc(C("sources.components_intro"))}</p><div class="ceffs">{"".join(components)}</div></section>
 {('<section class="band band--tight"><h2 class="h2">' + esc(C('sources.ingested_heading')) + '</h2><p class="intro">' + esc(C('sources.ingested_intro')) + '</p><div class="ceffs">' + ''.join(ingested) + '</div></section>') if ingested else ''}
 {('<section class="band band--tight"><h2 class="h2">' + esc(C('sources.efforts_heading')) + '</h2><p class="intro">' + esc(C('sources.efforts_intro')) + '</p><div class="ceffs">' + ''.join(efforts) + '</div></section>') if efforts else ''}
 </div>"""
@@ -3467,7 +3490,7 @@ def build_about():
     r = RD()
     fill = dict(release_date=CFG["release_date"], families=NUM("families"), families_with_lean=NUM("families_with_lean"),
                 commit_short=COMMIT_SHORT, author=CFG["author"])
-    cite = C("about.cite_format", author=CFG["author"], name=C("site.name"), url=BASE_URL, commit=COMMIT)
+    cite = C("about.cite_format", author=CFG["author"], name=C("site.citation_title"), url=BASE_URL, commit=COMMIT)
     ur = SUMMARY.get("upstream_reported", {})
     disclosed = []
     for key in ("catalogue", "model", "compute", "problems_posed", "top_line_results_formalized", "human_edited"):
@@ -3510,8 +3533,8 @@ def build_about():
 {('<section class="band band--tight"><h2 class="h2">' + esc(C('about.interests_heading')) + '</h2><p>' + esc(C('about.interests')) + '</p></section>') if C('about.interests') else ''}
 <section class="band band--tight"><h2 class="h2">{esc(C('about.disclosed_heading'))}</h2><p>{esc(C('about.disclosed_intro'))}</p><ul>{disclosed_items}</ul></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.related_heading'))}</h2><p>{esc(C('about.related_intro'))}</p><ul>{related_items}</ul></section>
-<section class="band band--tight"><h2 class="h2">{esc(C('about.licence_heading'))}</h2><p>{esc(C('about.licence'))} <a class="ext" href="{CFG['upstream_repo']}/blob/{COMMIT}/LICENSE" rel="noopener">LICENSE</a></p></section>
-<section class="band band--tight"><h2 class="h2">{esc(C('about.cite_heading'))}</h2><p>{esc(C('about.cite'))}</p><div class="texsrc__box texsrc__box--open"><button class="copy" type="button" data-copy-next>{esc(C('words.copy'))}</button><pre><code>{esc(cite)}</code></pre></div></section>
+<section class="band band--tight"><h2 class="h2">{esc(C('about.licence_heading'))}</h2><p>{esc(C('about.licence'))} <a href="sources.html#software">{esc(C("about.licence_link"))}</a></p></section>
+<section class="band band--tight"><h2 class="h2">{esc(C('about.cite_heading'))}</h2><p>{esc(C('about.cite'))} <a href="CITATION.cff">CITATION.cff</a></p><div class="texsrc__box texsrc__box--open"><button class="copy" type="button" data-copy-next>{esc(C('words.copy'))}</button><pre><code>{esc(cite)}</code></pre></div></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.author_heading'))}</h2><p>{esc(C('about.author', **fill))} <a class="ext" href="{esc(CFG['author_url'])}" rel="noopener">{esc(C('about.author_link'))}</a></p></section>
 </div>"""
     write_page(rel, page(rel, C("about.title"), C("about.what", **fill), body, current="about"))
@@ -3643,7 +3666,11 @@ def social_card_html():
 
 
 def squarify(values, x, y, w, h):
-    """Squarified treemap (Bruls, Huizing, van Wijk). values sorted descending."""
+    """Squarified treemap; values sorted descending.
+
+    Bruls, Huizing and van Wijk (2000), doi:10.1007/978-3-7091-6783-0_4.
+    See docs/ATTRIBUTION.md for the method and scope of use.
+    """
     total = sum(values)
     if total <= 0:
         return [(x, y, 0, 0) for _ in values]
@@ -3756,6 +3783,7 @@ def main():
         shutil.rmtree(OUT)
     OUT.mkdir(parents=True)
     shutil.copytree(ASSETS, OUT / "assets")
+    attribution.write_notices(OUT)
     (OUT / ".nojekyll").write_text("")
     (OUT / "cards").mkdir(exist_ok=True)
 

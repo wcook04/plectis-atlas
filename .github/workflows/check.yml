@@ -56,5 +56,9 @@ jobs:
         run: python3 scripts/sync_skills.py --check
       - name: README numbers match the data
         run: python3 scripts/sync_readme.py --check
-      - name: Site builds
-        run: python3 scripts/build_site.py
+      - name: Attribution inventory and notice regressions
+        run: python3 scripts/test_attribution.py
+      - name: Site builds with licence notices
+        run: |
+          python3 scripts/build_site.py
+          python3 scripts/attribution.py --built site/_build

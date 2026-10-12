@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "If you use the atlas or its dataset, please cite it as below."
+message: "Cite the Atlas with its revision or access date. Also cite the original paper or outside report when relying on its result; see docs/ATTRIBUTION.md."
 title: "Plectis Atlas: OpenAI's mathematics release, read and checked"
 authors:
   - family-names: "Cook"
@@ -7,10 +7,94 @@ authors:
 repository-code: "https://github.com/wcook04/plectis-atlas"
 url: "https://wcook04.github.io/plectis-atlas/"
 license: Apache-2.0
-type: dataset
+type: software
 keywords:
   - mathematics
   - Lean
   - formal verification
   - exposition
   - AI-generated mathematics
+abstract: >-
+  An independent static reader for OpenAI's mathematics release, combining
+  source browsing with attributed outside assessments. The Apache-2.0 licence
+  here describes original Atlas code and documentation. Imported records,
+  fonts and other components retain the terms listed in NOTICE.
+references:
+  - type: software
+    title: "OpenAI mathematics collection"
+    authors:
+      - name: "OpenAI"
+    repository-code: "https://github.com/openai/math"
+    commit: "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb"
+    scope: "The pinned papers, catalogue, Lean challenges and scope notes read by the Atlas."
+  - type: software
+    title: "MathVet"
+    authors:
+      - name: "MathVet maintainers"
+    repository-code: "https://github.com/mathvet/mathvet"
+    commit: "14c7f918cd336d0da03a02aae5a0eed4a429d4db"
+    scope: "Imported statement readings and reported Comparator checks."
+  - type: software
+    title: "cert-machine"
+    authors:
+      - family-names: "Toledo"
+        given-names: "Carlos"
+    repository-code: "https://github.com/carlostoledo1891/cert-machine"
+    commit: "9814e4c06281e34a113ce853d7d99ccce160b750"
+    scope: "Imported scope readings, reported proof replays and finite checks."
+  - type: software
+    title: "openai-math-lean-tooling"
+    authors:
+      - family-names: "McBurnett"
+        given-names: "Neal"
+    repository-code: "https://github.com/nealmcb/openai-math-lean-tooling"
+    commit: "824beb05b35eb09eeb8c8571be7dbb61975c2e46"
+    scope: "Imported reported Comparator checks and performance measurements."
+  - type: software
+    title: "openai-math-hol-cards"
+    authors:
+      - family-names: "Knill"
+        given-names: "Ben"
+    repository-code: "https://github.com/BenKnill/openai-math-hol-cards"
+    commit: "68a12280f84cac1e9204e0f3272fdd9339773d1f"
+    scope: "Selected proof-card descriptions and records; no whole-paper certification is inferred."
+  - type: software
+    title: "Comparator"
+    authors:
+      - name: "Comparator contributors"
+    repository-code: "https://github.com/leanprover/comparator"
+    scope: "Proof-checking tool used by the cited replay authors; the Atlas website build does not run it."
+  - type: software
+    title: "KaTeX"
+    authors:
+      - name: "Khan Academy and KaTeX contributors"
+    version: "0.18.9"
+    repository-code: "https://github.com/KaTeX/KaTeX"
+    commit: "71a7bc02435353b4ed2420bb7b904cae6a0231bc"
+    scope: "Bundled formula renderer and build-time formula checks."
+  - type: software
+    title: "STIX Two Text and STIX Two Math"
+    authors:
+      - name: "The STIX Fonts Project Authors"
+    repository-code: "https://github.com/stipub/stixfonts"
+    scope: "Modified font subsets; exact versions and distributed files are in LICENSES/manifest.json."
+  - type: software
+    title: "Source Sans 3"
+    authors:
+      - name: "Adobe"
+    version: "3.052"
+    repository-code: "https://github.com/adobe-fonts/source-sans"
+    scope: "Modified interface-font subsets, renamed Plectis Sans."
+  - type: conference-paper
+    title: "Squarified Treemaps"
+    authors:
+      - family-names: "Bruls"
+        given-names: "Mark"
+      - family-names: "Huizing"
+        given-names: "Kees"
+      - family-names: "van Wijk"
+        given-names: "Jarke J."
+    year: 2000
+    doi: "10.1007/978-3-7091-6783-0_4"
+    url: "https://vanwijk.win.tue.nl/stm.pdf"
+    scope: "Row-selection algorithm implemented by build_site.py's squarify routine."
