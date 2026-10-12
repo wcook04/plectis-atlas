@@ -246,6 +246,12 @@
     var controls = {};
     wrap.querySelectorAll('[data-filter]').forEach(function (el) { controls[el.getAttribute('data-filter')] = el; });
     wrap.hidden = false;
+    var toggle = wrap.querySelector('.filters__toggle');
+    if (toggle) toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      wrap.classList.toggle('is-open', open);
+    });
     function sync() { KEYS.forEach(function (k) { if (controls[k]) controls[k].value = state[k]; }); }
     function apply(push) {
       var n = 0;
@@ -261,6 +267,25 @@
         if (ok) n++;
       });
       shownCount(wrap, n);
+      /* The active criteria in words, after the count. */
+      var parts = [];
+      KEYS.forEach(function (k) {
+        var el = controls[k];
+        if (!state[k] || !el) return;
+        if (el.tagName === 'SELECT') {
+          var opt = el.options[el.selectedIndex];
+          var txt = opt ? opt.textContent.replace(/\s*\([\d,]+\)$/, '') : state[k];
+          var lab = wrap.querySelector('label[for="' + el.id + '"]');
+          parts.push((k === 'l' || k === 'r') && lab ? lab.textContent + ': ' + txt.toLowerCase() : txt);
+        } else {
+          parts.push('\u201c' + state[k] + '\u201d');
+        }
+      });
+      var nEl = wrap.querySelector('.filters__n');
+      if (nEl && parts.length) {
+        var tot = table.tBodies[0].rows.length;
+        nEl.textContent = nEl.getAttribute('data-criteria-lead').replace('{n}', n.toLocaleString('en-GB')).replace('{total}', tot.toLocaleString('en-GB')) + ' ' + parts.join('; ') + '.';
+      }
       if (empty) empty.hidden = n > 0;
       if (reset) reset.hidden = !KEYS.some(function (k) { return state[k]; });
       if (push !== false && window.history && history.replaceState) {

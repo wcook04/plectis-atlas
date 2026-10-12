@@ -88,9 +88,6 @@
   "kicker": "Lean statement",
   "in_family": "In family {id}: {name}.",
   "also_in": "Also listed under {families}.",
-  "paired_heading": "The paper theorem it is paired with",
-  "unpaired_heading": "No paper theorem is paired with it",
-  "paired_intro": "The theorem as the paper prints it. Read the argument on the paper’s own page; the Lean statement below says only what it states.",
   "lean_heading": "The Lean statement",
   "formal_heading": "Formal status: who has re-run it",
   "readings_heading": "What outside readers found about family {id}’s headline",
@@ -101,8 +98,15 @@
   "alternatives_more": "Other statements that share words with it",
   "alternatives_none": "The backend records no other statement for it.",
   "read_in_paper": "Read the theorem in the paper",
-  "read_pairing": "Read the pairing",
-  "read_lean": "Read the Lean statement"
+  "pair_heading": {
+   "candidate-pairing": "Possible paper match: suggested from shared wording; not reviewed",
+   "producer-cited-association": "Paper theorem cited in the Lean source; the match is not reviewed",
+   "producer-declared-binding": "Paper theorem bound to it by the release; the match is not reviewed",
+   "unavailable": "No paper theorem is paired with it"
+  },
+  "read_runs": "Who has re-run it",
+  "report_check": "Report a check (GitHub issue)",
+  "read_candidates": "See the candidate theorems"
  },
  "pairing": {
   "ref": "{name} of {title}",
@@ -131,7 +135,7 @@
   "undated": "undated",
   "when": "Reported {when}, {pin}.",
   "receipt": "Their record",
-  "method": "Method, in their words:",
+  "method": "How they ran it, in their words",
   "reported": "Each group below reports its own run; the atlas has not re-run it.",
   "none_recorded": "No outside group reports a run of this Lean statement."
  },

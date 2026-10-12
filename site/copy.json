@@ -490,8 +490,8 @@
  },
  "explain": {
   "title": "Families",
-  "lede": "All {families} families of the release, each with its papers, its Lean statements, what the outside readers found, the re-runs outside groups report and who has explained it.",
-  "readers_note": "The outside readers judge whether a family’s Lean statements state its headline result: {left} and {right}. Each column gives the reader’s own term, with the atlas’s plain reading of it underneath.",
+  "lede": "All {families} families, one per row, with what each holds and who has checked or explained it.",
+  "readers_note": "Reader columns: the atlas’s plain reading of what {left} and {right} each find about the headline, then the reader’s own term.",
   "list_heading": "Every family",
   "caption": "Every family in the release, one per row, in the release’s order.",
   "filter_evidence": "Evidence",
@@ -511,7 +511,7 @@
   "col_lean": "Lean statements",
   "col_reader": "{name}",
   "col_runs": "Re-run and accepted",
-  "col_checks": "Checked by another method",
+  "col_checks": "Other checks",
   "col_status": "Explanation",
   "editions_1": "one previous edition",
   "editions_n": "{n} previous editions",
@@ -544,9 +544,21 @@
   "status_none": "No explanation recorded",
   "status_progress": "In progress",
   "status_reviewed": "Reviewed explanation",
-  "claim": "Offer an explanation",
+  "claim": "Offer one",
   "read": "Read the explanation",
-  "col_action": "Action"
+  "col_action": "Action",
+  "counts_note": "Menu counts are for the whole release.",
+  "filter_toggle": "Filter the list",
+  "criteria_lead": "Showing {n} of {total} families:",
+  "their_term": "Their term:",
+  "no_lean_short": "No Lean",
+  "checks_none": "None recorded",
+  "evgroup_lean": "Lean",
+  "evgroup_readers": "Outside readers",
+  "evgroup_pairing": "Pairing method",
+  "evgroup_checks": "Other checks",
+  "evgroup_explanations": "Explanations",
+  "evgroup_problems": "Problems"
  },
  "statements": {
   "title": "Lean statements",
@@ -729,7 +741,7 @@
   "approach_response_intro": "What the atlas does about it:",
   "approach_responses": [
    "Each family page opens with the claim as the paper prints it, with its hypotheses and its place in the paper, and every paper has a reading page.",
-   "Where the release has a Lean statement, it sits beside the paper’s theorem, with two outside readings of whether it states all of it. Neither stands in for the other.",
+   "Where the release has a Lean statement, it sits beside the paper’s theorem, with outside readings of whether it states all of it. Neither stands in for the other.",
    "The atlas counts what has been checked and by whom, and credits each kind of work where it appears.",
    "Each paper’s references are listed, earlier work can be credited at the passage it bears on, and every outside check carries its author, date and source.",
    "Every family is open for an explanation, a check or a correction, credited by name and made with or without an AI assistant."
@@ -772,7 +784,7 @@
     "who": "Thomas Bloom",
     "title": "Changes to the Erdős problems web site",
     "url": "https://terrytao.wordpress.com/2026/10/06/changes-to-the-erdos-problems-web-site/",
-    "says": "(6 October 2026), describes removing problem statuses and the count of solved problems from erdosproblems.com, in favour of neutral wording such as “it is known that”, with a source. The atlas follows the same discipline: it says what is recorded and by whom, and keeps no tally of results."
+    "says": "a guest post on Terence Tao’s blog (6 October 2026), describes removing problem statuses and the count of solved problems from erdosproblems.com, in favour of neutral wording such as “it is known that”, with a source. The atlas follows the same discipline: it says what is recorded and by whom, and keeps no tally of results."
    },
    {
     "who": "The Association for Human Mathematics",
@@ -783,7 +795,7 @@
   ],
   "since_note": "None of these authors has reviewed or endorsed the atlas.",
   "how_heading": "How it is built",
-  "how": "Scripts read the release at commit {commit_short} and extract catalogue entries, available manuscript sources, bibliographies, Comparator files and scope notes. The generated pages link back to the source files. Each paper’s reading page is converted from its TeX, with every formula checked by KaTeX; a page that did not convert in full lists what is missing, and the PDF stays the reference. Catalogue counts come from the release; contribution status comes from the atlas’s own records.",
+  "how": "Scripts read the release at commit {commit_short} and extract catalogue entries, available manuscript sources, bibliographies, Comparator files and scope notes. The generated pages link back to the source files. Each paper’s reading page is converted from its TeX, with every formula checked by KaTeX; a page that did not convert in full lists what is missing, and the PDF stays the reference. Contribution status comes from the atlas’s own records.",
   "independence_heading": "Independence",
   "independence": "The atlas is an independent project. It is not affiliated with or endorsed by OpenAI. It describes what is in the release and what has been checked, and quotes OpenAI’s own words where it describes the results.",
   "licence_heading": "Licence and attribution",

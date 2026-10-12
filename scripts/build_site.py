@@ -3265,6 +3265,12 @@ def cap(s: str) -> str:
     return s[:1].upper() + s[1:]
 
 
+def prose_credit(name: str) -> str:
+    """A credited name as prose says it: "Carlos Toledo, cert-machine" is
+    "Carlos Toledo’s cert-machine"; "MathVet" stays "MathVet"."""
+    return "’s ".join(name.split(", ", 1)) if ", " in name else name
+
+
 def LW(key: str, **kw) -> str:
     """A string from site/copy_lean.json by dotted key (the Lean page's own words)."""
     node = COPY_LEAN
@@ -3385,8 +3391,7 @@ def join_html(doc, pinfo, root) -> str:
     state = pinfo["state"]
     cls = {"candidate-pairing": "join--candidate", "producer-cited-association": "join--cited",
            "producer-declared-binding": "join--cited"}.get(state, "join--none")
-    parts = [f'<p class="join__state">{esc(cap(evidence.say("pairing_short." + state)))}</p>',
-             f'<p class="join__words">{esc(evidence.say("pairing." + state))}</p>']
+    parts = [f'<p class="join__words">{esc(evidence.say("pairing." + state))}</p>']
     if state == "candidate-pairing":
         alt = next((a for a in pinfo["alternatives"] if a.get("target") == pinfo["target"]), None)
         terms = (alt or {}).get("matched_terms") or []
@@ -3437,7 +3442,7 @@ def lean_runs_html(rec, root) -> str:
     runs = {x["id"]: x for x in rec.get("runs") or []}
     names = {}
     for x in runs.values():
-        names.setdefault(x["source"], ((x.get("credit") or {}).get("name") or x["source"]))
+        names.setdefault(x["source"], prose_credit((x.get("credit") or {}).get("name") or x["source"]))
     acc = [names.get(s, s) for s in rec.get("accepted_current_sources") or []]
     lead = (evidence.say("reruns.none") if not acc else evidence.say("reruns.one", names=acc[0]) if len(acc) == 1
             else evidence.say("reruns.many", n=say(len(acc)), names=", ".join(acc[:-1]) + " " + LW("and") + " " + acc[-1]))
@@ -3458,8 +3463,11 @@ def lean_runs_html(rec, root) -> str:
                        f'<span class="run__state">{esc(run_state_words(x))}</span></p>'
                        f'<p>{esc(sv.get("text") or "")}</p>'
                        f'<p class="small muted">{esc(LW("runs.when", when=when, pin=pin))}{receipt}</p></li>')
-        method = credit.get("method")
-        method_html = f'<p class="small muted">{esc(LW("runs.method"))} {esc(method)}</p>' if method else ""
+        method = (credit.get("method") or "").strip()
+        if method and method[-1] not in ".!?)":
+            method += "…"   # the source record stops mid-sentence; say so rather than end abruptly
+        method_html = (f'<details class="run__method"><summary>{esc(LW("runs.method"))}</summary><p class="small">{esc(method)}</p></details>'
+                       if method else "")
         groups.append(f'<div class="run"><h3 class="h3">{who}</h3>{method_html}<ul class="run__list">{"".join(lis)}</ul></div>')
     body = "".join(groups) or f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
     return f'<p class="lead-sentence">{esc(lead)} {esc(LW("runs.reported"))}</p>{body}'
@@ -3482,7 +3490,8 @@ def family_readings_html(fid, doc, root) -> str:
             continue
         cr = rd.get("credit") or {}
         sv = rd.get("source_value") or {}
-        name = f'<a class="ext" href="{esc(cr["url"])}" rel="noopener">{esc(cr.get("name") or src)}</a>' if cr.get("url") else esc(cr.get("name") or src)
+        nm = prose_credit(cr.get("name") or src)
+        name = f'<a class="ext" href="{esc(cr["url"])}" rel="noopener">{esc(nm)}</a>' if cr.get("url") else esc(nm)
         tone = _ev.TONE.get(rd.get("state"), "none")
         note = sv.get("note") or sv.get("gap") or ""
         note_html = f'<p class="reading__note">{esc(LW("readings.note"))} {ctext(note)}</p>' if note and note.strip().rstrip(".").lower() != "none" else ""
@@ -3580,19 +3589,21 @@ def build_statement(stmt):
     card_rel = f"cards/{sid}.html"
     card_body = receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pinfo, lrec, standalone=True)
     write_page(card_rel, head(card_rel, label, label, noindex=True) + f'\n<body class="card-only" data-root="{root}">\n{card_body}\n{macros_script([paper_ms["id"]] if paper_ms else [])}\n</body></html>\n', index=False)
-    # The paper theorem it is paired with, then the words at the join, then the Lean.
+    # After the Lean statement: the paper theorem it is paired with, under a heading that
+    # carries the pairing's state, the words at the join first, then the theorem itself.
+    pair_heading = LW("page.pair_heading." + (pinfo["state"] if pinfo["state"] in PAIRED_STATES and paper_st else "unavailable"))
     if paper_st:
         others = alternatives_html(doc, pinfo, root, limit=6)
         others_html = (f'<details class="more"><summary>{esc(LW("page.alternatives_more"))}</summary>'
                        f'<ul class="alts">{others}</ul></details>') if others else ""
-        paper_read = (f'<h2 class="h2" id="h-claim">{esc(LW("page.paired_heading"))}</h2>'
-                      f'<p class="claim__src">{statement_ref_html(doc, pinfo["target"], root)}</p>'
-                      + render_paper_statement(paper_ms, paper_st, root, conv, "claim")
-                      + join_html(doc, pinfo, root) + others_html)
+        paper_read = (f'<h2 class="h2" id="h-claim">{esc(pair_heading)}</h2>'
+                      + join_html(doc, pinfo, root)
+                      + f'<p class="claim__src">{statement_ref_html(doc, pinfo["target"], root)}</p>'
+                      + render_paper_statement(paper_ms, paper_st, root, conv, "claim") + others_html)
     else:
         alts = alternatives_html(doc, pinfo, root) if doc else ""
         reason = pinfo.get("reason")
-        paper_read = (f'<h2 class="h2" id="h-claim">{esc(LW("page.unpaired_heading"))}</h2>'
+        paper_read = (f'<h2 class="h2" id="h-claim">{esc(pair_heading)}</h2>'
                       + join_html(doc, pinfo, root)
                       + (f'<p>{esc(LW("pairing.reason", reason=reason[0].lower() + reason[1:]))}</p>' if reason else "")
                       + (f'<h3 class="h3">{esc(LW("page.alternatives_heading"))}</h3><ul class="alts">{alts}</ul>' if alts else ""))
@@ -3680,7 +3691,7 @@ def build_statement(stmt):
                 else f'<p class="phead__sub"><span class="md-math">{esc(human_name)}</span> <code>{esc(sid)}</code></p>')
     reading_href = (root + paper_rec["reading_page"]) if paper_rec and paper_rec.get("reading_page") else None
     read_primary = (f'<a class="btn btn--primary" href="{esc(reading_href)}">{esc(LW("page.read_in_paper"))}</a>' if reading_href
-                    else f'<a class="btn btn--primary" href="#h-claim">{esc(LW("page.read_pairing"))}</a>')
+                    else f'<a class="btn btn--primary" href="#h-claim">{esc(LW("page.read_candidates"))}</a>')
     runs_section = lean_runs_html(lrec, root) if lrec else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
     readings_section = ""
     if doc:
@@ -3699,12 +3710,9 @@ def build_statement(stmt):
  {subtitle}
  <p class="phead__facts">{where}</p>
  <p class="phead__facts">{esc(main_line)}</p>
- <p class="actions">{read_primary}<a class="btn btn--ghost" href="#h-lean-read">{esc(LW('page.read_lean'))}</a><a class="btn btn--quiet ext" href="{esc(check_url(sid))}" rel="noopener">{esc(C('statement.check_button'))}</a></p>
+ <p class="actions">{read_primary}<a class="btn btn--ghost" href="#h-runs">{esc(LW('page.read_runs'))}</a><a class="btn btn--quiet ext" href="{esc(check_url(sid))}" rel="noopener">{esc(LW('page.report_check'))}</a></p>
 </header>
 {('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}
-<section class="band band--tight claim claim--paper" aria-labelledby="h-claim">
- {paper_read}
-</section>
 <section class="band band--tight claim claim--lean" aria-labelledby="h-lean-read">
  <h2 class="h2" id="h-lean-read">{esc(LW('page.lean_heading'))}</h2>
  <p class="intro">{esc(C('statement.claim_lean_intro'))}</p>
@@ -3713,11 +3721,14 @@ def build_statement(stmt):
  {defs}
  {holes_html}
  {axiom}
- {comparator_box_html(stmt)}
+</section>
+<section class="band band--tight claim claim--paper" aria-labelledby="h-claim">
+ {paper_read}
 </section>
 <section class="band band--tight" aria-labelledby="h-runs">
  <h2 class="h2" id="h-runs">{esc(LW('page.formal_heading'))}</h2>
  {runs_section}
+ {comparator_box_html(stmt)}
 </section>
 {readings_section}
 <section class="band supporting" aria-labelledby="h-support">
@@ -3859,7 +3870,7 @@ def build_explain():
             runs_cell = f'{esc(C("explain.runs_of", k=num(rerun), n=num(k)))}'
         else:
             lean_cell = f'<span class="cell__none">{esc(C("explain.no_lean"))}</span>'
-            runs_cell = ""
+            runs_cell = f'<span class="cell__none">{esc(C("explain.no_lean_short"))}</span>'
             rerun = -1
         # each reader's own term, with a plain gloss under it
         rcells = []
@@ -3868,17 +3879,18 @@ def build_explain():
             rd = next((x for x in ev.readers if x.source == src), None)
             tones[side] = rd.tone if rd else "none"
             if not k:
-                rcells.append('<td class="t-reader" data-v=""></td>')
+                rcells.append(f'<td class="t-reader" data-v=""><span class="cell__none">{esc(C("explain.no_lean_short"))}</span></td>')
             elif rd is None or rd.tone == "none" or not rd.term:
                 rcells.append(f'<td class="t-reader" data-v="~"><span class="cell__none">{esc(C("explain.not_read"))}</span></td>')
             else:
-                rcells.append(f'<td class="t-reader" data-v="{esc(rd.term)}"><span class="term">{esc(rd.term)}</span>'
-                              f'<span class="cell__sub">{esc(say_e("tone_short." + rd.tone))}</span></td>')
+                rcells.append(f'<td class="t-reader" data-v="{esc(rd.tone)}"><span class="cell__plain">{esc(cap(say_e("tone_short." + rd.tone)))}</span>'
+                              f'<span class="cell__sub">{esc(C("explain.their_term"))} <span class="term">{esc(rd.term)}</span></span></td>')
         agree = ""
         if k and ev.agreement == "disagree":
             agree = f'<span class="cell__flag">{esc(C("explain.disagree_flag"))}</span>'
         checks = ", ".join(say_e("check_kind." + c) for c in ev.checks if c in evidence.WORDS["check_kind"])
         checks = cap(checks) if checks else ""
+        checks_cell = esc(checks) if checks else f'<span class="cell__none">{esc(C("explain.checks_none"))}</span>'
         # explanations: the atlas's own records, then explanations by others
         rev = reviewed_explanations(fid)
         expl = [f'<span class="st st--{st}">{esc(C("explain.status_" + st))}</span>']
@@ -3891,10 +3903,10 @@ def build_explain():
             expl.append(f'<a class="cell__sub cell__warn" href="families/{fid}.html#h-problems">'
                         f'{esc(cap(C("explain.problems_1") if problems == 1 else C("explain.problems_n", n=say(problems))))}</a>')
         if rev:
-            action = f'<a class="btn btn--small" href="{explanation_rel(rev[0], fid)}">{esc(C("explain.read"))}</a>'
+            expl.append(f'<a class="cell__sub" href="{explanation_rel(rev[0], fid)}">{esc(C("explain.read"))}</a>')
         else:
             claim = issue_url("claim", C("issues.claim", id=fid, title=tex_plain(f["title"]) if f else ev.name), family=fid)
-            action = f'<a class="btn btn--small ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>'
+            expl.append(f'<a class="cell__sub ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>')
         rows.append(
             f'<tr id="f-{fid}" data-q="{esc((fid + " " + name_plain + " " + dname).lower())}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none") if k else "nolean"}" '
             f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}">'
@@ -3907,9 +3919,8 @@ def build_explain():
             + "".join(c.replace('<td class="t-reader"', f'<td class="t-reader" data-label="{esc(C("explain.col_reader", name=short_name[order[i]]))}"', 1)
                       for i, c in enumerate(rcells)) +
             f'<td class="t-num" data-v="{rerun}" data-label="{esc(C("explain.col_runs"))}">{runs_cell}</td>'
-            f'<td data-v="{esc(checks)}" data-label="{esc(C("explain.col_checks"))}">{esc(checks)}</td>'
-            f'<td data-v="{st}" data-label="{esc(C("explain.col_status"))}">{"".join(expl)}</td>'
-            f'<td class="t-action">{action}</td></tr>')
+            f'<td data-v="{esc(checks)}" data-label="{esc(C("explain.col_checks"))}">{checks_cell}</td>'
+            f'<td data-v="{st}" data-label="{esc(C("explain.col_status"))}">{"".join(expl)}</td></tr>')
     # Filters, in one row: discipline, evidence, each reader's finding, and words.
     def select(fid_, label, key, opts):
         return (f'<div class="filters__g"><label class="filters__h" for="{fid_}">{esc(label)}</label>'
@@ -3918,8 +3929,10 @@ def build_explain():
     for d in r.universe.get("disciplines") or []:
         dopts.append(f'<option value="{slugify(d["name"])}">{esc(d["name"])} ({num(len(d.get("family_ids") or []))})</option>')
     eopts = [f'<option value="">{esc(C("explain.all_evidence"))}</option>']
-    for key in ("lean", "nolean", "disagree", "explained_by_others", "problems_reported", "ring", "thread_candidate", "thread_cited"):
-        eopts.append(f'<option value="{key}">{esc(C("explain.ev_" + key))} ({num(counts.get(key, 0))})</option>')
+    for group, keys in (("lean", ("lean", "nolean")), ("readers", ("disagree",)), ("pairing", ("thread_candidate", "thread_cited")),
+                        ("checks", ("ring",)), ("explanations", ("explained_by_others",)), ("problems", ("problems_reported",))):
+        eopts.append(f'<optgroup label="{esc(C("explain.evgroup_" + group))}">' + "".join(
+            f'<option value="{key}">{esc(C("explain.ev_" + key))} ({num(counts.get(key, 0))})</option>' for key in keys) + "</optgroup>")
     selects = [select("ff-d", C("explain.filter_discipline"), "d", dopts), select("ff-c", C("explain.filter_evidence"), "c", eopts)]
     for side, src in enumerate(order):
         opts = [f'<option value="">{esc(C("explain.reader_any"))}</option>']
@@ -3939,23 +3952,25 @@ def build_explain():
     heads.append(f'<th scope="col" class="t-num" aria-sort="none"><button type="button" class="sort" data-sort="{len(sort_cols) + 2}" data-type="n">{esc(C("explain.col_runs"))}</button></th>')
     heads.append(f'<th scope="col">{esc(C("explain.col_checks"))}</th>')
     heads.append(f'<th scope="col">{esc(C("explain.col_status"))}</th>')
-    heads.append(f'<th scope="col"><span class="vh">{esc(C("explain.col_action"))}</span></th>')
     invite_key = "explain.invite_all" if status_counts["none"] == len(evs) else "explain.invite"
     invite = (f'<p class="muted">{esc(C(invite_key, open=num(status_counts["none"]), families=num(len(evs))))} {esc(C("explain.how"))} '
               f'<a class="ext" href="{esc(REPO + "/" + CFG["contributing_path"])}" rel="noopener">{esc(C("contribute.guide_link"))}</a></p>')
     readers_note = C("explain.readers_note", left=prose_name[order[0]], right=prose_name[order[1]] if len(order) > 1 else "")
     body = f"""<div class="frame page page--families">
-<header class="phead">
+<header class="phead phead--compact">
  <h1 class="phead__title">{esc(C('explain.title'))}</h1>
- <p class="lede">{esc(C('explain.lede', families=NUM('families')))}</p>
- <p class="phead__facts">{esc(readers_note)}</p>
+ <p class="phead__lede">{esc(C('explain.lede', families=NUM('families')))}</p>
 </header>
-<section class="band band--tight" aria-labelledby="h-list">
+<section class="band band--table" aria-labelledby="h-list">
 <h2 class="h2 vh" id="h-list">{esc(C('explain.list_heading'))}</h2>
 <div class="filters filters--families" data-filter-families="families-table" hidden>
- {''.join(selects)}
- <p class="filters__n" aria-live="polite" data-shown-template="{esc(C('explain.shown', n='{n}', total=num(len(evs))))}">{esc(C('explain.shown', n=num(len(evs)), total=num(len(evs))))}</p>
- <button type="button" class="btn btn--quiet filters__reset" hidden>{esc(C('explain.reset'))}</button>
+ <button type="button" class="btn btn--ghost filters__toggle" aria-expanded="false" aria-controls="families-filters">{esc(C('explain.filter_toggle'))}</button>
+ <div class="filters__panel" id="families-filters">{''.join(selects)}</div>
+ <div class="filters__status">
+  <p class="filters__n" aria-live="polite" data-shown-template="{esc(C('explain.shown', n='{n}', total=NUM('families')))}" data-criteria-lead="{esc(C('explain.criteria_lead'))}">{esc(C('explain.shown', n=NUM('families'), total=NUM('families')))}</p>
+  <button type="button" class="btn btn--quiet filters__reset" hidden>{esc(C('explain.reset'))}</button>
+ </div>
+ <p class="filters__note">{esc(readers_note)} {esc(C('explain.counts_note'))}</p>
 </div>
 <p class="filters__empty" hidden>{esc(C('explain.none_match'))}</p>
 <div class="table-wrap"><table class="tbl tbl--sortable tbl--families" id="families-table">
@@ -4355,7 +4370,7 @@ def build_about():
     backend_p = (f'<p>{esc(C("about.backend"))}</p>'
                  f'<p>{esc(C("about.backend_pin", generation=r.generation.split(":")[-1][:12], commit=(r.commit or "")[:12], runtime=(r.runtime or "")[:12], exporter=r.exporter or "", receipt=(receipt.get("sha256") or "").split(":")[-1][:12], schema=r.export.get("reader_schema") or ""))} '
                  f'<a href="numbers.html">{esc(C("about.backend_numbers"))}</a></p>')
-    groups = credited_groups()
+    groups = [prose_credit(g) for g in credited_groups()]
     group_list = ", ".join(groups[:-1]) + (" " + C("about.and") + " " if len(groups) > 1 else "") + (groups[-1] if groups else "")
     since = "".join(
         f'<li class="approach__item"><p><span class="approach__who">{esc(a["who"])}</span>, in '
