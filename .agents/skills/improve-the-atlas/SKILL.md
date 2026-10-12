@@ -5,19 +5,23 @@ description: Use when changing how the atlas itself is built, such as the data b
 
 # Improve the atlas
 
-The atlas is a few standard-library Python scripts that read a pinned checkout of openai/math and write plain JSON and static HTML. Anyone with Python 3.10 or newer and git can rebuild it.
+The atlas builds the public website from source indexes and a checked-in export of Statement Map, its separate backend. Core generators use Python 3.10 or newer and the standard library. Git fetches source bytes; Node checks paper formulas with vendored KaTeX. Playwright and Chromium are optional for share cards. Begin with `docs/ARCHITECTURE.md` for the current ownership and build boundaries.
 
 ## How the repository fits together
 
 | Path | What it is | How it changes |
 |---|---|---|
-| `upstream.json` | The openai/math commit the atlas reads | `sh scripts/fetch_upstream.sh --latest`, then a rebuild |
+| `upstream.json` | The openai/math commit the atlas reads | Coordinated source refresh, including a matching accepted Statement Map export |
+| `backend/` | Imported Statement Map reader packets, targets, manifests and receipts | `scripts/vendor_backend.py`; never hand-edit |
+| `scripts/reader.py` | Validates and reads backend packets | Edit with reader regressions; `scripts/backend.py` is a compatibility import |
 | `scripts/fetch_upstream.sh` | Sparse checkout of openai/math at the pinned commit, without PDFs | Edit |
 | `scripts/build_data.py` | Reads the checkout, writes `data/*.json` | Edit |
-| `data/*.json` | The dataset; `data/summary.json` holds every count with its definition | Generated: never edit by hand |
+| `data/*.json` | Source indexes and rendering metadata; `data/summary.json` holds baseline extraction counts and definitions | Generated: never edit by hand |
 | `scripts/sync_readme.py` | Rewrites the computed blocks of `README.md` from the data | Edit |
-| `scripts/build_site.py` | Renders `site/_build/` from `data/`, `contributions/`, `site/copy.json` and `site/config.json` | Edit |
-| `site/copy.json`, `site/config.json` | Every sentence on the site; URLs and settings | Edit |
+| `scripts/build_site.py` | Renders `site/_build/` from the checked backend, source indexes, contributions, copy and configuration | Edit; it clears the output directory first |
+| `scripts/build_papers.py` | Writes paper pages and acceptance/number/label metadata in `data/` | Edit with paper-renderer regressions |
+| `scripts/build_universe.py` | Builds the map and replaces the front page | Run after the site builder |
+| `site/copy*.json`, `site/config.json` | Interface copy, URLs and settings | Edit |
 | `site/_build/` | The generated site | Generated |
 | `contributions/` | Contributors' work; the formats are in `contributions/README.md` | Contributors |
 | `scripts/check_contributions.py` | Validates contributions; `--self-test` validates the templates and the checker | Edit, with a self-test case for every rule |
@@ -27,30 +31,40 @@ The atlas is a few standard-library Python scripts that read a pinned checkout o
 
 ## Build everything
 
+For the current pin, use the committed data and backend export:
+
 ```sh
+python3 scripts/reader.py              # validate the backend export
 sh scripts/fetch_upstream.sh            # openai/math at the pinned commit, in ../openai-math-upstream
-python3 scripts/build_data.py           # writes data/*.json
-python3 scripts/sync_readme.py          # refreshes the computed blocks of README.md
 python3 scripts/build_site.py           # writes site/_build/
+python3 scripts/build_papers.py         # adds paper pages and refreshes rendering metadata
+python3 scripts/build_universe.py       # builds the map/front page
+python3 scripts/check_paper_links.py site/_build
 python3 -m http.server -d site/_build   # then open http://localhost:8000
 ```
 
-`python3 scripts/build_data.py --upstream <path>` reads a checkout somewhere else.
+`python3 scripts/build_data.py --upstream <path>` separately re-extracts baseline JSON from a checkout elsewhere. It does not rebuild Statement Map, all Lean-derived data or paper metadata. If paper metadata changes, follow `docs/ARCHITECTURE.md#refreshing-paper-metadata`: refresh metadata and README, rebuild the site, then restore the paper pages and map. Without Node, paper pages are partial because formulas were not checked.
 
 ## Rules
 
-1. **Every number on the site is computed by a script.** No count, percentage or ranking is typed by hand into a page, the README or `site/copy.json`. Compute it in `scripts/build_data.py` or `scripts/build_site.py`, and read it from there.
-2. **Every number has a definition.** Write it in words beside the computation and keep it with the data, in the `definitions` of `data/summary.json`.
+1. **Every number on the site is computed by its owner.** No count, percentage or ranking is typed by hand into a page, the README or `site/copy.json`. Evidence counts and their membership come from Statement Map's packets; rendering counts come from their generators. Never replace a backend decision with a separate frontend calculation.
+2. **Every number has a definition.** Preserve its unit, input universe, counting rule, members and attribution. Backend counts have receipts; baseline extraction definitions remain in `data/summary.json`.
 3. **Generated files are never edited by hand.** That covers `data/`, `site/_build/`, the computed blocks of `README.md` and the skill mirrors. Change the generator and regenerate.
 4. **Output is deterministic.** Sort keys and lists, and keep timestamps out of the data, so that a rebuild without upstream changes produces no diff and a reviewer sees only real changes.
-5. **The pinned checkout is the only source.** Quote OpenAI's text unchanged, with a link to its source at the pinned commit.
-6. **Standard library only**, so that anyone can run the scripts without installing packages.
+5. **Keep source identity.** Quote OpenAI's text unchanged at its pin. Outside findings and contributions retain their own source, version, credit and limits; do not present them as OpenAI's statements or fresh checks.
+6. **Standard library for core generators.** Keep Node/KaTeX formula checks and optional Playwright share-card rendering explicit; do not introduce dependencies into the core without a concrete need.
 7. **Contribution formats are stable.** Contributors and the site depend on the field names in `contributions/README.md`. A format change updates that file, the templates, the checker and its self-test, and the site builder in one pull request.
 8. **Prose** on the site and in the documentation uses British spelling and plain declarative sentences, without em dashes or slogans.
 
 ## Moving the upstream pin
 
-`sh scripts/fetch_upstream.sh --latest` moves `upstream.json` to the current main branch of openai/math and checks it out. Then rebuild the data and the README, read upstream's `history.md` for withdrawals and repairs, and review the diff of `data/`. Run `python3 scripts/check_contributions.py`: a contribution that names a withdrawn or renamed manuscript or statement shows up as an error or a warning. The weekly workflow `.github/workflows/upstream.yml` does the fetch and rebuild and opens a pull request for review.
+`sh scripts/fetch_upstream.sh --latest` moves `upstream.json` to the current main branch of openai/math and checks it out. This is only one step: `reader.py` rejects a backend export from the old pin. Obtain a matching accepted Statement Map generation and vendor it, rebuild the affected data and rendering metadata, refresh the README, and inspect upstream's `history.md` for withdrawals and repairs. Run `python3 scripts/check_contributions.py` and preserve each contribution's actual source version. Inspect `.github/workflows/upstream.yml` before relying on automation; fetching and baseline extraction alone are not a complete backend refresh.
+
+## Improving the repository front door
+
+The README is the public entry; keep it understandable without another repository. State the reader's problem, what works, what the site adds to credited existing tools, and one useful action. Explain that Atlas presents Statement Map records. Use a small text diagram and a responsibility tree when they reduce reading effort; preserve stable file names unless a move solves an ownership problem.
+
+Keep capabilities, populated contributions and reviewed mathematics separate. Research essays motivate design decisions; they are not endorsements or proof of success. Prefer a concrete, evidenced comparison to a first/only claim. Leave changing counts and the worked example in the generator-owned blocks. Check README links and commands, and review it from a reader's, contributor's and developer's point of view.
 
 ## Changing the skills
 
@@ -70,4 +84,4 @@ python3 scripts/sync_readme.py --check
 python3 scripts/build_site.py
 ```
 
-The workflow `.github/workflows/check.yml` runs the same checks, apart from the self-test, on every pull request.
+The workflow `.github/workflows/check.yml` also runs reader, search, data-parser, paper-renderer and community checks, including the contribution self-test. Run the relevant focused tests for changed code. For documentation-only changes, check relative links, README/skill synchronisation and `git diff --check`; a full site build is not necessary.

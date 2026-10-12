@@ -4,7 +4,7 @@ This file is for AI coding agents (Claude Code, Codex, Cursor and others) workin
 
 ## What this repository is
 
-The Plectis Atlas is an independent reader's atlas to OpenAI's mathematics release, the repository openai/math, read at the commit pinned in `upstream.json`. Scripts compute the machine-derived layer into `data/*.json` and a static site. People add the human layer as files in `contributions/`: explanations of result families, statement checks comparing a Lean statement with its paper theorem, credits to earlier work, and replay receipts from re-running Comparator.
+The Plectis Atlas is an independent reader's atlas to OpenAI's mathematics release, the repository openai/math, read at the commit pinned in `upstream.json`. It builds the static website from source indexes in `data/` and a checked-in export of the separate Statement Map backend in `backend/`. Statement Map owns evidence records, paper–Lean candidates and counts; `scripts/reader.py` verifies its packets before the site renders them. People add explanations, statement checks, credits and replay receipts through `contributions/`. [Architecture](docs/ARCHITECTURE.md) maps source ownership and build order.
 
 ## Start
 
@@ -30,7 +30,7 @@ If the person has not chosen a task, follow `skills/start-here/SKILL.md`. Otherw
 4. **Invent nothing.** Every citation, DOI, arXiv id, theorem number, page, quotation and line number comes from a source you opened in this session. If you cannot open a source, say so and leave the field out.
 5. **Quote exactly.** Copy quoted text from the source file at the pinned commit; never retype or paraphrase inside quotation marks. Keep quotations from OpenAI's release short and located. It is published under the Apache License 2.0, and the atlas is independent of OpenAI and not affiliated with it.
 6. **Keep the mathematics honest.** Keep what is proved, computed, heuristic and open visibly separate. No sentence is stronger or weaker than its source. Mark every step you could not verify, and list those steps when you hand the draft over.
-7. **Leave generated files to their generators.** Never edit `data/`, `site/_build/`, the computed blocks of `README.md`, `.claude/skills/` or `.agents/skills/` by hand. Change the generator and regenerate.
+7. **Leave generated files to their generators.** Never edit `data/`, `site/_build/`, the computed blocks of `README.md`, `.claude/skills/` or `.agents/skills/` by hand. Change the generator and regenerate. `backend/` is imported and hash-bound: change its Statement Map source, then use `scripts/vendor_backend.py` to import an accepted export at the matching pin.
 8. **Keep the formats.** Paths and field names in `contributions/README.md` are fixed; the site and the checker depend on them.
 9. **Check before you hand over.** Run `python3 scripts/check_contributions.py <file>` on every contribution you create or edit, and fix errors that can be resolved from the evidence. If identity, a source or a human judgement is missing, keep an unsigned draft private and list the missing evidence. Never invent fields to satisfy the checker.
 10. **Ask before acting outside the repository.** Pushing, opening a pull request, opening an issue and posting a comment all act under the person's name. Do them only with the person's explicit go-ahead.
@@ -44,10 +44,12 @@ Begin with a bounded note when the person has fifteen minutes. A short Lean file
 | Path | What it holds |
 |---|---|
 | `upstream.json` | The pinned openai/math commit |
+| `backend/`, `scripts/reader.py` | Statement Map's pinned export and the validating reader; evidence decisions belong to the backend |
+| `docs/ARCHITECTURE.md` | Folder responsibilities, source boundaries, build order and checks |
 | `data/statements.json` | Every Comparator challenge: its Lean text (`lean`), configuration (`comparator`), family (`families`) and linked papers (`papers`) |
 | `data/families.json` | Every family: discipline, title, description, `manuscripts`, `statements`, and the Lean scope note (`lean_doc`) |
 | `data/manuscripts.json` | Every manuscript: title, abstract, headline statements with source file and line (`statements`), bibliography (`references`) |
-| `data/summary.json` | Every count on the site, with its definition |
+| `data/summary.json` | Baseline extraction counts and definitions; current reader counts and receipts come from `backend/` |
 | `contributions/` | Contributions; formats in `contributions/README.md`, templates in `contributions/_templates/` |
 | `STYLE.md` | How to write an explanation |
 | `CONTRIBUTING.md` | The guide for people, including the credit and AI policy |
@@ -73,7 +75,7 @@ python3 scripts/check_contributions.py --self-test                            # 
 python3 scripts/sync_skills.py [--check]                                      # regenerate or check the skill mirrors
 ```
 
-All scripts use only the Python standard library and need Python 3.10 or newer.
+The core Python scripts use the standard library and need Python 3.10 or newer. Git is needed for source fetching; Node checks paper formulas using vendored KaTeX. Playwright and Chromium are optional for share cards. Follow the architecture guide when rebuilding paper metadata or moving a source pin; the website build is not a proof replay.
 
 ## Writing
 
