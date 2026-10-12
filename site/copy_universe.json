@@ -29,7 +29,7 @@
   "split": "The two readers disagree",
   "none": "No Lean statement in the release",
   "unread": "Not yet read by either",
-  "size": "A family’s disc grows with the number of its results and Lean statements.",
+  "size": "A disc’s area grows with the number of paper results and Lean statements it shows.",
   "citations": "Lines between families are citations between their papers, drawn for the family or discipline you choose: brick where it cites, grey where it is cited.",
   "readers": "The readers are MathVet and Carlos Toledo’s cert-machine; each one’s own words are on every family page."
  },
@@ -67,7 +67,8 @@
   "zoom_in": "Zoom in",
   "zoom_out": "Zoom out",
   "fit": "Show the whole release",
-  "canvas_label": "Map of the release: {families} families in {disciplines} disciplines. The list beside it names the same families, with links."
+  "canvas_label": "Map of the release: {families} families in {disciplines} disciplines. The list beside it names the same families, with links.",
+  "fit_scope": "Fit {name}"
  },
  "search": {
   "label": "Find a family, paper, theorem or Lean statement",
@@ -170,9 +171,14 @@
   "paper_heading_cited": "The paper theorem its source cites",
   "paper_heading_declared": "The paper theorem the release binds it to",
   "paper_heading_none": "Paper theorem",
-  "runs_role": "Re-runs of the Lean file:",
+  "runs_role": "Reported checks",
   "runs_scope": "A re-run checks the Lean file itself. It says nothing about whether the Lean states the paper’s theorem.",
-  "challenge_note": "This is a challenge file: it states the theorem and leaves the proof as sorry. Comparator checks OpenAI’s separate proof against this statement."
+  "challenge_note": "This is a challenge file: it states the theorem and leaves the proof as sorry. Comparator checks OpenAI’s separate proof against this statement.",
+  "run_not_current": "at an earlier version of the release",
+  "why": "Why this match is shown",
+  "shared_words": "Shared words: {words}.",
+  "show_pair": "Show this pair on the map",
+  "shown_pair": "Shown on the map"
  },
  "plate": {
   "lean_ring": "Lean statements",
@@ -242,5 +248,14 @@
   "cited": "Pairing cited in the Lean source or declared by the release",
   "cites": "Its papers cite another family",
   "cited_by": "Another family’s papers cite it"
+ },
+ "mapkey": {
+  "button": "Map key",
+  "colour": "Colour: what the two outside readers find the release’s Lean states for a family’s headline.",
+  "size": "Size: a disc’s area grows with the number of paper results and Lean statements it shows.",
+  "arrow": "An arrow runs from the citing family to the cited one. A citation joins papers; it is not a proof dependency.",
+  "disc_inks": "Brick arrows leave a family in {name}; grey arrows arrive at one from another discipline.",
+  "fam_inks": "Brick arrows leave {name}; grey arrows arrive at it.",
+  "release_inks": "Citations are drawn for the family you point at or choose."
  }
 }

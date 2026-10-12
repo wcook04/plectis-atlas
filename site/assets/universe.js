@@ -620,6 +620,7 @@
     var shards = {}, shardLoading = {};
     var hitTargets = [];              // labels that can be clicked: { box, key }
     var drawPending = false;
+    var pin = -1;                     // the other end of the pair the reader shows (a Lean or result index)
     var lastPlan = null;
 
     /* ---- Text ------------------------------------------------------------ */
@@ -691,6 +692,7 @@
         var c = get('--u-t-' + t, p.struct);
         p.tone[t] = c;
         p.tone[t + 'Wash'] = mixOklab(c, p.ground, t === 'none' ? 0.62 : 0.78, groundRGB);
+        p.tone[t + 'Edge'] = get('--u-e-' + t, c);
       });
       p.structFaint = mixOklab(p.struct, p.ground, 0.45, groundRGB);
       p.groundRGB = groundRGB;
@@ -841,7 +843,7 @@
     /* ---- Canvas size ---------------------------------------------------- */
     function chromeBoxes() {
       var out = [], sr = canvas.getBoundingClientRect();
-      [toolsEl, helpEl, legendEl].forEach(function (el) {
+      [toolsEl, helpEl, legendEl, root.querySelector('[data-u-mapkey]'), root.querySelector('[data-u-mapkey-panel]')].forEach(function (el) {
         if (!el || el.hidden || !el.offsetParent) return;
         var b = el.getBoundingClientRect();
         if (b.width && b.height) out.push({ x0: b.left - sr.left - 6, x1: b.right - sr.left + 6, y0: b.top - sr.top - 6, y1: b.bottom - sr.top + 6 });
@@ -1037,8 +1039,34 @@
       return o && o.kind === 'd' ? o.i : -1;
     }
     function screenR(fi) { return fams[fi].r * view.k; }
+    // Camera, marks and words are scaled apart. Inside a chosen discipline the discs are
+    // drawn at about three fifths of their room, so names and citation routes have space;
+    // the relative sizes stay as they are.
+    var mScale = 1;
+    function markTarget() { return focusDisc() >= 0 && openFamily() < 0 ? 0.6 : 1; }
+    function markR(fi) { return fams[fi].r * view.k * (openFamily() === fi ? 1 : mScale); }
     function dotRadius(sr) { return clamp(sr * 0.05, 0.9, 4.6); }
 
+    // The pair the reader shows: the selected result with its chosen Lean statement, or
+    // the selected Lean statement with its chosen paper result. [result id, Lean id] or null.
+    function pinnedPair() {
+      var o = sel ? obj(sel) : null;
+      if (!o || !partsReady) return null;
+      if (o.kind === 'r') {
+        var r = D.results[o.i], li = r.lean.indexOf(pin) >= 0 ? pin : r.lean[0];
+        return li === undefined ? null : [r.id, D.lean[li].id];
+      }
+      if (o.kind === 'l') {
+        var l = D.lean[o.i], ri = l.results.indexOf(pin) >= 0 ? pin : l.results[0];
+        return ri === undefined ? null : [D.results[ri].id, l.id];
+      }
+      return null;
+    }
+    function inHand(key) {
+      if (key === sel || key === hover) return true;
+      var pp = pinnedPair();
+      return !!pp && (pp[0] === key || pp[1] === key);
+    }
     /* ---- Painting -------------------------------------------------------- */
     function draw() {
       if (drawPending) return;
@@ -1066,6 +1094,11 @@
 
     function paint() {
       if (!D || !W) return;
+      var mt = markTarget();
+      if (Math.abs(mScale - mt) > 0.004) {
+        mScale = reduceMotion ? mt : mScale + (mt - mScale) * 0.25;
+        draw();
+      } else mScale = mt;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, W, H);
       hitTargets = [];
@@ -1116,7 +1149,7 @@
       for (var fi = 0; fi < fams.length; fi++) {
         var a = alphas[fi];
         if (a < 0.01) continue;
-        var f = fams[fi], sx = f.x * k + tx, sy = f.y * k + ty, sr = f.r * k;
+        var f = fams[fi], sx = f.x * k + tx, sy = f.y * k + ty, sr = markR(fi);
         if (sx + sr * 1.4 < -margin || sx - sr * 1.4 > W + margin || sy + sr * 1.4 < -margin || sy - sr * 1.4 > H + margin) continue;
         paintFamily(fi, sx, sy, sr, a, fi === openF ? openA : 0);
       }
@@ -1152,7 +1185,7 @@
             var A = fams[from], B = fams[to];
             var ax = A.x * k + view.tx, ay = A.y * k + view.ty, bx = B.x * k + view.tx, by = B.y * k + view.ty;
             var dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
-            var ra = A.r * k + 2, rb = B.r * k + 3;
+            var ra = markR(from) + 2, rb = markR(to) + 3;
             if (len < ra + rb + 4) return;
             var bow = Math.min(90, len * 0.18);
             var mx = (ax + bx) / 2 - uy * bow, my = (ay + by) / 2 + ux * bow;
@@ -1243,7 +1276,7 @@
       }
       ctx.globalAlpha = a;
       ctx.lineWidth = isHot && open < 0.5 ? 2.2 : hollow ? clamp(sr * 0.06, 1, 1.6) : clamp(sr * 0.03, 0.8, 1.4);
-      ctx.strokeStyle = isHot && open < 0.5 ? palette.focus : ink;
+      ctx.strokeStyle = isHot && open < 0.5 ? palette.focus : palette.tone[tone + 'Edge'];
       ctx.stroke();
       if (inner <= 0.01 || !partsReady) { ctx.restore(); return; }
       // Paper rings and arcs.
@@ -1267,7 +1300,7 @@
       }
       // Each result is a dot in its family's one colour; selected or pointed at, it is ringed.
       var dim = function (key) { return matches && !matches[key] ? 0.28 : 1; };
-      var hotKey = function (key) { return (hk && hk.key === key) || (so && so.key === key); };
+      var hotKey = function (key) { return inHand(key); };
       var dotInk = hollow ? palette.struct : ink;
       fd.papers.forEach(function (pi) {
         D.papers[pi].results.forEach(function (ri) {
@@ -1486,7 +1519,7 @@
       fams.forEach(function (f, fi) {
         // Faded families outside the focus are ground a name may stand on.
         if (alphas[fi] < 0.5) return;
-        var x = f.x * k + cx, y = f.y * k + cy, r = f.r * k + 3;
+        var x = f.x * k + cx, y = f.y * k + cy, r = markR(fi) + 3;
         if (x + r < 0 || x - r > W || y + r < 0 || y - r > H) return;
         nodes.push([x, y, r, fi]);
       });
@@ -1503,7 +1536,7 @@
         .filter(function (fi) { return alphas[fi] >= 0.3; })
         .sort(function (a, b) { return fams[b].r - fams[a].r || a - b; });
       list.forEach(function (fi) {
-        var f = fams[fi], x = f.x * k + cx, y = f.y * k + cy, r = f.r * k;
+        var f = fams[fi], x = f.x * k + cx, y = f.y * k + cy, r = markR(fi);
         if (x < -40 || x > W + 40 || y < -40 || y > H + 40) return;
         var title = D.families[fi].title;
         var shapes = [fitLines(title, FLAT_FONT, 172, 3) || balancedLines(title, 4, FLAT_FONT), fitLines(title, FLAT_FONT, 240, 2)].filter(Boolean);
@@ -1702,12 +1735,12 @@
       var lk = [sel, hover].map(function (k) { var o = k ? obj(k) : null; return o && o.kind === 'l' ? o.i : -1; });
       var hotResult = function (ri) {
         var r = D.results[ri];
-        return r.id === sel || r.id === hover || r.lean.some(function (li) { return lk.indexOf(li) >= 0; });
+        return inHand(r.id) || r.lean.some(function (li) { return lk.indexOf(li) >= 0; });
       };
       var hotFirst = function (list, keyOf) {
         return list.slice().sort(function (a, b) {
           var ka = keyOf(a), kb = keyOf(b);
-          return (kb === sel || kb === hover ? 1 : 0) - (ka === sel || ka === hover ? 1 : 0);
+          return (inHand(kb) ? 1 : 0) - (inHand(ka) ? 1 : 0);
         });
       };
       var resultOrder = [];
@@ -1811,7 +1844,7 @@
         var sct = L.wheel.sectors[o.i], rr = sct[3] * k;
         return { x: view.tx + rr * Math.cos(sct[2]), y: view.ty + rr * Math.sin(sct[2]), r: 4 };
       }
-      if (o.kind === 'f') { var f = fams[o.i]; return { x: f.x * k + view.tx, y: f.y * k + view.ty, r: f.r * k + 2 }; }
+      if (o.kind === 'f') { var f = fams[o.i]; return { x: f.x * k + view.tx, y: f.y * k + view.ty, r: markR(o.i) + 2 }; }
       p = objPos(o);
       var sr = screenR(famOf(o));
       r = o.kind === 'p' ? 4 : dotRadius(sr) * 1.5 + 2;
@@ -1867,7 +1900,7 @@
           D.lean[li].results.forEach(function (ri) {
             var rp = L.results[ri], A = [sx + rp[0] * sr, sy + rp[1] * sr];
             var obs = obstacles.filter(function (o) { return !insideBox(A, o) && !insideBox(B, o); });
-            var way = shortestWay(A, B, obs) || [A, B];
+            var way = [A, B];  // a pairing is drawn straight, so its two ends read as one pair
             routes.push({ ink: 'steel', dash: D.lean[li].pairing === 'candidate-pairing', w: 1.2, pair: [D.results[ri].id, D.lean[li].id], pts: trimEnds(way, dotRadius(sr) * 1.4 + 2, dotRadius(sr) * 1.7 + 2) });
           });
         });
@@ -1887,14 +1920,22 @@
         }) };
       }
       ctx.save();
-      // Pointing at a result or a Lean statement brightens its threads; the rest step back.
-      var lit = [hover, sel].filter(function (k) { return k && /^[rl]:/.test(k); });
-      var anyLit = lit.length && routes.some(function (r) { return r.pair && (lit.indexOf(r.pair[0]) >= 0 || lit.indexOf(r.pair[1]) >= 0); });
+      // The pair the reader shows is the strongest line on the map (still dashed when it
+      // is a candidate); pointing at a result or a Lean statement previews its lines, and
+      // leaving restores the pinned pair. Other pairings step back.
+      var pp = pinnedPair();
+      var hk2 = hover && /^[rl]:/.test(hover) ? hover : null;
+      var isOn = function (r) {
+        if (!r.pair) return false;
+        if (hk2) return r.pair[0] === hk2 || r.pair[1] === hk2;
+        return !!pp && r.pair[0] === pp[0] && r.pair[1] === pp[1];
+      };
+      var anyLit = routes.some(isOn);
       routes.forEach(function (r) {
-        var on = r.pair && (lit.indexOf(r.pair[0]) >= 0 || lit.indexOf(r.pair[1]) >= 0);
-        ctx.globalAlpha = openA * (anyLit && r.pair ? (on ? 1 : 0.4) : 1);
+        var on = isOn(r);
+        ctx.globalAlpha = openA * (anyLit && r.pair ? (on ? 1 : 0.3) : 1);
         ctx.strokeStyle = r.ink === 'steel' ? palette.steel : r.ink === 'cites' ? palette.cites : palette.cited;
-        ctx.lineWidth = on ? 1.9 : r.w;
+        ctx.lineWidth = on ? 2.4 : r.w;
         ctx.setLineDash(r.dash ? [3, 3] : []);
         ctx.beginPath();
         r.pts.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
@@ -2173,7 +2214,7 @@
       // A family's small map.
       var bestF = -1, bestD = Infinity;
       for (var fi = 0; fi < fams.length; fi++) {
-        var fm = fams[fi], d2 = Math.hypot(fm.x * k + view.tx - x, fm.y * k + view.ty - y), rr2 = fm.r * k + 3;
+        var fm = fams[fi], d2 = Math.hypot(fm.x * k + view.tx - x, fm.y * k + view.ty - y), rr2 = markR(fi) + 3;
         if (d2 <= rr2 && d2 / rr2 < bestD) { bestD = d2 / rr2; bestF = fi; }
       }
       if (bestF >= 0 && (openF < 0 || bestF === openF || 1 - smooth((screenR(openF) - 80) / 110) > 0.3)) return D.families[bestF].id;
@@ -2219,6 +2260,7 @@
       var before = viewNow();
       var prev = sel ? obj(sel) : null;
       sel = key || null;
+      pin = -1;
       hover = null;
       routeCache.key = '';
       if (opts.trail) trail.push({ key: key, before: before, prev: prev ? prev.key : null });
@@ -2247,7 +2289,7 @@
       root.classList.toggle('is-reading', reading);
       var changed = resize();
       if (changed) { routeCache.key = ''; draw(); }
-      return changed;
+      return changed && reading;
     }
     /* At family depth, a small key names the objects and lines this family's
        map actually draws, in words. */
@@ -2321,9 +2363,21 @@
       });
       return items.join('<span class="u-crumb-sep" aria-hidden="true">/</span>');
     }
+    function scopeName(o) {
+      if (!o) return '';
+      return o.kind === 'd' ? D.disciplines[o.i].name : D.families[famOf(o)].title;
+    }
+    function updateFit() {
+      var b = root.querySelector('[data-u-zoom="fit"]');
+      if (!b) return;
+      var o = sel ? obj(sel) : null, label = o ? T('controls.fit_scope', { name: scopeName(o) }) : T('controls.fit');
+      b.setAttribute('aria-label', label); b.setAttribute('title', label);
+    }
     function renderPanel() {
       if (!viewEl) return;
       var o = sel ? obj(sel) : null;
+      updateFit();
+      updateMapKey();
       updateLegend(o && o.kind !== 'd' ? famOf(o) : -1);
       if (trailEl) trailEl.innerHTML = trailHtml();
       if (trailEl) trailEl.hidden = !o;
@@ -2434,6 +2488,7 @@
     // pointing within the list only highlights, so the list never moves under the pointer.
     function syncActive() {
       if (!viewEl) return;
+      if (typeof updateMapKey === 'function' && mapKeyEl && !mapKeyEl.hidden) updateMapKey();
       var hk = hover ? obj(hover) : null, fk = hk ? D.families[famOf(hk)] : null;
       Array.prototype.forEach.call(viewEl.querySelectorAll('.u-entry'), function (e) {
         e.classList.toggle('is-active', !!fk && e.getAttribute('data-go') === fk.id);
@@ -2521,6 +2576,29 @@
       return h;
     }
 
+    /* Reported checks, each group its own entry in its own term, after the sentence
+       that says what Comparator checked. */
+    function checksHtml(ld) {
+      var h = '<p class="u-sub__w"><span class="u-role">' + escapeHtml(T('lean.runs_role')) + '</span> ' + escapeHtml(ld.reruns) + '</p>';
+      if (ld.runs && ld.runs.length) h += '<ul class="u-runs">' + ld.runs.map(function (x) {
+        return '<li>' + escapeHtml(T('lean.source_term', { name: x.who, term: x.term || x.state || '' })) +
+          (x.date ? ' <span class="u-nowrap">' + escapeHtml(longDate(x.date)) + '</span>' : '') +
+          (x.current ? '' : ' (' + escapeHtml(T('lean.run_not_current')) + ')') + '. ' + link(x.url, T('lean.record')) + '</li>';
+      }).join('') + '</ul>';
+      return h + '<p class="u-sub__w">' + escapeHtml(T('lean.what_it_checks')) + '</p>';
+    }
+    // Why a pairing is drawn: a candidate's reason and shared words behind a fold;
+    // a citation in the Lean source or a declared binding said plainly.
+    function whyHtml(l, ld) {
+      var join = '<span class="u-join u-join--' + (l.pairing === 'candidate-pairing' ? 'candidate' : 'cited') + '" aria-hidden="true"></span>';
+      if (l.pairing !== 'candidate-pairing') return '<p class="u-sub__w">' + join + escapeHtml(ld.pairing) + '</p>';
+      return '<details class="u-why"><summary>' + join + escapeHtml(T('lean.why')) + '</summary><p>' + escapeHtml(ld.pairing) +
+        (ld.terms && ld.terms.length ? ' ' + escapeHtml(T('lean.shared_words', { words: ld.terms.join(', ') })) : '') + '</p></details>';
+    }
+    function pairControl(isShown, idx) {
+      return isShown ? '<p class="u-shown">' + escapeHtml(T('lean.shown_pair')) + '</p>'
+        : '<p><button type="button" class="u-pairbtn" data-pair="' + idx + '">' + escapeHtml(T('lean.show_pair')) + '</button></p>';
+    }
     /* A result: the theorem as printed, the Lean paired with it, and the ways on. */
     function resultHtml(ri) {
       var r = D.results[ri], p = D.papers[r.p], f = D.families[r.f], o = obj(r.id), det = detail(o);
@@ -2542,12 +2620,14 @@
       h += '<h2 class="u-h2">' + escapeHtml(T(r.lean.length ? (one ? 'result.lean_heading_' + one : 'result.lean_heading_mixed') : 'result.lean_heading_none')) + '</h2>';
       if (one === 'candidate') h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_candidate')) + '</p>';
       if (r.lean.length) {
+        var pp = pinnedPair();
         h += '<ul class="u-subrows u-subrows--lean">' + r.lean.map(function (li) {
-          var l = D.lean[li], ld = detail(obj(l.id));
-          return '<li>' + goBtn(l.id, '<span class="u-sub__t">' + escapeHtml(l.label) + '</span><code class="u-sub__n">' + escapeHtml(l.name) + '</code>', 'u-sub') +
-            (ld ? '<p class="u-sub__w"><span class="u-join u-join--' + (l.pairing === 'candidate-pairing' ? 'candidate' : 'cited') + '" aria-hidden="true"></span>' + escapeHtml(ld.pairing) + '</p>' +
+          var l = D.lean[li], ld = detail(obj(l.id)), shown = !!pp && pp[1] === l.id;
+          return '<li class="' + (shown ? 'is-shown' : '') + '" data-lean-row="' + escapeHtml(l.id) + '">' + goBtn(l.id, '<span class="u-sub__t">' + escapeHtml(l.label) + '</span><code class="u-sub__n">' + escapeHtml(l.name) + '</code>', 'u-sub') +
+            (r.lean.length > 1 ? pairControl(shown, li) : '') +
+            (ld ? whyHtml(l, ld) +
               (ld.snippet ? '<pre class="lean lean--snippet u-lean"><code>' + ld.snippet + '</code></pre><p class="u-sub__w">' + escapeHtml(T('lean.challenge_note')) + '</p>' : '') +
-              '<p class="u-sub__w"><span class="u-role">' + escapeHtml(T('lean.runs_role')) + '</span> ' + escapeHtml(ld.reruns) + '</p>' : '') + '</li>';
+              checksHtml(ld) : '') + '</li>';
         }).join('') + '</ul>';
       } else h += para(T('result.unpaired'));
       h += para(r.num ? T('result.numbering_note') : r.nn ? T('result.unnumbered') : T('result.number_unavailable'));
@@ -2572,24 +2652,56 @@
       h += '<h2 class="u-h2">' + escapeHtml(T('lean.paper_heading_' + (l.results.length ? lk : 'none'))) + '</h2>';
       if (l.results.length && lk === 'candidate') h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_candidate')) + '</p>';
       if (l.results.length) {
-        h += '<ul class="u-subrows">' + l.results.map(resultRow).join('') + '</ul>';
-        if (det) h += '<p class="u-sub__w"><span class="u-join u-join--' + (l.pairing === 'candidate-pairing' ? 'candidate' : 'cited') + '" aria-hidden="true"></span>' + escapeHtml(det.pairing) + '</p>';
+        var lp = pinnedPair();
+        h += '<ul class="u-subrows">' + l.results.map(function (ri) {
+          var shown = !!lp && lp[0] === D.results[ri].id;
+          return resultRow(ri).replace(/<\/li>$/, (l.results.length > 1 ? pairControl(shown, ri) : '') + '</li>');
+        }).join('') + '</ul>';
+        if (det) h += whyHtml(l, det);
       } else h += para(T('lean.paired_none'));
       h += '<h2 class="u-h2">' + escapeHtml(T('lean.reruns_heading')) + '</h2>';
       if (det) {
-        h += para(det.reruns, 'u-facts') + para(T('lean.runs_scope'));
-        if (det.runs.length) h += '<ul class="u-reruns">' + det.runs.map(function (x) {
-          var ok = /accepted$/.test(x.state || '');
-          return '<li class="' + (ok ? 'is-ok' : 'is-not') + '"><strong>' + escapeHtml(x.who) + '</strong>: ' +
-            escapeHtml(ok ? T('lean.accepted') : String(x.term || x.state || '').toLowerCase()) + (x.date ? ', ' + escapeHtml(longDate(x.date)) : '') + '. ' +
-            link(x.url, T('lean.record')) + '</li>';
-        }).join('') + '</ul>';
+        h += checksHtml(det) + para(T('lean.runs_scope'));
         if (det.holes.length) h += '<h3 class="u-h3">' + escapeHtml(T('lean.holes_heading')) + '</h3>' + para(T('lean.holes_note')) + '<p>' +
           det.holes.map(function (n) { return '<code>' + escapeHtml(n) + '</code>'; }).join(', ') + '</p>';
       } else h += loadingHtml(discOf(obj(l.id)), 'result.loading', 'result.load_failed');
       return h;
     }
 
+    /* The map key, for the release and a discipline: only the encodings drawn there,
+       in words, with citation inks named for the scope in hand. */
+    var mapKeyBtn = root.querySelector('[data-u-mapkey]'), mapKeyEl = root.querySelector('[data-u-mapkey-panel]');
+    function updateMapKey() {
+      if (!mapKeyBtn) return;
+      var o = sel ? obj(sel) : null, famState = o && o.kind !== 'd';
+      mapKeyBtn.hidden = !!famState;
+      if (famState) { mapKeyEl.hidden = true; mapKeyBtn.setAttribute('aria-expanded', 'false'); }
+      var rows = ['all', 'part', 'other', 'split', 'none'].map(function (t) {
+        return '<li>' + dot(t) + '<span>' + escapeHtml(T('key.' + t)) + '</span></li>';
+      }).join('');
+      var hk = hover ? obj(hover) : null;
+      var inks = o && o.kind === 'd' ? (hk && hk.kind === 'f' ? T('mapkey.fam_inks', { name: D.families[hk.i].title }) : T('mapkey.disc_inks', { name: D.disciplines[o.i].name })) : T('mapkey.release_inks');
+      mapKeyEl.innerHTML = '<p class="u-mapkey__p">' + escapeHtml(T('mapkey.colour')) + '</p><ul>' + rows + '</ul>' +
+        '<p class="u-mapkey__p">' + escapeHtml(T('mapkey.size')) + '</p>' +
+        '<p class="u-mapkey__p"><span class="u-arrow" aria-hidden="true"></span>' + escapeHtml(T('mapkey.arrow')) + ' ' + escapeHtml(inks) + '</p>';
+    }
+    // Pointing at the button previews the key; clicking pins it open; Escape or a second
+    // click closes it. The open key can itself be pointed at.
+    var mapKeyPinned = false, mapKeyTimer = 0;
+    function showMapKey(open) {
+      if (!mapKeyEl || mapKeyEl.hidden === !open) return;
+      if (open) updateMapKey();
+      mapKeyEl.hidden = !open;
+      mapKeyBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      chrome = chromeBoxes(); draw();
+    }
+    if (mapKeyBtn) {
+      mapKeyBtn.addEventListener('click', function () { mapKeyPinned = !mapKeyPinned || mapKeyEl.hidden; showMapKey(mapKeyPinned); });
+      [mapKeyBtn, mapKeyEl].forEach(function (el) {
+        el.addEventListener('pointerenter', function () { clearTimeout(mapKeyTimer); showMapKey(true); });
+        el.addEventListener('pointerleave', function () { mapKeyTimer = setTimeout(function () { if (!mapKeyPinned) showMapKey(false); }, 250); });
+      });
+    }
     /* ---- Search ----------------------------------------------------------- */
     function loadSearch() {
       if (searchRows) return Promise.resolve(searchRows);
@@ -2810,6 +2922,20 @@
       if (outside) window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
       select(key || null, { trail: true });
     });
+    // Choosing which recorded pair the map traces: the reader and the map follow, the
+    // camera stays where it is.
+    root.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-pair]') : null;
+      if (!b) return;
+      e.preventDefault();
+      pin = parseInt(b.getAttribute('data-pair'), 10);
+      var top = panelBody ? panelBody.scrollTop : 0;
+      var o = sel ? obj(sel) : null;
+      if (o) { viewEl.innerHTML = rerender(o); typeset(viewEl, o); }
+      if (panelBody) panelBody.scrollTop = top;
+      routeCache.key = '';
+      draw();
+    });
     // A row under the pointer in the panel lights its place on the map.
     root.addEventListener('pointerover', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
@@ -2823,7 +2949,7 @@
     root.querySelectorAll('[data-u-zoom]').forEach(function (b) {
       b.addEventListener('click', function () {
         var m = b.getAttribute('data-u-zoom');
-        if (m === 'fit') { if (sel) select(null, { trail: true }); else cameraTo(fitView(), true); return; }
+        if (m === 'fit') { var so = sel ? obj(sel) : null; cameraTo(frameFor(so), !so); return; }
         var f = m === 'in' ? 1.5 : 1 / 1.5, k = clamp(view.k * f, fitK * 0.6, 900);
         f = k / view.k;
         cameraTo({ k: k, tx: W / 2 - (W / 2 - view.tx) * f, ty: H / 2 - (H / 2 - view.ty) * f }, false);
@@ -2860,6 +2986,7 @@
       var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable);
       if (e.key === 'Escape') {
         if (document.querySelector('dialog[open]')) return;
+        if (mapKeyEl && !mapKeyEl.hidden) { e.preventDefault(); mapKeyPinned = false; showMapKey(false); mapKeyBtn.focus(); return; }
         if (sel || !viewFitted) { e.preventDefault(); stepBack(); }
         return;
       }
