@@ -1355,7 +1355,7 @@
       var hk = hover ? obj(hover) : null, so = sel ? obj(sel) : null;
       // The discipline names while the wheel is in view; in a discipline, its
       // families' names come first and the other disciplines' names take what room is left.
-      if (ctxA > 0.3 && !(compactLabels && view.k < fitK * 1.6)) {
+      if (ctxA > 0.3 && openF < 0 && !(compactLabels && view.k < fitK * 1.6)) {
         var fd = focusDisc();
         var wantNames = fd >= 0 || k >= fitK * 1.9;
         if (wantNames && fd >= 0) placeFlatNames(plan, taken, fd, alphas, ctxA, free);
