@@ -293,6 +293,7 @@
   "loading": "Loading the statement…",
   "dashed": "Dashed: a candidate pairing nobody has reviewed.",
   "page": "Papers {from}–{to} of {n}",
+  "page_one": "Paper {from} of {n}",
   "earlier": "Earlier papers",
   "later": "Later papers",
   "results_one": "1 result",

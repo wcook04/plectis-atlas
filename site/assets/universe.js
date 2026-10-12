@@ -1176,7 +1176,7 @@
       if (pager) {
         pager.hidden = pages < 2;
         var from = board.page * per + 1, to = Math.min(cols.length, (board.page + 1) * per);
-        pager.querySelector('[data-u-page-n]').textContent = T('board.page', { from: from, to: to, n: cols.length });
+        pager.querySelector('[data-u-page-n]').textContent = T(from === to ? 'board.page_one' : 'board.page', { from: from, to: to, n: cols.length });
         pager.querySelector('[data-u-page="-1"]').disabled = board.page === 0;
         pager.querySelector('[data-u-page="1"]').disabled = board.page >= pages - 1;
       }
