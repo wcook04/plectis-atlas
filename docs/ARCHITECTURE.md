@@ -5,6 +5,10 @@ a pinned export from **Statement Map**, the separate backend that joins source
 records, contributions and reported evidence. No database or application server
 is required. The [README](../README.md) is the public reading route; this guide owns development and build instructions.
 
+The [documentation index](README.md) lists the reader, contributor and developer
+guides. For file-level navigation, use [site source](../site/README.md) or
+[build tools and checks](../scripts/README.md).
+
 ## Where responsibilities live
 
 ```text
@@ -23,11 +27,23 @@ docs/                         repository explanation and README images
 .github/                      contribution forms, checks and publishing workflows
 ```
 
-The folders distinguish authored material, imported material and generated
-output. Tests remain beside the scripts they exercise; their `test_` names make
-them discoverable. `DESIGN.md` owns the website's reader experience, `STYLE.md`
-owns explanations, and `CONTRIBUTING.md` owns submission and review. Runtime
-code does not depend on the agent skills.
+The folders separate authored material, imported evidence and generated output.
+The website is built by scripts; it needs no application server or installable
+Python package. Tests stay beside the scripts they exercise and are listed in
+the [scripts guide](../scripts/README.md#check-a-change).
+
+The root keeps documents GitHub and contributors expect to find there:
+the README, contribution instructions, licences, citation metadata and agent
+entry files. The [documentation index](README.md) also links the writing,
+design and alignment guides at their existing addresses. Directory READMEs
+explain the folder you have opened; build order and source ownership remain
+in this guide. Runtime code does not depend on the agent skills.
+
+[`.gitattributes`](../.gitattributes) identifies the imported backend, fonts
+and KaTeX as vendored material, and the data JSON and skill mirrors as
+generated. GitHub can exclude these from language statistics and collapse
+generated diffs. The source records remain tracked and available for review;
+these attributes do not change the build or its validation rules.
 
 | Change | Owner |
 | --- | --- |
@@ -41,7 +57,7 @@ code does not depend on the agent skills.
 | The release map and front page | [`build_universe.py`](../scripts/build_universe.py), run after the site build. |
 | Lean source rendering and cross-references | [`lean_render.py`](../scripts/lean_render.py) and [`build_lean_xref.py`](../scripts/build_lean_xref.py). |
 | Contribution formats and validation | [`contributions/README.md`](../contributions/README.md) and [`check_contributions.py`](../scripts/check_contributions.py). |
-| Generated README sections and skill copies | [`sync_readme.py`](../scripts/sync_readme.py) and [`sync_skills.py`](../scripts/sync_skills.py). |
+| Generated root README sections, data-folder guide and skill copies | [`sync_readme.py`](../scripts/sync_readme.py) and [`sync_skills.py`](../scripts/sync_skills.py). |
 
 Statement Map owns the reader's evidence decisions. Atlas displays those
 records and their limits; a page renderer must not silently substitute its own
@@ -129,17 +145,61 @@ the PDF remains the reference for the paper.
 
 ## Use the data
 
-The source indexes in [`data/`](../data/) are plain JSON:
+The files in [`data/`](../data/) are plain JSON. Baseline extraction and later
+rendering have different producers; neither replaces Statement Map's evidence
+records or number memberships in [`backend/`](../backend/).
 
-- `families.json`: result families, their discipline, OpenAI's description, manuscripts and Lean statements;
-- `manuscripts.json`: abstracts, theorem-like statements with source file and line (those in the introduction flagged as candidate headline statements), and references with where each is cited;
-- `statements.json`: every Comparator statement file, its imports and the definitions it introduces;
-- `graph.json`: citations between manuscripts inside the collection;
-- `works.json`: the outside works the collection cites;
-- `review_queue.json`: every challenge file in order of where a careful reading is most useful, with the reasons, by a rule stated in `summary.json`;
-- `statement_numbers.json`: what each extracted statement prints on its reading page ("Theorem 1.1"), bound to its source file, line and hash;
-- `lean_xref.json`: each Lean declaration's counterpart in OpenAI's library and Mathlib at the pinned commits;
-- `summary.json`: baseline extraction counts and definitions; current reader counts and their member records come from `backend/` and appear on the [Numbers page](https://wcook04.github.io/plectis-atlas/numbers.html).
+| Files | Contents and producer |
+|---|---|
+| `summary.json`, `disciplines.json`, `history.json` | Baseline counts and definitions, the catalogue's subject order, and dated release history. Produced by `build_data.py`; `build_lean_claims.py` adds its own summary block. |
+| `families.json` | Family IDs, disciplines, titles, OpenAI's descriptions, manuscripts, statements and per-family `lean_doc` scope notes. Produced by `build_data.py`. |
+| `manuscripts.json` | Manuscript IDs, status, title, date, abstract, PDF URL, extracted statements, references, `rests_on`, `cited_by_in_collection` and `has_lean`. Produced by `build_data.py`. |
+| `statements.json` | Comparator challenge IDs, full Lean source, hashes, imports, vocabulary, Comparator settings, solution module and associated families and papers. Produced by `build_data.py`. |
+| `graph.json`, `works.json` | Citations within the collection, and outside works with their records and citing manuscripts. Produced by `build_data.py`. |
+| `review_queue.json` | Challenge files ordered by a reading-priority rule, with reasons. The rule is recorded in `summary.json`; produced by `build_data.py`. |
+| `paper_acceptance.json`, `statement_numbers.json`, `paper_labels.json` | Reading-page conversion results, printed statement numbers and label targets. Produced by `build_papers.py`. |
+| `lean_claims.json` | Lean library declarations and their source locations, extracted textually by `build_lean_claims.py`. This is not a Lean build or proof check. |
+| `lean_xref.json` | Declaration references into OpenAI's library and Mathlib at pinned commits, produced by `build_lean_xref.py`. |
+
+#### How to read the extracted fields
+
+- **Paper statements** in `manuscripts[].statements` are theorem-like TeX
+  environments after `\input` expansion: theorems, propositions, corollaries,
+  conjectures, questions and hypotheses. Each has a source `file` and `line`,
+  `label`, TeX `text` and a `sha256` of its whitespace-normalised text.
+  `headline` marks non-appendix theorems, corollaries, conjectures and
+  propositions before the second section or with “main” in their display name.
+  If none qualify, it marks the first three non-appendix theorems instead.
+  This is an extraction heuristic. Lemmas are counted in `lemma_count`.
+- **References** are bibliography entries actually cited in the manuscript,
+  from `.bib` files or `thebibliography`. Their `uses` identify the source
+  file, line, section and, where present, the containing statement or proof.
+  `rests_on` follows citations to manuscripts in the collection through later
+  editions, retaining their status and `has_lean` flag.
+- **Statement vocabulary** lists the definitions, abbreviations, structures,
+  classes, inductive types, instances, notation, macros and axioms introduced
+  by the challenge file. These are part of what its statement means.
+- **Lean coverage** of a manuscript (`has_lean`) means OpenAI's family scope
+  note lists it as an accompanying paper and links at least one challenge.
+  It is a different measure from OpenAI's reported share of formalised
+  top-line results, quoted separately in `summary.json`.
+- **Printed statement numbers**, such as “Theorem 1.1”, come from the paper
+  renderer and are bound to the extracted statement's file, line and hash.
+  They describe the reading page; the PDF remains the reference.
+
+Family IDs are source identifiers, not a consecutive sequence. Outside works
+are grouped by DOI, then arXiv identifier, then normalised title; that grouping
+is unaudited and can count a work twice. Candidate paper-to-Lean matches come
+from the backend export and remain subject to review. Source extraction alone
+does not establish that a formal statement matches a paper's claim.
+
+Use the [Numbers page](https://wcook04.github.io/plectis-atlas/numbers.html)
+for the reader's current counts, definitions and member records. Quoted source
+text retains its original copyright and licence; see [NOTICE](../NOTICE).
+
+The directory's short [`README.md`](../data/README.md) is generated by
+`sync_readme.py` and points here. To change that introduction, edit its
+`data_guide()` function and regenerate; maintain the detailed reference here.
 
 
 ## Refreshing inputs

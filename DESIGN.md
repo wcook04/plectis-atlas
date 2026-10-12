@@ -232,6 +232,27 @@ Preserve the README's existing section anchors when shortening it. Check the
 rendered Markdown in light and dark schemes at laptop and phone widths, and
 check that the preview is a working link, not just an image.
 
+Keep the introduction literal: say what the website shows and what a reader
+can do there. Use a named example rather than another general description.
+Review repetition and vague language across paragraphs, while preserving
+attribution and the limits of each check. The directory guides in `docs/`,
+`site/` and `scripts/` should help someone browsing GitHub find the relevant
+file without repeating the architecture guide.
+
+Repository references for this arrangement:
+
+- [Observable Plot](https://github.com/observablehq/plot) gives its documentation,
+  examples and contribution instructions short, direct routes from the README.
+- [Datasette](https://github.com/simonw/datasette) names its readers and links a
+  live example before the installation details.
+- [Lean Blueprint](https://github.com/PatrickMassot/leanblueprint) introduces its
+  purpose through real projects before explaining setup.
+
+For Atlas, these support a website action and concrete family example first,
+with contributor and developer instructions linked nearby. Folder boundaries
+follow the files' responsibilities; a different project's package structure
+does not by itself justify moving working paths here.
+
 ## Words
 
 - Plain and exact. A statement "states" a theorem, a check "checked" a run, a paper "cites" another.

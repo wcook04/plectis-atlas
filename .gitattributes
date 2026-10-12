@@ -1,0 +1,9 @@
+# Imported dependencies are not Atlas implementation code.
+backend/** linguist-vendored
+site/assets/vendor/** linguist-vendored
+site/assets/fonts/** linguist-vendored
+
+# Generated data and skill mirrors remain available, with diffs collapsed by GitHub.
+data/*.json linguist-generated
+.agents/skills/** linguist-generated
+.claude/skills/** linguist-generated
