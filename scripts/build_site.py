@@ -161,34 +161,92 @@ GREEK = {k: v for k, v in zip(
 PLAIN_SYM = {"le": "≤", "leq": "≤", "ge": "≥", "geq": "≥", "lt": "<", "gt": ">", "ne": "≠", "neq": "≠", "cdot": "·",
              "times": "×", "infty": "∞", "to": "→", "in": "∈", "pm": "±", "ldots": "…", "cdots": "⋯", "dots": "…",
              "log": "log", "exp": "exp", "Re": "Re", "sim": "∼", "approx": "≈", "subset": "⊂", "subseteq": "⊆",
-             "ell": "ℓ", "partial": "∂", "sqrt": "√", "mid": "|", "colon": ":", "otimes": "⊗", "oplus": "⊕"}
-SUPS = str.maketrans("0123456789+-=()niak", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱᵃᵏ")
+             "ell": "ℓ", "partial": "∂", "sqrt": "√", "mid": "|", "colon": ":", "otimes": "⊗", "oplus": "⊕",
+             "exists": "∃", "forall": "∀", "notin": "∉", "supset": "⊃", "supseteq": "⊇", "cap": "∩", "cup": "∪",
+             "setminus": "∖", "emptyset": "∅", "varnothing": "∅", "circ": "∘", "ast": "∗", "star": "⋆",
+             "wedge": "∧", "vee": "∨", "neg": "¬", "nabla": "∇", "hbar": "ℏ", "aleph": "ℵ", "langle": "⟨",
+             "rangle": "⟩", "Vert": "‖", "mapsto": "↦", "rightarrow": "→", "leftarrow": "←", "Rightarrow": "⇒",
+             "iff": "⟺", "equiv": "≡", "cong": "≅", "simeq": "≃", "ll": "≪", "gg": "≫", "prec": "≺", "perp": "⊥",
+             "sum": "∑", "prod": "∏", "int": "∫", "lvert": "|", "rvert": "|", "vert": "|", "lfloor": "⌊",
+             "rfloor": "⌋", "lceil": "⌈", "rceil": "⌉", "dagger": "†", "prime": "′", "quad": " ", "qquad": " "}
+# Commands that print nothing in a plain title: sizes, spacing and delimiters' sizing.
+PLAIN_DROP = {"left", "right", "big", "Big", "bigg", "Bigg", "bigl", "bigr", "Bigl", "Bigr", "biggl", "biggr",
+              "displaystyle", "textstyle", "scriptstyle", "limits", "nolimits", "mathop", "mathord", "mathrel",
+              "mathbin", "mathopen", "mathclose", "nonumber", "notag", "label", "boldsymbol", "bm", "middle"}
+BLACKBOARD = {"R": "ℝ", "Z": "ℤ", "N": "ℕ", "Q": "ℚ", "C": "ℂ", "P": "ℙ", "H": "ℍ", "F": "𝔽", "E": "𝔼",
+              "A": "𝔸", "T": "𝕋", "K": "𝕂", "S": "𝕊"}
+SUPS = str.maketrans("0123456789+-=()niak/", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱᵃᵏ\u2044")
+# A longer exponent (2^{0.49n}, C^{1,α}) in modifier letters, when every character has one.
+SUP_MORE = {**{chr(c): v for c, v in zip(b"0123456789+-=()/", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾\u2044")},
+            **dict(zip("abcdefghijklmnoprstuvwxyz", "ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻ")),
+            **dict(zip("αβγδεθφχ", "ᵅᵝᵞᵟᵋᶿᵠᵡ")), ".": "·", ",": ",", " ": ""}
+
+
+def _sup(body: str) -> str:
+    if re.fullmatch(r"[0-9+\-=()niak/]+", body):
+        return body.translate(SUPS)
+    if body and all(ch in SUP_MORE for ch in body):
+        return "".join(SUP_MORE[ch] for ch in body)
+    return "^(" + body + ")"
 SUBS = str.maketrans("0123456789+-=()", "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎")
+SUB_LETTERS = dict(zip("aehijklmnoprstuvx", "ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓ"))
+_RELATION = re.compile(r"\s*([≤≥≠<>∈∉⊂⊆⊃⊇≈∼≡≅≃≪≫→←⇒⟺↦=×⊗⊕])\s*")
+_OPERATOR_WORD = re.compile(r"(?<=[\w)\]])(?=\\(?:log|exp|sin|cos|tan|det|dim|ker|max|min|sup|inf|lim|gcd|deg|arg)(?![A-Za-z]))")
+
+
+def _plain_math(t: str) -> str:
+    """One formula as plain Unicode text: CAT(0), L₁, c₀, C¹, ℤ³, P ≠ NP."""
+    t = re.sub(r"\\mathbb\s*\{?\s*([A-Z])\s*\}?", lambda mm: BLACKBOARD.get(mm.group(1), mm.group(1)), t)
+    t = re.sub(r"\\(?:mathsf|mathcal|mathbb|mathrm|mathbf|operatorname\*?|text|mathit|mathfrak|mathscr|mathtt|"
+               r"textsf|textbf|textit|texttt|textrm|textup|textnormal|mbox|hbox|emph|boldsymbol|bm)\s*\{([^{}]*)\}", r"\1", t)
+    t = re.sub(r"\\(?:mathsf|mathcal|mathbb|mathrm|mathbf)\s+(\w)", r"\1", t)
+    t = re.sub(r"\\[dt]?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}", r"\1/\2", t)
+    t = _OPERATOR_WORD.sub(" ", t)
+    t = re.sub(r"\\([A-Za-z]+)", lambda mm: GREEK.get(mm.group(1)) or PLAIN_SYM.get(mm.group(1))
+               or ("" if mm.group(1) in PLAIN_DROP else mm.group(1)), t)
+    t = re.sub(r"\\[,;:!> ]", " ", t)
+    t = re.sub(r"\^\{([^{}]*)\}", lambda mm: _sup(mm.group(1)), t)
+    t = re.sub(r"\^(\w)", lambda mm: mm.group(1).translate(SUPS), t)
+    t = re.sub(r"_\{([^{}]*)\}", lambda mm: mm.group(1).translate(SUBS) if re.fullmatch(r"[0-9+\-=()]+", mm.group(1)) else "_" + mm.group(1), t)
+    t = re.sub(r"_(\d)", lambda mm: mm.group(1).translate(SUBS), t)
+    t = re.sub(r"_(?:\{([aehijklmnoprstuvx])\}|([aehijklmnoprstuvx]))", lambda mm: SUB_LETTERS[mm.group(1) or mm.group(2)], t)
+    t = re.sub(r"_(?=[∞αβγδεπσωℓ])", "", t)
+    t = t.replace("{", "").replace("}", "").replace("\\", "")
+    t = _RELATION.sub(r" \1 ", t)
+    return re.sub(r"\s+", " ", t).strip()
+
+
+# An apostrophe inside a word, after any letter (Erdős's, Patterson's), is typographic in
+# prose. A prime in TeX, a code span, a tag and an identifier keep their straight quote.
+_APOS = re.compile(r"(?<=[^\W_])'(?=[^\W\d_])")
+_PROSE_SKIP = re.compile(r"(`[^`]*`|<[^>]+>|\]\([^)\s]*\)|\\\(.*?\\\)|\\\[.*?\\\]|\$\$.*?\$\$|(?<!\\)\$[^$]*(?<!\\)\$)", re.S)
+
+
+def curly_prose(s) -> str:
+    """Typographic apostrophes in a name or title from the release, outside formulas,
+    tags and code spans."""
+    if not s or "'" not in s:
+        return s or ""
+    return "".join(p if i % 2 else _APOS.sub("\u2019", p) for i, p in enumerate(_PROSE_SKIP.split(s)))
 
 
 def tex_plain(s: str) -> str:
-    """Plain-text rendering of a title or description for <title>, meta tags and search."""
+    """Plain-text rendering of a title or description for <title>, meta tags and search:
+    its formulas in Unicode (CAT(0), L₁, c₀, C¹), no dollar signs or backslashes."""
     if not s:
         return ""
     s = re.sub(r"<[^>]+>", "", s)
-    s = html.unescape(s)
-
-    def math(m):
-        t = m.group(1)
-        t = re.sub(r"\\(?:mathsf|mathcal|mathbb|mathrm|mathbf|operatorname|text|mathit|mathfrak|mathscr)\s*\{([^{}]*)\}", r"\1", t)
-        t = re.sub(r"\\(?:mathsf|mathcal|mathbb|mathrm|mathbf)\s+(\w)", r"\1", t)
-        t = re.sub(r"\\([A-Za-z]+)", lambda mm: GREEK.get(mm.group(1), PLAIN_SYM.get(mm.group(1), "")), t)
-        t = re.sub(r"\^\{([^{}]*)\}", lambda mm: mm.group(1).translate(SUPS) if re.fullmatch(r"[0-9+\-=()niak]+", mm.group(1)) else "^" + mm.group(1), t)
-        t = re.sub(r"\^(\w)", lambda mm: mm.group(1).translate(SUPS), t)
-        t = re.sub(r"_\{([^{}]*)\}", lambda mm: mm.group(1).translate(SUBS) if re.fullmatch(r"[0-9+\-=()]+", mm.group(1)) else "_" + mm.group(1), t)
-        t = re.sub(r"_(\d)", lambda mm: mm.group(1).translate(SUBS), t)
-        t = t.replace("{", "").replace("}", "").replace("\\", "")
-        return re.sub(r"\s+", " ", t).strip()
-
+    s = curly_prose(html.unescape(s))
+    math = lambda m: _plain_math(m.group(1))
     s = re.sub(r"\\\((.*?)\\\)", math, s, flags=re.S)
     s = re.sub(r"\\\[(.*?)\\\]", math, s, flags=re.S)
-    s = re.sub(r"\$([^$]+)\$", math, s)
+    s = re.sub(r"\$\$(.+?)\$\$", math, s, flags=re.S)
+    s = re.sub(r"(?<!\\)\$([^$]+)\$", math, s)
+    # A superscript or subscript the source writes outside $...$ ("A C^1 Counterexample").
+    s = re.sub(r"(?<=[A-Za-z)])\^\{?([0-9]+)\}?", lambda mm: mm.group(1).translate(SUPS), s)
+    s = re.sub(r"(?<=[A-Za-z])_\{?([0-9]+)\}?(?![\w])", lambda mm: mm.group(1).translate(SUBS), s)
     s = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", s)
+    s = re.sub(r"\\([%&#_$])", r"\1", s)
     return re.sub(r"\s+", " ", s).strip()
 
 
@@ -1257,6 +1315,10 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
          extra_head: str = "", page_type="website") -> str:
     depth = rel.count("/")
     root = "../" * depth
+    # Titles and descriptions are plain text: a formula in one is written in Unicode
+    # (CAT(0), L₁), never as TeX, in the tab, the search result and a pasted link's preview.
+    title = tex_plain(title)
+    description = tex_plain(description)
     canonical = BASE_URL + ("" if rel == "index.html" else rel)
     full_title = title if title == C("site.name") else f"{title} | {C('site.name')}"
     og = og_block or generic_og_meta()
@@ -3316,9 +3378,9 @@ def build_references_outside():
         authors = clean_ref_text(w.get("authors"))
         title = clean_ref_text(w.get("title"))
         if title:
-            head_ = f'<span class="work__ti">{esc(title)}</span>' + (f' <span class="work__au">{esc(authors)}</span>' if authors else "")
+            head_ = f'<span class="work__ti md-math">{esc(curly_prose(title))}</span>' + (f' <span class="work__au">{esc(authors)}</span>' if authors else "")
         else:
-            head_ = f'<span class="work__tx">{esc(clean_ref_text(w.get("text") or w["id"]))}</span>'
+            head_ = f'<span class="work__tx md-math">{esc(curly_prose(clean_ref_text(w.get("text") or w["id"])))}</span>'
         rr = rec.get("record", {})
         links = []
         if rr.get("doi"):
@@ -3366,7 +3428,7 @@ def build_sources():
         flist = "".join(f"<li><strong>{esc(k)}</strong>: {esc(v)}</li>" for k, v in fields.items())
         authors = ", ".join(a.get("name") or a.get("handle") or "" for a in (src.get("authors") or []))
         ingested.append(f"""<article class="ceff" id="src-{esc(src['id'])}">
- <h3 class="h3"><a class="ext" href="{esc(src.get('url') or '')}" rel="noopener">{esc(src.get('name') or src['id'])}</a></h3>
+ <h3 class="h3"><a class="ext" href="{esc(src.get('url') or '')}" rel="noopener"><span class="md-math">{esc(src.get('name') or src['id'])}</span></a></h3>
  <p class="muted small">{esc(authors)}, {esc(C('sources.snapshot', date=src.get('snapshot') or ''))}, {esc(C('sources.licence', licence=src.get('licence') or 'n/a'))}</p>
  <p>{esc(short(src.get('method') or '', 400))}</p>
  <ul class="small">{flist}</ul>
@@ -3378,10 +3440,10 @@ def build_sources():
         fams = sorted({f["family"] for f in COMMUNITY["findings"] if f.get("effort") == e["id"] and f.get("family") in FAM} | {x for x in (e.get("families") or []) if x in FAM})
         fam_links = ", ".join(f'<a href="families/{esc(x)}.html">{esc(x)}</a>' for x in fams[:10]) + (" …" if len(fams) > 10 else "")
         efforts.append(f"""<article class="ceff" id="src-{esc(e['id'])}">
- <h3 class="h3"><a class="ext" href="{esc(e['url'])}" rel="noopener">{esc(e['name'])}</a></h3>
+ <h3 class="h3"><a class="ext" href="{esc(e['url'])}" rel="noopener"><span class="md-math">{esc(curly_prose(e['name']))}</span></a></h3>
  <p class="muted small">{esc(credit_names(e))}{', ' if credit_names(e) else ''}{esc(e.get('date') or '')}, {esc(C('community.reuse_' + e.get('reuse', 'link')))} {esc(C('community.licence', licence=e.get('licence') or 'n/a'))}</p>
- <p>{esc(e['summary'])}</p>
- {('<p class="small">' + esc(C('sources.used_on', n=nf)) + ' ' + fam_links + '</p>') if fams else ''}
+ <p class="md-math">{esc(e['summary'])}</p>
+ {('<p class="small">' + esc(C('sources.used_on', findings=C('sources.findings_one') if nf == 1 else C('sources.findings_many', n=nf), results=C('sources.on_result' if len(fams) == 1 else 'sources.on_results'))) + ' ' + fam_links + '</p>') if fams else ''}
  {adopted_list_html(e.get('adopted'))}
 </article>""")
     people = {(a.get("name") or a.get("handle")) for e in COMMUNITY["list"] for a in (e.get("authors") or [])}

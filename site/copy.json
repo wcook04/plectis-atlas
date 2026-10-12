@@ -916,7 +916,11 @@
   "erdos_number": "Erdős problem #{n}",
   "efforts_heading": "Findings and work cited from other people",
   "efforts_intro": "Replays, error reports, follow-up results, explanations and commentary, each attached to the results it concerns and credited there.",
-  "used_on": "Cited on {n} findings, on results",
+  "used_on": "Cited on {findings}, on {results}",
+  "findings_one": "1 finding",
+  "findings_many": "{n} findings",
+  "on_result": "result",
+  "on_results": "results",
   "type_words": {
    "proof": "proof",
    "counterexample": "counterexample",
