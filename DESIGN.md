@@ -449,6 +449,15 @@ Board layout must not recursively rebuild its own content. Reserve scrollbar
 space so overflow does not alternate the column count. Resize and pagination
 refresh only the visible excerpts, with bounded fitting work. Verify boards
 near a column breakpoint, including the 14-paper log-abundance family.
+Detail arriving for a neighbouring family updates that family's title in place.
+It must not rebuild the paper board, move its page, or discard keyboard focus.
+An own-detail refresh preserves the board's page, scroll and focused control.
+Excerpt fitting is cached for unchanged width, budget and font metrics, including
+when the fitting limit was reached. Fresh desktop selections bring the map's
+heading and breadcrumbs back into view; scrolling a sidebar must not leave the
+next selection cropped above the screen.
+Dragging across board text selects text without selecting a record or stepping
+back. Board pointer clicks use the same movement tolerance as map circles.
 Discipline citation arrows carry a visible direction key. Arrowheads point to
 the cited family, including on the board; the line does not assert a proof
 dependency. Fade unrelated circles and their labels enough to keep citations

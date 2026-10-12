@@ -1039,7 +1039,9 @@
        it (dashed for a candidate pairing), and a neighbouring family to the papers that
        carry the citation (brick where this family cites, grey where it is cited). */
     var boardEl = root.querySelector('[data-u-board]');
-    var board = { fi: -1, sig: '', page: 0, per: 1, cols: 0, on: false, pending: false, budget: 170, hideT: 0, ringKey: null, revealKey: null };
+    var board = { fi: -1, sig: '', page: 0, per: 1, cols: 0, on: false, pending: false, budget: 170, hideT: 0, ringKey: null, revealKey: null, selectionKey: null };
+    var boardFontVersion = 0;
+    var boardPress = null;
     var pendingBoard = null;
     function boardPosition() {
       return board.fi < 0 || !boardEl ? null : { family: D.families[board.fi].id, column: board.page * board.per, y: boardEl.scrollTop };
@@ -1275,10 +1277,14 @@
       Array.prototype.forEach.call(boardEl.querySelectorAll('.u-col:not([hidden]) .u-bc--r .u-bc__x:not(.u-bc__x--none)'), function (x) {
         var c = x.closest('.u-bc'), det = sh.results[c.getAttribute('data-bk')];
         if (!det || !det.html || !x.clientWidth) return;
-        var b = board.budget, n = 0, most = 7.6 * (parseFloat(getComputedStyle(x).fontSize) || 16);
+        var css = getComputedStyle(x), size = parseFloat(css.fontSize) || 16;
+        var fit = [board.budget, x.clientWidth, size, css.lineHeight, boardFontVersion].join('|');
+        var previousFit = x.getAttribute('data-u-fit');
+        if (previousFit === fit) return;
+        var b = board.budget, n = 0, most = 7.6 * size;
         // Resize and pagination change only visible excerpts. Rebuilding the whole
         // board from layout can toggle its scrollbar and column count indefinitely.
-        if (+x.getAttribute('data-u-budget') !== b) {
+        if (previousFit || +x.getAttribute('data-u-budget') !== b) {
           var fresh = excerpt(det.html, b);
           x.innerHTML = fresh.html + (fresh.cut ? '…' : '');
           x.setAttribute('data-u-budget', b);
@@ -1290,6 +1296,7 @@
           x.innerHTML = ex.html + (ex.cut ? '…' : '');
           katexIn(x, c.getAttribute('data-paper'), di);
         }
+        x.setAttribute('data-u-fit', fit);
       });
     }
     function drawWires() {
@@ -1369,6 +1376,41 @@
       else if (card.bottom > bottom) boardEl.scrollTop += card.bottom - bottom;
       board.revealKey = null;
     }
+    // A neighbouring packet only enriches its title. Keep the cards and controls
+    // being read intact, rather than reconstructing all this family's papers.
+    function refreshBoardNeighbours() {
+      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--f'), function (c) {
+        var di = fams[+c.getAttribute('data-g')].d, sh = shards[di];
+        if (!sh || c.getAttribute('data-u-detail') === 'ready') return;
+        var det = sh.families && sh.families[c.getAttribute('data-bk')], title = c.querySelector('.u-bc__ft');
+        if (det && det.titleHtml && title) { title.innerHTML = det.titleHtml; katexIn(title, null, di); }
+        c.setAttribute('data-u-detail', 'ready');
+      });
+    }
+    function rememberBoardFocus() {
+      var active = document.activeElement;
+      if (!active || !boardEl.contains(active)) return null;
+      var card = active.closest('[data-bk]');
+      return { key: card && card.getAttribute('data-bk'), way: card && card.getAttribute('data-way'), href: active.getAttribute('href'), page: active.getAttribute('data-u-page') };
+    }
+    function restoreBoardFocus(saved) {
+      if (!saved) return;
+      var target = null;
+      if (saved.page !== null) target = boardEl.querySelector('[data-u-page="' + saved.page + '"]');
+      else if (saved.key) {
+        Array.prototype.some.call(boardEl.querySelectorAll('[data-bk]'), function (c) {
+          if (c.getAttribute('data-bk') !== saved.key) return false;
+          if (saved.way && c.getAttribute('data-way') !== saved.way) return false;
+          target = c;
+          if (saved.href) Array.prototype.some.call(c.querySelectorAll('a'), function (a) {
+            if (a.getAttribute('href') !== saved.href) return false;
+            target = a; return true;
+          });
+          return true;
+        });
+      }
+      if (target && !target.closest('[hidden]')) target.focus({ preventScroll: true });
+    }
     function syncBoard() {
       if (!boardEl || !D) return;
       var fi = boardFamily();
@@ -1377,19 +1419,22 @@
       if (!shards[di] && !failedShards[di]) loadShard(di).then(syncBoard, syncBoard);
       // The neighbours' titles are typeset from their own disciplines' records.
       var near = f.cites.concat(f.citedBy).map(function (c) { return fams[c[0]].d; });
-      var ready = near.filter(function (d2) { return shards[d2]; }).length;
+      near = near.filter(function (d2, i) { return d2 !== di && near.indexOf(d2) === i; });
       near.forEach(function (d2) { if (!shards[d2] && !failedShards[d2]) loadShard(d2).then(syncBoard, function () {}); });
-      var sig = fi + '|' + (shards[di] ? 1 : failedShards[di] ? 'failed' : 0) + '|' + ready;
+      var sig = fi + '|' + (shards[di] ? 1 : failedShards[di] ? 'failed' : 0);
       var fresh = board.fi !== fi;
+      var focused = null;
       if (sig !== board.sig) {
         var keepScroll = board.fi === fi ? boardEl.scrollTop : 0;
-        if (fresh) board.page = 0;
+        if (fresh) { board.page = 0; board.selectionKey = null; }
+        else focused = rememberBoardFocus();
         board.fi = fi; board.sig = sig;
         boardEl.innerHTML = boardHtml(fi);
         typesetBoard(fi);
         boardEl.scrollTop = keepScroll;
         hideBoardCard();
       }
+      refreshBoardNeighbours();
       markBoard();
       if (!board.on) {
         board.pending = true;
@@ -1402,8 +1447,13 @@
       ringBoard();
       restoreBoardPosition();
       revealBoardSelection();
+      restoreBoardFocus(focused);
     }
-    function layoutPages() { var keep = board.on; board.on = true; layoutBoard(); pageToSelection(); layoutBoard(); board.on = keep; }
+    function layoutPages() {
+      var keep = board.on; board.on = true; layoutBoard();
+      if (board.selectionKey !== sel) { pageToSelection(); board.selectionKey = sel; layoutBoard(); }
+      board.on = keep;
+    }
     function showBoard() {
       if (!board.pending) return;
       board.pending = false;
@@ -1553,7 +1603,13 @@
       }
     }
     if (boardEl) {
+      boardEl.addEventListener('pointerdown', function (e) {
+        boardPress = e.button === 0 && e.isPrimary !== false ? { x: e.clientX, y: e.clientY } : null;
+      });
+      boardEl.addEventListener('pointercancel', function () { boardPress = null; });
       boardEl.addEventListener('click', function (e) {
+        var press = boardPress; boardPress = null;
+        if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) { e.preventDefault(); return; }
         if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         var pg = e.target.closest('[data-u-page]');
         if (pg) { board.page += +pg.getAttribute('data-u-page'); hideBoardCard(); layoutBoard(); return; }
@@ -1579,6 +1635,7 @@
         if (c) openFromBoard(c.getAttribute('data-bk'));
       });
       boardEl.addEventListener('keydown', function (e) {
+        boardPress = null;
         var c = e.target && e.target.getAttribute && e.target.getAttribute('data-bk') ? e.target : null;
         if (!c) return;
         var key = c.getAttribute('data-bk');
@@ -1738,9 +1795,10 @@
       updateHash(!!opts.trail && !opts.fromHistory, leavingY, leavingBoard, leavingViews);
       if (o && liveEl) liveEl.textContent = nameOf(o);
       chartTo(fly);
-      // A fresh phone selection starts at its heading; returning through history
-      // keeps the position saved for the list or details being revisited.
-      if (!opts.fromHistory && narrow()) window.scrollTo({ top: 0, behavior: 'auto' });
+      // A fresh selection starts with its heading and breadcrumbs visible. The
+      // desktop sidebar's scrollIntoView can otherwise leave the whole map cropped.
+      // Returning through history keeps the saved reading position.
+      if (!opts.fromHistory) window.scrollTo({ top: 0, behavior: 'auto' });
     }
     // A paper, theorem or Lean statement in hand is read: the panel widens to give the
     // mathematics room, and the chart is laid out again in the rest.
@@ -2838,7 +2896,10 @@
           paint: paint
         };
         if (document.fonts && document.fonts.addEventListener) {
-          document.fonts.addEventListener('loadingdone', function () { widthCache = {}; labelCache = {}; layoutCache = {}; chartTo(false); });
+          document.fonts.addEventListener('loadingdone', function () {
+            widthCache = {}; labelCache = {}; layoutCache = {}; boardFontVersion++;
+            chartTo(false); if (board.on) layoutBoard();
+          });
         }
       })
       .catch(function (err) {

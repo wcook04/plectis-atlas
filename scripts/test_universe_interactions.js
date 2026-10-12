@@ -18,6 +18,9 @@ const shard = range('    function loadShard(di)', '    function detail(');
 // Isolate the production admission/retry prefix from board DOM rendering.
 const syncAdmission = range('    function syncBoard()', '      // The neighbours\' titles') + '\n    }';
 const boardVisibility = range('    function showBoard()', '    // The chosen card gets');
+const boardPages = range('    function layoutPages()', '    function showBoard()');
+const boardSync = range('    function refreshBoardNeighbours()', '    function showBoard()');
+const boardPointer = range("    if (boardEl) {\n      boardEl.addEventListener('pointerdown'", "      boardEl.addEventListener('pointerover'") + '    }';
 const chartNavigation = range('    function copyLayout(l)', '    function chartAnimating()');
 function deferred() {
   let resolve, reject;
@@ -39,7 +42,7 @@ function context(extra = {}) {
     chart: { start: 1, shown: { level: 'disc', nodes: [
       { x: 20, y: 20, r: 10, a: 1 }, { x: 60, y: 20, r: 10, a: 1 }
     ], regions: [] } },
-    root: { getAttribute: () => 'map' }, obj: key => objects.get(key),
+    root: { getAttribute: () => 'map' }, window: { scrollTo() {} }, obj: key => objects.get(key),
     sel: 'd:test', board: {}, pendingBoard: null, pendingViewSwitch: null,
     pendingY: null, pin: -1, hover: null, hoverVia: '', cardDismissed: null,
     ring: null, ringWanted: null, reduceMotion: false, trail: [], liveEl: { textContent: '' },
@@ -103,6 +106,90 @@ async function main() {
   boardState.hideBoard();
   assert.equal(attributes.has('inert'), true, 'even not-yet-visible board becomes inert');
   assert.equal(boardState.board.pending, false);
+  // Async detail replies can ask the board to lay out again. A reader-selected
+  // page is still the reader's page until a new selection requests a reveal.
+  let pageLayouts = 0, pageResets = 0;
+  const chosenPage = context({
+    board: { on: false, pending: true, fi: 0, page: 3, per: 2, revealKey: null, selectionKey: 'd:test' },
+    layoutBoard: () => { pageLayouts++; },
+    pageToSelection: () => { pageResets++; chosenPage.board.page = 0; }
+  });
+  vm.runInContext(boardPages, chosenPage);
+  chosenPage.layoutPages();
+  assert.ok(pageLayouts > 0, 'board layout still runs for asynchronous updates');
+  assert.equal(chosenPage.board.on, false, 'temporary layout visibility is restored');
+  assert.equal(chosenPage.board.page, 3, 'asynchronous updates preserve the chosen page');
+  assert.equal(pageResets, 0, 'selection paging does not run without a new selection');
+  chosenPage.sel = 'f:a';
+  chosenPage.layoutPages();
+  assert.equal(pageResets, 1, 'a new selection reveals its page once');
+  assert.equal(chosenPage.board.selectionKey, 'f:a');
+
+  // A neighbour packet enriches only its side card. The whole board and its
+  // focused controls stay in place; the own-family packet may rebuild but
+  // restores the same card or pager control after replacement.
+  let rebuilds = 0, enriched = 0;
+  const title = { innerHTML: 'old title' };
+  const sideAttrs = { 'data-g': '1', 'data-bk': 'f:b' };
+  const sideCard = {
+    getAttribute: key => sideAttrs[key] || null,
+    setAttribute: (key, value) => { sideAttrs[key] = String(value); },
+    querySelector: key => key === '.u-bc__ft' ? title : null
+  };
+  const doc = { activeElement: null };
+  const replacement = {
+    getAttribute: key => key === 'data-bk' ? 'r:chosen' : null,
+    querySelectorAll: () => [], closest: () => null,
+    focus: () => { doc.activeElement = replacement; }
+  };
+  const replacementPager = { closest: () => null, focus: () => { doc.activeElement = replacementPager; } };
+  const oldCard = {
+    getAttribute: key => key === 'data-bk' ? 'r:chosen' : null,
+    closest: key => key === '[data-bk]' ? oldCard : null
+  };
+  const oldPager = {
+    getAttribute: key => key === 'data-u-page' ? '-1' : null,
+    closest: () => null
+  };
+  const boardEl = {
+    scrollTop: 75,
+    set innerHTML(value) { rebuilds++; doc.activeElement = null; this.html = value; },
+    get innerHTML() { return this.html; },
+    contains: el => el === sideCard || el === oldCard || el === oldPager,
+    querySelectorAll: key => key === '.u-bc--f' ? [sideCard] : key === '[data-bk]' ? [replacement] : [],
+    querySelector: key => key === '[data-u-page="-1"]' ? replacementPager : null
+  };
+  const boardState2 = context({
+    D: { families: [{ id: 'f:a', cites: [[1, 1]], citedBy: [] }, { id: 'f:b', cites: [], citedBy: [] }] },
+    fams: [{ d: 0 }, { d: 1 }], sel: 'f:a', boardEl, document: doc,
+    board: { fi: 0, sig: '0|1', on: true, pending: false, page: 2, per: 2,
+      selectionKey: 'f:a', ringKey: null },
+    shards: { 0: {} }, failedShards: { 1: true },
+    boardFamily: () => 0, boardHtml: () => '<replacement board>',
+    typesetBoard() {}, hideBoardCard() {}, markBoard() {}, layoutBoard() {},
+    ringBoard() {}, restoreBoardPosition() {}, revealBoardSelection() {},
+    pageToSelection() { throw new Error('async refresh reset the chosen page'); },
+    katexIn: () => { enriched++; }, loadShard: () => Promise.resolve({})
+  });
+  vm.runInContext(boardSync, boardState2);
+  doc.activeElement = sideCard;
+  boardState2.syncBoard();
+  boardState2.shards[1] = { families: { 'f:b': { titleHtml: 'ready title' } } };
+  boardState2.syncBoard();
+  assert.equal(rebuilds, 0, 'neighbour readiness does not rebuild papers or pager');
+  assert.equal(title.innerHTML, 'ready title');
+  assert.equal(sideAttrs['data-u-detail'], 'ready');
+  assert.equal(enriched, 1, 'new side title is typeset once');
+  assert.equal(doc.activeElement, sideCard, 'neighbour refresh retains card focus');
+  boardState2.board.sig = '0|0';
+  doc.activeElement = oldCard;
+  boardState2.syncBoard();
+  assert.equal(rebuilds, 1, 'own-family readiness refreshes board content');
+  assert.equal(doc.activeElement, replacement, 'own-family rebuild restores card focus');
+  boardState2.board.sig = '0|0';
+  doc.activeElement = oldPager;
+  boardState2.syncBoard();
+  assert.equal(doc.activeElement, replacementPager, 'own-family rebuild restores pager focus');
   const c = context();
   vm.runInContext(hit, c);
   assert.equal(c.hitAt(20, 20, true), 'f:a', 'click can hit the visible moving family');
@@ -156,6 +243,54 @@ async function main() {
   assert.equal(c.hitAt(20, 20, true), 'f:a', 'faint but painted circle remains clickable');
   c.chart.shown.nodes[0].a = 0.009;
   assert.equal(c.hitAt(20, 20, true), null, 'invisible circle is excluded');
+
+  const boardHandlers = {}, boardSelected = [];
+  let boardBacks = 0, boardOpens = 0;
+  const card = { getAttribute: key => key === 'data-bk' ? 'r:chosen' : null };
+  const cardText = {
+    closest: key => key === '[data-bk]' ? card : null,
+    matches: () => false
+  };
+  const ground = { closest: () => null, matches: () => true };
+  const boardPointerState = context({
+    boardPress: null, board: { page: 0 }, sel: 'r:old',
+    boardEl: { addEventListener: (type, fn) => { boardHandlers[type] = fn; }, contains: () => true },
+    selectFromBoard: key => boardSelected.push(key),
+    stepBack: () => { boardBacks++; }, openFromBoard: () => { boardOpens++; },
+    hideBoardCard() {}, layoutBoard() {}
+  });
+  vm.runInContext(boardPointer, boardPointerState);
+  const boardEvent = (target, x, y) => ({
+    target, clientX: x, clientY: y, button: 0, isPrimary: true, detail: 1,
+    defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }
+  });
+  boardHandlers.pointerdown(boardEvent(cardText, 10, 10));
+  const textDrag = boardEvent(cardText, 40, 10);
+  boardHandlers.click(textDrag);
+  assert.equal(textDrag.defaultPrevented, true, 'dragged theorem text suppresses click');
+  assert.deepEqual(boardSelected, [], 'dragged theorem text does not select its card');
+  assert.equal(boardPointerState.boardPress, null, 'dragged press is consumed');
+  boardHandlers.pointerdown(boardEvent(ground, 10, 10));
+  const groundDrag = boardEvent(ground, 40, 10);
+  boardHandlers.click(groundDrag);
+  assert.equal(groundDrag.defaultPrevented, true);
+  assert.equal(boardBacks, 0, 'dragging empty board space does not step back');
+  boardHandlers.pointerdown(boardEvent(cardText, 10, 10));
+  boardHandlers.click(boardEvent(cardText, 12, 10));
+  assert.deepEqual(boardSelected, ['r:chosen'], 'short press still selects card');
+  boardHandlers.pointerdown(boardEvent(cardText, 10, 10));
+  boardHandlers.pointercancel();
+  boardHandlers.click(boardEvent(cardText, 40, 10));
+  assert.equal(boardSelected.length, 2, 'pointer cancel clears stale drag start');
+  boardHandlers.pointerdown(boardEvent(cardText, 10, 10));
+  const keyboard = boardEvent(card, 0, 0);
+  keyboard.key = 'Enter';
+  boardHandlers.keydown(keyboard);
+  assert.equal(keyboard.defaultPrevented, true);
+  assert.equal(boardPointerState.boardPress, null, 'keyboard activation clears stale drag start');
+  boardHandlers.click(boardEvent(cardText, 40, 10));
+  assert.equal(boardSelected.length, 4, 'keyboard activation and later click both select');
+  assert.equal(boardOpens, 0, 'none of these gestures double-open a result');
 
   let requests = 0;
   const caches = [];
