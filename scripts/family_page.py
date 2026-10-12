@@ -37,6 +37,7 @@ import re
 from functools import lru_cache
 from html import escape as _esc
 from pathlib import Path
+from urllib.parse import urlparse
 
 import evidence
 import reader
@@ -350,12 +351,36 @@ class Ctx:
         return src
 
     def effort_credit(self, x) -> str:
-        e = self.efforts.get(x.get("effort") or "") or {}
+        """The credit for a community finding: the authors and name of the effort it cites.
+        When the packet holds no record of that effort, the finding is never shown bare: the
+        credit is where its own link points, in plain words, or that the record names no author."""
+        e = self.efforts.get(x.get("effort") or "")
+        if e is None:
+            site = link_site(x.get("url"))
+            return W("said.from_site", site=site) if site else W("said.no_author")
         who = ", ".join(a.get("name") for a in e.get("authors") or [] if a.get("name"))
-        return ", ".join(t for t in (who, e.get("name") or "") if t)
+        return ", ".join(t for t in (who, e.get("name") or "") if t) or W("said.no_author")
 
     def templates(self) -> str:
         return "".join(f'<template id="{tid}">{html}</template>' for tid, html in self.tpls.items())
+
+
+def link_site(url) -> str:
+    """Where a link points, in plain words: the site's name, with the account and project for
+    GitHub and the account for a Mastodon-style address. Nothing is inferred beyond the address."""
+    try:
+        u = urlparse(url or "")
+    except ValueError:
+        return ""
+    host = (u.netloc or "").lower().removeprefix("www.")
+    if not host:
+        return ""
+    parts = [p for p in (u.path or "").split("/") if p]
+    if host == "github.com" and parts:
+        return host + "/" + "/".join(parts[:2])
+    if parts and parts[0].startswith("@"):
+        return host + "/" + parts[0]
+    return host
 
 
 def record(kind: str, title_html: str, rows, links, *, body: str = "", macros: str = "") -> str:

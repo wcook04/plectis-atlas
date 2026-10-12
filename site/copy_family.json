@@ -242,7 +242,9 @@
  },
  "said": {
   "heading": "What people have said",
-  "intro": "Commentary on this family by others, dated and credited. It is commentary, not a finding."
+  "intro": "Commentary on this family by others, dated and credited. It is commentary, not a finding.",
+  "from_site": "From {site}",
+  "no_author": "The record names no author"
  },
  "followups": {
   "heading": "Follow-up work by others"
