@@ -165,6 +165,40 @@ def example_block(families, manuscripts, statements) -> str:
     ])
 
 
+WORDS = {2: "Two", 3: "Three", 4: "Four", 5: "Five"}
+
+
+def checks_block(s: dict) -> str:
+    """The outside checks in numbers: Comparator re-runs accepted on the pinned release per
+    challenge file, from the backend's family packets (scripts/reader.py), and the two outside
+    readers' agreement from data/summary.json."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import reader
+    r = reader.Reader()
+    accepted = {}
+    for f in load("families.json"):
+        fid = "f:" + str(f["id"])
+        try:
+            doc = r.family(fid)
+        except SystemExit:
+            continue
+        for lean in doc.get("lean") or []:
+            accepted[lean["id"]] = set(lean.get("accepted_current_sources") or [])
+    sources = set().union(*accepted.values()) if accepted else set()
+    k = len(sources)
+    some = sum(1 for v in accepted.values() if v)
+    every = sum(1 for v in accepted.values() if sources and v == sources)
+    ra = s["readers_agreement"]
+    agree, dis = ra["agree-full"] + ra["agree-less"], ra["disagree"]
+    return (
+        f"{WORDS.get(k, str(k))} outside groups report re-running OpenAI’s proofs through [Comparator](https://github.com/leanprover/comparator) "
+        f"on the pinned release: {some:,} of the {len(accepted):,} challenge files were accepted by at least one of them, and {every:,} by all {WORDS.get(k, str(k)).lower()}. "
+        "Two of them, [MathVet](https://math.vet) and Carlos Toledo’s [cert-machine](https://github.com/carlostoledo1891/cert-machine), "
+        "also read every family’s Lean against the paper’s headline result, independently of each other. "
+        f"They agree on {agree:,} of the {agree + dis:,} families both read and disagree on {dis:,}; each family page shows both readings."
+    )
+
+
 def replace_block(text: str, name: str, body: str) -> str:
     pat = re.compile(rf"(<!-- {name}:start -->\n).*?(<!-- {name}:end -->)", re.S)
     if not pat.search(text):
@@ -204,6 +238,7 @@ def main():
     s = load("summary.json")
     new = replace_block(text, "overview", overview_block())
     new = replace_block(new, "numbers", numbers_block(s))
+    new = replace_block(new, "checks", checks_block(s))
     new = replace_block(new, "example", example_block(load("families.json"), load("manuscripts.json"), load("statements.json")))
     outputs = {readme: new, DATA / "README.md": data_guide()}
     if "--check" in sys.argv:

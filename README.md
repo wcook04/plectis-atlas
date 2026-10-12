@@ -1,6 +1,6 @@
 # Plectis Atlas
 
-An independent reader for [OpenAI’s mathematics release](https://github.com/openai/math). Read the papers in your browser, compare their claims with the linked Lean statements, and follow checks credited to the people who ran them.
+An independent reader for [OpenAI’s mathematics release](https://github.com/openai/math). Every paper is in the browser, every Lean statement sits beside the theorem it states, and every outside check is credited to the people who ran it.
 
 **[Open the atlas ↗](https://wcook04.github.io/plectis-atlas/)** &nbsp; [Browse the families](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [How it is built](docs/ARCHITECTURE.md)
 
@@ -17,7 +17,7 @@ An independent reader for [OpenAI’s mathematics release](https://github.com/op
 
 ## Why it exists
 
-OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lean files. OpenAI groups related results into **families**. Each family page brings together its papers, any linked Lean statements, OpenAI’s note on what those statements cover, and what outside groups found when they checked them. The map includes families without Lean and keeps disagreements visible. You can read it without installing anything.
+OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lean files. To judge any one result you need four things from different places: the theorem the paper states, the Lean statement meant to say the same thing, OpenAI’s note on how much of the theorem that Lean covers, and what outside groups found when they checked it. OpenAI groups related papers into **families**; the atlas puts those four things on one page for each of the 372 families, including the 130 without Lean, and puts the families on one map. You can read it without installing anything.
 
 ## What you can do
 
@@ -25,11 +25,13 @@ OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lea
 |---|---|
 | [The map](https://wcook04.github.io/plectis-atlas/) | Explore by discipline, search for a theorem or Lean name, and open a family to follow its papers and statements. |
 | [The reciprocal-sum family](https://wcook04.github.io/plectis-atlas/families/159.html) | The paper’s claim beside its linked Lean statement, OpenAI’s scope note, outside readings and reported re-runs with their receipts. |
-| [A paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) | A reading page made from the paper’s TeX, with linked statements and references. Conversion gaps are listed on the page; the PDF remains the reference. |
-| [A Lean statement](https://wcook04.github.io/plectis-atlas/statements/ErdosReciprocal.html) | The challenge file, links to definitions and source code, reported checks, and candidate matches to paper statements. |
+| [A paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) | All 719 current papers typeset from their TeX, with theorems, equations, cross-references and citations linked to where they point. Any conversion gap is listed on the page; the PDF stays the reference. |
+| [A Lean statement](https://wcook04.github.io/plectis-atlas/statements/ErdosReciprocal.html) | The whole challenge file with every name linked to its definition, the reported re-runs, and the paper theorem it is the candidate statement of. |
 | [Sources and outside readings](https://wcook04.github.io/plectis-atlas/sources.html) | Who checked what, in their own words, with links to their records. |
 
-Three outside groups report re-running OpenAI’s proofs through [Comparator](https://github.com/leanprover/comparator). Two of them, [MathVet](https://math.vet) and Carlos Toledo’s [cert-machine](https://github.com/carlostoledo1891/cert-machine), also compare the families’ Lean statements with their headline results. Each family page shows both readings, including disagreements. The [Numbers page](https://wcook04.github.io/plectis-atlas/numbers.html) gives the reported coverage and the records behind it.
+<!-- checks:start -->
+Three outside groups report re-running OpenAI’s proofs through [Comparator](https://github.com/leanprover/comparator) on the pinned release: 409 of the 416 challenge files were accepted by at least one of them, and 179 by all three. Two of them, [MathVet](https://math.vet) and Carlos Toledo’s [cert-machine](https://github.com/carlostoledo1891/cert-machine), also read every family’s Lean against the paper’s headline result, independently of each other. They agree on 220 of the 242 families both read and disagree on 22; each family page shows both readings.
+<!-- checks:end -->
 
 ## The release in numbers
 
@@ -141,7 +143,16 @@ The [documentation index](docs/README.md) collects the guides for contributors a
 
 The site is static: Python builds it from a pinned commit of OpenAI’s release and a checked-in export from **Statement Map**, the separate backend that joins papers, Lean statements, citations and outside reports. Its [export is included here](backend/EXPORT.json), so you can rebuild the site without running the backend. The site builders check data integrity and page rendering; they do not run Lean or Comparator.
 
-Start with the [quick local preview](docs/ARCHITECTURE.md#quick-preview-without-paper-sources), or follow the [complete build](docs/ARCHITECTURE.md#rebuilding-the-website) to include the full paper reading pages. The core builders need Python 3.10 or newer. Git fetches paper sources; Node checks formulas with the included KaTeX.
+Papers are typeset in the browser with KaTeX, and the build checks every one of their 1,269,365 formulas with the same KaTeX version the site loads. There is no server, no account and no tracking.
+
+```sh
+git clone https://github.com/wcook04/plectis-atlas && cd plectis-atlas
+python3 scripts/reader.py && sh scripts/fetch_upstream.sh
+python3 scripts/build_site.py && python3 scripts/build_papers.py && python3 scripts/build_universe.py
+python3 -m http.server -d site/_build   # http://localhost:8000
+```
+
+The core builders need Python 3.10 or newer; Node checks the paper formulas with the included KaTeX. For layout and copy work there is a [quick preview without the paper sources](docs/ARCHITECTURE.md#quick-preview-without-paper-sources); the [complete build](docs/ARCHITECTURE.md#rebuilding-the-website) gives the full order and the tests.
 
 ## For producers of formal mathematics
 
