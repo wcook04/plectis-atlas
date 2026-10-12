@@ -1849,20 +1849,25 @@
       if (o.kind === 'f') return sh.families[o.key];
       return null;
     }
+    function paperMacros(sh, paper) {
+      var macros = {}, k;
+      for (k in GLOBAL_MACROS) macros[k] = GLOBAL_MACROS[k];
+      var own = sh && sh.macros && paper ? sh.macros[paper] || {} : {};
+      for (k in own) {
+        var v = own[k];
+        if (typeof v === 'string' && !/\\(?:newcommand|def|let|ifx|ifmmode|csname|expandafter)/.test(v)) macros[k] = v;
+      }
+      return macros;
+    }
     function typeset(el, o) {
       if (!window.katex) { if (window.atlasRenderMath) window.atlasRenderMath(el); return; }
       var sh = o ? shards[discOf(o)] : null;
       var spans = el.querySelectorAll('span.m:not([data-done])');
       for (var i = 0; i < spans.length; i++) {
-        var s = spans[i], tex = s.textContent, macros = {}, k;
-        for (k in GLOBAL_MACROS) macros[k] = GLOBAL_MACROS[k];
+        var s = spans[i], tex = s.textContent;
         var scope = s.closest('[data-u-paper]');
         var paper = scope ? scope.getAttribute('data-u-paper') : o && o.kind === 'r' ? D.papers[D.results[o.i].p].id : null;
-        var own = sh && paper ? sh.macros[paper] || {} : {};
-        for (k in own) {
-          var v = own[k];
-          if (typeof v === 'string' && !/\\(?:newcommand|def|let|ifx|ifmmode|csname|expandafter)/.test(v)) macros[k] = v;
-        }
+        var macros = paperMacros(sh, paper);
         s.setAttribute('data-done', '1');
         try {
           // A short inline formula stays on one line (atlas.js keepShort).
@@ -1871,6 +1876,17 @@
           window.katex.render(src, s, { displayMode: display, macros: macros, throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
         } catch (err) { s.textContent = tex; s.classList.add('m-fail'); }
       }
+      // Abstracts retain the source's delimiters; render those with the same
+      // paper-local macros as explicit theorem spans before the global pass.
+      if (window.renderMathInElement) Array.prototype.forEach.call(el.querySelectorAll('.tex-auto[data-u-paper]:not([data-done])'), function (host) {
+        host.setAttribute('data-done', '1');
+        window.renderMathInElement(host, {
+          delimiters: [{ left: '\\(', right: '\\)', display: false }, { left: '\\[', right: '\\]', display: true }],
+          macros: paperMacros(sh, host.getAttribute('data-u-paper')), throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000,
+          preProcess: window.atlasKeepShortMath || function (tex) { return tex; },
+          errorCallback: function () { host.classList.add('m-fail'); }
+        });
+      });
       if (window.atlasRenderMath) window.atlasRenderMath(el);
     }
     function releaseHtml() { return restViewHtml; }
