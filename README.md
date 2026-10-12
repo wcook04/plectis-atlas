@@ -7,11 +7,11 @@ An independent reader for [OpenAI’s mathematics release](https://github.com/op
 <a href="https://wcook04.github.io/plectis-atlas/">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/map-dark.png">
-    <img src="docs/map-light.png" width="1440" height="790" alt="The Plectis Atlas map: the release's result families arranged in a ring by mathematical discipline, coloured by outside readers’ assessments of Lean coverage, including families with no Lean statement.">
+    <img src="docs/map-light.png" width="1440" height="790" alt="The Plectis Atlas map: the release’s seventeen disciplines as labelled regions, each holding its families as discs coloured by what two outside readers find the family’s Lean states, with a disc left open where the release has no Lean.">
   </picture>
 </a>
 
-*The whole release on one map. Point at a family to see what it is about; click to open it.*
+*The whole release on one map: seventeen disciplines, each family a disc coloured by what its Lean states. Choose a discipline to see its families by name.*
 
 <a id="what-this-adds"></a>
 
@@ -19,11 +19,20 @@ An independent reader for [OpenAI’s mathematics release](https://github.com/op
 
 OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lean files. To judge any one result you need four things from different places: the theorem the paper states, the Lean statement meant to say the same thing, OpenAI’s note on how much of the theorem that Lean covers, and what outside groups found when they checked it. OpenAI groups related papers into **families**; the atlas puts those four things on one page for each of the 372 families, including the 130 without Lean, and puts the families on one map. You can read it without installing anything.
 
+<a href="https://wcook04.github.io/plectis-atlas/#o=f%3A003">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/family-dark.png">
+    <img src="docs/family-light.png" width="1440" height="790" alt="Family 003, the quasi-Riemann hypothesis, opened on the map: its papers as columns, each theorem with the opening of its statement typeset, the Lean statements paired with them joined by dashed lines, and the families that cite it and that it cites on either side.">
+  </picture>
+</a>
+
+*Inside a family: each paper’s theorems with what they state, and the Lean statement beside the theorem it states. A dashed line is a pairing nobody has reviewed yet.*
+
 ## What you can do
 
 | Start here | What you get |
 |---|---|
-| [The map](https://wcook04.github.io/plectis-atlas/) | Explore by discipline, search for a theorem or Lean name, and open a family to follow its papers and statements. |
+| [The map](https://wcook04.github.io/plectis-atlas/) | The release by discipline, then each discipline’s families by name. Open a family to see its papers, what each theorem states, and the Lean statement beside the theorem it states. Search for a theorem, a paper or a Lean name. |
 | [The reciprocal-sum family](https://wcook04.github.io/plectis-atlas/families/159.html) | The paper’s claim beside its linked Lean statement, OpenAI’s scope note, outside readings and reported re-runs with their receipts. |
 | [A paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) | All 719 current papers typeset from their TeX, with theorems, equations, cross-references and citations linked to where they point. Any conversion gap is listed on the page; the PDF stays the reference. |
 | [A Lean statement](https://wcook04.github.io/plectis-atlas/statements/ErdosReciprocal.html) | The whole challenge file with every name linked to its definition, the reported re-runs, and the paper theorem it is the candidate statement of. |
