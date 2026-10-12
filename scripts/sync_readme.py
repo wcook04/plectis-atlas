@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Regenerate the computed blocks of README.md from data/*.json.
 
-Blocks live between <!-- numbers:start --> / <!-- numbers:end --> and
-<!-- example:start --> / <!-- example:end -->. Run after build_data.py.
+Blocks use overview, numbers and example start/end markers. Counts come from
+Statement Map through reader.py; paper rendering metadata comes from data/.
 `--check` exits 1 if README.md is out of date. Standard library only.
 """
 from __future__ import annotations
@@ -24,6 +24,29 @@ def n(x: int) -> str:
     return f"{x:,}"
 
 
+def number_text(reader, key: str) -> str:
+    value = reader.number(key).get("value")
+    if value is None:
+        return "an unknown number of"
+    return n(value) if isinstance(value, int) else f"{value:g}"
+
+
+def overview_block() -> str:
+    """The short overview uses the same receipts as the detailed counts."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import reader
+    r = reader.load()
+    base = "https://wcook04.github.io/plectis-atlas/"
+    return "\n".join([
+        "| In the pinned release | Explore |",
+        "|---|---|",
+        f"| **{number_text(r, 'families')} result families** across {number_text(r, 'disciplines')} disciplines | [Browse by subject]({base}explain.html) |",
+        f"| **{number_text(r, 'manuscripts_current')} current manuscripts** | [Read the papers through their families]({base}explain.html) |",
+        f"| **{number_text(r, 'statements_lean')} Lean challenge files** | [Inspect the formal statements]({base}statements.html) |",
+        f"| **{number_text(r, 'external_citations')} resolved references** to work outside the collection | [Follow the citations]({base}references-outside.html) |",
+    ])
+
+
 def numbers_block(s: dict) -> str:
     """The README's numbers, every one from Statement Map's numbers index (scripts/reader.py),
     the same receipts the site's Numbers page shows. A number the backend cannot compute
@@ -33,10 +56,7 @@ def numbers_block(s: dict) -> str:
     r = reader.load()
 
     def v(key):
-        x = r.number(key).get("value")
-        if x is None:
-            return "an unknown number of"
-        return n(x) if isinstance(x, int) else (f"{x:g}")
+        return number_text(r, key)
 
     biggest = ", ".join(m[2:] for m in r.number_receipt("lean_vocabulary_max").get("maximizing_members") or [])
     rows = [
@@ -156,7 +176,8 @@ def main():
     readme = ROOT / "README.md"
     text = readme.read_text(encoding="utf-8")
     s = load("summary.json")
-    new = replace_block(text, "numbers", numbers_block(s))
+    new = replace_block(text, "overview", overview_block())
+    new = replace_block(new, "numbers", numbers_block(s))
     new = replace_block(new, "example", example_block(load("families.json"), load("manuscripts.json"), load("statements.json")))
     if "--check" in sys.argv:
         if new != text:

@@ -1,39 +1,44 @@
 # Plectis Atlas
 
-An independent reading and inspection layer for [OpenAI's mathematics release](https://github.com/openai/math). The atlas brings papers, Lean challenge statements, citations and attributed outside findings together by result family: a group of related manuscripts and formal statements in OpenAI's catalogue. It helps you find a claim, inspect its formal scope, and see who checked what.
+An independent reading room for [OpenAI’s mathematics release](https://github.com/openai/math). Explore the papers by subject, compare their claims with the linked Lean statements, and see what outside readers have checked.
 
-**[Open the atlas](https://wcook04.github.io/plectis-atlas/)**, a map of the whole release that opens into each family, its papers and its Lean statements. You can also go straight to [every family as a list](https://wcook04.github.io/plectis-atlas/explain.html), [the numbers and how each is counted](https://wcook04.github.io/plectis-atlas/numbers.html), or [how to contribute](CONTRIBUTING.md).
+**[Explore the website ↗](https://wcook04.github.io/plectis-atlas/)** &nbsp; [Browse families](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [Developer guide](docs/ARCHITECTURE.md)
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/map-dark.png">
-  <img alt="The atlas's front page: every family of OpenAI's mathematics release drawn as one map by discipline, with a search, a key and four ways in" src="docs/map-light.png">
-</picture>
+<a href="https://wcook04.github.io/plectis-atlas/">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/map-dark.png">
+    <img src="docs/map-light.png" width="1440" height="790" alt="Open Plectis Atlas: a map of result families arranged by mathematical discipline, coloured by outside readers’ assessments of their Lean coverage.">
+  </picture>
+</a>
 
-The atlas is independent of OpenAI. It reads the public collection at a pinned commit. The counts below are generated from the backend's recorded counts and the atlas's rendering metadata, with their units and limits kept visible.
+*Explore the release by discipline, then open a family to read its papers and evidence.*
 
 ## What this adds
 
-The release's papers, formal statements and outside assessments are spread across files and projects. The atlas gives them a shared reading interface: a map and searchable family list, full paper reading pages, formal statements, citation links and source-attributed findings. It includes families without Lean and keeps disagreements visible.
+OpenAI groups related papers into **result families**. The atlas brings each family’s papers, formal statements, references and attributed outside findings into one reading interface. It includes families without Lean and keeps disagreements visible. You can read the website without installing anything.
 
-A reader can use those records to check a particular statement, explain one argument or correct a source link. The contribution workflow is available; the existence of a page does not mean its mathematics has been explained or reviewed. Paper-to-Lean candidates, AI scope drafts, reported proof replays and human reviews retain their separate labels and limits.
-
-This repository builds the **website**. **Statement Map** is the separate backend that joins the evidence and exports the reader records. A checked-in export lets you rebuild the site without running the backend:
-
-```text
-Pinned research sources + outside reports + contribution records
-                              |
-                        Statement Map
-                              |
-                  backend/  (pinned export)
-                              |
-                    Atlas reader + builders  <--- paper sources + site assets
-                              |
-                  site/_build/  (static website)
-```
-
-The builders check record identity and rendering; they do not run Lean or Comparator. [Architecture and folder guide](docs/ARCHITECTURE.md) describes each source, generated output and build step.
+| Start with | What you can do |
+|---|---|
+| [The map](https://wcook04.github.io/plectis-atlas/) | Explore by discipline, search for a theorem, or follow connections between families. |
+| [A result family](https://wcook04.github.io/plectis-atlas/families/159.html) | Read a paper’s claim beside its linked Lean statement, then follow the sources. |
+| [The Lean catalogue](https://wcook04.github.io/plectis-atlas/statements.html) | Inspect a challenge file, its definitions and the checks reported for it. |
+| [Sources and outside readings](https://wcook04.github.io/plectis-atlas/sources.html) | See who checked what, with credit and links to their own records. |
 
 ## The release in numbers
+
+<!-- overview:start -->
+| In the pinned release | Explore |
+|---|---|
+| **372 result families** across 17 disciplines | [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) |
+| **719 current manuscripts** | [Read the papers through their families](https://wcook04.github.io/plectis-atlas/explain.html) |
+| **416 Lean challenge files** | [Inspect the formal statements](https://wcook04.github.io/plectis-atlas/statements.html) |
+| **16,077 resolved references** to work outside the collection | [Follow the citations](https://wcook04.github.io/plectis-atlas/references-outside.html) |
+<!-- overview:end -->
+
+These describe the collection at the commit in [`upstream.json`](upstream.json). [How each number is counted](https://wcook04.github.io/plectis-atlas/numbers.html) gives the definitions and the records behind them.
+
+<details>
+<summary>Full counts, coverage and reading-page checks</summary>
 
 <!-- numbers:start -->
 - **372 result families** in 17 disciplines, from **719 current manuscripts** (3 more were withdrawn and 27 earlier editions remain in the collection).
@@ -49,7 +54,14 @@ The builders check record identity and rendering; they do not run Lean or Compar
 Counted by Statement Map from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb), generation `c2164a5394dc`. The unit, rule, state and credit behind each number, and its members, are on the site's Numbers page.
 <!-- numbers:end -->
 
+</details>
+
 ## One result, side by side
+
+[Open the reciprocal-sum family](https://wcook04.github.io/plectis-atlas/families/159.html) to see how a paper, its formal statement and outside readings fit together. The comparison is also available below, with the source links and Lean text.
+
+<details>
+<summary>Read the paper’s statement, the Lean challenge and OpenAI’s scope note</summary>
 
 <!-- example:start -->
 **Family 159: Erdős’s reciprocal-sum conjecture and quasipolynomial Szemerédi bounds.** The paper, [*Quasipolynomial Bounds for Arithmetic Progressions*](https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026/paper.pdf), states:
@@ -89,58 +101,41 @@ OpenAI's scope note for this family:
 > Erdős's reciprocal-sum conjecture asks whether every set of positive integers with divergent reciprocal sum contains arithmetic progressions of every finite length. The formalization proves this statement: for every requested length, such a set contains a progression with positive common difference. The selected theorem is the reciprocal-sum consequence. The paper's quantitative upper bound for the largest progression-free subset of $\{1,\ldots,N\}$ is outside this statement.
 <!-- example:end -->
 
+</details>
+
+The atlas keeps separate what a paper claims, what its Lean statement says, and what a recorded check establishes. Outside re-runs are attributed to the people who report them. Automatically proposed pairings and AI draft classifications are labelled; they still need review. The paper’s PDF remains the reference for its browser reading page.
+
 ## Contribute
 
-Start with one useful note on a passage you are reading: its location, your correction or question, and what you checked. Use the [note issue form](https://github.com/wcook04/plectis-atlas/issues/new?template=report-a-problem.yml) without installing anything. Accepted contributions are credited beside the work they improve. A first note can fit a fifteen-minute visit; review and publication follow afterwards.
+Choose a passage you are reading. Give its location, your correction or question, and what you checked. You can [open a note](https://github.com/wcook04/plectis-atlas/issues/new?template=report-a-problem.yml) without installing anything. Accepted contributions are credited beside the work they improve.
 
-| If you have | Do this | Guide |
-|---|---|---|
-| Time to read the relevant sources and compare the mathematics | Check one Lean challenge against its precisely located paper statements | [`check-a-statement`](skills/check-a-statement/SKILL.md) |
-| A definition, example, lemma or argument you understand | Explain that part for a named reader | [`explain-a-result`](skills/explain-a-result/SKILL.md) |
-| Knowledge of a field's literature | Record the earliest source you can find for an idea in a manuscript | [`trace-a-credit`](skills/trace-a-credit/SKILL.md) |
-| A large Linux machine | Replay a Comparator check and publish the receipt | [`replay-a-proof`](skills/replay-a-proof/SKILL.md) |
-| A sharp eye | Report a mismatch, an error or a broken link | [`report-a-problem`](skills/report-a-problem/SKILL.md) |
-| Python or web development experience | Improve a parser, reader page, test or guide | [`improve-the-atlas`](skills/improve-the-atlas/SKILL.md) |
+For a larger contribution, [explain a result](skills/explain-a-result/SKILL.md), [compare a statement](skills/check-a-statement/SKILL.md), [trace an earlier source](skills/trace-a-credit/SKILL.md), or [replay a proof check](skills/replay-a-proof/SKILL.md). The [contributor guide](CONTRIBUTING.md) covers formats, credit and review. An available contribution route does not mean a family already has a reviewed explanation.
 
-**Bring your own agent.** The repository ships agent skills in [`skills/`](skills/), mirrored for Claude Code in `.claude/skills/` and for Codex and other agents in `.agents/skills/`, with instructions in [`AGENTS.md`](AGENTS.md). Open the repository in Claude Code, Codex or Cursor and ask it to begin with `start-here`. Agents may draft and check; every contribution names the person who stands behind it and says how AI was used. The full guide is [`CONTRIBUTING.md`](CONTRIBUTING.md).
+**Working with an agent?** Open this repository in Codex, Claude Code or Cursor and ask it to start with [`start-here`](skills/start-here/SKILL.md). The [agent instructions](AGENTS.md) route each task to its skill. Agents can help draft and check; a named person stands behind each contribution and discloses how AI was used.
 
 ## Build it yourself
 
-Python 3.10 or newer and Git build the core site. Node is also needed to check formulas in the paper reading pages, using the vendored KaTeX version served by the site. Run this sequence to rebuild from the checked-in data and backend export:
+This repository builds the **website**. **Statement Map** is the separate backend that joins the evidence and exports its reader records. The checked-in export lets you rebuild the site without running the backend. The site builders validate records and rendering; they do not run Lean or Comparator.
 
-```sh
-git clone https://github.com/wcook04/plectis-atlas
-cd plectis-atlas
-python3 scripts/reader.py               # validates the pinned backend packets
-sh scripts/fetch_upstream.sh            # sparse checkout of openai/math at the pinned commit, without PDFs
-python3 scripts/build_site.py           # writes site/_build/
-python3 scripts/build_papers.py         # writes each paper's full reading page into site/_build/papers/
-python3 scripts/build_universe.py       # writes the map, site/_build/index.html, and its data
-python3 scripts/check_paper_links.py site/_build
-python3 -m http.server -d site/_build   # then open http://localhost:8000
-```
+The [developer guide](docs/ARCHITECTURE.md#rebuilding-the-website) has the complete build sequence, a quick preview and validation commands. Python builds a static site; Node checks paper formulas with the included KaTeX.
 
-`build_site.py` clears its output directory, so keep the order above. Without Node, the paper renderer marks pages partial and links to the reference PDF. Paper rendering also refreshes generated metadata in `data/`; if that metadata changes, follow the [metadata refresh sequence](docs/ARCHITECTURE.md#refreshing-paper-metadata) before treating the whole site as a consistent rebuild. Playwright and Chromium are optional, used only for share-card images.
-
-`scripts/reader.py` checks exported file hashes, the release pin and generation before a page uses a packet. `scripts/backend.py` is its compatibility import. Source extraction and upstream updates are separate from rebuilding the site; see [the source and refresh boundaries](docs/ARCHITECTURE.md#refreshing-inputs).
-
-The dataset in `data/` is plain JSON for your own analysis:
-
-- `families.json`: result families, their discipline, OpenAI's description, manuscripts and Lean statements;
-- `manuscripts.json`: abstracts, theorem-like statements with source file and line (those in the introduction flagged as candidate headline statements), and references with where each is cited;
-- `statements.json`: every Comparator statement file, its imports and the definitions it introduces;
-- `graph.json`: citations between manuscripts inside the collection;
-- `works.json`: the outside works the collection cites;
-- `review_queue.json`: every challenge file in order of where a careful reading is most useful, with the reasons, by a rule stated in `summary.json`;
-- `statement_numbers.json`: what each extracted statement prints on its reading page ("Theorem 1.1"), bound to its source file, line and hash;
-- `lean_xref.json`: each Lean declaration's counterpart in OpenAI's library and Mathlib at the pinned commits;
-- `summary.json`: baseline extraction counts and definitions; current reader counts and their member records come from `backend/` and appear on the [Numbers page](https://wcook04.github.io/plectis-atlas/numbers.html).
+| Looking for | Start here |
+|---|---|
+| Data for your own analysis | [`data/`](data/) and the [dataset guide](docs/ARCHITECTURE.md#use-the-data) |
+| Site code, build order and source ownership | [Architecture and repository guide](docs/ARCHITECTURE.md) |
+| Editorial and visual conventions | [Writing guide](STYLE.md) and [design contract](DESIGN.md) |
+| Agent task instructions | [Canonical skills](skills/) |
 
 ## For producers of formal mathematics
 
-If you release Lean alongside papers, [`ALIGNMENT.md`](ALIGNMENT.md) proposes four optional keys for the `alignment` block of `formalization.yaml` that link each printed claim to the Lean declaration stating it, and describes how checked work comes back to you.
+If you release Lean alongside papers, [the alignment proposal](ALIGNMENT.md) links printed claims to the Lean declarations stating them using optional keys in `formalization.yaml`. It also describes how checked work comes back to you.
 
 ## Sources, related work and motivation
+
+The atlas brings together [OpenAI’s release](https://github.com/openai/math), [MathVet](https://math.vet), Carlos Toledo’s [cert-machine](https://github.com/carlostoledo1891/cert-machine) and Neal McBurnett’s [Lean tooling](https://github.com/nealmcb/openai-math-lean-tooling). Credit stays with each source, beside the finding it supports. The [Sources page](https://wcook04.github.io/plectis-atlas/sources.html) lets you follow those records.
+
+<details>
+<summary>Related projects and the writing behind the design</summary>
 
 | Project | Its work and the atlas's use of it |
 | --- | --- |
@@ -155,9 +150,12 @@ The atlas's contribution is the combined reading interface and traceable integra
 
 Henry Cohn's [essay on mathematical technical debt](https://terrytao.wordpress.com/2026/09/15/the-technical-debt-of-ai-generated-mathematics/) motivates explanations that readers can reconstruct and use. Thomas Hales's [account of Lean's reliability](https://terrytao.wordpress.com/2026/10/09/what-mathematicians-should-know-about-the-lean-theorem-proverquestions-of-reliability-and-ai/) motivates keeping proof checking separate from the question of what a formal statement means. [Responsible Release of AI-Generated Mathematics](https://agmai.org/general-sep29/) calls for attribution, clear exposition and support for human understanding. These motivate the design; they are not endorsements or completed reviews of this atlas. The [About page](https://wcook04.github.io/plectis-atlas/about.html) gives the wider reading behind it.
 
+
+</details>
+
 ## Licences and independence
 
-The atlas is not affiliated with or endorsed by OpenAI. Material quoted from openai/math is copyright OpenAI under the Apache License 2.0 and is reproduced from the commit recorded in `upstream.json`, with links to source. Code, data and documentation in this repository are Apache-2.0; contributed explanations are CC BY 4.0. See [`NOTICE`](NOTICE).
+Plectis Atlas is independent of OpenAI and is not affiliated with or endorsed by it. Quoted release material is copyright OpenAI, reproduced under Apache-2.0 from the pinned source. Atlas code, data and documentation are Apache-2.0; contributed explanations are CC BY 4.0. See [the licence](LICENSE) and [attribution notice](NOTICE).
 
 ## Author
 

@@ -66,6 +66,8 @@ The README is the public entry; keep it understandable without another repositor
 
 Keep capabilities, populated contributions and reviewed mathematics separate. Research essays motivate design decisions; they are not endorsements or proof of success. Prefer a concrete, evidenced comparison to a first/only claim. Leave changing counts and the worked example in the generator-owned blocks. Check README links and commands, and review it from a reader's, contributor's and developer's point of view.
 
+Follow `DESIGN.md`'s repository-front-page contract. Confirm the intended website revision before taking a screenshot: the public deployment may lag the active release branch. Keep the preview clickable and provide light and dark captures of the same state. Record capture provenance in `docs/ARCHITECTURE.md`, which also owns the build commands and dataset reference. Preserve existing README anchors when moving detail. Compact and detailed counts must use the same checked backend receipts; a missing value must stay unknown.
+
 ## Changing the skills
 
 Edit `skills/<name>/SKILL.md`, then run `python3 scripts/sync_skills.py` and commit the mirrors with it. Each `SKILL.md` starts with frontmatter holding `name` (the folder name: lowercase letters, digits and single hyphens) and `description` (when to use the skill, at most 1024 characters). Files a skill needs live inside its folder. Refer to other repository files by their path from the repository root, because the mirrors sit one folder deeper than `skills/`.

@@ -53,8 +53,8 @@ a good maps app pairs a map with its results. 700-plus results need both: the
 map for where things are, the list for reading them.
 
 - **The map** (the existing map engine): the seventeen disciplines labelled in
-  words on the drawing with plain counts ("Number theory, 31 families, 24 with
-  Lean"). Family nodes are coloured by one meaning (what the outside readers
+  words on the drawing with counts from the current reader records: the number
+  of families and how many have Lean. Family nodes are coloured by one meaning (what the outside readers
   find the release's Lean states), each colour named in one line. Citations
   are drawn only for the selected family, and called citations.
 - **The list** (the left panel): the release in sentences, search, then the
@@ -208,8 +208,29 @@ the paper and the Lean page: the backend's ids, never rebuilt from TeX.
 - At most four primary actions at any decision point; an expert's contents can show more.
 - Lists filter and never dump.
 
-**Teaching by example.** The home page teaches the site with one family read
-in full, before it shows any totals.
+**Teaching by example.** The front page shows the release map and its key.
+Opening a family leads to its papers, statements and attributed checks. The
+README links a concrete family before offering its full source comparison.
+
+## The repository front page
+
+The README is the first page many readers see. Keep one short introduction,
+the website action and a clickable screenshot before the detailed material.
+Use real captures of the intended website revision in light and dark schemes;
+the screenshot links to the same website as the primary action. A public URL
+can lag the working release. Confirm the intended revision before refreshing
+images, and record their source and capture state in `docs/ARCHITECTURE.md`.
+
+Follow the preview with routes into the map, a family, Lean statements and
+attributed findings. The compact overview and the full count inventory both
+come from `scripts/sync_readme.py` through Statement Map's checked reader.
+Keep the exact worked comparison and detailed credit available in expandable
+sections. Evidence limits remain visible outside those sections.
+
+Build commands and the dataset reference live in `docs/ARCHITECTURE.md`.
+Preserve the README's existing section anchors when shortening it. Check the
+rendered Markdown in light and dark schemes at laptop and phone widths, and
+check that the preview is a working link, not just an image.
 
 ## Words
 
