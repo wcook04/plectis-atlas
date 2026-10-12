@@ -66,6 +66,7 @@ def main() -> int:
         for what in compare_buttons(fid, html):
             check(False, what)
     fails += status_group_counts()
+    fails += tied_order()
     for f in fails:
         print("FAIL", f)
     print(f"family page: {len(SPECIMENS)} specimens, {len(fails)} failures")
@@ -81,8 +82,7 @@ def compare_buttons(fid: str, html: str) -> list:
         shown = [claim["primary_candidate"]]
     else:
         alts = [a for a in claim.get("alternatives") or [] if a.get("statement_id") in c.stmts]
-        top = max([a.get("score") or 0 for a in alts] or [0])
-        shown = [a["statement_id"] for a in alts if (a.get("score") or 0) == top][:3]
+        shown = [a["statement_id"] for a in family_page.tie_order(c, alts)][:3]
     section = html.split('id="claim"', 1)[-1].split("</section>", 1)[0]
     cards = re.findall(r'<article class="fx-st[^"]*" id="claim-[^"]+"(.*?)</article>', section, flags=re.S)
     out = []
@@ -96,6 +96,29 @@ def compare_buttons(fid: str, html: str) -> list:
         if not lean and c.leans and family_page.W("claim.no_lean_paired") not in body:
             out.append(f"{sid}: no Lean statement is paired with it, and the card does not say so")
     return out
+
+
+def tied_order() -> list:
+    """Among candidates the backend ties, the page opens on one a Lean statement is paired
+    with whenever there is one, then on the lead paper's; the set of tied candidates is
+    the backend's, unchanged."""
+    fails = []
+    for fid in S.FAM:
+        c = family_page.Ctx(S, S.FAM[fid])
+        claim = c.doc.get("claim") or {}
+        if claim.get("state") == "candidate" and claim.get("primary_candidate") in c.stmts:
+            continue
+        alts = [a for a in claim.get("alternatives") or [] if a.get("statement_id") in c.stmts]
+        if not alts:
+            continue
+        top = max(a.get("score") or 0 for a in alts)
+        tied = [a["statement_id"] for a in alts if (a.get("score") or 0) == top]
+        order = [a["statement_id"] for a in family_page.tie_order(c, alts)]
+        if sorted(order) != sorted(tied):
+            fails.append(f"{fid}: the tie shown is not the backend's tie")
+        if any(family_page.paired_lean(c, s) for s in tied) and not family_page.paired_lean(c, order[0]):
+            fails.append(f"{fid}: opens on {order[0]}, which no Lean statement is paired with, before a paired candidate")
+    return fails
 
 
 NUMBER_WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five"}

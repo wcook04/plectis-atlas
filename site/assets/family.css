@@ -100,7 +100,29 @@
   .fx-st--big .fx-st__head { font-size: 1.3rem; }
   .fx-st--big .fx-st__body { font-size: 1.15rem; }
 }
+/* The heading group: what the object is (number, title, paper, date) and, for a possible
+   match, what the atlas proposes about it, in the interface face and set apart from the
+   paper's own words below by one rule. The qualification is part of the heading, never
+   small print at the card's foot; the other possible matches are named there too. */
+.fx-st__hg--state { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.fx-st__hg--state .fx-st__src { margin-bottom: 8px; }
+.fx-st--big .fx-st__hg--state { margin-bottom: 18px; padding-bottom: 16px; }
+.fx-st--big .fx-st__hg--state .fx-st__src { margin-bottom: 10px; }
+.fx-st__state { display: grid; gap: 4px; }
+.fx-st__qual, .fx-st__alt { margin: 0; max-width: 68ch; font-family: var(--sans); font-size: var(--fs-meta); line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+.fx-st__qual .fx-why, .fx-st__alt .fx-why { margin-left: 2px; font-size: var(--fs-meta); color: var(--ink-soft); }
+.fx-st__alt .fx-why { margin-left: 0; }
+.fx-st__alt a { color: var(--ink-soft); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; text-decoration-color: color-mix(in oklab, currentColor 40%, transparent); }
+.fx-st__alt a:hover { color: var(--ink); }
+.fx-st__altk { font-weight: 600; white-space: nowrap; }
 .fx-cand { max-width: 80ch; margin: 12px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
+.fx-cand-idx { max-width: 72ch; margin: -6px 0 16px; font-size: var(--fs-meta); line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
+.fx-cand-idx a { color: var(--ink-soft); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; text-decoration-color: color-mix(in oklab, currentColor 40%, transparent); }
+.fx-cand-idx a:hover { color: var(--ink); }
+/* The rail's record of a possible match carries the paper and date under its number, in
+   the same heading group (two papers can each have a Theorem 1.1). */
+.ins-rec__title:has(+ .ins-rec__sub) { margin-bottom: 1px; }
+.ins-rec__sub { margin: 0 0 8px; font-size: var(--fs-small); line-height: 1.45; color: var(--muted); overflow-wrap: anywhere; }
 .fx-cand--open { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink-soft); margin: 0 0 14px; max-width: var(--fx-measure); }
 .fx-h2--theorem { margin-bottom: 4px; font-size: 1.5rem; }
 

@@ -392,12 +392,32 @@ class Ctx:
         body = self.S.glue(self.S.statement_blocks(conv, text, self.passage_href(sid)))
         return self.S.guard_labels(f"{m['id']} line {(st.get('source') or {}).get('line')}", body)
 
+    def title_tex(self, sid) -> str:
+        """The heading title the paper gives a statement ("Universal energy minimum"): the
+        Atlas's extraction, else the backend's name for it when that name is a title rather
+        than a TeX label (where both exist, the two agree on every statement)."""
+        st, m, ms_st = self.ms_of(sid)
+        if ms_st and ms_st.get("title"):
+            return ms_st["title"]
+        name = (st or {}).get("name") or ""
+        return name if " " in name and ":" not in name else ""
+
+    def title_plain(self, sid) -> str:
+        t = self.title_tex(sid)
+        return curly(self.S.tex_plain(t)) if t else ""
+
     def stmt_title_html(self, sid) -> str:
         st, m, ms_st = self.ms_of(sid)
-        if ms_st and ms_st.get("title") and m:
+        t = self.title_tex(sid)
+        if t and m:
             conv = self.S.LabelTexConv(m, self.root)
-            return f' <span class="fx-st__title">({conv.text(ms_st["title"], inline=True)})</span>'
+            return f' <span class="fx-st__title">({conv.text(t, inline=True)})</span>'
         return ""
+
+    def label_plain(self, sid) -> str:
+        """"Theorem 1.1 (Universal energy minimum)": the printed label and title in words."""
+        t = self.title_plain(sid)
+        return self.label(sid) + (f" ({t})" if t else "")
 
     def stmt_where(self, sid) -> str:
         st, m, _ = self.ms_of(sid)
@@ -407,9 +427,12 @@ class Ctx:
         date = self.S.date_words(m.get("date"))
         return W("claim.in_paper", paper=paper, date=f'<span class="fx-nw">, {esc(date)}</span>') if date else W("claim.in_paper_undated", paper=paper)
 
-    def stmt_card(self, sid, *, aid: str, level: int = 3, note: str = "", big: bool = False, actions: str = "") -> str:
-        """A paper statement exactly as printed: its number, the paper and date, the text,
-        then the way into the paper at that passage (and any further actions)."""
+    def stmt_card(self, sid, *, aid: str, level: int = 3, state: str = "", note: str = "", big: bool = False, actions: str = "") -> str:
+        """A paper statement exactly as printed: its number, the paper and date, then (in
+        the same heading group, in the interface face) the atlas's qualification of why it
+        is shown, the text, then the way into the paper at that passage (and any further
+        actions). The heading group says what the object is and what the atlas proposes;
+        the body is the paper's own words."""
         st, m, ms_st = self.ms_of(sid)
         if not st:
             return ""
@@ -431,9 +454,11 @@ class Ctx:
         return (f'<article class="fx-st{" fx-st--big" if big else ""}" id="{esc(aid)}" data-macros="{esc(m["id"]) if m else ""}" aria-labelledby="{esc(aid)}-h" '
                 f'data-paper="{esc(self.S.tex_plain(m["title"])) if m else ""}" data-date="{esc(pdate)}" '
                 f'data-from="{esc(W("source.from"))}" data-open="{esc(W("source.open"))}" data-close="{esc(W("source.close"))}">'
+                f'<header class="fx-st__hg{" fx-st__hg--state" if state else ""}">'
                 + (f'<p class="fx-st__role">{esc(W("claim.role"))}</p>' if big else "") +
                 f'<{h} class="fx-st__head" id="{esc(aid)}-h"><span class="fx-st__kind">{esc(self.label(sid))}</span>{self.stmt_title_html(sid)}</{h}>'
                 f'<p class="fx-st__src">{self.stmt_where(sid)}</p>'
+                + (f'<div class="fx-st__state">{state}</div>' if state else "") + '</header>'
                 f'<div class="fx-st__body">{self.stmt_body(sid)}</div>{note}'
                 f'<footer class="fx-st__foot"><p class="fx-st__acts">{"".join(go)}</p>{tex}</footer></article>')
 
@@ -652,24 +677,27 @@ def status_html(c: Ctx) -> str:
 # ---- the theorem -------------------------------------------------------------------
 
 
-def why_button(c: Ctx, sid: str, terms, *, primary: bool, lean: str | None = None) -> str:
+def why_button(c: Ctx, sid: str, terms, *, primary: bool, lean: str | None = None, label_key: str = "why.button") -> str:
     """The quiet route to how a passage was found: the exact shared words and the
     backend's reason, in the rail. The state itself stays visible on the card."""
     claim = c.doc.get("claim") or {}
     tid = "ins-why-" + slug_id(sid[2:]) + (f"-{slug_id(lean)}" if lean else "")
+    # Two papers can each have a Theorem 1.1: the record's head names the paper and date.
+    sub = esc(W("why.from", where=c.where_plain(sid)))
     if lean and tid not in c.tpls:
         rows = [(W("why.method"), esc(W("why.method_lean", name=lean))),
                 (W("why.words"), esc(", ".join(terms)) if terms else esc(W("claim.shared_none"))),
                 (W("why.review"), esc(W("why.review_lean")))]
-        c.tpls[tid] = record(W("why.kind"), esc(c.label(sid)) + c.stmt_title_html(sid), rows, [])
+        c.tpls[tid] = record(W("why.kind"), esc(c.label(sid)) + c.stmt_title_html(sid), rows, [], sub=sub)
     if tid not in c.tpls:
         rows = [(W("why.method"), esc(W("why.method_text"))),
                 (W("why.words"), esc(", ".join(terms)) if terms else esc(W("claim.shared_none"))),
                 (W("why.review"), esc(W("why.review_text")))]
         if claim.get("reason"):
             rows.append((W("why.reason"), esc(claim["reason"])))
-        c.tpls[tid] = record(W("why.kind"), esc(c.label(sid)) + c.stmt_title_html(sid), rows, [])
-    return ins_button(tid, esc(W("why.button")), "fx-why")
+        c.tpls[tid] = record(W("why.kind"), esc(c.label(sid)) + c.stmt_title_html(sid), rows, [], sub=sub)
+    return ins_button(tid, esc(W(label_key)), "fx-why",
+                      name=W("why.button_label", button=W(label_key), label=c.label_plain(sid), where=c.where_plain(sid)))
 
 
 def theorem_html(c: Ctx) -> str:
@@ -684,34 +712,111 @@ def theorem_html(c: Ctx) -> str:
     cand = claim.get("primary_candidate")
     parts = []
 
-    def note(sid, primary):
+    def state(sid, primary, extra=""):
+        """The qualification, in the card's heading group beside the paper and date: what
+        the atlas proposes (a possible match, found from shared wording, not reviewed) and
+        the quiet way to how it was found."""
         terms = next((a.get("matched_terms") for a in alts if a.get("statement_id") == sid), None) or []
-        state = W("claim.state_primary") if primary else W("claim.state_alt")
-        unpaired = f'<p class="fx-cand">{esc(W("claim.no_lean_paired"))}</p>' if c.leans and not compare_action(c, sid) else ""
-        return f'<p class="fx-cand">{esc(state)} {why_button(c, sid, terms, primary=primary)}</p>{unpaired}'
+        words = W("claim.state_primary") if primary else W("claim.state_alt")
+        return f'<p class="fx-st__qual">{esc(words)} {why_button(c, sid, terms, primary=primary)}</p>{extra}'
+
+    def unpaired(sid):
+        return f'<p class="fx-cand">{esc(W("claim.no_lean_paired"))}</p>' if c.leans and not compare_action(c, sid) else ""
 
     if claim.get("state") == "candidate" and cand in c.stmts:
-        parts.append(c.stmt_card(cand, aid="claim-theorem", level=2, big=True, actions=compare_action(c, cand), note=note(cand, True)))
         rest = [a for a in alts if a.get("statement_id") != cand]
-        if rest:
-            parts.append(f'<div class="fx-others"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
+        parts.append(c.stmt_card(cand, aid="claim-theorem", level=2, big=True, actions=compare_action(c, cand),
+                                 state=state(cand, True, alt_line(c, cand, rest)), note=unpaired(cand)))
+        if len(rest) > ALT_INLINE:
+            parts.append(f'<div class="fx-others" id="claim-more"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
         parts.append(status_html(c))
     else:
         parts.append(f'<h2 class="fx-h2 fx-h2--theorem" id="claim-h">{esc(W("claim.heading_unresolved"))}</h2>'
                      f'<p class="fx-cand fx-cand--open">{esc(W("claim.unresolved"))}</p>')
         if alts:
-            top = max(a.get("score") or 0 for a in alts)
-            tied = [a for a in alts if (a.get("score") or 0) == top][:3]
+            tied = tie_order(c, alts)[:3]
+            rest = [a for a in alts if a not in tied]
+            parts.append(claim_index(c, tied, rest))
             for i, a in enumerate(tied):
                 parts.append(c.stmt_card(a["statement_id"], aid=f"claim-alt-{i + 1}", level=3, big=len(tied) == 1,
-                                         note=note(a["statement_id"], False), actions=compare_action(c, a["statement_id"])))
-            rest = [a for a in alts if a not in tied]
+                                         state=state(a["statement_id"], False), note=unpaired(a["statement_id"]),
+                                         actions=compare_action(c, a["statement_id"])))
             if rest:
-                parts.append(f'<div class="fx-others"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
+                parts.append(f'<div class="fx-others" id="claim-more"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
         parts.append(status_html(c))
     lab = "claim-theorem-h" if (claim.get("state") == "candidate" and cand in c.stmts) else "claim-h"
     return (f'<section class="fx-sec fx-sec--theorem" id="claim" aria-labelledby="{lab}">'
             f'<span class="fx-alias" id="h-bench"></span><span class="fx-alias" id="bench-theorem"></span>{"".join(parts)}</section>')
+
+
+def tie_order(c: Ctx, alts) -> list:
+    """The candidates the backend ties (equal score, the highest), in the order the page
+    shows them: the one a Lean statement is paired with first, then the lead paper's, then
+    the backend's own order. The tie and its words stay the backend's."""
+    top = max((a.get("score") or 0) for a in alts) if alts else 0
+    tied = [a for a in alts if (a.get("score") or 0) == top]
+    lead = next((h.get("id") for h in c.doc.get("paper_history") or [] if h.get("status") == "current"), None)
+    def key(ia):
+        i, a = ia
+        sid = a["statement_id"]
+        return (paired_lean(c, sid) is None, c.stmts[sid].get("manuscript_id") != lead, i)
+    return [a for _, a in sorted(enumerate(tied), key=key)]
+
+
+def claim_index(c: Ctx, tied: list, rest: list) -> str:
+    """When the headline is unresolved, one line before the cards names every possible
+    match shown in full (its printed number and paper, linked to its card) and how many
+    more are listed after them, so a reader sees what there is before the long cards."""
+    if len(tied) < 2 and not rest:
+        return ""
+    items = []
+    for i, a in enumerate(tied):
+        sid = a["statement_id"]
+        slug = (c.stmts[sid].get("manuscript_id") or "")[2:]
+        where = esc(W("claim.alt_in", paper="\x00")).replace("\x00", c.short_title_html(slug))
+        items.append(f'<a class="fx-st__altk" href="#claim-alt-{i + 1}">{esc(c.label(sid))}</a> {where}')
+    line = esc(W("claim.index_shown", items="\x00")).replace("\x00", join_and(c.S, items))
+    if rest:
+        listed = f'<a href="#claim-more">{esc(W("claim.listed_after_them" if len(tied) > 1 else "claim.listed_after_it"))}</a>'
+        more = W("claim.index_rest_one", listed="\x01") if len(rest) == 1 else W("claim.index_rest_many", n=cap(c.S.say(len(rest))), listed="\x01")
+        line += " " + esc(more).replace("\x01", listed)
+    return f'<p class="fx-cand-idx">{line}</p>'
+
+
+ALT_INLINE = 2   # up to this many other possible matches are named, with their records, in the card itself
+
+
+def alt_line(c: Ctx, cand: str, rest: list) -> str:
+    """The other possible matches, named in the candidate card's heading group: which
+    statement and which paper, each linked to its passage. With at most ALT_INLINE of them
+    each carries its own route to why it is listed, and there is no list below the card;
+    a longer list is below the card, and the first two are named here."""
+    if not rest:
+        return ""
+    home = c.stmts[cand].get("manuscript_id")
+    inline = len(rest) <= ALT_INLINE
+    items = []
+    for a in rest[:2]:
+        sid = a["statement_id"]
+        st = c.stmts[sid]
+        slug = (st.get("manuscript_id") or "")[2:]
+        href = c.passage_href(sid) or f"{c.root}papers/{quote(slug)}.html"
+        if st.get("manuscript_id") == home:
+            where = esc(W("claim.alt_same"))
+        else:
+            where = esc(W("claim.alt_in", paper="\x00")).replace("\x00", c.short_title_html(slug))
+        why = (" (" + why_button(c, sid, a.get("matched_terms") or [], primary=False, label_key="why.button_alt") + ")") if inline else ""
+        items.append(f'<span class="fx-st__altv"><a class="fx-st__altk" href="{esc(href)}">{esc(c.label(sid))}</a>{c.stmt_title_html(sid)} {where}{why}</span>')
+    named = join_and(c.S, items)
+    if len(rest) == 1:
+        line = esc(W("claim.alt_one", items="\x00")).replace("\x00", named)
+    elif len(rest) == 2:
+        line = esc(W("claim.alt_two", items="\x00")).replace("\x00", named)
+    else:
+        listed = f'<a href="#claim-more">{esc(W("claim.alt_listed"))}</a>'
+        line = (esc(W("claim.alt_many", n=cap(c.S.say(len(rest))), listed="\x01", items="\x00"))
+                .replace("\x01", listed).replace("\x00", named))
+    return f'<p class="fx-st__alt">{line}</p>'
 
 
 def paired_lean(c: Ctx, sid: str) -> str | None:
@@ -746,9 +851,10 @@ def alt_list(c: Ctx, alts, keep: int = 0, lean: str | None = None) -> str:
         m = c.S.MS.get(slug) or {}
         href = c.passage_href(sid) or f"{c.root}papers/{esc(slug)}.html"
         date = c.S.date_words(m.get("date"))
-        where = W("claim.alt_in", paper=c.paper_short(slug, 90)) + (f", {date}" if date else "")
+        # Which paper, by its short title typeset as the map labels it, and its date.
+        where = esc(W("claim.alt_in", paper="\x00")).replace("\x00", c.short_title_html(slug)) + (f", {esc(date)}" if date else "")
         rows.append(f'<li class="fx-alt"><a class="fx-alt__k" href="{esc(href)}">{esc(c.label(sid))}</a>{c.stmt_title_html(sid)} '
-                    f'<span class="fx-alt__p">{esc(where)}.</span> {why_button(c, sid, terms, primary=False, lean=lean)}</li>')
+                    f'<span class="fx-alt__p">{where}.</span> {why_button(c, sid, terms, primary=False, lean=lean)}</li>')
     return f'<ul class="fx-alts">{"".join(rows)}</ul>' if rows else ""
 
 
