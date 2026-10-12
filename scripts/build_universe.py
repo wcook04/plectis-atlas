@@ -1097,13 +1097,11 @@ def page_body(M, gen) -> str:
   <div class="u-visually-hidden" aria-live="polite" data-u-live></div>
   <div class="u-maplegend" data-u-legend hidden></div>
   <div class="u-board" data-u-board role="region" aria-label="{esc(U('board.label'))}"></div>
-  <button type="button" class="u-mapkey-btn" data-u-mapkey aria-expanded="false" aria-controls="u-mapkey">{esc(U('mapkey.button'))}</button>
-  <div class="u-mapkey" id="u-mapkey" data-u-mapkey-panel hidden></div>
-  <div class="u-tools">
-   <button type="button" class="u-tool" data-u-zoom="in" aria-label="{esc(U('controls.zoom_in'))}" title="{esc(U('controls.zoom_in'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button>
-   <button type="button" class="u-tool" data-u-zoom="out" aria-label="{esc(U('controls.zoom_out'))}" title="{esc(U('controls.zoom_out'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/></svg></button>
-   <button type="button" class="u-tool" data-u-zoom="fit" aria-label="{esc(U('controls.fit'))}" title="{esc(U('controls.fit'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="1.4"/></svg></button>
+  <div class="u-mapbar" data-u-bar>
+   <button type="button" class="u-mapkey-btn" data-u-mapkey aria-expanded="false" aria-controls="u-mapkey">{esc(U('mapkey.button'))}</button>
+   <p class="u-cap" data-u-cap>{esc(U('chart.release_cap', families=len(M.data['families']), disciplines=len(M.data['disciplines'])))}</p>
   </div>
+  <div class="u-mapkey" id="u-mapkey" data-u-mapkey-panel hidden></div>
   <p class="u-status" data-u-status>{esc(U('status.loading'))}</p>
  </div>
  <script type="application/json" id="universe-copy">{copy_json}</script>

@@ -431,7 +431,12 @@ main.u-main { padding: 0; max-width: none; }
 @media (max-width: 899px) { .u-maplegend { max-width: calc(100% - 28px); } }
 
 /* The map key for the release and a discipline, top left of the drawing. */
-.u-mapkey-btn { position: absolute; left: 14px; top: 12px; min-height: 32px; padding: 5px 12px; border-radius: var(--r-sm); border: 1px solid var(--rule-strong); background: var(--surface); color: var(--ink); font: 500 var(--fs-small)/1.2 var(--sans); cursor: pointer; }
+/* The bar over the drawing: the key's button and one line saying what the drawing shows. */
+.u-mapbar { position: absolute; left: 14px; right: 14px; top: 10px; display: flex; align-items: center; gap: 8px 14px; pointer-events: none; }
+.u-mapbar > * { pointer-events: auto; }
+.u-cap { margin: 0; max-width: 78ch; font: 400 var(--fs-small)/1.4 var(--sans); color: var(--ink-soft); text-wrap: pretty; }
+[data-board] .u-mapbar { display: none; }
+.u-mapkey-btn { flex: none; position: static; min-height: 32px; padding: 5px 12px; border-radius: var(--r-sm); border: 1px solid var(--rule-strong); background: var(--surface); color: var(--ink); font: 500 var(--fs-small)/1.2 var(--sans); cursor: pointer; }
 .u-mapkey-btn[hidden] { display: none; }
 .u-mapkey-btn[aria-expanded="true"] { border-color: var(--ink); }
 .u-mapkey-btn:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
@@ -603,7 +608,7 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
 /* On the board the card says more (a statement's opening, a pairing's terms), and the
    pointer can move onto it to read it; a click on it selects what it names. */
 .u-card.is-board { max-width: min(23rem, calc(100% - 16px)); }
-.u-card.is-board.is-on { pointer-events: auto; cursor: pointer; }
+.u-card.is-on { pointer-events: auto; cursor: pointer; }
 .u-card__x { margin: 5px 0 2px; font: 400 0.9375rem/1.5 var(--serif); color: var(--ink); overflow-wrap: break-word; }
 .u-card__n + .u-card__n { margin-top: 3px !important; }
 .u-card__n b { font-weight: 600; color: var(--ink); }
