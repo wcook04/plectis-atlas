@@ -286,8 +286,26 @@ def clean_url(u: str) -> str:
     return u
 
 
+# Hosts that serve the same address over https: a bibliography's http:// link to one of
+# them is followed as https (the printed text stays as the paper prints it).
+HTTPS_HOSTS = {
+    "hdl.handle.net", "doi.org", "dx.doi.org", "arxiv.org", "www.arxiv.org", "export.arxiv.org", "www.ams.org",
+    "ams.org", "mathscinet.ams.org", "zbmath.org", "www.zbmath.org", "eudml.org", "www.numdam.org", "numdam.org",
+    "projecteuclid.org", "www.jstor.org", "jstor.org", "link.springer.com", "onlinelibrary.wiley.com",
+    "www.sciencedirect.com", "oeis.org", "www.oeis.org", "en.wikipedia.org", "github.com", "mathoverflow.net",
+    "math.stackexchange.com", "msp.org", "www.cambridge.org", "academic.oup.com", "epubs.siam.org", "dl.acm.org",
+    "ieeexplore.ieee.org", "www.worldscientific.com", "citeseerx.ist.psu.edu", "www.emis.de", "emis.de",
+    "annals.math.princeton.edu", "www.ems-ph.org", "ems.press", "www.semanticscholar.org", "inspirehep.net",
+    "repository.kulib.kyoto-u.ac.jp", "www.kurims.kyoto-u.ac.jp", "www.mathnet.ru", "mathnet.ru", "www.lmfdb.org",
+    "lmfdb.org", "www.math.ias.edu", "www.ihes.fr", "www.numdam.org",
+}
+
+
 def safe_href(u: str) -> str | None:
     u = clean_url(u)
+    m = re.match(r"(?i)^http://([^/:?#]+)", u)
+    if m and m.group(1).lower() in HTTPS_HOSTS:
+        u = "https://" + u[len("http://"):]
     if u.lower().startswith(SAFE_SCHEMES):
         return u
     if re.match(r"^(www\.)", u):
