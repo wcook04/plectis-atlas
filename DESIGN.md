@@ -415,6 +415,13 @@ Lean snippets; source code may still scroll horizontally. Compact map cards
 stop before an omitted formula instead of carrying on after it; a numbered
 list marker alone is not a sentence or a useful preview.
 
+On desktop, pointing at a family in a discipline brings its expanded sidebar
+entry to the top of the reading area immediately. Keyboard focus uses the same
+alignment. Keep the catalogue order and allow enough scroll range for the last
+entry. Pointer movement within the sidebar must not reposition its rows, and
+leaving the map must not reset the reader's place. A preview does not select an
+object, change the address or move keyboard focus.
+
 ## Quality floor
 
 Judge every page at four sizes, in both schemes:

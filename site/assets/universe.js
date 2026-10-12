@@ -1619,6 +1619,7 @@
     function restorePending() {
       var s = panelScroller();
       if (pendingY == null || !s) return;
+      if (!narrow() && pendingY > s.scrollHeight - s.clientHeight) reserveEntryTail();
       s.scrollTop = pendingY;
       if (s.scrollTop >= pendingY - 2) pendingY = null;
     }
@@ -1841,6 +1842,7 @@
             typeset(viewEl, o);
             if (panelScroller()) panelScroller().scrollTop = top;
             restorePending();
+            syncActive();
             // Loading may replace the section being read. Keep keyboard focus
             // there, but never take it back from another part of the page.
             var replacement = focusedId ? viewEl.querySelector('#' + focusedId) : focusedButton ?
@@ -1953,14 +1955,32 @@
           (det.first ? '<span class="u-entry__c"><span class="u-role">' + escapeHtml(T('family.catalogue')) + '</span> <span class="tex-auto">' + det.first + '</span></span>' : '') +
           '<span class="u-entry__e">' + escapeHtml(det.evidence) + '</span></span>' : '') + '</a></li>';
     }
-    // The entry for the family under the pointer on the map opens to its synopsis;
-    // pointing within the list only highlights, so the list never moves under the pointer.
+    // Leave enough scroll range to bring even the last family to the reading edge.
+    // Keep that range when its synopsis closes, so leaving the map does not jump the list.
+    function reserveEntryTail() {
+      var entries = viewEl && viewEl.querySelector('.u-entries');
+      if (!entries || !panelBody || narrow()) return;
+      var last = entries.lastElementChild && entries.lastElementChild.firstElementChild;
+      if (!last) return;
+      var more = last.querySelector('.u-entry__more');
+      var compactHeight = last.offsetHeight - (more ? more.offsetHeight : 0);
+      entries.style.paddingBottom = Math.max(0, panelBody.clientHeight - compactHeight - 12) + 'px';
+    }
+    function revealEntry(entry) {
+      if (!entry || !entry.classList.contains('u-entry') || narrow()) return;
+      reserveEntryTail();
+      panelBody.scrollTop += entry.getBoundingClientRect().top - panelBody.getBoundingClientRect().top - 12;
+    }
+    // Map previews bring their synopsis to the top of the sidebar. Pointer browsing
+    // inside the list stays stationary; keyboard focus follows the same reading edge.
     function syncActive() {
       if (!viewEl) return;
       if (typeof updateMapKey === 'function' && mapKeyEl && !mapKeyEl.hidden) updateMapKey();
       var hk = hover ? obj(hover) : null, fk = hk ? D.families[famOf(hk)] : null;
       Array.prototype.forEach.call(viewEl.querySelectorAll('.u-entry'), function (e) {
-        e.classList.toggle('is-active', !!fk && e.getAttribute('data-go') === fk.id);
+        var active = !!fk && e.getAttribute('data-go') === fk.id;
+        e.classList.toggle('is-active', active);
+        if (active && hoverVia === 'map') revealEntry(e);
       });
     }
     function disciplineHtml(di) {
@@ -2517,7 +2537,7 @@
       var key = go ? go.getAttribute('data-go') : null;
       var visible = false;
       try { visible = go && go.matches(':focus-visible'); } catch (err) { visible = false; }
-      if (go && visible && panelBody && panelBody.contains(go) && key && obj(key)) { hover = key; hoverVia = 'focus'; cardPtr = null; draw(); }
+      if (go && visible && panelBody && panelBody.contains(go) && key && obj(key)) { hover = key; hoverVia = 'focus'; cardPtr = null; revealEntry(go); draw(); }
     });
     root.addEventListener('focusout', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
