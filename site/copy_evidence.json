@@ -21,12 +21,12 @@
  "agreement": {
   "agree": "The two outside readers agree.",
   "disagree": "The two outside readers disagree.",
-  "unknown": "No outside reader has compared a Lean statement with this family's headline."
+  "unknown": "No outside reader has compared a Lean statement with this family’s headline."
  },
  "pairing": {
   "candidate-pairing": "Candidate pairing: found by the words the two statements share. Nobody has reviewed whether they state the same thing.",
   "producer-cited-association": "The Lean source cites this theorem by its label. Nobody has reviewed whether the two state the same thing.",
-  "producer-declared-binding": "The release's manifest binds this declaration to the theorem. Nobody has reviewed whether the two state the same thing.",
+  "producer-declared-binding": "The release’s manifest binds this declaration to the theorem. Nobody has reviewed whether the two state the same thing.",
   "unavailable": "No paper theorem is paired with this Lean statement."
  },
  "pairing_short": {
@@ -36,17 +36,17 @@
   "unavailable": "no pairing"
  },
  "claim": {
-  "candidate": "Candidate for the theorem the catalogue describes: of the papers' main statements, it shares the most words with OpenAI's description. Nobody has reviewed the choice.",
+  "candidate": "Candidate for the theorem the catalogue describes: of the papers’ main statements, it shares the most words with OpenAI’s description. Nobody has reviewed the choice.",
   "unresolved": "No single theorem in the papers has been identified as the one the catalogue describes. These share the most words with it."
  },
  "scope_context": {
-  "family-readings": "The outside readers judged the family's Lean statements against the family's headline, as a whole.",
-  "supporting-or-different": "The outside readers find that the release's Lean states a supporting or different result, so the theorem it is paired with is shown under its own heading."
+  "family-readings": "The outside readers judged the family’s Lean statements against the family’s headline, as a whole.",
+  "supporting-or-different": "The outside readers find that the release’s Lean states a supporting or different result, so the theorem it is paired with is shown under its own heading."
  },
  "reruns": {
-  "none": "No outside group reports re-running this Lean statement at the release's pin.",
-  "one": "Re-run and accepted by one outside group at the release's pin: {names}.",
-  "many": "Re-run and accepted by {n} outside groups at the release's pin: {names}."
+  "none": "No outside group reports re-running this Lean statement at the release’s pin.",
+  "one": "Re-run and accepted by one outside group at the release’s pin: {names}.",
+  "many": "Re-run and accepted by {n} outside groups at the release’s pin: {names}."
  },
  "other_checks": "Checked by another method: {kinds}.",
  "check_kind": {
@@ -72,7 +72,7 @@
   "agree:agree": "The two outside readers agree.",
   "different-scope-descriptions:agree": "The two outside readers agree on how much of the headline the Lean states, and describe it in different terms.",
   "different-scope-descriptions:disagree": "The two outside readers disagree on how much of the headline the Lean states.",
-  "unavailable:unknown": "No outside reader has compared a Lean statement with this family's headline."
+  "unavailable:unknown": "No outside reader has compared a Lean statement with this family’s headline."
  },
  "no_lean": "The release has no Lean statement for this family. The papers can still be read and checked."
 }
