@@ -1308,7 +1308,7 @@ def header(rel: str, current: str | None) -> str:
   <nav class="nav" id="site-nav" aria-label="{esc(C('nav.site_nav'))}">{''.join(links)}</nav>
   <div class="top__tools">
    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg><span>{esc(C('nav.menu'))}</span></button>
-   <a class="search-open" href="{root}explain.html" aria-haspopup="dialog" aria-controls="search-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg><span class="search-open__label">{esc(C('nav.search'))}</span><kbd aria-hidden="true">/</kbd></a>
+   <a class="search-open" href="{root}explain.html" aria-label="{esc(C('nav.search'))}" aria-haspopup="dialog" aria-controls="search-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg><span class="search-open__label">{esc(C('nav.search'))}</span><kbd aria-hidden="true">/</kbd></a>
    <button class="theme-toggle" type="button" data-label-dark="{esc(C('nav.theme_dark'))}" data-label-light="{esc(C('nav.theme_light'))}" aria-label="{esc(C('nav.theme_dark'))}"><span class="theme-toggle__thumb" aria-hidden="true"></span></button>
   </div>
  </div>
@@ -3549,10 +3549,10 @@ def build_search_data():
         lean = say("sentence.lean_none") if k == 0 else say("sentence.lean_one") if k == 1 else say("sentence.lean_many", n=k)
         return f"{papers}, {lean}"
 
-    fams = {ev.id: {"n": ev.name, "d": disc_name.get(ev.id, ""), "e": holdings(ev)} for ev in evidence.all_families(r)}
+    fams = {ev.id: {"n": tex_plain(ev.name), "d": disc_name.get(ev.id, ""), "e": holdings(ev)} for ev in evidence.all_families(r)}
     labels = {"schema": "plectis-atlas-search-labels/1", "generation_id": r.generation,
               "source": "search-index.json and its entry chunks; family holdings from the reader packets",
-              "kinds": runs, "papers": {e["id"]: e["name"] for e in entries if e["kind"] == "manuscript"},
+              "kinds": runs, "papers": {e["id"]: tex_plain(e["name"]) for e in entries if e["kind"] == "manuscript"},
               "families": fams}
     (dst / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
