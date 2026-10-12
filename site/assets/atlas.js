@@ -1004,7 +1004,7 @@
         var nm = el('span', 'sr__name');
         nm.appendChild(el('code', 'sr__code', r.id.slice(2)));
         tt.appendChild(nm);
-        tt.appendChild(richEl('span', 'sr__k md-math', r.name));
+        if (r.name !== r.id.slice(2)) tt.appendChild(richEl('span', 'sr__k md-math', r.name));
       } else {
         tt.appendChild(richEl('span', 'sr__name md-math', r.name));
         var fams = r.family_ids.map(function (f) { return (lab.families[f] || {}).n || f; });
@@ -1035,7 +1035,7 @@
       return;
     }
     dlg.setAttribute('data-state', 'results');
-    status.textContent = fmt(T('found'), { n: total.toLocaleString('en-GB'), words: quoteList(toks) });
+    status.textContent = fmt(T(total === 1 ? 'found-one' : 'found'), { n: total.toLocaleString('en-GB'), words: quoteList(toks) });
     KIND_ORDER.forEach(function (kind) {
       var n = res.counts[kind] || 0;
       if (!n) return;

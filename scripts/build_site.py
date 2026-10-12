@@ -1186,7 +1186,7 @@ def RD():
     return reader.load()
 
 
-SEARCH_TEXT_KEYS = ("family", "in-paper", "in-family", "discipline-n", "found", "missing-one", "missing-many",
+SEARCH_TEXT_KEYS = ("family", "in-paper", "in-family", "discipline-n", "found", "found-one", "missing-one", "missing-many",
                     "apart", "failed", "more", "truncated", "kind-family", "kind-lean", "kind-manuscript",
                     "kind-statement", "kind-discipline")
 
