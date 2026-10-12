@@ -53,11 +53,14 @@
   "said": "What people have said"
  },
  "claim": {
-  "heading_unresolved": "The theorems that share the most words with the description",
+  "heading_unresolved": "The candidate theorems",
+  "diagram": "A diagram is drawn here in the paper.",
+  "diagram_link": "A diagram is drawn here in the paper; <a href=\"{href}\">see it on the reading page</a>.",
   "printed": "{kind} {number}",
   "unnumbered": "{kind} (the paper prints no number)",
   "unavailable": "{kind} (number unavailable)",
-  "in_paper": "In {paper}, {date}",
+  "in_paper": "In {paper}{date}",
+  "role": "The paper states",
   "in_paper_undated": "In {paper}",
   "read_passage": "Read it in the paper",
   "pdf": "PDF",
@@ -86,8 +89,20 @@
   "index_runs_none": "no accepted re-run reported",
   "index_runs_one": "one accepted re-run reported",
   "index_runs_many": "{n} accepted re-runs reported",
-  "paper_side": "The paper",
+  "paper_side": "The paper states",
   "lean_side": "The Lean",
+  "state_head": {
+   "candidate-pairing": "Possible Lean match",
+   "producer-cited-association": "The Lean statement whose source cites this theorem",
+   "producer-declared-binding": "The Lean statement the release binds to this theorem",
+   "unavailable": "The Lean statement"
+  },
+  "state_qual": {
+   "candidate-pairing": "Suggested from shared wording. Correspondence not reviewed.",
+   "producer-cited-association": "The Lean source cites the theorem by its label. Correspondence not reviewed.",
+   "producer-declared-binding": "The release’s manifest binds them. Correspondence not reviewed.",
+   "unavailable": "No paper theorem is paired with it."
+  },
   "no_pair": "No paper theorem is paired with this Lean statement.",
   "no_pair_reason": "{reason}",
   "no_pair_alternatives": "Statements it shares words with:",
@@ -101,7 +116,8 @@
   "holes_many": "{n} definitions are compared by name and type only: {names}.",
   "cited_quote": "The Lean source’s comment reads: {quote}",
   "nolean": "The release has no Lean statement for this family. Its papers can still be read and checked by hand, and anyone can offer a formal statement.",
-  "runs_link": "Who re-ran it"
+  "runs_link": "Who re-ran it",
+  "sorry": "The challenge file states the theorem with <code>sorry</code> in place of its proof; the release’s solution file supplies the proof, and that is what a re-run checks."
  },
  "checked": {
   "heading": "Who has checked it"

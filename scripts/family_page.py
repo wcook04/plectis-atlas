@@ -66,10 +66,14 @@ def slug_id(s: str) -> str:
     return re.sub(r"[^A-Za-z0-9_-]+", "-", s).strip("-")
 
 
+DIAGRAM = re.compile(r"\\begin\{(tikzpicture|tikzcd|xy|picture)\}.*?\\end\{\1\}", re.S)
+
+
 def curly(s: str) -> str:
     """Typographic quotes in recorded prose: an apostrophe inside a word, and a pair of
     single or double quotes around words. Callers keep code spans apart."""
     t = re.sub(r"(?<=[A-Za-z0-9À-ɏ])'(?=[A-Za-z])", "’", s or "")
+    t = re.sub(r"(?<=[a-z]s)'(?=\s)", "’", t)
     t = re.sub(r"(?<![\w'])'([^'\n]{1,80}?)'(?![\w'])", r"‘\1’", t)
     t = re.sub(r'(?<![\w"])"([^"\n]{1,120}?)"(?![\w"])', r"“\1”", t)
     return t
@@ -271,7 +275,12 @@ class Ctx:
         if not (m and text):
             return f'<p class="fx-muted">{esc(W("claim.no_text"))}</p>'
         conv = self.S.LabelTexConv(m, self.root)
+        text = DIAGRAM.sub(" ZZFXDIAGRAMZZ ", text)
         body = self.S.glue(conv.blocks(text))
+        href = self.passage_href(sid)
+        note = W("claim.diagram_link", href=esc(href)) if href else esc(W("claim.diagram"))
+        body = re.sub(r'<div class="m-d">\s*<span class="m"[^>]*>\s*ZZFXDIAGRAMZZ\s*</span>\s*</div>|<span class="m"[^>]*>\s*ZZFXDIAGRAMZZ\s*</span>', "ZZFXDIAGRAMZZ", body)
+        body = re.sub(r"(?:<p>)?\s*ZZFXDIAGRAMZZ\s*(?:</p>)?", f'<span class="fx-diagram">{note}</span>', body)
         return self.S.guard_labels(f"{m['id']} line {(st.get('source') or {}).get('line')}", body)
 
     def stmt_title_html(self, sid) -> str:
@@ -287,7 +296,7 @@ class Ctx:
             return ""
         paper = f'<a href="{self.root}papers/{esc(m["id"])}.html"><span class="tex-auto">{self.S.rich(curly_tex(m["title"]))}</span></a>'
         date = self.S.date_words(m.get("date"))
-        return W("claim.in_paper", paper=paper, date=esc(date)) if date else W("claim.in_paper_undated", paper=paper)
+        return W("claim.in_paper", paper=paper, date=f'<span class="fx-nw">, {esc(date)}</span>') if date else W("claim.in_paper_undated", paper=paper)
 
     def stmt_card(self, sid, *, aid: str, level: int = 3, note: str = "", big: bool = False, actions: str = "") -> str:
         """A paper statement exactly as printed: its number, the paper and date, the text,
@@ -298,7 +307,7 @@ class Ctx:
         go = []
         href = self.passage_href(sid)
         if href:
-            go.append(f'<a class="btn {"btn--primary" if big else "btn--ghost btn--small"}" href="{esc(href)}">{esc(W("claim.read_passage"))}</a>')
+            go.append(f'<a class="btn {"btn--ghost" if big else "btn--ghost btn--small"}" href="{esc(href)}">{esc(W("claim.read_passage"))}</a>')
         if actions:
             go.append(actions if big else actions.replace("btn btn--ghost", "btn btn--ghost btn--small"))
         if m:
@@ -310,6 +319,7 @@ class Ctx:
                    f'<button class="copy" type="button" data-copy-next>{esc(self.S.C("words.copy"))}</button><pre><code>{esc(text)}</code></pre></div></details>')
         h = f"h{level}"
         return (f'<article class="fx-st{" fx-st--big" if big else ""}" id="{esc(aid)}" data-macros="{esc(m["id"]) if m else ""}" aria-labelledby="{esc(aid)}-h">'
+                + (f'<p class="fx-st__role">{esc(W("claim.role"))}</p>' if big else "") +
                 f'<{h} class="fx-st__head" id="{esc(aid)}-h"><span class="fx-st__kind">{esc(self.label(sid))}</span>{self.stmt_title_html(sid)}</{h}>'
                 f'<p class="fx-st__src">{self.stmt_where(sid)}</p>'
                 f'<div class="fx-st__body">{self.stmt_body(sid)}</div>{note}'
@@ -391,7 +401,7 @@ def finds_list(c: Ctx, items) -> str:
         who = c.effort_credit(x)
         when = c.S.date_words(x.get("date"))
         out.append(f'<li class="fx-find"><p class="fx-find__what">{esc(curly(x.get("summary") or ""))}</p>'
-                   f'<p class="fx-find__who">{esc(curly(who))}{(", " + esc(when)) if when else ""}. '
+                   f'<p class="fx-find__who">{esc(", ".join(t for t in (curly(who), when) if t))}{". " if (who or when) else ""}'
                    f'<a class="ext" href="{esc(x.get("url") or "")}" rel="noopener">{esc(c.S.C("community.source"))}</a></p></li>')
     return '<ul class="fx-finds">' + "".join(out) + "</ul>"
 
@@ -422,8 +432,7 @@ def head_html(c: Ctx) -> str:
              f'<button class="btn btn--small" type="button" data-copy-text="{esc(c.page_url)}" data-copied="{esc(W("actions.copied"))}">{esc(W("actions.copy"))}</button></p>')
     title_plain = S.tex_plain(f["title"])
     cat = c.catalogue()
-    unresolved = (doc.get("claim") or {}).get("state") != "candidate"
-    lead, rest = (cat, "") if unresolved else S.head_lede(cat)
+    lead, rest = S.head_lede(cat)
     more = (f'<details class="fx-fold fx-quote__more"><summary>{esc(W("head.quote_more"))}</summary>'
             f'<p class="tex-auto">{S.glue(S.rich(curly_tex(rest), "", root, link_results=True))}</p></details>') if rest else ""
     quote = (f'<figure class="fx-quote" id="h-desc"><figcaption class="fx-quote__src">{W("head.quote_credit", link=catalogue_link(c))}</figcaption>'
@@ -480,8 +489,6 @@ def status_html(c: Ctx) -> str:
     if ex:
         n_ex = W("status.explained_others_one") if len(ex) == 1 else W("status.explained_others_many", n=cap(S.say(len(ex))))
         readable += f' <a href="#explanations">{esc(n_ex)}</a>'
-    if not rev and not ex:
-        readable += " " + esc(W("status.explained_none"))
     return (f'<dl class="fx-status" id="h-standing">'
             f'<div class="fx-status__row"><dt>{esc(W("status.formal"))}</dt><dd>{formal}</dd></div>'
             f'<div class="fx-status__row"><dt>{esc(W("status.readable"))}</dt><dd>{readable}</dd></div></dl>')
@@ -516,7 +523,7 @@ def theorem_html(c: Ctx) -> str:
                      f'<p class="fx-cand fx-cand--open">{esc(sayc("claim.unresolved"))}</p>')
         if alts:
             top = max(a.get("score") or 0 for a in alts)
-            tied = [a for a in alts if (a.get("score") or 0) == top and top > 0][:3]
+            tied = [a for a in alts if (a.get("score") or 0) == top][:3]
             for i, a in enumerate(tied):
                 terms = a.get("matched_terms") or []
                 note = f'<p class="fx-cand">{esc(W("claim.shared", words=", ".join(terms)) if terms else W("claim.shared_none"))}</p>'
@@ -590,9 +597,9 @@ def lean_card(c: Ctx, l) -> str:
     acc = [c.source_name(x) for x in l.get("accepted_current_sources") or []]
     runs = sayc("reruns.none") if not acc else (sayc("reruns.one", names=acc[0]) if len(acc) == 1 else sayc("reruns.many", n=S.say(len(acc)), names=", ".join(acc)))
     return (f'<article class="fx-lean" aria-labelledby="lean-{esc(name)}-h">'
-            f'<h4 class="fx-lean__head" id="lean-{esc(name)}-h"><a href="{c.root}statements/{esc(name)}.html"><span class="md-math">{esc(l.get("name") or name)}</span></a></h4>'
+            f'<h4 class="fx-lean__head" id="lean-{esc(name)}-h"><a href="{c.root}statements/{esc(name)}.html"><span class="md-math">{esc(curly_tex(l.get("name") or name))}</span></a></h4>'
             f'<p class="fx-lean__file"><code translate="no">{S.lean_breaks(">" + esc(name))[1:]}.lean</code>, {esc(role)}.</p>'
-            f'{code}{more}{holes_html}'
+            f'{code}' + (f'<p class="fx-lean__note">{W("compare.sorry")}</p>' if code and "sorry" in (s or {}).get("lean", "") else "") + f'{more}{holes_html}'
             f'<p class="fx-lean__runs">{esc(runs)} <a href="#reruns-{esc(name)}">{esc(W("compare.runs_link"))}</a></p>'
             f'<p class="fx-lean__go"><a href="{c.root}statements/{esc(name)}.html">{esc(W("compare.lean_open"))}</a></p></article>')
 
@@ -611,21 +618,24 @@ def comparison_one(c: Ctx, l, *, first: bool) -> str:
         alts = [dict(a, statement_id=a.get("target")) for a in rec["alternatives"]]
         alt = (f'<p class="fx-cmp__why">{esc(W("compare.no_pair_alternatives"))}</p>' + alt_list(c, alts, keep=4)) if alts else ""
         paper = f'<div class="fx-st fx-st--none"><p class="fx-st__none">{esc(W("compare.no_pair"))}</p>{why}{alt}</div>'
-    words = esc(sayc("pairing." + state))
-    if rec["target"] and rec["shared"]:
-        words += " " + esc(W("compare.shared", words=", ".join(rec["shared"])))
+    words = ""
+    if rec["target"] and rec["shared"] and state == "candidate-pairing":
+        words = esc(W("compare.shared", words=", ".join(rec["shared"])))
     for sa in c.doc.get("source_associations") or []:
         if sa.get("challenge") == name and rec["target"] in (sa.get("local_statement_ids") or []):
             q = ((sa.get("source") or {}).get("quote") or "").strip()
             if q:
                 words += f' <span class="fx-join__quote">{W("compare.cited_quote", quote=code_spans(q))}</span>'
+    lean_head = (f'<p class="fx-cmp__state">{esc(W("compare.state_head." + state))}</p>'
+                 f'<p class="fx-cmp__qual">{esc(W("compare.state_qual." + state))}</p>')
+    join = f'<p class="fx-join fx-join--{esc(state)}">{words}</p>' if words else ""
     aliases = ('<span class="fx-alias" id="bench-lean"></span>' + (f'<span class="fx-alias" id="thread-{esc(c.num)}"></span>' if rec["target"] else "")) if first else ""
     return (f'<section class="fx-cmp" id="lean-{esc(name)}" data-cmp aria-labelledby="lean-{esc(name)}-ch">{aliases}'
             f'<h3 class="fx-cmp__h" id="lean-{esc(name)}-ch"><code translate="no">{esc(name)}</code></h3>'
             f'<div class="fx-cmp__grid fx-cmp__grid--{esc(state)}">'
             f'<div class="fx-cmp__paper"><p class="fx-cmp__side">{esc(W("compare.paper_side"))}</p>{paper}</div>'
-            f'<p class="fx-join fx-join--{esc(state)}">{words}</p>'
-            f'<div class="fx-cmp__lean"><p class="fx-cmp__side">{esc(W("compare.lean_side"))}</p>{lean_card(c, l)}</div>'
+            f'{join}'
+            f'<div class="fx-cmp__lean"><div class="fx-cmp__lhead">{lean_head}</div>{lean_card(c, l)}</div>'
             f'</div></section>')
 
 
@@ -641,12 +651,12 @@ def lean_index(c: Ctx) -> str:
             slug = (c.stmts[rec["target"]].get("manuscript_id") or "")[2:]
             pair = W("compare.index_paired", state=sayc("pairing_short." + rec["state"]), label=c.label(rec["target"]))
             if len([h for h in c.doc.get("paper_history") or [] if h.get("status") == "current"]) > 1:
-                pair += " " + W("compare.index_in", paper=c.paper_short(slug, 56))
+                pair += " " + W("compare.index_in", paper=c.paper_short(slug, 200))
         else:
             pair = sayc("pairing_short.unavailable")
         rows.append(f'<li><a class="fx-idx__a" href="#lean-{esc(name)}" data-cmp-tab="lean-{esc(name)}"{" aria-current=\"true\"" if i == 0 else ""}>'
-                    f'<code translate="no">{c.S.lean_breaks(">" + esc(name))[1:]}</code></a>'
-                    f'<span class="fx-idx__m">{esc(cap(W("compare.index_main") if main else W("compare.index_support")))}; {esc(pair)}; {esc(runs)}.</span></li>')
+                    f'<span class="fx-idx__t md-math">{esc(curly_tex(l.get("name") or name))}</span></a>'
+                    f'<span class="fx-idx__m"><code translate="no">{c.S.lean_breaks(">" + esc(name))[1:]}</code>. {esc(cap(W("compare.index_main") if main else W("compare.index_support")))}; {esc(pair)}; {esc(runs)}.</span></li>')
     return (f'<nav class="fx-idx" id="h-index" aria-labelledby="idx-h"><h3 class="fx-h3" id="idx-h">{esc(W("compare.index_heading", n=c.S.say(len(c.leans))))}</h3>'
             f'<p class="fx-intro">{esc(W("compare.index_intro"))}</p><ol class="fx-idx__list">{"".join(rows)}</ol></nav>')
 
@@ -709,7 +719,7 @@ def readings_html(c: Ctx) -> str:
         return f'<span class="fx-alias" id="h-readings"></span>{head}<p class="fx-prose">{esc(W("readings.nolean"))}</p>'
     a, b = (list(ev.readers) + [None, None])[:2]
     lead = esc(ev.agreement_sentence())
-    if ev.comparison != "agree" and a and b and a.term and b.term:
+    if ev.agreement == "disagree" and a and b and a.term and b.term:
         lead += " " + esc(W("readings.both", left=reading_says(a).rstrip("."), right=reading_says(b)))
     cols = []
     for rd in ev.readers:

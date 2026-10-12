@@ -16,12 +16,12 @@
 }
 
 /* ---- The head ---------------------------------------------------------- */
-.fx-head { max-width: 62rem; }
-.fx-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; margin-bottom: 22px; }
+.fx-head > :not(.fx-bar) { max-width: 62rem; }
+.fx-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; margin-bottom: 16px; }
 .fx-bar .trail { margin: 0; }
 .fx-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
 .fx-title { font-family: var(--serif); font-weight: 500; font-size: clamp(1.9rem, 1.3rem + 1.8vw, 2.75rem); line-height: 1.14; letter-spacing: -0.014em;
-  margin: 0 0 18px; max-width: 24em; text-wrap: balance; overflow-wrap: break-word; }
+  margin: 0 0 14px; max-width: 24em; text-wrap: balance; overflow-wrap: break-word; }
 .fx-title--long { font-size: clamp(1.7rem, 1.25rem + 1.3vw, 2.25rem); }
 .fx-quote { margin: 0; max-width: var(--fx-measure); }
 .fx-quote__src { margin: 0 0 6px; font-size: var(--fs-meta); color: var(--muted); }
@@ -31,6 +31,9 @@
 .fx-quote__more { margin-top: 8px; }
 .fx-quote__more p { margin-top: 6px; }
 .fx-fact { max-width: var(--fx-measure); margin: 14px 0 0; font-size: var(--fs-body); color: var(--ink-soft); line-height: 1.55; }
+.fx-fact a:not(.ext) { color: var(--ink-soft); text-decoration-color: var(--rule-control); }
+.fx-nw { white-space: nowrap; }
+.fx-diagram { display: block; margin: 0.6em 0; padding: 8px 12px; border: 1px dashed var(--rule-strong); border-radius: var(--r-sm); font-family: var(--sans); font-size: var(--fs-small); color: var(--muted); }
 
 /* ---- Body and side column ------------------------------------------------ */
 .fx-body { margin-top: 8px; }
@@ -50,14 +53,14 @@
 
 /* ---- Sections ------------------------------------------------------------ */
 .fx-sec { margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--rule); scroll-margin-top: 12px; }
-.fx-sec--theorem { margin-top: 36px; padding-top: 0; border-top: 0; }
+.fx-sec--theorem { margin-top: 26px; padding-top: 0; border-top: 0; }
 .fx-sec--quiet .fx-h2 { font-size: 1.375rem; color: var(--ink-soft); }
 .fx-h2 { font-family: var(--serif); font-weight: 500; font-size: 1.75rem; line-height: 1.25; letter-spacing: -0.008em; margin: 0 0 10px; text-wrap: balance; }
 .fx-h3 { font-family: var(--serif); font-weight: 600; font-size: 1.1875rem; line-height: 1.3; margin: 36px 0 8px; scroll-margin-top: 12px; }
 .fx-h4 { font-family: var(--sans); font-weight: 600; font-size: var(--fs-base); margin: 24px 0 6px; }
 .fx-intro { color: var(--muted); max-width: var(--fx-measure); font-size: var(--fs-body); line-height: 1.55; margin: 0 0 16px; text-wrap: pretty; }
 .fx-prose { max-width: var(--fx-measure); font-size: var(--fs-base); line-height: 1.6; color: var(--ink-soft); }
-.fx-lead-s { max-width: var(--fx-measure); font-family: var(--serif); font-size: 1.125rem; line-height: 1.55; color: var(--ink); margin: 0 0 10px; text-wrap: pretty; }
+.fx-lead-s { max-width: var(--fx-measure); font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; color: var(--ink); margin: 0 0 10px; text-wrap: pretty; }
 .fx-muted { color: var(--muted); }
 .fx-alias, .fam-alias { display: block; height: 0; scroll-margin-top: 12px; }
 .fx-tag, .fam-tag { font-size: var(--fs-small); color: var(--steel-text); }
@@ -83,8 +86,8 @@
 .fx-st__head { font-family: var(--serif); font-size: 1.125rem; line-height: 1.35; font-weight: 400; margin: 0 0 2px; }
 .fx-st__kind { font-weight: 700; color: var(--ink); }
 .fx-st__title { font-style: italic; color: var(--ink-soft); }
-.fx-st__src { margin: 0 0 12px; font-size: var(--fs-small); color: var(--muted); }
-.fx-st__src a { color: var(--muted); }
+.fx-st__src { margin: 0 0 12px; font-size: var(--fs-meta); color: var(--ink-soft); }
+.fx-st__src a { color: var(--ink-soft); }
 .fx-st__src a:hover { color: var(--ink); }
 .fx-st__body { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.62; color: var(--ink); overflow-wrap: break-word; }
 .fx-st__body p { margin: 0 0 0.6em; }
@@ -97,7 +100,7 @@
 .fx-st__none { margin: 0 0 6px; font-family: var(--serif); font-size: 1.0625rem; color: var(--ink-soft); }
 
 /* The centrepiece: the theorem, set large. */
-.fx-st--big { padding: 30px 36px 18px; max-width: 54rem; border-color: var(--rule-strong); }
+.fx-st--big { padding: 24px 36px 18px; max-width: 54rem; border-color: var(--rule-strong); }
 .fx-st--big .fx-st__head { font-size: 1.5rem; margin-bottom: 4px; }
 .fx-st--big .fx-st__src { font-size: var(--fs-meta); margin-bottom: 18px; }
 .fx-st--big .fx-st__body { font-size: 1.3125rem; line-height: 1.6; }
@@ -109,8 +112,8 @@
   .fx-st--big .fx-st__body { font-size: 1.15rem; }
 }
 .fx-cand { max-width: 36rem; margin: 12px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
-.fx-cand--open { font-family: var(--serif); font-size: 1.125rem; color: var(--ink-soft); margin: 0 0 18px; }
-.fx-h2--theorem { margin-bottom: 6px; }
+.fx-cand--open { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink-soft); margin: 0 0 14px; max-width: var(--fx-measure); }
+.fx-h2--theorem { margin-bottom: 4px; font-size: 1.5rem; }
 .fx-others { margin-top: 18px; max-width: 52rem; }
 
 /* Two lines kept apart: the formal status and the readable argument. */
@@ -137,27 +140,34 @@
 .fx-idx__list { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
 .fx-idx__list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; padding: 6px 0; border-top: 1px solid var(--rule); }
 .fx-idx__a { display: inline-flex; align-items: center; min-height: 24px; color: var(--ink-soft); text-decoration: none; }
-.fx-idx__a code { font-family: var(--fx-lean-mono); font-size: 0.875rem; }
-.fx-idx__a:hover code { color: var(--ink); text-decoration: underline; }
-.fx-idx__a[aria-current="true"] code { color: var(--ink); font-weight: 700; text-decoration: underline; text-decoration-color: var(--steel-text); text-underline-offset: 0.25em; }
+.fx-idx__t { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink); }
+.fx-idx__a:hover .fx-idx__t { text-decoration: underline; }
+.fx-idx__a[aria-current="true"] .fx-idx__t { font-weight: 600; text-decoration: underline; text-decoration-color: var(--steel-text); text-underline-offset: 0.25em; }
 .fx-idx__m { font-size: var(--fs-small); color: var(--muted); flex: 1 1 22rem; }
+.fx-idx__m code { font-family: var(--fx-lean-mono); font-size: 0.95em; color: var(--steel-text); overflow-wrap: anywhere; }
 
 .fx-cmp { margin-top: 26px; scroll-margin-top: 12px; }
 .fx-cmp:first-child { margin-top: 8px; }
 .fx-cmp__h { margin: 0 0 10px; font-family: var(--sans); font-size: var(--fs-base); font-weight: 600; color: var(--ink-soft); }
 .fx-cmp__h code { font-family: var(--fx-lean-mono); font-size: 0.95em; color: var(--ink); overflow-wrap: anywhere; }
 .fx-cmp__side { margin: 0 0 6px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
-.fx-cmp__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+.fx-cmp__lhead { margin: 0 0 6px; }
+.fx-cmp__state { margin: 0; font-size: var(--fs-meta); font-weight: 600; color: var(--ink); }
+.fx-cmp__qual { margin: 0; font-size: var(--fs-small); font-style: italic; color: var(--ink-soft); }
+.fx-st__role { margin: 0 0 4px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.fx-cmp__grid { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "join" "lean"; gap: 0; }
+.fx-cmp__paper { grid-area: paper; min-width: 0; }
+.fx-cmp__lean { grid-area: lean; min-width: 0; }
 .fx-cmp__grid .fx-st { margin-bottom: 0; max-width: none; }
 .fx-cmp__why { margin: 6px 0; font-size: var(--fs-small); color: var(--muted); }
-/* The join: the words that qualify the two statements' being side by side. */
-.fx-join { margin: 14px 0; padding: 10px 14px; border-left: 2px solid var(--steel); font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); max-width: var(--fx-measure); }
-.fx-join--unavailable { border-left-color: var(--rule-control); background: none; }
+/* The join: the words that qualify the two statements' being side by side. Between
+   them when they stack; a band across both, above them, when they stand side by side. */
+.fx-join { grid-area: join; margin: 14px 0; padding: 8px 0 8px 14px; border-left: 2px solid var(--steel); font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); max-width: 48rem; }
+.fx-join--unavailable { border-left-color: var(--rule-control); }
 .fx-join__quote { display: block; margin-top: 6px; font-size: var(--fs-small); color: var(--muted); }
-@container fxmain (min-width: 1000px) {
-  .fx-cmp__grid { grid-template-columns: minmax(0, 1fr) 190px minmax(0, 1fr); gap: 0 18px; align-items: start; }
-  .fx-join { margin: 30px 0 0; max-width: none; border-left: 0; border-top: 2px solid var(--steel); border-radius: 0 0 var(--r-sm) var(--r-sm); padding: 10px 2px; font-size: var(--fs-meta); background: none; }
-  .fx-join--unavailable { border-top-color: var(--rule-control); }
+@container fxmain (min-width: 860px) {
+  .fx-cmp__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "join join" "paper lean"; gap: 0 24px; align-items: start; }
+  .fx-join { margin: 0 0 16px; }
 }
 
 .fx-lean { padding: 16px 18px 12px; background: var(--surface); border: 1px solid color-mix(in oklab, var(--steel) 40%, var(--rule-strong)); border-radius: var(--r-lg); }
@@ -168,6 +178,7 @@
 .fx-lean__file code { font-family: var(--fx-lean-mono); color: var(--steel-text); overflow-wrap: anywhere; }
 .fx-lean__code { font-family: var(--fx-lean-mono); margin: 0 0 8px; max-height: 26rem; overflow: auto; }
 .fx-lean__code code { font-family: inherit; }
+.fx-lean__code .x { color: var(--muted); font-weight: 600; }
 .fx-lean__more, .fx-lean__note, .fx-lean__runs, .fx-lean__go { margin: 6px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
 .fx-lean__more code, .fx-lean__note code { font-family: var(--fx-lean-mono); }
 .fx-forms { list-style: none; padding: 0; margin: 0; }
