@@ -2116,8 +2116,9 @@
         cardEl.innerHTML = cardHtml(o);
         if (window.atlasRenderMath) window.atlasRenderMath(cardEl);
         cardKey = key; cardSpot = -1;
-        cardW = cardEl.offsetWidth; cardH = cardEl.offsetHeight;
       }
+      cardW = cardEl.offsetWidth; cardH = cardEl.offsetHeight;
+      if (!cardW || !cardH) { hideCard(); return; }
       var w = cardW, h = cardH, gap = m.r + 12, d = gap * 0.72;
       var spots = [[m.x + gap, m.y - h / 2], [m.x - gap - w, m.y - h / 2],
                    [m.x + d, m.y + d], [m.x + d, m.y - d - h], [m.x - d - w, m.y + d], [m.x - d - w, m.y - d - h],
