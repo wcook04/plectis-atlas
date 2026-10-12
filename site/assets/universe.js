@@ -2309,6 +2309,9 @@
     });
     function focusArrival() {
       var phoneMap = narrow() && root.getAttribute('data-view') === 'map';
+      // Keyboard navigation needs a visible focus target before the disc's
+      // transition finishes; a hidden board cannot receive focus.
+      if (board.pending && (!narrow() || phoneMap)) showBoard();
       var target = board.on || board.pending ? (!narrow() || phoneMap ? boardEl : null) : (phoneMap ? canvas : null);
       if (!target) target = titleEl;
       if (!target) return;
