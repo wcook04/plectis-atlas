@@ -97,7 +97,21 @@
   "alternatives_heading": "Statements that share the most words with it",
   "alternatives_more": "Other statements that share words with it",
   "alternatives_none": "The backend records no other statement for it.",
-  "read_in_paper": "Read the theorem in the paper",
+  "read_in_paper": {
+   "candidate-pairing": "Read the candidate theorem in the paper",
+   "producer-cited-association": "Read the cited theorem in the paper",
+   "producer-declared-binding": "Read the declared theorem in the paper"
+  },
+  "read_below": {
+   "candidate-pairing": "See the candidate theorem",
+   "producer-cited-association": "See the cited theorem",
+   "producer-declared-binding": "See the declared theorem"
+  },
+  "pair_line": {
+   "candidate-pairing": "Candidate pairing with {ref}, found by the words the two statements share. Nobody has reviewed whether they state the same thing.",
+   "producer-cited-association": "The Lean source cites {ref} by its label. Nobody has reviewed whether the two state the same thing.",
+   "producer-declared-binding": "The release’s manifest binds this declaration to {ref}. Nobody has reviewed whether the two state the same thing."
+  },
   "pair_heading": {
    "candidate-pairing": "Candidate paper theorem: matched by shared words, not reviewed",
    "producer-cited-association": "Paper theorem cited in the Lean source, match not reviewed",
@@ -110,6 +124,7 @@
  },
  "pairing": {
   "ref": "{name} of {title}",
+  "of": "of",
   "shared": "The two share {n} words, among them {words}.",
   "alt_shared": "Shares {n} words with it, among them {words}.",
   "cited_how": "The docstring of {declaration} names the theorem’s TeX label.",

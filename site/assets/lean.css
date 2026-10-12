@@ -182,6 +182,12 @@
 .page--lean .phead__sub { margin: -4px 0 10px; color: var(--ink-soft); font-family: var(--serif); font-size: 1.125rem; }
 .page--lean .phead__sub code { font-family: var(--lean-mono); font-size: 0.82em; color: var(--steel-text); }
 .page--lean .phead__sub span + code { margin-left: 0.4em; }
+/* The action that opens the paper theorem and the qualification of the pairing it
+   follows, as one group: which theorem it opens and that nobody has reviewed the match,
+   then the actions (build_site.build_statement). */
+.page--lean .phead__go { margin-top: 16px; }
+.page--lean .phead__pair { margin: 0; max-width: 72ch; font-size: var(--fs-meta); line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
+.page--lean .phead__go .actions { margin-top: 10px; }
 .claim--paper .claim__src { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink); margin: 0 0 10px; }
 /* The join: the words between the paper theorem and the Lean statement it is paired
    with. A steel rule runs down from the theorem; dashed for a candidate pairing,
