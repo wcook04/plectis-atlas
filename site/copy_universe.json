@@ -32,7 +32,7 @@
   "none": "No Lean statement in the release",
   "unread": "Not yet read by either",
   "size": "A disc’s area grows with the number of paper results and Lean statements it shows.",
-  "citations": "Lines between families are citations between their papers, drawn for the family or discipline you choose: brick where it cites, grey where it is cited.",
+  "citations": "Inside a discipline, pointing at a family draws its citations to the families beside it: brick where its papers cite, grey where they are cited.",
   "readers": "The readers are MathVet and Carlos Toledo’s cert-machine; each one’s own words are on every family page."
  },
  "counts": {
@@ -267,6 +267,11 @@
   "cites": "Its papers cite another family",
   "cited_by": "Another family’s papers cite it"
  },
+ "chart": {
+  "_note": "The words standing with the drawing at the release and at a discipline.",
+  "release_cap": "{families} families in {disciplines} disciplines, each disc coloured by what its Lean states. Choose a discipline to see its families by name.",
+  "disc_cap": "{name}: {counts}. Choose a family to open its papers, results and Lean statements."
+ },
  "board": {
   "_note": "Inside a family the map is a board of cards: its papers in columns with each result's statement, the Lean statements beside the results they state, the families citing it on the left and those it cites on the right.",
   "label": "The family's papers, results and Lean statements",
@@ -300,6 +305,6 @@
   "arrow": "An arrow runs from the citing family to the cited one. A citation joins papers; it is not a proof dependency.",
   "disc_inks": "Brick arrows leave a family in {name}; grey arrows arrive at one from another discipline.",
   "fam_inks": "Brick arrows leave {name}; grey arrows arrive at it.",
-  "release_inks": "Citations are drawn for the family you point at or choose."
+  "release_inks": "Inside a discipline, pointing at a family draws its citations."
  }
 }
