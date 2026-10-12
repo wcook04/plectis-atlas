@@ -3132,13 +3132,18 @@ def build_explain():
     eopts = [f'<option value="">{esc(C("explain.all_evidence"))}</option>']
     for group, keys in (("lean", ("lean", "nolean")), ("readers", ("disagree",)), ("pairing", ("thread_candidate", "thread_cited")),
                         ("checks", ("ring",)), ("explanations", ("explained_by_others",)), ("problems", ("problems_reported",))):
-        eopts.append(f'<optgroup label="{esc(C("explain.evgroup_" + group))}">' + "".join(
-            f'<option value="{key}">{esc(C("explain.ev_" + key))} ({num(counts.get(key, 0))})</option>' for key in keys) + "</optgroup>")
+        # An option that would lead to an empty list is not offered.
+        shown_opts = "".join(f'<option value="{key}">{esc(C("explain.ev_" + key))} ({num(counts.get(key, 0))})</option>'
+                             for key in keys if counts.get(key, 0))
+        if shown_opts:
+            eopts.append(f'<optgroup label="{esc(C("explain.evgroup_" + group))}">{shown_opts}</optgroup>')
     selects = [select("ff-d", C("explain.filter_discipline"), "d", dopts), select("ff-c", C("explain.filter_evidence"), "c", eopts)]
     for side, src in enumerate(order):
         opts = [f'<option value="">{esc(C("explain.reader_any"))}</option>']
         for tone in evidence.TONES:
             n = counts.get(("left_" if side == 0 else "right_") + tone, 0)
+            if not n:
+                continue   # an option that leads to an empty list is not offered
             opts.append(f'<option value="{tone}">{esc(cap(say_e("tone_short." + tone)))} ({num(n)})</option>')
         selects.append(select(f"ff-{side}", C("explain.filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts))
     selects.append(f'<div class="filters__g filters__g--q"><label class="filters__h" for="ff-q">{esc(C("explain.filter_words"))}</label>'
