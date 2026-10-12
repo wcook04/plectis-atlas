@@ -243,7 +243,8 @@ async function loads() {
   for (const kind of ['clicked', 'direct']) {
     const events = [];
     const state = vm.createContext({
-      selectionRequest: 0, partsReady: false, shards: {}, failedShards: {},
+      selectionRequest: 0, historyBackPending: null, historySelection: null,
+      partsReady: false, shards: {}, failedShards: {},
       statusEl: null, T: x => x, start: 'f:033',
       obj: () => ({ kind: 'f' }), discOf: () => 1,
       loadShard: () => { events.push('detail-start'); return waiting; },

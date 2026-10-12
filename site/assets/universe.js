@@ -885,11 +885,29 @@
        over --t-hover. A touch screen gets none: tapping selects. */
     var hoverMQ = window.matchMedia ? window.matchMedia('(hover: hover) and (pointer: fine)') : null;
     var cardEl = null, cardFor = null, cardKey = '', cardOn = false, cardSpot = -1, cardPtr = null, cardBox = null;
+    function guardPreviewClicks(el) {
+      var press = null, cancelled = false;
+      el.addEventListener('pointerdown', function (e) {
+        cancelled = e.isPrimary === false;
+        press = e.button === 0 && !cancelled ? { x: e.clientX, y: e.clientY } : null;
+      });
+      el.addEventListener('pointercancel', function () { press = null; cancelled = true; });
+      el.addEventListener('click', function (e) {
+        if (e.detail === 0) { press = null; cancelled = false; }
+        var moved = press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8;
+        press = null;
+        if (cancelled || moved || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+          e.preventDefault(); e.stopImmediatePropagation();
+        }
+        cancelled = false;
+      });
+    }
     if (stage) {
       cardEl = document.createElement('div');
       cardEl.className = 'u-card';
       cardEl.setAttribute('aria-hidden', 'true');
       stage.appendChild(cardEl);
+      guardPreviewClicks(cardEl);
     }
     function cardObject() {
       if (!cardEl || !hover || !D || board.on || !chart.shown) return null;
@@ -1343,7 +1361,9 @@
           });
         });
       }
-      svg.setAttribute('width', inEl.scrollWidth); svg.setAttribute('height', inEl.scrollHeight);
+      // The old overlay contributes to scrollWidth/scrollHeight. Its next size
+      // follows the content box so a narrower or shorter board can shrink.
+      svg.setAttribute('width', inEl.clientWidth); svg.setAttribute('height', inEl.clientHeight);
       svg.innerHTML = '<defs><marker id="u-cite-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="w-arrow-in" d="M0 0 10 5 0 10Z"/></marker>' +
         '<marker id="u-cite-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="w-arrow-out" d="M0 0 10 5 0 10Z"/></marker></defs>' + paths.join('');
     }
@@ -1706,12 +1726,14 @@
       var url = sel ? base + '#o=' + encodeURIComponent(sel) : base;
       var view = root.getAttribute('data-view');
       if (url === window.location.pathname + window.location.search + window.location.hash) return;
+      var state = window.history.state || {};
       if (push && window.history.pushState) {
         // The entry being left keeps how far down the list the reader was, so Back
         // returns them to the same row.
-        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0, v: view, ys: leavingViews, sf: searchFolded, b: leavingBoard }, ''); } catch (e) { /* the address still works */ }
-        window.history.pushState({ o: sel, v: view, ys: phoneViewY, sf: searchFolded, b: boardPosition() }, '', url);
-      } else window.history.replaceState({ o: sel, v: view, ys: phoneViewY, sf: searchFolded, b: boardPosition() }, '', url);
+        var previous = readHash();
+        try { window.history.replaceState(Object.assign({}, state, { o: previous, y: leavingY || 0, v: view, ys: leavingViews, sf: searchFolded, b: leavingBoard }), ''); } catch (e) { /* the address still works */ }
+        window.history.pushState({ o: sel, uPrev: previous, v: view, ys: phoneViewY, sf: searchFolded, b: boardPosition() }, '', url);
+      } else window.history.replaceState(Object.assign({}, state, { o: sel, v: view, ys: phoneViewY, sf: searchFolded, b: boardPosition() }), '', url);
     }
     // The list scrolls inside the panel on a wide screen and with the page on a narrow one.
     function panelScroller() {
@@ -1745,10 +1767,13 @@
       if (s.scrollTop >= pendingY - 2) pendingY = null;
     }
     // Select an object: its panel, its plate and, where its level asks, a flight.
-    var selectionRequest = 0;
+    var selectionRequest = 0, historyBackPending = null, historySelection = null;
     function select(key, opts) {
       var request = ++selectionRequest;
       opts = opts || {};
+      // A browser traversal settles on the next event turn. Keep a click made in
+      // that interval, rather than letting the arriving popstate erase it.
+      if (historyBackPending && !opts.fromHistory) { historySelection = { key: key, opts: opts }; return; }
       if (key && !partsReady && !/^d:/.test(key)) {
         // A family, paper, result or Lean statement opens once the parts are in.
         var family = obj(key);
@@ -1840,8 +1865,20 @@
       chrome = chromeBoxes();
     }
     function stepBack() {
+      if (historyBackPending) return;
       if (trail.length) {
-        var last = trail.pop();
+        var last = trail[trail.length - 1], state = window.history && window.history.state;
+        if (state && state.o === sel && Object.prototype.hasOwnProperty.call(state, 'uPrev') &&
+            state.uPrev === last.prev && window.history.back) {
+          historyBackPending = { key: last.prev, trail: trail.slice(0, -1) };
+          try {
+            window.history.replaceState(Object.assign({}, state, { y: savedScrollPos(), v: root.getAttribute('data-view'), ys: viewPositions(), sf: searchFolded, b: boardPosition() }), '');
+            window.history.back();
+            return;
+          } catch (e) { historyBackPending = null; /* an explicit ancestor still works */ }
+        }
+        var leavingY = savedScrollPos(), leavingBoard = boardPosition(), leavingViews = viewPositions();
+        last = trail.pop();
         sel = last.prev;
         restoreViewPositions({ ys: last.views, v: last.view, y: last.y });
         pendingY = typeof last.y === 'number' ? last.y : null;
@@ -1850,13 +1887,16 @@
         hover = null; hoverVia = ''; ring = null; ringWanted = null; cardDismissed = null;
         setReading(sel ? obj(sel) : null);
         renderPanel();
-        updateHash();
+        // A breadcrumb can skip several levels. Its map ancestor is then a new
+        // visit, not necessarily the immediately preceding browser entry.
+        updateHash(true, leavingY, leavingBoard, leavingViews);
         chartTo(true);
         return;
       }
-      if (sel) select(parentKey(obj(sel)), {});
+      if (sel) selectAncestor(parentKey(obj(sel)));
     }
     function selectAncestor(key) {
+      if (historyBackPending) { historySelection = { key: key, ancestor: true }; return; }
       var saved = null, remaining = [];
       for (var i = trail.length - 1; i >= 0; i--) {
         if (trail[i].prev === key) {
@@ -2799,20 +2839,27 @@
     });
     window.addEventListener('popstate', function (e) {
       var key = readHash();
+      var returning = historyBackPending, queued = historySelection;
+      historyBackPending = null; historySelection = null;
       var y = e.state && typeof e.state.y === 'number' ? e.state.y : null;
       restoreViewPositions(e.state);
       pendingBoard = e.state && e.state.b || null;
       if (e.state && (e.state.v === 'map' || e.state.v === 'list')) showView(e.state.v, true);
-      if (key !== sel) { trail = []; pendingY = y; select(key, { fromHistory: true }); }
+      if (key !== sel) { trail = returning && returning.key === key ? returning.trail : []; pendingY = y; select(key, { fromHistory: true }); }
       else if (y != null) { pendingY = y; }
       restoreSearch(e.state);
       restorePending();
       restoreBoardPosition();
+      if (returning && returning.key === key) focusArrival();
+      if (queued) {
+        if (queued.ancestor) selectAncestor(queued.key);
+        else select(queued.key, queued.opts);
+      }
     });
     // Leaving for a paper or a family page, the address's entry keeps the list's place,
     // so coming back finds it.
     window.addEventListener('pagehide', function () {
-      try { window.history.replaceState({ o: sel, y: savedScrollPos(), v: root.getAttribute('data-view'), ys: viewPositions(), sf: searchFolded, b: boardPosition() }, ''); } catch (e) { /* nothing to keep */ }
+      try { window.history.replaceState(Object.assign({}, window.history.state, { o: sel, y: savedScrollPos(), v: root.getAttribute('data-view'), ys: viewPositions(), sf: searchFolded, b: boardPosition() }), ''); } catch (e) { /* nothing to keep */ }
     });
     function readHash() {
       var hash = window.location.hash || '';

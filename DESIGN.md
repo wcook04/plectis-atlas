@@ -108,6 +108,12 @@ give space and emphasis to what the current task needs, at each depth.
   workspace) and the map refits. The mathematics never shrinks to fit.
 - A list beside the map is an index: a title and one status line per row, and
   the active row expanded.
+- Escape and empty map space return through the same browser entry as Back
+  when that entry is the previous selection. Breadcrumbs can skip levels;
+  their map ancestors remain separate visits. A direct link stays within the
+  map when stepping up. A click during a pending return is retained.
+- An arrow overlay follows its content box, so moving to a narrower panel or
+  shorter paper page removes obsolete scrolling space.
 
 ## The thread
 
@@ -162,6 +168,8 @@ candidate theorem, a number, a Lean name, a citation.
 
 - Pointing or focusing shows a light preview that can itself be pointed at and
   dismissed with Escape. Hover is never the only way in.
+- Selecting text in a preview preserves the selection being read. A drag,
+  cancelled gesture or modified click does not activate the preview.
 - Selecting pins the record in the inspection rail beside the reading column
   (a sheet from the bottom on phones). Focus moves to it; closing returns focus
   and the reading position.
