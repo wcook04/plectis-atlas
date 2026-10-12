@@ -67,9 +67,13 @@
   "shared": "The words it shares with the description: {words}.",
   "shared_none": "It shares no words with the description.",
   "alternatives": "Statements that share words with the description",
+  "alternatives_other": "Other statements that share words with the description",
   "alternatives_fold": "{n} other statements share words with the description",
   "alternatives_fold_one": "One other statement shares words with the description",
-  "alt_more": "Show {n} more",
+  "alt_in": "in {paper}",
+  "alt_shared": "Shares: {words}.",
+  "tex_copy": "Copy the TeX",
+  "tex_copied": "TeX copied",
   "score": "{n} shared words",
   "score_one": "one shared word",
   "no_text": "The statement’s text is on its reading page.",
@@ -146,6 +150,7 @@
   "method_link": "How {name} reads",
   "record": "Their record",
   "details": "Details",
+  "draft_label": "Unreviewed AI draft.",
   "draft_heading": "An AI agent’s draft classifications, which nobody has reviewed",
   "draft_fold": "{n} AI draft classifications, which nobody has reviewed",
   "draft_classes": {
@@ -217,12 +222,14 @@
    "independent-check-followup": "Follow up an undecided check"
   },
   "go": "Open the form",
+  "check_each": "Check a Lean statement against the paper:",
   "go_label": "Open the form: {what}",
   "names_more": "and {n} more"
  },
  "papers": {
   "heading": "Papers",
   "previous": "Previous editions",
+  "refs_intro": "Each paper’s outside references are listed with it on its reading page, where each citation is placed. Every outside work cited in the release:",
   "pdf": "PDF",
   "status": "{status}, {date}"
  },

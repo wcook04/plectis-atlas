@@ -315,8 +315,8 @@ class Ctx:
         tex = ""
         text = (ms_st or {}).get("text")
         if text:
-            tex = (f'<details class="texsrc"><summary>{esc(self.S.C("words.tex_source"))}</summary><div class="texsrc__box">'
-                   f'<button class="copy" type="button" data-copy-next>{esc(self.S.C("words.copy"))}</button><pre><code>{esc(text)}</code></pre></div></details>')
+            tex = (f'<button class="btn btn--quiet fx-st__tex" type="button" data-copy-text="{esc(text)}" '
+                   f'data-copied="{esc(W("claim.tex_copied"))}">{esc(W("claim.tex_copy"))}</button>')
         h = f"h{level}"
         return (f'<article class="fx-st{" fx-st--big" if big else ""}" id="{esc(aid)}" data-macros="{esc(m["id"]) if m else ""}" aria-labelledby="{esc(aid)}-h">'
                 + (f'<p class="fx-st__role">{esc(W("claim.role"))}</p>' if big else "") +
@@ -409,7 +409,7 @@ def finds_list(c: Ctx, items) -> str:
 def folded(items_html: list, keep: int, more_label: str) -> str:
     if len(items_html) <= keep + 1:
         return "".join(items_html)
-    return "".join(items_html[:keep]) + f'<details class="fx-fold"><summary>{esc(more_label)}</summary>{"".join(items_html[keep:])}</details>'
+    return "".join(items_html)
 
 
 # ---- the head -----------------------------------------------------------------
@@ -432,9 +432,7 @@ def head_html(c: Ctx) -> str:
              f'<button class="btn btn--small" type="button" data-copy-text="{esc(c.page_url)}" data-copied="{esc(W("actions.copied"))}">{esc(W("actions.copy"))}</button></p>')
     title_plain = S.tex_plain(f["title"])
     cat = c.catalogue()
-    lead, rest = S.head_lede(cat)
-    more = (f'<details class="fx-fold fx-quote__more"><summary>{esc(W("head.quote_more"))}</summary>'
-            f'<p class="tex-auto">{S.glue(S.rich(curly_tex(rest), "", root, link_results=True))}</p></details>') if rest else ""
+    lead, more = cat, ""
     quote = (f'<figure class="fx-quote" id="h-desc"><figcaption class="fx-quote__src">{W("head.quote_credit", link=catalogue_link(c))}</figcaption>'
              f'<blockquote class="fx-quote__q"><p class="tex-auto">{S.glue(S.rich(curly_tex(lead), "", root, link_results=True))}</p>{more}</blockquote></figure>')
     extra = []
@@ -517,7 +515,7 @@ def theorem_html(c: Ctx) -> str:
         rest = [a for a in alts if a.get("statement_id") != cand]
         parts.append(status_html(c))
         if rest:
-            parts.append(f'<details class="fx-fold fx-others"><summary>{esc((W("claim.alternatives_fold_one") if len(rest) == 1 else cap(W("claim.alternatives_fold", n=S.say(len(rest))))))}</summary>{alt_list(c, rest, keep=12)}</details>')
+            parts.append(f'<div class="fx-others"><h3 class="fx-h3">{esc(W("claim.alternatives_other"))}</h3>{alt_list(c, rest)}</div>')
     else:
         parts.append(f'<h2 class="fx-h2 fx-h2--theorem" id="claim-h">{esc(W("claim.heading_unresolved"))}</h2>'
                      f'<p class="fx-cand fx-cand--open">{esc(sayc("claim.unresolved"))}</p>')
@@ -532,8 +530,8 @@ def theorem_html(c: Ctx) -> str:
             rest = [a for a in alts if a not in tied]
             parts.append(status_html(c))
             if rest:
-                label = (W("claim.alternatives_fold_one") if len(rest) == 1 else cap(W("claim.alternatives_fold", n=S.say(len(rest))))) if tied else W("claim.alternatives")
-                parts.append(f'<details class="fx-fold fx-others"><summary>{esc(label)}</summary>{alt_list(c, rest, keep=12)}</details>')
+                label = W("claim.alternatives_other") if tied else W("claim.alternatives")
+                parts.append(f'<div class="fx-others"><h3 class="fx-h3">{esc(label)}</h3>{alt_list(c, rest)}</div>')
         else:
             parts.append(status_html(c))
     lab = "claim-theorem-h" if (claim.get("state") == "candidate" and cand in c.stmts) else "claim-h"
@@ -541,32 +539,28 @@ def theorem_html(c: Ctx) -> str:
             f'<span class="fx-alias" id="h-bench"></span><span class="fx-alias" id="bench-theorem"></span>{"".join(parts)}</section>')
 
 
-def alt_list(c: Ctx, alts, keep: int = 6) -> str:
-    """Statements that share words with a description or a Lean statement, compact, each
-    with its full record for inspection."""
+def alt_list(c: Ctx, alts, keep: int = 0) -> str:
+    """Statements that share words with a description or a Lean statement, as a short
+    visible list: each linked by its printed number to its passage, with its paper and
+    the words it shares. The statement itself is on the reading page and in its record."""
     rows = []
     for a in alts:
         sid = a.get("statement_id") or a.get("target")
         if sid not in c.stmts:
             continue
         terms = a.get("matched_terms") or []
-        score = len(terms)
         tid = c.stmt_tpl(sid, [(W("inspect.shared"), esc(", ".join(terms)) or esc(W("claim.shared_none")))])
         st = c.stmts[sid]
         slug = (st.get("manuscript_id") or "")[2:]
         m = c.S.MS.get(slug) or {}
-        href = c.passage_href(sid)
-        go = f' <a class="fx-alt__go" href="{esc(href)}" aria-label="{esc(W("claim.read_passage"))}: {esc(c.label(sid))}">{esc(W("claim.read_passage"))}</a>' if href else ""
-        sc = W("claim.score_one") if score == 1 else W("claim.score", n=score)
-        rows.append(f'<li class="fx-alt">{ins_button(tid, esc(c.label(sid)), "fx-alt__k")}'
-                    f'<span class="fx-alt__p">{esc(c.paper_short(slug, 64))}{(", " + esc(c.S.date_words(m.get("date")))) if m.get("date") else ""}</span>'
-                    f'<span class="fx-alt__s">{esc(sc)}</span>{go}</li>')
-    if not rows:
-        return ""
-    if len(rows) <= keep + 1:
-        return f'<ul class="fx-alts">{"".join(rows)}</ul>'
-    return (f'<ul class="fx-alts">{"".join(rows[:keep])}</ul><details class="fx-fold"><summary>{esc(W("claim.alt_more", n=len(rows) - keep))}</summary>'
-            f'<ul class="fx-alts">{"".join(rows[keep:])}</ul></details>')
+        href = c.passage_href(sid) or f"{c.root}papers/{esc(slug)}.html"
+        date = c.S.date_words(m.get("date"))
+        where = W("claim.alt_in", paper=c.paper_short(slug, 90)) + (f", {date}" if date else "")
+        shared = W("claim.alt_shared", words=", ".join(terms)) if terms else W("claim.shared_none")
+        rows.append(f'<li class="fx-alt"><a class="fx-alt__k" href="{esc(href)}">{esc(c.label(sid))}</a> '
+                    f'<span class="fx-alt__p">{esc(where)}.</span> <span class="fx-alt__s">{esc(shared)}</span> '
+                    f'{ins_button(tid, esc(W("readings.details")), "fx-alt__ins")}</li>')
+    return f'<ul class="fx-alts">{"".join(rows)}</ul>' if rows else ""
 
 
 # ---- the Lean beside the theorem -------------------------------------------------------
@@ -683,7 +677,8 @@ def comparison_html(c: Ctx) -> str:
 
 
 def formulations_html(c: Ctx) -> str:
-    """Other formulations in the release's Lean library (atlas data), folded, as before."""
+    """OpenAI's other formulations in the release's Lean library (atlas data): a visible
+    list of their names, each linked to its line in the source."""
     S = c.S
     fam_claims = S.CLAIMS_BY_FAMILY.get(c.num, [])
     stmts_c = [x for x in fam_claims if x["kind"] == "statement"]
@@ -691,15 +686,13 @@ def formulations_html(c: Ctx) -> str:
     if not stmts_c:
         return ""
     items = []
-    for x in stmts_c[:12]:
-        head_lines = S.lean_lines("\n".join((x.get("text") or x["head"]).split("\n")[:14]))
+    for x in stmts_c:
         cmp_note = f' <span class="fx-tag">{esc(S.C("family.formulation_checked", id=x["comparator_statement"]))}</span>' if x.get("comparator_statement") else ""
-        items.append(f'<li><p><code translate="no">{esc(x["name"].split(".")[-1])}</code>{cmp_note} <a class="ext small" href="{esc(S.BASE_BLOB + x["file"] + "#L" + str(x["line"]))}" rel="noopener">{esc(x["file"].split("/")[-1])}:{x["line"]}</a></p>'
-                     f'<pre class="lean lean--snippet"><code>{"".join(chr(10) + ln for ln in head_lines).lstrip(chr(10))}</code></pre></li>')
-    more_f = f'<p class="fx-muted small">{esc(S.C("family.formulations_more", n=len(stmts_c) - 12))}</p>' if len(stmts_c) > 12 else ""
+        items.append(f'<li><a class="ext" href="{esc(S.BASE_BLOB + x["file"] + "#L" + str(x["line"]))}" rel="noopener"><code translate="no">{esc(x["name"].split(".")[-1])}</code></a>'
+                     f' <span class="fx-muted small">{esc(x["file"].split("/")[-1])}, line {x["line"]}</span>{cmp_note}</li>')
     thm_line = f'<p class="fx-muted small">{esc(S.C("family.formulations_theorems", n=len(thms_c)))}</p>' if thms_c else ""
-    return (f'<details class="fx-fold fx-fold--section" id="h-form"><summary>{esc(S.C("family.formulations_heading"))}</summary>'
-            f'<p class="fx-intro">{esc(S.C("family.formulations_intro"))}</p><ol class="fx-forms">{"".join(items)}</ol>{more_f}{thm_line}</details>')
+    return (f'<div class="fx-forms-wrap" id="h-form"><h3 class="fx-h3">{esc(S.C("family.formulations_heading"))}</h3>'
+            f'<p class="fx-intro">{esc(S.C("family.formulations_intro"))}</p><ul class="fx-plain fx-forms">{"".join(items)}</ul>{thm_line}</div>')
 
 
 # ---- who has checked it ----------------------------------------------------------------
@@ -760,23 +753,17 @@ def readings_html(c: Ctx) -> str:
         if sd.get("state") != "ai-draft" or not val:
             continue
         cls = W("readings.draft_classes").get(val.get("class"), val.get("class") or "")
-        drafts.append(f'<li><code translate="no">{esc(l["id"][2:])}</code>: {esc(cls)}. <span class="md-math">{code_spans(val.get("note") or "")}</span></li>')
+        drafts.append(f'<li><span class="fx-draft__k">{esc(W("readings.draft_label"))}</span> <code translate="no">{esc(l["id"][2:])}</code>: {esc(cls)}. '
+                      f'<span class="md-math">{code_spans(val.get("note") or "")}</span></li>')
     draft_html = ""
     if drafts:
-        intro = f'<p class="fx-draft__h">{esc(W("readings.draft_heading"))}</p>'
-        if len(drafts) <= 2:
-            draft_html = f'<div class="fx-draft">{intro}<ul class="fx-draft__list">{"".join(drafts)}</ul></div>'
-        else:
-            draft_html = (f'<details class="fx-draft fx-fold"><summary>{esc(W("readings.draft_fold", n=S.say(len(drafts))))}</summary>'
-                          f'<ul class="fx-draft__list">{"".join(drafts)}</ul></details>')
+        draft_html = f'<ul class="fx-draft">{"".join(drafts)}</ul>'
     ps = c.doc.get("producer_scope") or {}
     pv = ps.get("value") or {}
     producer = ""
     if pv.get("scope"):
         paras = [S.curly(p) for p in re.split(r"\n\s*\n", pv["scope"].strip()) if p.strip()]
-        rest = ""
-        if len(paras) > 1:
-            rest = f'<details class="fx-fold"><summary>{esc(W("readings.producer_more"))}</summary>{S.md_paragraphs(chr(10) + chr(10).join(paras[1:]))}</details>'
+        rest = S.md_paragraphs(chr(10) + chr(10).join(paras[1:])) if len(paras) > 1 else ""
         producer = (f'<div class="fx-producer"><p class="fx-producer__h"><a class="ext" href="{esc(pv.get("url") or "")}" rel="noopener">{esc(W("readings.producer"))}</a></p>'
                     f'<blockquote class="fx-producer__q md-math">{S.md_paragraphs(paras[0])}{rest}</blockquote></div>')
     return (f'<span class="fx-alias" id="h-readings"></span>{head}<p class="fx-lead-s">{lead}</p>'
@@ -834,8 +821,6 @@ def reruns_html(c: Ctx) -> str:
         label = f'<code translate="no">{S.lean_breaks(">" + esc(name))[1:]}</code>'
         groups.append(f'<div class="fx-rg" id="reruns-{esc(name)}"><p class="fx-rg__h">{label}</p>{body}</div>')
     note = "" if any_detail or not c.leans else f'<p class="fx-muted small">{esc(W("reruns.details_none"))}</p>'
-    if len(groups) > 3:
-        groups = groups[:2] + [f'<details class="fx-fold"><summary>{esc(W("reruns.more", n=S.say(len(groups) - 2)))}</summary>{"".join(groups[2:])}</details>']
     oth = ""
     if others:
         items = [finds_list(c, [x]) for x in sorted(others, key=lambda x: x.get("date") or "", reverse=True)]
@@ -876,9 +861,7 @@ def other_checks_html(c: Ctx) -> str:
                          + (f'<p class="fx-card__w"><span class="fx-rd__k">{esc(W("checks.certifies"))}:</span> <span class="md-math">{code_spans(what)}</span></p>' if what else "")
                          + (f'<p class="fx-card__w"><span class="fx-rd__k">{esc(W("checks.relation"))}:</span> {code_spans(v.get("relation") or v.get("scope"))}</p>' if (v.get("relation") or v.get("scope")) else "")
                          + f'<p class="fx-card__l"><a class="ext" href="{esc(v.get("url") or credit.get("url") or "")}" rel="noopener">{esc(W("checks.report"))}</a> {ins_button(tid, esc(W("readings.details")))}</p></li>')
-        lst = f'<ul class="fx-cards">{"".join(items)}</ul>' if len(items) <= 5 else (
-            f'<ul class="fx-cards">{"".join(items[:4])}</ul><details class="fx-fold"><summary>{esc(S.C("family.show_all", n=len(items)))}</summary>'
-            f'<ul class="fx-cards">{"".join(items[4:])}</ul></details>')
+        lst = f'<ul class="fx-cards">{"".join(items)}</ul>'
         parts.append(f'<span class="fx-alias" id="h-hol"></span><span class="fx-alias" id="h-finite"></span>{lst}')
     if unav:
         items = "".join(f'<li><a class="ext" href="{esc(u.get("url") or "")}" rel="noopener">{esc(u.get("name") or u.get("source") or u.get("url"))}</a></li>' for u in unav)
@@ -960,6 +943,35 @@ def left_html(c: Ctx) -> str:
 # ---- papers, connections, explain, said ------------------------------------------------------
 
 
+def paper_row(c: Ctx, m, seen: set) -> str:
+    """One current paper, everything visible: where to read it, its date and edition, its
+    abstract. Its statements are on its reading page; the anchors earlier pages linked
+    to (the paper's slug, its earlier editions, its opening statements) are kept."""
+    S, root = c.S, c.root
+    reading = c.readable(m["id"])
+    meta = S.C("family.paper_meta", date=S.date_words(m.get("date")) or S.C("family.undated"), status=S.status_label(m["status"]).lower())
+    read = f'<a class="btn btn--ghost btn--small" href="{root}papers/{esc(m["id"])}.html">{esc(S.C("family.read_here") if reading else S.C("family.open_page"))}</a>'
+    note = f'<div class="pp__note md-math">{S.md_paragraphs(m["version_note"], "preprints/" + m["id"] + "/")}</div>' if m.get("version_note") else ""
+    prev = ""
+    if m.get("previous_versions"):
+        lst = ", ".join(f'<a href="{root}papers/{esc(p)}.html">{esc(S.date_words(S.MS[p]["date"]) or p) if p in S.MS else esc(p)}</a>' for p in m["previous_versions"])
+        prev = f'<p class="pp__prev">{esc(S.C("family.previous_editions"))}: {lst}</p>'
+    aliases = ""
+    for st in S.headline_statements(m):
+        aid = f'st-{S.slugify(m["id"])[:40]}-{S.slugify(st.get("label") or str(st["line"]))}'
+        if aid not in seen:
+            seen.add(aid)
+            aliases += f'<span class="fam-alias" id="{esc(aid)}"></span>'
+    for p in m.get("previous_versions") or []:
+        if p not in seen and p not in c.f.get("manuscripts", []):
+            seen.add(p)
+            aliases += f'<span class="fam-alias" id="{esc(p)}"></span>'
+    abstract = f'<div class="pp__abstract tex-auto">{S.rich(curly_tex(m.get("abstract") or ""))}</div>' if m.get("abstract") else ""
+    return (f'<article class="pp" id="{esc(m["id"])}">{aliases}'
+            f'<h3 class="pp__title"><a href="{root}papers/{esc(m["id"])}.html"><span class="tex-auto">{S.rich(curly_tex(m["title"]))}</span></a></h3>'
+            f'<p class="pp__meta">{esc(meta)}</p><p class="pp__acts">{read}{S.pdf_button(m, "btn btn--quiet")}</p>{note}{prev}{abstract}</article>')
+
+
 def papers_html(c: Ctx) -> str:
     S, root = c.S, c.root
     hist = c.doc.get("paper_history") or []
@@ -968,7 +980,7 @@ def papers_html(c: Ctx) -> str:
     for h in prev:
         seen.add(h["id"][2:])
     cur = [S.MS[h["id"][2:]] for h in hist if h.get("status") == "current" and h["id"][2:] in S.MS]
-    rows = "".join(S.paper_row(m, root, S.LabelTexConv(m, root), seen) for m in cur)
+    rows = "".join(paper_row(c, m, seen) for m in cur)
     for m in cur:
         if m["id"] not in c.macro_ids:
             c.macro_ids.append(m["id"])
@@ -985,8 +997,8 @@ def papers_html(c: Ctx) -> str:
                          + "</li>")
         prev_html = f'<h3 class="fx-h3" id="previous">{esc(W("papers.previous"))}</h3><ul class="fx-pps">{"".join(items)}</ul>'
     rs = c.f.get("reasoning_summary")
-    reasoning = (f'<details class="fx-fold"><summary>{esc(S.C("family.method_notes"))}</summary><p class="small">{esc(S.C("family.reasoning_summary"))} '
-                 f'<a class="ext" href="{esc(rs["url"])}" rel="noopener">{esc(rs["title"])}</a></p></details>') if rs else ""
+    reasoning = (f'<p class="fx-prose small">{esc(S.C("family.reasoning_summary"))} '
+                 f'<a class="ext" href="{esc(rs["url"])}" rel="noopener">{esc(rs["title"])}</a></p>') if rs else ""
     return (f'<section class="fx-sec" id="papers" aria-labelledby="papers-h"><span class="fx-alias" id="h-ms"></span>'
             f'<h2 class="fx-h2" id="papers-h">{esc(W("papers.heading"))}</h2><p class="fx-intro">{S.ctext(S.C("family.papers_intro"))}</p>'
             f'<div class="pps">{rows}</div>{reasoning}{prev_html}{S.withdrawn_from_family_html(c.num, root)}</section>')
@@ -1014,10 +1026,9 @@ def connections_html(c: Ctx) -> str:
     for m in mss:
         refs = m.get("references") or []
         if refs:
-            items = S.guard_labels(f"{m['id']} references", "".join(S.ref_entry(r) for r in S.resolved_refs(m["id"], refs)))
-            refs_html.append(f'<details class="fx-fold"><summary>{esc(S.C("family.refs_summary", count=len(refs), title=S.tex_plain(m["title"])))}</summary><ol class="refs">{items}</ol></details>')
+            refs_html.append(f'<li><a href="{root}papers/{esc(m["id"])}.html">{esc(S.C("family.refs_summary", count=len(refs), title=S.tex_plain(m["title"])))}</a></li>')
         else:
-            refs_html.append(f'<p class="fx-muted small">{esc(S.C("family.refs_none_in", title=S.tex_plain(m["title"])))}</p>')
+            refs_html.append(f'<li class="fx-muted">{esc(S.C("family.refs_none_in", title=S.tex_plain(m["title"])))}</li>')
     fol = c.cfind.get("follow-up-result") or []
     fol_html = ""
     if fol:
@@ -1027,7 +1038,7 @@ def connections_html(c: Ctx) -> str:
             f'<h2 class="fx-h2" id="cites-h">{esc(S.C("family.citations_heading"))}</h2><p class="fx-intro">{esc(S.C("family.citations_intro"))}</p>'
             f'<div class="fx-cols2"><div><h3 class="fx-h3">{esc(S.C("family.cites_heading"))}</h3>{cites}</div>'
             f'<div><h3 class="fx-h3">{esc(S.C("family.cited_heading"))}</h3>{cited}</div></div>{fol_html}'
-            f'<div class="fx-refs" id="h-refs"><h3 class="fx-h3">{esc(S.C("family.refs_heading"))}</h3><p class="fx-intro">{esc(S.C("family.refs_intro"))}</p>{"".join(refs_html)}</div></section>')
+            f'<div class="fx-refs" id="h-refs"><h3 class="fx-h3">{esc(S.C("family.refs_heading"))}</h3><p class="fx-intro">{esc(W("papers.refs_intro"))} <a href="{root}references-outside.html">{esc(S.C("references_outside.title"))}</a></p><ul class="fx-plain">{"".join(refs_html)}</ul></div></section>')
 
 
 def explain_html(c: Ctx) -> str:
@@ -1044,13 +1055,46 @@ def explain_html(c: Ctx) -> str:
     contributors = f'<h3 class="fx-h3">{esc(S.C("family.contributors_heading"))}</h3><p>{esc(", ".join(dict.fromkeys(names)))}</p>' if names else ""
     return f"""<section class="fx-sec" id="explain" aria-labelledby="explain-h"><span class="fx-alias" id="h-explain"></span>
  <h2 class="fx-h2" id="explain-h">{esc(S.C('family.explain_heading'))}</h2>
- {S.explanation_section_html(f, root)}
+ {explanations_html(c)}
  <div class="fx-contrib" id="h-contrib">
   <p class="fx-intro">{esc(S.C('family.contribute_intro'))}</p>
-  <p class="actions"><a class="btn btn--ghost ext" href="{esc(claim)}" rel="noopener">{esc(S.C('family.claim_button'))}</a>{S.check_choice_html(f["statements"], root)}<a class="btn btn--ghost ext" href="{esc(credit)}" rel="noopener">{esc(S.C('family.credit_button'))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(S.C('words.suggest_change'))}</a></p>
+  <p class="actions"><a class="btn btn--ghost ext" href="{esc(claim)}" rel="noopener">{esc(S.C('family.claim_button'))}</a>{check_buttons(c)}<a class="btn btn--ghost ext" href="{esc(credit)}" rel="noopener">{esc(S.C('family.credit_button'))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(S.C('words.suggest_change'))}</a></p>
  </div>
  {contributors}
 </section>"""
+
+
+def explanations_html(c: Ctx) -> str:
+    """Explanations written for the atlas: reviewed ones as reading routes, drafts as a
+    visible list, an invitation when there are none."""
+    S, fid, root = c.S, c.num, c.root
+    ex = S.CONTRIB["explanations"].get(fid, [])
+    parts = []
+    for e in [e for e in ex if e["status"] == "reviewed"]:
+        href = f'{root}{S.explanation_rel(e, fid)}'
+        parts.append(f'<article class="exrec"><h3 class="fx-h3 md-math"><a href="{href}">{esc(e.get("title") or S.C("explanation.untitled"))}</a></h3>'
+                     f'{S.explanation_meta_html(e, fid, root)}<p class="actions"><a class="btn btn--ghost" href="{href}">{esc(S.C("family.read_explanation"))}</a></p></article>')
+    drafts = [e for e in ex if e["status"] != "reviewed"]
+    if drafts:
+        items = "".join(f'<li><span class="md-math">{esc(e.get("title") or S.C("explanation.untitled"))}</span>, {esc(S.people(e["names"]))} '
+                        f'<span class="fx-muted small">({esc(S.C("family.explain_status_" + ("ready" if e["status"] == "ready-for-review" else "draft")))})</span> '
+                        f'<a class="ext small" href="{esc(S.REPO + "/blob/main/" + e["path"])}" rel="noopener">{esc(S.C("family.explain_draft_source"))}</a></li>' for e in drafts)
+        parts.append(f'<h3 class="fx-h3">{esc(S.C("family.explain_progress_heading"))}</h3><p class="fx-intro">{esc(S.C("family.explain_progress_intro"))}</p><ul class="fx-plain">{items}</ul>')
+    if not any(e["status"] == "reviewed" for e in ex):
+        parts.insert(0, f'<p class="fam-invite">{esc(S.C("family.explain_none"))}</p>')
+    return "".join(parts)
+
+
+def check_buttons(c: Ctx) -> str:
+    """A form to check each Lean statement, every one visible."""
+    S = c.S
+    sids = [s for s in c.f.get("statements") or [] if s in S.ST]
+    if not sids:
+        return ""
+    if len(sids) == 1:
+        return f'<a class="btn btn--ghost ext" href="{esc(S.check_url(sids[0]))}" rel="noopener">{esc(S.C("family.check_button"))}</a>'
+    links = ", ".join(f'<a class="ext" href="{esc(S.check_url(s))}" rel="noopener"><code translate="no">{esc(s)}</code></a>' for s in sids)
+    return f'<span class="fx-checks">{esc(W("left.check_each"))} {links}</span>'
 
 
 def said_html(c: Ctx) -> str:

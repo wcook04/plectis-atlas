@@ -45,6 +45,7 @@ def main() -> int:
             check(h in ids, f"in-page link #{h} has no target")
         for t in set(re.findall(r'data-inspect="([^"]+)"', html)):
             check(f'<template id="{t}">' in html, f"inspection record {t} missing")
+        check("<details" not in html, "a fold on the page")
         check('class="sp ' not in html and "sp-half" not in html, "a symbol mark is drawn")
         check("assets/evidence.css" not in html and "assets/figure.css" not in html, "a retired sheet is linked")
         claim = doc["claim"]

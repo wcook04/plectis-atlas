@@ -28,8 +28,6 @@
 .fx-quote__src a { color: var(--ink-soft); }
 .fx-quote__q { margin: 0; padding: 2px 0 2px 18px; border-left: 2px solid var(--rule-strong); }
 .fx-quote__q p { font-family: var(--serif); font-size: 1.125rem; line-height: 1.62; color: var(--ink-soft); margin: 0; text-wrap: pretty; }
-.fx-quote__more { margin-top: 8px; }
-.fx-quote__more p { margin-top: 6px; }
 .fx-fact { max-width: var(--fx-measure); margin: 14px 0 0; font-size: var(--fs-body); color: var(--ink-soft); line-height: 1.55; }
 .fx-fact a:not(.ext) { color: var(--ink-soft); text-decoration-color: var(--rule-control); }
 .fx-nw { white-space: nowrap; }
@@ -68,19 +66,6 @@
 .fx-plain li { margin: 4px 0; }
 .fx-plain code, .fx-left code, .fx-draft code, .fx-rd code, .fx-join code { font-family: var(--fx-lean-mono); font-size: 0.86em; overflow-wrap: anywhere; }
 
-/* Folds hold optional depth only: the rest of a description, long lists, abstracts. */
-.fx-fold > summary, .fam-fold > summary { cursor: pointer; display: inline-flex; align-items: center; gap: 7px; min-height: 28px; font-size: var(--fs-meta);
-  font-weight: 600; color: var(--ink-soft); list-style: none; }
-.fx-fold > summary::-webkit-details-marker, .fam-fold > summary::-webkit-details-marker { display: none; }
-.fx-fold > summary::before, .fam-fold > summary::before { content: ""; width: 0; height: 0; border-left: 5px solid currentColor; border-block: 4px solid transparent;
-  transition: transform 160ms var(--ease-out); }
-.fx-fold[open] > summary::before, .fam-fold[open] > summary::before { transform: rotate(90deg); }
-.fx-fold > summary:hover, .fam-fold > summary:hover { color: var(--ink); }
-.fx-fold[open] > summary, .fam-fold[open] > summary { margin-bottom: 6px; }
-.fx-fold--section { margin-top: 28px; }
-.fx-fold--section > summary { font-family: var(--serif); font-size: 1.125rem; color: var(--ink); }
-@media (prefers-reduced-motion: reduce) { .fx-fold > summary::before, .fam-fold > summary::before { transition: none; } }
-
 /* ---- A paper statement, exactly as printed ---------------------------------- */
 .fx-st { margin: 0 0 18px; padding: 18px 22px 12px; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-lg); scroll-margin-top: 12px; max-width: 52rem; }
 .fx-st__head { font-family: var(--serif); font-size: 1.125rem; line-height: 1.35; font-weight: 400; margin: 0 0 2px; }
@@ -95,7 +80,7 @@
 .fx-st__body .katex-display, .fx-st__body .m[data-d="1"] { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 .fx-st__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); }
 .fx-st__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; }
-.fx-st__foot .texsrc { margin-left: auto; font-size: var(--fs-small); }
+.fx-st__tex { margin-left: auto; font-size: var(--fs-small); min-height: 28px; }
 .fx-st--none { background: none; border-style: dashed; padding: 16px 20px; }
 .fx-st__none { margin: 0 0 6px; font-family: var(--serif); font-size: 1.0625rem; color: var(--ink-soft); }
 
@@ -114,7 +99,6 @@
 .fx-cand { max-width: 36rem; margin: 12px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
 .fx-cand--open { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink-soft); margin: 0 0 14px; max-width: var(--fx-measure); }
 .fx-h2--theorem { margin-bottom: 4px; font-size: 1.5rem; }
-.fx-others { margin-top: 18px; max-width: 52rem; }
 
 /* Two lines kept apart: the formal status and the readable argument. */
 .fx-status { max-width: 52rem; margin: 22px 0 0; display: grid; gap: 0; }
@@ -128,11 +112,13 @@
 
 /* Compact rows of statements (alternatives). */
 .fx-alts { list-style: none; margin: 4px 0 0; padding: 0; max-width: 52rem; }
-.fx-alt { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; padding: 7px 0; border-top: 1px solid var(--rule); font-size: var(--fs-body); }
-.fx-alt__k { font-family: var(--serif); font-weight: 600; font-size: 1rem; color: var(--ink); }
-.fx-alt__p { color: var(--ink-soft); flex: 1 1 18rem; min-width: 0; }
-.fx-alt__s { color: var(--muted); font-size: var(--fs-small); white-space: nowrap; }
-.fx-alt__go { font-size: var(--fs-small); white-space: nowrap; }
+.fx-alt { padding: 7px 0; border-top: 1px solid var(--rule); font-size: var(--fs-body); }
+.fx-alt__k { font-family: var(--serif); font-weight: 600; font-size: 1rem; }
+.fx-alt__p { color: var(--ink-soft); }
+.fx-alt__s { color: var(--muted); font-size: var(--fs-small); }
+.fx-alt .ins { font-size: var(--fs-small); color: var(--muted); white-space: nowrap; }
+.fx-others { margin-top: 22px; max-width: 52rem; }
+.fx-others .fx-h3 { margin-top: 0; font-size: 1.0625rem; }
 
 /* ---- The Lean beside the theorem ---------------------------------------------- */
 .fx-idx { margin: 18px 0 26px; }
@@ -194,10 +180,9 @@
 .fx-rd__k { font-weight: 600; color: var(--ink-soft); }
 .fx-rd__def, .fx-rd__method { margin: 0 0 6px; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
 .fx-rd__links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 6px 0 0; font-size: var(--fs-small); }
-.fx-draft { margin: 18px 0 0; max-width: var(--fx-measure); font-size: var(--fs-small); color: var(--muted); }
-.fx-draft__h { margin: 0 0 4px; font-weight: 600; }
-.fx-draft__list { margin: 0; padding-left: 1.1em; line-height: 1.5; }
-.fx-draft__list li { margin: 4px 0; }
+.fx-draft { list-style: none; margin: 18px 0 0; padding: 0; max-width: 46rem; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
+.fx-draft li { margin: 4px 0; }
+.fx-draft__k { font-weight: 600; }
 .fx-producer { margin-top: 18px; max-width: var(--fx-measure); }
 .fx-producer__h { margin: 0 0 4px; font-size: var(--fs-meta); font-weight: 600; }
 .fx-producer__q { margin: 0; padding-left: 14px; border-left: 2px solid var(--rule-strong); font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); }
@@ -247,7 +232,10 @@
 .pp__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0 6px; }
 .pp__prev { font-size: var(--fs-meta); color: var(--muted); margin: 6px 0; }
 .pp__abstract { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.6; color: var(--ink-soft); max-width: 42em; margin: 4px 0 14px; }
-.pp__more .stmts { max-width: 56em; }
+.pp__note { font-size: var(--fs-meta); color: var(--ink-soft); max-width: 62ch; }
+.fx-checks { font-size: var(--fs-body); color: var(--ink-soft); }
+.fx-checks a { margin-right: 4px; }
+.fx-forms-wrap { margin-top: 28px; }
 .fam-numstate { font-weight: 400; font-style: italic; color: var(--muted); font-size: 0.92em; }
 .fx-pps { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
 .fx-pp { padding: 8px 0; border-top: 1px solid var(--rule); font-family: var(--serif); font-size: 1.0625rem; scroll-margin-top: 12px; }
@@ -264,7 +252,6 @@
 @container fxmain (min-width: 760px) { .fx-cols2 { grid-template-columns: 1fr 1fr; } }
 .fx-cols2 .fx-h3 { margin-top: 12px; }
 .fx-refs { margin-top: 30px; scroll-margin-top: 12px; }
-.fx-refs .fx-fold { margin-top: 4px; }
 .fam-invite { font-family: var(--serif); font-size: 1.125rem; line-height: 1.55; color: var(--ink-soft); max-width: 34em; margin: 0; }
 .fx-contrib { margin-top: 26px; scroll-margin-top: 12px; }
 .fx-contrib .actions { margin-top: 8px; }
