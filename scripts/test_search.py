@@ -100,6 +100,12 @@ def check_lean_filename_search(node, build_site, entries):
                     for e in entries if e["kind"] == "lean"}
         assert labels["lean"] == expected, "Lean filenames must come from the search catalogue"
         assert len({key.lower() for key in expected}) == len(expected), "ambiguous Lean filename case"
+        formula_name = build_site.search_statement_name({
+            "kind": "statement",
+            "id": "r:Global-Arthur-Enhancements-of-Cuspidal-Excursion-Parameters-October-5-2026:thm:parent",
+            "name": r"$a<b>c$ \cite[Theorem~1.1]{Parent}",
+        })
+        assert "a<b>c" in formula_name.replace(" ", ""), "formula comparisons are not HTML tags"
         js = Path(tmp, "query.cjs")
         js.write_text(r"""
 const assert = require('node:assert/strict');
@@ -130,6 +136,19 @@ vm.runInContext(src.slice(src.indexOf('(function (global) {')), context);
   }
   assert.equal((await context.AtlasSearch.query('UnlistedLeanIdentifierForSearchTest')).length, 0);
   assert.ok((await context.AtlasSearch.query('014')).some(h => h.id === 'f:014'));
+  const parentId = 'r:Global-Arthur-Enhancements-of-Cuspidal-Excursion-Parameters-October-5-2026:thm:parent';
+  const parent = (await context.AtlasSearch.query('Ramanujan')).find(h => h.id === parentId);
+  assert.ok(parent, 'citation-bearing title remains searchable');
+  assert.ok(parent.name.startsWith('Finite-level Ramanujan–Arthur decomposition ['));
+  assert.ok(parent.name.includes('Theorem 1.1'), 'retain the cited locator');
+  assert.ok(!parent.name.includes('\\'), 'render citation syntax in result labels');
+  assert.equal(parent.url, 'papers/Global-Arthur-Enhancements-of-Cuspidal-Excursion-Parameters-October-5-2026.html#thm:parent');
+  const citedOnly = (await context.AtlasSearch.query('ABKRT21')).find(h => h.name === '[Aaronson et al., 2021]');
+  assert.ok(citedOnly, 'a citation-only title keeps its attribution');
+  const labels = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/search/labels.json'), 'utf8'));
+  const packetId = 'r:Diagonal-Fourier-extension-for-positively-curved-surfaces-in-three-dimensions-September-24-2026:thm:packet';
+  assert.ok(labels.statement_names[packetId].startsWith('Packet propagation ['));
+  assert.ok(!labels.statement_names[packetId].includes('\\'), 'undefined source locator macros stay out of navigation labels');
   assert.ok(requested.every(url => url.endsWith('.json')), 'no guessed page request');
   console.log('test_search: canonical Lean filename searches pass in original, lower and upper case; unknown name stays empty.');
 })().catch(err => { console.error(err); process.exitCode = 1; });

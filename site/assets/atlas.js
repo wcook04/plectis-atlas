@@ -834,7 +834,8 @@
       var rest = e.id.slice(2), j = rest.indexOf(':');
       paper = lab.papers['p:' + rest.slice(0, j)] || null;
     }
-    return { id: e.id, kind: e.kind, name: e.name, family_ids: e.family_ids || [], url: urlFor(e.id, e.kind), paper: paper };
+    var name = (lab.statement_names || {})[e.id] || e.name;
+    return { id: e.id, kind: e.kind, name: name, family_ids: e.family_ids || [], url: urlFor(e.id, e.kind), paper: paper };
   }
 
   /* Postings for a query: every token's list, intersected. */

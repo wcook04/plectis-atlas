@@ -3713,6 +3713,34 @@ def search_url(entry_id: str, kind: str) -> str | None:
     return None
 
 
+def search_statement_name(entry):
+    """Render citation-bearing navigation labels with their paper's bibliography.
+
+    Search packets and the source statement retain the original title. Only the
+    displayed label is rendered here, without links nested inside a result link.
+    """
+    name = entry.get("name") or ""
+    if entry["kind"] != "statement" or not re.search(r"\\(?:" + "|".join(CITE_CMDS) + r")\b", name):
+        return None
+    slug = entry["id"][2:].partition(":")[0]
+    ms = MS.get(slug)
+    if not ms:
+        return None
+
+    class NameConv(TexConv):
+        def cite(self, keys, opt):
+            # Some source titles use undefined locator macros. Keep the cited
+            # work in the navigation label; the full title remains in the paper.
+            if opt and re.search(r"\\[A-Za-z]+", self.text(opt, inline=True)):
+                opt = None
+            return super().cite(keys, opt)
+
+    rendered = NameConv(ms, "").text(name, inline=True)
+    rendered = re.sub(r'<span class="m"[^>]*>(.*?)</span>',
+                      lambda m: esc(_plain_math(html.unescape(m.group(1)))), rendered, flags=re.S)
+    return tex_plain(rendered)
+
+
 def build_search_data():
     """Copy Statement Map's compact search into data/search/ at its logical paths, and
     write labels.json beside it: which index range holds which kind of entry, each
@@ -3773,10 +3801,11 @@ def build_search_data():
         if any(k.lower() == name.lower() for k in lean):
             raise SystemExit(f"search labels: two Lean statements differ only in case: {name}")
         lean[name] = [curly_prose(e["name"]), e.get("family_ids") or []]
+    statement_names = {e["id"]: name for e in entries if (name := search_statement_name(e))}
     labels = {"schema": "plectis-atlas-search-labels/1", "generation_id": r.generation,
-              "source": "search-index.json and its entry chunks; family holdings from the reader packets; edition dates and status from the manuscript source index",
+              "source": "search-index.json and its entry chunks; family holdings from the reader packets; edition dates, status and citation labels from the manuscript source index",
               "kinds": runs, "papers": papers, "paper_editions": editions,
-              "families": fams, "lean": lean}
+              "families": fams, "lean": lean, "statement_names": statement_names}
     (dst / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
 
