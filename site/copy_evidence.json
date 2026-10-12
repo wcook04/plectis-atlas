@@ -7,7 +7,7 @@
   ]
  },
  "tone": {
-  "full": "finds the whole headline stated",
+  "full": "finds the whole headline stated or implied",
   "part": "finds part of it stated, or a narrower or weaker statement",
   "other": "finds a supporting or a different result stated",
   "none": "has not read this family"

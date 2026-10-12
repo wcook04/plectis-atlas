@@ -136,7 +136,7 @@
   "intro": "Two outside readers have judged whether the release’s Lean states this family’s headline. Their readings concern the headline as a whole, not one paper theorem.",
   "says": "{name} finds that {finds} (their term: “{term}”).",
   "state": {
-   "all": "the Lean states all of the headline",
+   "all": "the Lean states or implies all of the headline",
    "part": "the Lean states part of the headline",
    "narrower": "the Lean states a narrower statement than the headline",
    "weaker": "the Lean states a weaker statement than the headline",
