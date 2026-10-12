@@ -6,6 +6,7 @@
   "redirect_title": "The map has moved",
   "redirect_text": "The map of the release is now the front page.",
   "redirect_link": "Open the map",
+  "independent": "An independent reader of the release, not affiliated with OpenAI.",
   "nojs": "The map needs JavaScript. The list below names every family, with a link to each."
  },
  "release": {

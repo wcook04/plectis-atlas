@@ -614,6 +614,15 @@ def pack_sector(items, a0, a1, r_in, gap):
     return out
 
 
+def asset_version() -> str:
+    """A short hash of the map's own script and stylesheet, so a browser fetches them anew
+    whenever either changes (the data files carry the build's generation the same way)."""
+    h = hashlib.sha256()
+    for name in OWN_ASSETS:
+        h.update((SITE / "assets" / name).read_bytes())
+    return h.hexdigest()[:12]
+
+
 _PAPER_CITATIONS = None
 
 
@@ -1065,6 +1074,7 @@ def page_body(M, gen) -> str:
   <div class="u-panel__head">
    <nav class="u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail hidden></nav>
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
+   <p class="u-ground" data-u-ground>{esc(U('page.independent'))}</p>
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
     <input id="u-search-in" class="u-search__in" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(U('search.placeholder'))}" data-u-search>
@@ -1209,11 +1219,11 @@ def main():
         shutil.copy(ASSETS / name, OUT / "assets" / name)
     v = gen[7:19]
     extra = ('<link rel="stylesheet" href="assets/lean.css">\n'
-             '<link rel="stylesheet" href="assets/universe.css">\n'
+             f'<link rel="stylesheet" href="assets/universe.css?v={asset_version()}">\n'
              f'<link rel="preload" href="data/universe-data.json?v={v}" as="fetch" crossorigin>\n'
              f'<link rel="preload" href="data/universe-layout.json?v={v}" as="fetch" crossorigin>\n'
              '<meta name="format-detection" content="telephone=no">\n'
-             '<script defer src="assets/universe.js"></script>')
+             f'<script defer src="assets/universe.js?v={asset_version()}"></script>')
     body = page_body(M, gen)
     html_text = S.page("index.html", U("page.title"), U("page.description"), body, current="map",
                        extra_head=extra, main_class="u-main")

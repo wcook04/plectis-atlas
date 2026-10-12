@@ -3605,7 +3605,10 @@
     var matchList = [];
     var searchFolded = false;   // the reader opened a match and folded the list away
     function runSearch() {
-      var q = (searchIn.value || '').trim().toLowerCase();
+      // The site's search gets the query as typed (a Lean name's case can matter to it);
+      // the map's own matching is in lower case.
+      var raw = (searchIn.value || '').trim();
+      var q = raw.toLowerCase();
       query = q;
       if (resultsEl) resultsEl.classList.remove('is-folded');
       searchFolded = false;
@@ -3619,16 +3622,18 @@
       // hits light their families here and list beside the map. The map's own rows
       // stand in until it is.
       if (window.AtlasSearch && typeof window.AtlasSearch.query === 'function') {
-        return Promise.resolve(window.AtlasSearch.query(q)).then(function (hits) {
+        return Promise.resolve(window.AtlasSearch.query(raw)).then(function (hits) {
           if (query !== q) return;
           hits = hits || [];
           // Disciplines, families, papers and Lean statements before the paper
           // statements that mention the words; within a kind, an entry whose own name
           // holds every word comes first (the search dialog orders its groups so).
-          var toks = window.AtlasSearch.tokens ? window.AtlasSearch.tokens(q) : [];
+          // Accents folded on both sides, so "erdos" ranks the Erdős families as "Erdős" does.
+          var fold = function (list) { return list.map(function (t) { return String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }); };
+          var toks = window.AtlasSearch.tokens ? fold(window.AtlasSearch.tokens(q)) : [];
           var order = { discipline: 0, family: 1, manuscript: 2, lean: 3, statement: 4 };
           hits = hits.map(function (h, i) {
-            var own = toks.length ? window.AtlasSearch.tokens(h.name || '') : [];
+            var own = toks.length ? fold(window.AtlasSearch.tokens(h.name || '')) : [];
             var named = toks.every(function (t) { return own.indexOf(t) >= 0; });
             return { h: h, i: i, k: order[h.kind] != null ? order[h.kind] : 5, n: named ? 0 : 1 };
           }).sort(function (a, b) { return a.k - b.k || a.n - b.n || a.i - b.i; }).map(function (x) { return x.h; });
@@ -3941,10 +3946,12 @@
           e.preventDefault();
           clearTimeout(t);
           var q = (searchIn.value || '').trim().toLowerCase();
-          Promise.resolve(runSearch()).then(function (found) {
-            if (found && found.length && query === q && (searchIn.value || '').trim().toLowerCase() === q) {
-              select(found[0], { trail: true });
-              foldResults(true);
+          Promise.resolve(runSearch()).then(function () {
+            if (query === q && (searchIn.value || '').trim().toLowerCase() === q) {
+              // Enter opens the first match shown, a page link with no place on the map
+              // included; its own click handler selects and folds a mapped one.
+              var first = resultsEl.querySelector('.u-row--hit');
+              if (first) first.click();
             }
           });
         } else if (e.key === 'Escape' && searchIn.value) {
