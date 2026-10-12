@@ -73,6 +73,28 @@ map for where things are, the list for reading them.
   `#o=d%3Anumber-theory`, `#o=r:...`, `#o=l:...`); Back and Forward restore it;
   older `#d=...&f=...` links still land. Keyboard: Tab, arrows, Enter, Escape.
 
+## What each view shows first
+
+From the outside review of the first rebuild screenshots (12 October 2026):
+give space and emphasis to what the current task needs, at each depth.
+
+| View | First read | Second read | Third read |
+|---|---|---|---|
+| Release | Disciplines and the size of the corpus | Families and what their Lean states | A route into a chosen object |
+| Discipline | Readable family titles | Where they sit and how they connect | The selected family's claim |
+| Family or theorem | The selected statement, typeset | Its paper and its Lean counterpart | The mathematical neighbourhood |
+| Families list | Comparable rows | How their evidence differs | Filters that refine the question |
+| Lean statement | The formal statement and its hypotheses | The paper passage and the pairing's state | Sources, runs, further inspection |
+
+- Labels are horizontal and collision-managed, never rotated. The selection
+  always keeps its full label.
+- Level of detail follows scale: a family is a plain disc until it is large
+  enough for its inner map to be read.
+- At theorem focus the reading pane widens (about 40 to 45 per cent of the
+  workspace) and the map refits. The mathematics never shrinks to fit.
+- A list beside the map is an index: a title and one status line per row, and
+  the active row expanded.
+
 ## The thread
 
 The line from a paper's theorem to the Lean statement paired with it. Wherever
@@ -87,8 +109,11 @@ adjacency itself makes a claim.
 | Unresolved, or several targets | none | No theorem is paired; the alternatives are listed with their reasons. |
 | Reviewed by a named person | solid, heavier | Their recorded relation, their name, the version they reviewed. |
 
-A reported re-run is evidence about the Lean statement it ran, never about the
-paper theorem beside it. Outside readings concern the family's headline as a
+A heading that pairs two statements carries the pairing's state where the
+pairing is asserted ("Possible Lean match: suggested from shared wording;
+correspondence not reviewed"). A reported re-run is evidence about the Lean
+statement it ran, never about the paper theorem beside it, and never upgrades
+an unreviewed pairing. Outside readings concern the family's headline as a
 whole and sit under a heading that says so.
 
 ## Reading a family
