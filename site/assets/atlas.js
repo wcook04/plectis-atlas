@@ -232,7 +232,7 @@
   Array.prototype.forEach.call(doc.querySelectorAll('[data-filter-rows]'), function (input) {
     var table = doc.getElementById(input.getAttribute('data-filter-rows'));
     var wrap = input.closest('.filters');
-    var apply = function () {
+    var apply = function (remember) {
       var terms = norm(input.value).trim().split(/\s+/).filter(Boolean);
       var n = 0;
       Array.prototype.forEach.call(table.tBodies[0].rows, function (r) {
@@ -242,9 +242,15 @@
         if (ok) n++;
       });
       shownCount(wrap, n);
+      if (remember !== false && window.history && history.replaceState) {
+        var params = new URLSearchParams(location.search);
+        if (input.value) params.set('q', input.value); else params.delete('q');
+        history.replaceState(history.state, '', location.pathname + (params.toString() ? '?' + params.toString() : '') + location.hash);
+      }
     };
     input.addEventListener('input', apply);
-    apply();
+    input.value = new URLSearchParams(location.search).get('q') || '';
+    apply(false);
   });
   Array.prototype.forEach.call(doc.querySelectorAll('[data-filter-table]'), function (wrap) {
     var table = doc.getElementById(wrap.getAttribute('data-filter-table'));
