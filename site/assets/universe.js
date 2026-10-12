@@ -1431,16 +1431,33 @@
       }
       if (target && !target.closest('[hidden]')) target.focus({ preventScroll: true });
     }
+    var boardShardWaiting = {};
+    function watchBoardShard(di) {
+      if (shards[di] || failedShards[di] || boardShardWaiting[di]) return;
+      var waiting = loadShard(di);
+      boardShardWaiting[di] = waiting;
+      var settled = function () {
+        if (boardShardWaiting[di] !== waiting) return;
+        delete boardShardWaiting[di];
+        // The reader may have left this board while the packet was in flight.
+        // Only its current family and neighbours can need a layout update.
+        var fi = boardFamily();
+        if (fi < 0) return;
+        var f = D.families[fi];
+        if (fams[fi].d === di || f.cites.concat(f.citedBy).some(function (c) { return fams[c[0]].d === di; })) syncBoard();
+      };
+      waiting.then(settled, settled);
+    }
     function syncBoard() {
       if (!boardEl || !D) return;
       var fi = boardFamily();
       if (fi < 0) { hideBoard(); return; }
       var f = D.families[fi], di = fams[fi].d;
-      if (!shards[di] && !failedShards[di]) loadShard(di).then(syncBoard, syncBoard);
+      watchBoardShard(di);
       // The neighbours' titles are typeset from their own disciplines' records.
       var near = f.cites.concat(f.citedBy).map(function (c) { return fams[c[0]].d; });
       near = near.filter(function (d2, i) { return d2 !== di && near.indexOf(d2) === i; });
-      near.forEach(function (d2) { if (!shards[d2] && !failedShards[d2]) loadShard(d2).then(syncBoard, function () {}); });
+      near.forEach(watchBoardShard);
       var sig = fi + '|' + (shards[di] ? 1 : failedShards[di] ? 'failed' : 0);
       var fresh = board.fi !== fi;
       var focused = null;
@@ -1982,8 +1999,22 @@
         el.classList.add('is-arriving');
       });
     }
+    var panelDetailVisit = 0, panelShardWaiting = {};
+    function watchPanelShard(di, again) {
+      var current = panelShardWaiting[di];
+      if (current) { current.again = again; return; }
+      current = { again: again };
+      panelShardWaiting[di] = current;
+      var settled = function () {
+        if (panelShardWaiting[di] !== current) return;
+        delete panelShardWaiting[di];
+        current.again();
+      };
+      loadShard(di).then(settled, settled);
+    }
     function renderPanel(quiet) {
       if (!viewEl) return;
+      var visit = ++panelDetailVisit;
       var o = sel ? obj(sel) : null;
       var changed = panelKey !== null && panelKey !== (sel || '');
       var listSwitch = root.querySelector('[data-u-show="list"]');
@@ -2016,7 +2047,7 @@
         var di = discOf(o);
         if (di >= 0 && !shards[di] && !failedShards[di]) {
           var again = function () {
-            if (sel !== o.key) return;
+            if (visit !== panelDetailVisit || sel !== o.key) return;
             var top = scrollPos(), active = document.activeElement;
             var focusedId = viewEl.contains(active) && /^u-section-/.test(active.id) ? active.id : null;
             var focusedButton = viewEl.contains(active) ? active.getAttribute('data-u-section') : null;
@@ -2052,7 +2083,7 @@
               else replacement.focus({ preventScroll: true });
             }
           };
-          loadShard(di).then(again, again);
+          watchPanelShard(di, again);
         }
       }
     }

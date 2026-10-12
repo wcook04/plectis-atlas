@@ -18,12 +18,13 @@ const select = range('    function select(key, opts)', '    // A paper, theorem 
 const click = range("    canvas.addEventListener('pointerdown',", '\n    if (cardEl)');
 const shard = range('    function loadShard(di)', '    function detail(');
 // Isolate the production admission/retry prefix from board DOM rendering.
-const syncAdmission = range('    function syncBoard()', '      // The neighbours\' titles') + '\n    }';
+const syncAdmission = range('    var boardShardWaiting = {};', '      // The neighbours\' titles') + '\n    }';
 const boardVisibility = range('    function showBoard()', '    // The chosen card gets');
 const boardPages = range('    function layoutPages()', '    function showBoard()');
 const boardSync = range('    function refreshBoardNeighbours()', '    function showBoard()');
 const boardPointer = range("    if (boardEl) {\n      boardEl.addEventListener('pointerdown'", "      boardEl.addEventListener('pointerover'") + '    }';
-const detailAgain = range('          var again = function () {', '          loadShard(di).then(again, again);');
+const detailAgain = range('          var again = function () {', '          watchPanelShard(di, again);');
+const panelWatch = range('    function watchPanelShard(di, again)', '    function renderPanel(quiet)');
 const hashState = range('    function updateHash(', '    function panelScroller()');
 const backSteps = range('    function stepBack()', '    function selectAncestor(');
 const ancestorStep = range('    function selectAncestor(', '    function openPage(');
@@ -316,7 +317,7 @@ async function main() {
     };
     const scroller = { scrollTop: 0, getBoundingClientRect: () => ({ top: 0, bottom: 500 }) };
     const state = vm.createContext({
-      sel: 'f:104', o: { key: 'f:104' }, document: doc, viewEl: view,
+      sel: 'f:104', o: { key: 'f:104' }, visit: 1, panelDetailVisit: 1, document: doc, viewEl: view,
       scrollPos: () => 40, panelScroller: () => scroller,
       rerender: () => '<new sidebar>', typeset() {}, restorePending() {}, syncActive() {},
       showPanelSection() { throw new Error('row focus should not use section reveal'); }
@@ -353,7 +354,7 @@ async function main() {
   };
   const sectionScroller = { scrollTop: 0, getBoundingClientRect: () => ({ top: 0, bottom: 500 }) };
   const sectionState = vm.createContext({
-    sel: 'f:104', o: { key: 'f:104' }, document: sectionDoc, viewEl: sectionView,
+    sel: 'f:104', o: { key: 'f:104' }, visit: 1, panelDetailVisit: 1, document: sectionDoc, viewEl: sectionView,
     scrollPos: () => 40, panelScroller: () => sectionScroller,
     rerender: () => '<new sidebar>', typeset() {}, restorePending() {}, syncActive() {},
     showPanelSection: target => { shownSection = target; }
@@ -361,6 +362,34 @@ async function main() {
   vm.runInContext(detailAgain, sectionState);
   sectionState.again();
   assert.equal(shownSection, newHeading, 'visible section heading retains section-follow behaviour');
+  for (const leaveBeforeReply of [false, true]) {
+    const reply = deferred();
+    let requests = 0, replacements = 0, renders = 0;
+    const view = {
+      contains: () => false, querySelector: () => null,
+      set innerHTML(html) { replacements++; this.html = html; }
+    };
+    const pendingPanel = vm.createContext({
+      Promise, panelShardWaiting: {}, panelDetailVisit: 0, sel: 'f:same',
+      document: { activeElement: {} }, viewEl: view,
+      loadShard: () => { requests++; return reply.promise; },
+      scrollPos: () => 40, panelScroller: () => ({ scrollTop: 0, getBoundingClientRect: () => ({ top: 0, bottom: 500 }) }),
+      rerender: () => '<latest sidebar>', typeset: () => { renders++; },
+      restorePending() {}, syncActive() {}
+    });
+    vm.runInContext(panelWatch + 'function callbackFor(visit) { var o = { key: "f:same" };' + detailAgain + 'return again; }', pendingPanel);
+    for (let i = 1; i <= 50; i++) {
+      pendingPanel.panelDetailVisit = i;
+      pendingPanel.watchPanelShard(0, pendingPanel.callbackFor(i));
+    }
+    assert.equal(requests, 1, 'revisits retain one pending sidebar subscription');
+    if (leaveBeforeReply) pendingPanel.panelDetailVisit++;
+    reply.resolve({});
+    await flush();
+    assert.equal(replacements, leaveBeforeReply ? 0 : 1, 'only the latest still-current visit replaces the sidebar');
+    assert.equal(renders, replacements, 'sidebar typesetting is bounded to that replacement');
+    assert.equal(Object.keys(pendingPanel.panelShardWaiting).length, 0, 'settled sidebar callback is released');
+  }
   const c = context();
   vm.runInContext(hit, c);
   assert.equal(c.hitAt(20, 20, true), 'f:a', 'click can hit the visible moving family');

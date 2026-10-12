@@ -215,6 +215,84 @@ function excerptExpandsAtSameBudget() {
 }
 excerptExpandsAtSameBudget();
 
+// Repeated pointer/selection work must share one completion watcher per pending
+// shard. The former syncBoard registered 50 own callbacks and then 100 neighbour
+// callbacks after only 50 calls while both shards were pending.
+async function boardShardCallbacks() {
+  const syncStart = source.indexOf('    function syncBoard()');
+  const syncEnd = source.indexOf('      var sig = fi +', syncStart);
+  assert.ok(syncStart >= 0 && syncEnd > syncStart);
+  const watchStart = source.lastIndexOf('    var boardShardWaiting = {};', syncStart);
+  const admission = (watchStart >= 0 ? source.slice(watchStart, syncStart) : '') +
+    source.slice(syncStart, syncEnd) + '\n    }';
+  const deferred = () => {
+    let resolve, reject;
+    const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
+    return { promise, resolve, reject };
+  };
+  const flush = async () => { for (let i = 0; i < 8; i++) await Promise.resolve(); };
+  function fixture() {
+    const packets = [deferred(), deferred()];
+    const calls = { sync: 0, loads: [0, 0], hides: 0 };
+    let family = 0;
+    const state = vm.createContext({
+      Promise, boardEl: {}, board: { fi: 0, on: true },
+      D: { families: [{ cites: [[1]], citedBy: [] }] },
+      fams: [{ d: 0 }, { d: 1 }], shards: {}, failedShards: {}, shardLoading: {},
+      boardFamily: () => family,
+      hideBoard: () => { calls.hides++; state.board.on = false; },
+      loadShard: di => { calls.loads[di]++; return packets[di].promise; }
+    });
+    vm.runInContext(admission, state);
+    const original = state.syncBoard;
+    state.syncBoard = () => { calls.sync++; return original(); };
+    return { state, calls, packets, navigateOut: () => { family = -1; state.syncBoard(); } };
+  }
+  const active = fixture();
+  for (let i = 0; i < 50; i++) active.state.syncBoard();
+  assert.equal(active.calls.sync, 50);
+  assert.deepEqual(active.calls.loads, [1, 1], '50 interactions share each pending shard request');
+  active.state.shards[0] = {};
+  active.packets[0].resolve({});
+  await flush();
+  assert.equal(active.calls.sync, 51, 'own completion schedules only one current-family board sync');
+  assert.deepEqual(active.calls.loads, [1, 1], 'own completion does not add neighbour watchers');
+  active.state.shards[1] = {};
+  active.packets[1].resolve({});
+  await flush();
+  assert.equal(active.calls.sync, 52, 'neighbour completion schedules only one board sync');
+
+  const stale = fixture();
+  for (let i = 0; i < 50; i++) stale.state.syncBoard();
+  stale.navigateOut();
+  const beforeStale = stale.calls.sync;
+  stale.state.shards[0] = {};
+  stale.packets[0].resolve({});
+  stale.state.shards[1] = {};
+  stale.packets[1].resolve({});
+  await flush();
+  assert.equal(stale.state.board.on, false, 'departing the family hides its board');
+  assert.equal(stale.calls.sync, beforeStale, 'stale shard completions cannot reopen or redraw the departed board');
+
+  const retry = fixture();
+  for (let i = 0; i < 50; i++) retry.state.syncBoard();
+  retry.state.failedShards[0] = true;
+  retry.packets[0].reject(new Error('temporary detail failure'));
+  await flush();
+  assert.equal(retry.calls.sync, 51, 'one failed own shard causes one failed-state board sync');
+  for (let i = 0; i < 50; i++) retry.state.syncBoard();
+  assert.equal(retry.calls.loads[0], 1, 'failed detail is not automatically retried');
+  retry.packets[0] = deferred();
+  delete retry.state.failedShards[0]; // explicit selection admits another attempt
+  for (let i = 0; i < 50; i++) retry.state.syncBoard();
+  assert.equal(retry.calls.loads[0], 2, 'explicit retry starts one replacement request');
+  retry.state.shards[0] = {};
+  retry.packets[0].resolve({});
+  await flush();
+  assert.equal(retry.calls.sync, 152, 'retry completion also schedules one bounded board sync');
+  console.log('universe board shards: pending callbacks coalesce; stale and failed completions stay bounded');
+}
+
 async function loads() {
   const begin = source.indexOf('        validate(both[0], both[1]);');
   const finish = source.indexOf('\n      })\n      .then(function ()', begin);
@@ -257,4 +335,4 @@ async function loads() {
   }
   console.log('universe loading: unresolved fonts do not block; clicked and direct families start detail + parts together');
 }
-loads().catch(error => { console.error(error); process.exitCode = 1; });
+Promise.all([loads(), boardShardCallbacks()]).catch(error => { console.error(error); process.exitCode = 1; });
