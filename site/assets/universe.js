@@ -1478,8 +1478,13 @@
         var c = e.target && e.target.getAttribute && e.target.getAttribute('data-bk') ? e.target : null;
         if (!c) return;
         var key = c.getAttribute('data-bk');
-        if (e.key === 'Enter') { e.preventDefault(); openFromBoard(key); }
-        else if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); selectFromBoard(key); }
+        if (e.key === 'Enter') {
+          e.preventDefault(); openFromBoard(key);
+          if (!boardEl.contains(c)) focusArrival();
+        } else if (e.key === ' ' || e.key === 'Spacebar') {
+          e.preventDefault(); selectFromBoard(key);
+          if (!boardEl.contains(c)) focusArrival();
+        }
       });
       boardEl.addEventListener('pointerover', function (e) {
         var c = e.target.closest && e.target.closest('[data-bk]');
@@ -2246,7 +2251,8 @@
       if (byKey) focusArrival();
     });
     function focusArrival() {
-      var target = board.on || board.pending ? (narrow() ? null : boardEl) : null;
+      var phoneMap = narrow() && root.getAttribute('data-view') === 'map';
+      var target = board.on || board.pending ? (!narrow() || phoneMap ? boardEl : null) : (phoneMap ? canvas : null);
       if (!target) target = titleEl;
       if (!target) return;
       if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
@@ -2350,7 +2356,7 @@
         // The input clears its query before a later Escape steps out of the map selection.
         if (e.target === searchIn && searchIn.value) return;
         if (cardOn && hover && !cardEl.classList.contains('is-board')) { e.preventDefault(); cardDismissed = hover; hideCard(); return; }
-        if (sel) { e.preventDefault(); stepBack(); }
+        if (sel) { e.preventDefault(); stepBack(); focusArrival(); }
         return;
       }
       if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
