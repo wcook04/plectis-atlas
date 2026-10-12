@@ -1484,7 +1484,8 @@ def connections_html(c: Ctx) -> str:
     for m in mss:
         refs = m.get("references") or []
         if refs:
-            refs_html.append(f'<li><a href="{root}papers/{esc(m["id"])}.html">{esc(S.C("family.refs_summary", count=len(refs), title=S.tex_plain(m["title"])))}</a></li>')
+            anchor = "#pr-references" if m["id"] in S.PAPER_BIBLIOGRAPHY else ""
+            refs_html.append(f'<li><a href="{root}papers/{esc(m["id"])}.html{anchor}">{esc(S.C("family.refs_summary", count=len(refs), title=S.tex_plain(m["title"])))}</a></li>')
         else:
             refs_html.append(f'<li class="fx-muted">{esc(S.C("family.refs_none_in", title=S.tex_plain(m["title"])))}</li>')
     fol = c.cfind.get("follow-up-result") or []

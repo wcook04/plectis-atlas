@@ -62,10 +62,15 @@ except FileNotFoundError:
     _CLAIMS = []
 # Papers with a full reading page (scripts/build_papers.py writes it over papers/<slug>.html).
 try:
-    PAPER_READING = {r["id"]: r["status"] for r in load("paper_acceptance.json").get("papers", [])
+    _PAPER_ACCEPTANCE = load("paper_acceptance.json").get("papers", [])
+    PAPER_READING = {r["id"]: r["status"] for r in _PAPER_ACCEPTANCE
                      if r.get("status") in ("accepted", "partial")}
+    # A partial reading page may have no rendered bibliography.
+    PAPER_BIBLIOGRAPHY = {r["id"] for r in _PAPER_ACCEPTANCE if r["id"] in PAPER_READING
+                         and (r.get("bibliography") or {}).get("entries", 0) > 0}
 except (FileNotFoundError, ValueError):
     PAPER_READING = {}
+    PAPER_BIBLIOGRAPHY = set()
 
 
 def paper_statement_href(ms_id, st, root):
