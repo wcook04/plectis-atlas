@@ -275,6 +275,7 @@ def rich(s: str, base_dir: str = "", root: str = "", link_results: bool = False)
     links at the pinned commit, keep TeX delimiters for the client renderer."""
     if not s:
         return ""
+    s = curly_prose(s)
     out = []
     pos = 0
     for m in re.finditer(r"\[([^\]]+)\]\(([^)\s]+)\)|" + ALLOWED_TAGS.pattern, s):
@@ -2030,7 +2031,7 @@ def date_words(s) -> str:
 def curly(s) -> str:
     """Typographic apostrophes in recorded prose (a word's ' becomes ’); code spans keep theirs."""
     parts = re.split(r"(`[^`]*`)", s or "")
-    return "".join(p if p.startswith("`") else re.sub(r"(?<=[A-Za-z0-9])'(?=[A-Za-z])", "\u2019", p) for p in parts)
+    return "".join(p if p.startswith("`") else _APOS.sub("\u2019", p) for p in parts)
 
 
 def say(n: int) -> str:
@@ -2763,7 +2764,7 @@ def build_statement(stmt):
     root = "../"
     page_url = BASE_URL + rel
     fam = FAM.get(stmt["families"][0]) if stmt.get("families") else None
-    label = (stmt.get("labels") or [sid])[0]
+    label = curly_prose((stmt.get("labels") or [sid])[0])
     lines_html = lean_lines(stmt["lean"])
     # The backend's record for this Lean statement: its family packet, its pairing,
     # its re-runs and the draft scope reading.
@@ -3233,7 +3234,7 @@ def build_statements_table():
         fid = s["families"][0] if s.get("families") else None
         f = FAM.get(fid)
         di = DISC_OF.get(fid)
-        label = (s.get("labels") or [s["id"]])[0]
+        label = curly_prose((s.get("labels") or [s["id"]])[0])
         nm = len(s["non_mathlib_imports"])
         nh = len(s["comparator"].get("definition_names") or [])
         rows.append(f'<tr data-q="{esc((label + " " + s["id"] + " " + (tex_plain(f["title"]) if f else "") + " " + (DISCIPLINES[di]["name"] if di is not None else "")).lower())}">'

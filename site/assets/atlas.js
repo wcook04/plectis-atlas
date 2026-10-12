@@ -173,7 +173,7 @@
   });
 
   /* Loose matching for the tables' own filters (site search is the separate block below). */
-  function norm(s) { return (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+  function norm(s) { return (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[\u2018\u2019]/g, "'").toLowerCase(); }
 
   /* ---- Tables ----------------------------------------------------------- */
   function shownCount(container, n) {
