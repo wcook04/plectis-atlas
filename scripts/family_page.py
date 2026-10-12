@@ -937,8 +937,8 @@ def comparison_one(c: Ctx, l, *, first: bool, rest: bool = False) -> str:
 
 def lean_index(c: Ctx) -> str:
     """Every Lean statement in the family, one entry each, every entry in the same rhythm:
-    its mathematical name (the link that chooses it), its formal identifier on a line of
-    its own, then two labelled lines with separate jobs, the paper theorem it is paired
+    its mathematical name (the link that chooses its comparison on this page), its formal
+    identifier on a line of its own (the link that opens its Lean page), then two labelled lines with separate jobs, the paper theorem it is paired
     with (and by what evidence) and who reports re-running it."""
     rows = []
     for i, l in enumerate(c.leans):
@@ -955,7 +955,7 @@ def lean_index(c: Ctx) -> str:
         role = W("compare.index_main") if l.get("main_result") else W("compare.index_support")
         rows.append(f'<li class="fx-idx__i"><a class="fx-idx__a" href="#lean-{esc(name)}" data-cmp-tab="lean-{esc(name)}"{" aria-current=\"true\"" if i == 0 else ""}>'
                     f'<span class="fx-idx__t md-math">{esc(curly_tex(l.get("name") or name))}</span></a>'
-                    f'<p class="fx-idx__id"><code translate="no">{c.S.lean_breaks(">" + esc(name))[1:]}</code><span class="fx-idx__role">, {esc(role)}</span></p>'
+                    f'<p class="fx-idx__id"><a class="fx-idx__lean" href="{c.root}statements/{esc(name)}.html" title="{esc(W("compare.lean_open"))}"><code translate="no">{c.S.lean_breaks(">" + esc(name))[1:]}</code></a><span class="fx-idx__role">, {esc(role)}</span></p>'
                     f'<dl class="fx-idx__dl"><div><dt>{esc(W("compare.index_paper"))}</dt><dd>{esc(pair)}</dd></div>'
                     f'<div><dt>{esc(W("compare.index_runs"))}</dt><dd>{esc(runs)}</dd></div></dl></li>')
     return (f'<nav class="fx-idx" id="h-index" aria-label="{esc(W("toc.compare"))}">'

@@ -17,6 +17,8 @@ from Statement Map's web_projection.py (Will Cook, statement-map). It also check
 that the page each result links to is the backend's own reading_page for every
 paper statement in the reader packets, in Python (build_site.search_url) and in
 JavaScript (urlFor).
+Exact Lean filename searches also run through the browser query code with generated
+packets, checking canonical routes regardless of the query's capitalisation.
 
     python3 scripts/test_search.py
 
@@ -84,6 +86,56 @@ const subtle = globalThis.crypto && globalThis.crypto.subtle;
 """
 
 
+def check_lean_filename_search(node, build_site, entries):
+    """Run the browser query code against generated packets on a case-sensitive route map."""
+    with tempfile.TemporaryDirectory() as tmp:
+        previous_out = build_site.OUT
+        try:
+            build_site.OUT = Path(tmp)
+            build_site.build_search_data()
+        finally:
+            build_site.OUT = previous_out
+        labels = json.loads(Path(tmp, "data/search/labels.json").read_text())
+        expected = {e["id"]: e.get("family_ids") or [] for e in entries if e["kind"] == "lean"}
+        assert labels["lean"] == expected, "Lean filenames must come from the search catalogue"
+        assert len({key.lower() for key in expected}) == len(expected), "ambiguous Lean filename case"
+        js = Path(tmp, "query.cjs")
+        js.write_text(r"""
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const src = fs.readFileSync(process.argv[2], 'utf8');
+const requested = [];
+const context = {
+  document: {body: {getAttribute: () => ''}, getElementById: () => null},
+  fetch: async (url, options) => {
+    requested.push(url);
+    assert.ok(!options || options.method !== 'HEAD', 'search must not guess a filename');
+    return {ok: true, json: async () => JSON.parse(fs.readFileSync(path.join(__dirname, url), 'utf8'))};
+  }
+};
+vm.createContext(context);
+vm.runInContext(src.slice(src.indexOf('(function (global) {')), context);
+(async () => {
+  for (const name of ['CoveringDensity', 'ElementaryPositivity', 'CartierChartCompactnessSupport']) {
+    for (const spelling of [name, name.toLowerCase(), name.toUpperCase()]) {
+      const hits = await context.AtlasSearch.query(spelling);
+      const hit = hits.find(h => h.id === 'l:' + name);
+      assert.ok(hit, 'missing Lean filename: ' + spelling);
+      assert.equal(hit.url, 'statements/' + name + '.html');
+      assert.ok(hit.family_ids.length, 'retain the catalogue family');
+    }
+  }
+  assert.equal((await context.AtlasSearch.query('UnlistedLeanIdentifierForSearchTest')).length, 0);
+  assert.ok((await context.AtlasSearch.query('014')).some(h => h.id === 'f:014'));
+  assert.ok(requested.every(url => url.endsWith('.json')), 'no guessed page request');
+  console.log('test_search: canonical Lean filename searches pass in original, lower and upper case; unknown name stays empty.');
+})().catch(err => { console.error(err); process.exitCode = 1; });
+""", encoding="utf-8")
+        subprocess.run([node, str(js), str(ROOT / "site/assets/atlas.js")], check=True)
+
+
 def main() -> int:
     node = shutil.which("node")
     if not node:
@@ -102,6 +154,7 @@ def main() -> int:
     entries = []
     for chunk in idx["entry_chunks"]:
         entries.extend(r.packet(chunk)["entries"])
+    check_lean_filename_search(node, build_site, entries)
     texts = tokens + [e["name"] for e in entries] + HARD
     with tempfile.TemporaryDirectory() as tmp:
         inp, outp, js = Path(tmp, "in.json"), Path(tmp, "out.json"), Path(tmp, "run.js")

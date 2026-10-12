@@ -109,6 +109,8 @@ python3 -m http.server -d site/_build   # then open http://localhost:8000
 
 `build_site.py` clears its output directory, so keep the order above. Without Node, the paper renderer marks pages partial and links to the reference PDF. Paper rendering also refreshes generated metadata in `data/`; if that metadata changes, follow the [metadata refresh sequence](#refreshing-paper-metadata) before treating the whole site as a consistent rebuild. Playwright and Chromium are optional, used only for share-card images.
 
+After changing a shared renderer such as `lean_snippet_html()`, also run `build_universe.py`: the map stores those rendered excerpts in its detail files, so regenerating individual statement or family pages leaves the map's excerpts stale.
+
 `scripts/reader.py` checks exported file hashes, the release pin and generation before a page uses a packet. `scripts/backend.py` is its compatibility import. Source extraction and upstream updates are separate from rebuilding the site; see [the source and refresh boundaries](#refreshing-inputs).
 
 ### Quick preview without paper sources

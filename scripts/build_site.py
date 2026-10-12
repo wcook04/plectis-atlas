@@ -1924,6 +1924,12 @@ def guard_labels(where: str, h: str) -> str:
     return h
 
 
+def camel_breaks(name: str) -> str:
+    """An escaped identifier or file name that may break on a phone only between its
+    capitalised words or before its extension: CharacterVarieties<wbr>AllSeams..."""
+    return re.sub(r"(?<=[a-z0-9])(?=[A-Z])|(?=\.lean$)", "<wbr>", esc(name))
+
+
 def lean_breaks(h: str) -> str:
     """Let a long Lean name break only after an underscore or a dot."""
     return re.sub(r">([^<]+)", lambda mm: ">" + re.sub(r"([_.])(?=\w)", r"\1<wbr>", mm.group(1)), h)
@@ -2770,27 +2776,35 @@ def build_statement(stmt):
     replays_html = "".join(f'<li><strong>{esc(c["name"])}</strong>{(": " + esc(c["verdict"])) if c.get("verdict") else ""}{(", " + esc(c["date"])) if c.get("date") else ""} <a class="ext small" href="{esc(REPO + "/blob/main/" + c["path"])}" rel="noopener">{esc(C("statement.record_link"))}</a></li>' for c in replays)
     replay_url = issue_url("replay", C("issues.replay", statement=sid), statement=sid)
     suggest = suggest_url(page_url, label, statement_label=label)
+    # The breadcrumb is the page's ancestry and ends at the family, its parent; the
+    # heading below names the page itself. Without a family it keeps the page's name.
     trail_items = []
     if fam:
         di = DISC_OF[fam["id"]]
         trail_items = [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d:{DISC_SLUG[di]}'), (fam_title_html(fam), f'{root}families/{fam["id"]}.html')]
-    trail_items.append((f'<span class="md-math">{esc(label)}</span>', None))
-    where = ""
-    if fam:
-        where = (esc(LW("page.in_family", id=fam["id"], name="\x00"))
-                 .replace("\x00", f'<a href="{root}families/{fam["id"]}.html">{fam_title_html(fam)}</a>') + " ")
+    else:
+        trail_items.append((f'<span class="md-math">{esc(label)}</span>', None))
+    # Under the heading: the source file as one typed link (its role, then its name; the
+    # full path in its title and in the facts list below) and the map as another, each a
+    # whole unit when the line wraps; then the family number and the catalogue's word,
+    # which the breadcrumb's family name does not repeat.
+    role = "challenge" if stmt["file"].startswith("lean/ComparatorChallenges/") else "other"
+    src_link = (f'<a class="ext phead__src" href="{esc(stmt["url"])}" rel="noopener" title="{esc(stmt["file"])}">'
+                f'{esc(LW("page.source_role." + role))} <code>{camel_breaks(stmt["file"].rsplit("/", 1)[-1])}</code></a>')
+    map_link = f'<a class="phead__map" href="{root}index.html#o=l:{quote(sid)}">{esc(C("words.show_on_map"))}</a>'
+    meta = []
+    if fam and main:  # the catalogue's sentence for a supporting statement names the family itself
+        meta.append(LW("page.family_number", id=fam["id"]))
     others = [f for f in (summ.get("family_ids") or [])[1:]]
     if others:
-        where += esc(LW("page.also_in", families=", ".join(o[2:] for o in others))) + " "
-    where += f'{esc(C("statement.file_label"))} <a class="ext" href="{esc(stmt["url"])}" rel="noopener"><code class="path">{esc(stmt["file"]).replace("/", "/<wbr>")}</code></a>.'
-    where += f' <a href="{root}index.html#o=l:{quote(sid)}">{esc(C("words.show_on_map"))}</a>'
+        meta.append(LW("page.also_in", families=", ".join(o[2:] for o in others)))
     reasons = REVIEW_REASONS.get(sid) or []
     reasons_html = (f'<div class="note"><p class="note__h">{esc(C("statement.reasons_heading"))}</p><ul class="rq__why">' + "".join(f'<li class="md-math">{ctext(t)}</li>' for t in reasons) + '</ul></div>') if reasons else ""
     problems = findings_for(sid=sid, kinds={'error-reported', 'correction', 'replay-fail'})
     more_finds = findings_for(sid=sid, kinds={'explanation', 'commentary', 'follow-up-result'})
     human_name = summ.get("name")
-    subtitle = (f'<p class="phead__sub"><code>{esc(sid)}</code></p>' if not human_name or human_name == label
-                else f'<p class="phead__sub"><span class="md-math">{esc(human_name)}</span> <code>{esc(sid)}</code></p>')
+    subtitle = (f'<p class="phead__sub"><code>{camel_breaks(sid)}</code></p>' if not human_name or human_name == label
+                else f'<p class="phead__sub"><span class="md-math">{esc(human_name)}</span> <code>{camel_breaks(sid)}</code></p>')
     # The action that opens the paper theorem and the qualification of the pairing it
     # follows form one group: the button says which theorem it opens (the candidate, the
     # cited or the declared one), and the line above it says which theorem that is and
@@ -2825,8 +2839,7 @@ def build_statement(stmt):
  <p class="phead__kicker">{esc(LW('page.kicker'))}</p>
  <h1 class="phead__title md-math">{esc(label)}</h1>
  {subtitle}
- <p class="phead__facts">{where}</p>
- <p class="phead__facts">{esc(main_line)}</p>
+ <p class="phead__where">{src_link}{map_link}<span class="phead__meta">{esc(" ".join(meta + [main_line]))}</span></p>
  {action_group}
 </header>
 {('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}
@@ -3580,7 +3593,8 @@ def build_search_data():
     write labels.json beside it: which index range holds which kind of entry, each
     paper's title and each family's name, discipline and holdings in words, so a result list can
     show them without loading the reader packets. Ambiguous and non-current paper results
-    also carry their source date and edition status. Every file carries the generation."""
+    also carry their source date and edition status. Lean filenames retain their canonical
+    case for exact-name lookup without probing filesystem paths. Every file carries the generation."""
     r = RD()
     dst = OUT / "data" / "search"
     for logical, path in r.browser_files(SEARCH_PACKETS):
@@ -3627,7 +3641,8 @@ def build_search_data():
     labels = {"schema": "plectis-atlas-search-labels/1", "generation_id": r.generation,
               "source": "search-index.json and its entry chunks; family holdings from the reader packets; edition dates and status from the manuscript source index",
               "kinds": runs, "papers": papers, "paper_editions": editions,
-              "families": fams}
+              "families": fams,
+              "lean": {e["id"]: e.get("family_ids") or [] for e in entries if e["kind"] == "lean"}}
     (dst / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
 
