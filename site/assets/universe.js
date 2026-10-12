@@ -1563,7 +1563,7 @@
     // The selection lives in the address. A selection the reader makes is a new entry
     // in the history, so Back and Forward walk the same steps; one that follows from
     // the drawing (a zoom settling) or from the history itself replaces it.
-    function updateHash(push, leavingY, leavingBoard) {
+    function updateHash(push, leavingY, leavingBoard, leavingViews) {
       if (!window.history || !window.history.replaceState) return;
       var base = window.location.pathname + window.location.search;
       var url = sel ? base + '#o=' + encodeURIComponent(sel) : base;
@@ -1572,9 +1572,9 @@
       if (push && window.history.pushState) {
         // The entry being left keeps how far down the list the reader was, so Back
         // returns them to the same row.
-        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0, v: view, sf: searchFolded, b: leavingBoard }, ''); } catch (e) { /* the address still works */ }
-        window.history.pushState({ o: sel, v: view, sf: searchFolded, b: boardPosition() }, '', url);
-      } else window.history.replaceState({ o: sel, v: view, sf: searchFolded, b: boardPosition() }, '', url);
+        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0, v: view, ys: leavingViews, sf: searchFolded, b: leavingBoard }, ''); } catch (e) { /* the address still works */ }
+        window.history.pushState({ o: sel, v: view, ys: phoneViewY, sf: searchFolded, b: boardPosition() }, '', url);
+      } else window.history.replaceState({ o: sel, v: view, ys: phoneViewY, sf: searchFolded, b: boardPosition() }, '', url);
     }
     // The list scrolls inside the panel on a wide screen and with the page on a narrow one.
     function panelScroller() {
@@ -1582,6 +1582,22 @@
       return narrow ? (document.scrollingElement || document.documentElement) : panelBody;
     }
     function scrollPos() { var s = panelScroller(); return s ? s.scrollTop : 0; }
+    // The phone's Map and List/Details share a page scroller, but not a reading place.
+    var phoneViewY = { map: 0, list: 0 };
+    var pendingViewSwitch = null;
+    function savedScrollPos() {
+      return narrow() && pendingViewSwitch ? phoneViewY[root.getAttribute('data-view')] : scrollPos();
+    }
+    function viewPositions() {
+      var positions = Object.assign({}, phoneViewY);
+      if (narrow()) positions[root.getAttribute('data-view')] = savedScrollPos();
+      return positions;
+    }
+    function restoreViewPositions(state) {
+      pendingViewSwitch = null;
+      phoneViewY = Object.assign({ map: 0, list: 0 }, state && state.ys);
+      if (state && !state.ys && (state.v === 'map' || state.v === 'list') && typeof state.y === 'number') phoneViewY[state.v] = state.y;
+    }
     // A position to restore once the panel holds enough to scroll that far.
     var pendingY = null;
     function restorePending() {
@@ -1601,9 +1617,11 @@
       var o = key ? obj(key) : null;
       if (key && !o) return;
       var prev = sel ? obj(sel) : null;
-      var leavingY = scrollPos();
+      var leavingY = savedScrollPos();
       var leavingBoard = boardPosition();
-      if (!opts.fromHistory) { pendingY = null; pendingBoard = null; }
+      var leavingViews = viewPositions();
+      pendingViewSwitch = null;
+      if (!opts.fromHistory) { pendingY = null; pendingBoard = null; restoreViewPositions(); }
       sel = key || null;
       pin = -1;
       hover = null; hoverVia = ''; cardDismissed = null;
@@ -1612,10 +1630,10 @@
       var fly = opts.fly !== false;
       ring = null;
       ringWanted = o && o.kind === 'd' && opts.trail && !opts.fromHistory && fly ? key : null;
-      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view'), y: leavingY, board: leavingBoard });
+      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view'), y: leavingY, views: leavingViews, board: leavingBoard });
       setReading(o);
       renderPanel(opts.quiet);
-      updateHash(!!opts.trail && !opts.fromHistory, leavingY, leavingBoard);
+      updateHash(!!opts.trail && !opts.fromHistory, leavingY, leavingBoard, leavingViews);
       if (o && liveEl) liveEl.textContent = nameOf(o);
       chartTo(fly);
       // A fresh phone selection starts at its heading; returning through history
@@ -1665,6 +1683,7 @@
       if (trail.length) {
         var last = trail.pop();
         sel = last.prev;
+        restoreViewPositions({ ys: last.views, v: last.view, y: last.y });
         pendingY = typeof last.y === 'number' ? last.y : null;
         pendingBoard = last.board || null;
         if (last.view) showView(last.view, true);
@@ -2382,7 +2401,23 @@
       if (v === 'map') { resize(); draw(); }
     }
     root.querySelectorAll('[data-u-show]').forEach(function (b) {
-      b.addEventListener('click', function () { showView(b.getAttribute('data-u-show')); });
+      b.addEventListener('click', function () {
+        var v = b.getAttribute('data-u-show');
+        if (v === root.getAttribute('data-view')) return;
+        phoneViewY = viewPositions();
+        var visit = { key: sel, view: v };
+        pendingViewSwitch = visit;
+        showView(v);
+        // Wait for the newly visible content to lay out before restoring its place.
+        requestAnimationFrame(function () {
+          if (pendingViewSwitch !== visit || sel !== visit.key || root.getAttribute('data-view') !== v) return;
+          pendingViewSwitch = null;
+          if (narrow()) { pendingY = phoneViewY[v]; restorePending(); }
+          if (window.history && window.history.replaceState) {
+            try { window.history.replaceState(Object.assign({}, window.history.state, { y: scrollPos(), ys: phoneViewY }), ''); } catch (e) { /* the view still switches */ }
+          }
+        });
+      });
     });
     if (searchIn) {
       var t = 0;
@@ -2433,6 +2468,7 @@
     window.addEventListener('popstate', function (e) {
       var key = readHash();
       var y = e.state && typeof e.state.y === 'number' ? e.state.y : null;
+      restoreViewPositions(e.state);
       pendingBoard = e.state && e.state.b || null;
       if (e.state && (e.state.v === 'map' || e.state.v === 'list')) showView(e.state.v, true);
       if (key !== sel) { trail = []; pendingY = y; select(key, { fromHistory: true }); }
@@ -2444,7 +2480,7 @@
     // Leaving for a paper or a family page, the address's entry keeps the list's place,
     // so coming back finds it.
     window.addEventListener('pagehide', function () {
-      try { window.history.replaceState({ o: sel, y: scrollPos(), v: root.getAttribute('data-view'), sf: searchFolded, b: boardPosition() }, ''); } catch (e) { /* nothing to keep */ }
+      try { window.history.replaceState({ o: sel, y: savedScrollPos(), v: root.getAttribute('data-view'), ys: viewPositions(), sf: searchFolded, b: boardPosition() }, ''); } catch (e) { /* nothing to keep */ }
     });
     function readHash() {
       var hash = window.location.hash || '';
@@ -2503,6 +2539,7 @@
         var start = readHash();
         // Back from a paper or a family page: the entry remembers the list's place.
         var kept = window.history && window.history.state;
+        restoreViewPositions(kept);
         pendingBoard = kept && kept.b || null;
         if (kept && typeof kept.y === 'number') pendingY = kept.y;
         if (kept && (kept.v === 'map' || kept.v === 'list')) showView(kept.v, true);
