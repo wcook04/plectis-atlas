@@ -319,7 +319,16 @@ main.u-main { padding: 0; max-width: none; }
   [data-universe][data-view="list"] .u-stage { display: none; }
   [data-universe][data-view="map"] .u-panel { display: none; }
   .u-help { display: none; }
+  /* The list starts with something to open: the disciplines and the ways in come
+     straight after the release's two sentences, and the colour key, which explains
+     the map more than the list, follows them behind a link at the top. */
+  .u-view { display: flex; flex-direction: column; }
+  .u-view .u-keyjump { display: block; order: 1; margin: 0 0 4px; font: 400 var(--fs-meta)/1.4 var(--sans); }
+  .u-discsec { order: 2; }
+  .u-wayssec { order: 3; }
+  .u-keysec { order: 4; scroll-margin-top: 64px; }
 }
+.u-keyjump { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .u-row, .u-sub { transition: none; }
 }
