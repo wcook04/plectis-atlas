@@ -125,16 +125,31 @@
 .fx-others .fx-h3 { margin-top: 0; font-size: 1.0625rem; }
 
 /* ---- The Lean beside the theorem ---------------------------------------------- */
+/* The Lean statements, one entry each in the same rhythm: the mathematical name (the
+   link that chooses it), the formal identifier on its own line in the code face, then
+   two labelled lines with separate jobs, the paper theorem and the re-runs. Gaps inside
+   an entry are smaller than the gaps between entries. The chosen entry is marked by a
+   bar and a heavier name as well as by colour. */
 .fx-idx { margin: 18px 0 26px; }
 .fx-idx .fx-h3 { margin-top: 0; }
 .fx-idx__list { list-style: none; margin: 0; padding: 0; }
-.fx-idx__list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; padding: 6px 0; border-top: 1px solid var(--rule); }
-.fx-idx__a { display: inline-flex; align-items: center; min-height: 24px; color: var(--ink-soft); text-decoration: none; }
-.fx-idx__t { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink); }
+.fx-idx__i { position: relative; padding: 14px 0 15px; border-top: 1px solid var(--rule); }
+.fx-idx__i:last-child { border-bottom: 1px solid var(--rule); }
+.fx-idx__i:has(> .fx-idx__a[aria-current="true"])::before { content: ""; position: absolute; left: -13px; top: 14px; bottom: 15px; width: 3px; border-radius: 2px; background: var(--steel-text); }
+.fx-idx__a { display: inline-flex; align-items: center; min-height: 24px; color: var(--ink); text-decoration: none; }
+.fx-idx__t { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.35; color: var(--ink); }
 .fx-idx__a:hover .fx-idx__t { text-decoration: underline; }
 .fx-idx__a[aria-current="true"] .fx-idx__t { font-weight: 600; text-decoration: underline; text-decoration-color: var(--steel-text); text-underline-offset: 0.25em; }
-.fx-idx__m { font-size: var(--fs-small); color: var(--muted); flex: 1 1 22rem; }
-.fx-idx__m code { font-family: var(--fx-lean-mono); font-size: 0.95em; color: var(--steel-text); overflow-wrap: anywhere; }
+.fx-idx__id { margin: 1px 0 0; font-size: var(--fs-small); line-height: 1.45; color: var(--muted); }
+.fx-idx__id code { font-family: var(--fx-lean-mono); font-size: 0.95em; color: var(--steel-text); overflow-wrap: anywhere; }
+.fx-idx__dl { display: grid; grid-template-columns: 6.25rem minmax(0, 1fr); gap: 2px 12px; margin: 8px 0 0; font-size: var(--fs-small); line-height: 1.5; }
+.fx-idx__dl > div { display: contents; }
+.fx-idx__dl dt { font-weight: 600; color: var(--muted); }
+.fx-idx__dl dd { margin: 0; color: var(--ink-soft); max-width: 72ch; }
+@container fxmain (max-width: 480px) {
+  .fx-idx__dl { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .fx-idx__dl dd { margin-bottom: 4px; }
+}
 
 .fx-cmp { margin-top: 26px; scroll-margin-top: 12px; }
 .fx-cmp:first-child { margin-top: 8px; }
@@ -176,42 +191,87 @@
 .fx-forms li { margin: 12px 0; }
 
 /* ---- Who has checked it --------------------------------------------------------- */
-.fx-rds { display: grid; gap: 0 32px; }
+.fx-rds { display: grid; gap: 0 32px; align-items: start; }
 @container fxmain (min-width: 760px) { .fx-rds { grid-template-columns: 1fr 1fr; } }
 .fx-rd { padding: 12px 0 8px; border-top: 1px solid var(--rule); min-width: 0; }
 .fx-rd__v { margin: 0 0 8px; font-family: var(--serif); font-size: 1.0625rem; line-height: 1.5; color: var(--ink); }
 .fx-rd--none .fx-rd__v { color: var(--muted); }
+.fx-rd__who { font-weight: 600; }
 .fx-rd__note { margin: 0 0 6px; font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); overflow-wrap: break-word; }
 .fx-rd__k { font-weight: 600; color: var(--ink-soft); }
 .fx-rd__def, .fx-rd__method { margin: 0 0 6px; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
 .fx-rd__links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 6px 0 0; font-size: var(--fs-small); }
-.fx-draft { list-style: none; margin: 18px 0 0; padding: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
-.fx-draft li { margin: 4px 0; }
+/* The AI agent's drafts: a subordinate group after the outside readers and OpenAI's
+   note, smaller and quieter, each naming the Lean statement it classifies. */
+.fx-drafts { margin-top: 30px; max-width: var(--fx-measure); }
+.fx-drafts__h { margin: 0 0 4px; font-size: var(--fs-meta); color: var(--ink-soft); }
+.fx-draft { list-style: none; margin: 0; padding: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
+.fx-draft__i { padding: 8px 0; border-top: 1px solid var(--rule); }
+.fx-draft__obj { margin: 0; color: var(--ink-soft); }
+.fx-draft__t { font-family: var(--serif); font-size: var(--fs-meta); }
+.fx-draft__obj code { color: var(--steel-text); }
+.fx-draft__v { margin: 2px 0 0; }
 .fx-draft__k { font-weight: 600; }
 .fx-producer { margin-top: 18px; max-width: var(--fx-measure); }
 .fx-producer__h { margin: 0 0 4px; font-size: var(--fs-meta); font-weight: 600; }
 .fx-producer__q { margin: 0; padding-left: 14px; border-left: 2px solid var(--rule-strong); font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); }
 
-.fx-rg { margin: 14px 0 0; scroll-margin-top: 12px; }
-.fx-rg__h { margin: 0 0 4px; }
-.fx-rg__h code { font-family: var(--fx-lean-mono); font-size: 0.875rem; color: var(--steel-text); overflow-wrap: anywhere; }
-.fx-runs { list-style: none; margin: 0; padding: 0; }
-.fx-run { padding: 6px 0; border-top: 1px solid var(--rule); font-size: var(--fs-body); line-height: 1.5; color: var(--ink); }
-.fx-run__s { display: block; }
-.fx-run__more { display: block; margin-top: 2px; font-size: var(--fs-small); color: var(--muted); line-height: 1.5; }
+/* Re-runs, grouped by the Lean statement they ran: its name heads the group, with any
+   fact true of every record in it; inside, one row per report with the same fields in
+   the same columns, so reporters, words, accounts, dates and receipts can be compared.
+   In a narrow column each row stacks its fields, labelled, in the same order. */
+.fx-rg { margin: 24px 0 0; scroll-margin-top: 12px; }
+.fx-rg__h { margin: 0; font-family: var(--sans); font-size: var(--fs-base); font-weight: 600; line-height: 1.4; color: var(--ink); }
+.fx-rg__t { font-family: var(--serif); font-size: 1.0625rem; }
+.fx-rg__h code { font-family: var(--fx-lean-mono); font-size: 0.8125rem; font-weight: 400; color: var(--steel-text); overflow-wrap: anywhere; }
+.fx-rg__common { margin: 2px 0 8px; font-size: var(--fs-small); color: var(--muted); }
+.fx-rt { width: 100%; border-collapse: collapse; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
+.fx-rt thead th { padding: 0 14px 6px 0; text-align: left; vertical-align: bottom; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+.fx-rt tbody th, .fx-rt td { padding: 9px 14px 9px 0; text-align: left; vertical-align: top; font-weight: 400; border-bottom: 1px solid var(--rule); }
+.fx-rt tr > :last-child { padding-right: 0; }
+.fx-rt tbody th { width: 22%; color: var(--ink); }
+.fx-rt tbody td:nth-child(2) { width: 18%; }
+.fx-rt tbody td:nth-child(4) { width: 8.5rem; }
+.fx-rt tbody td:nth-child(5) { width: 7.5rem; }
+.fx-rt__term { color: var(--ink); overflow-wrap: anywhere; }
+.fx-rt__go { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 10px; }
 .fx-run__det { color: var(--muted); }
-.fx-run .ins, .fx-rd .ins, .fx-card .ins { font-size: var(--fs-small); color: var(--muted); }
+.fx-rt .ins, .fx-rd .ins, .fx-card .ins { font-size: var(--fs-small); color: var(--muted); }
+@container fxmain (max-width: 600px) {
+  .fx-rt, .fx-rt tbody, .fx-rt tr { display: block; }
+  .fx-rt thead { display: none; }
+  .fx-rt tr { padding: 8px 0 9px; border-bottom: 1px solid var(--rule); }
+  .fx-rt tr:first-child { border-top: 1px solid var(--rule); }
+  .fx-rt tbody th, .fx-rt td { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: 0 10px; width: auto !important; padding: 1px 0; border: 0; }
+  .fx-rt tbody th::before, .fx-rt td::before { content: attr(data-label); font-weight: 600; color: var(--muted); }
+}
 
+/* Checks by another method: each record leads with what it checked (the statement, as
+   the paper prints it, and the paper; or the fact a HOL Light card states), then the
+   same fields in the same order: who reports it, the method, their outcome in their own
+   term, what it covers in their words, and the receipt. */
 .fx-cards { list-style: none; margin: 0; padding: 0; }
-.fx-card { padding: 10px 0; border-top: 1px solid var(--rule); }
-.fx-card__s { margin: 0 0 4px; font-size: var(--fs-body); line-height: 1.5; color: var(--ink); }
-.fx-card__w { margin: 0 0 4px; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
-.fx-card__l { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; margin: 4px 0 0; font-size: var(--fs-small); }
+.fx-card { padding: 14px 0 16px; border-top: 1px solid var(--rule); }
+.fx-card__id { margin: 0; font-family: var(--serif); font-size: 1.0625rem; line-height: 1.45; color: var(--ink); text-wrap: pretty; overflow-wrap: break-word; }
+.fx-card__id a { color: var(--ink); }
+.fx-card__id a:hover { color: var(--steel-text); }
+.fx-card__date { font-family: var(--sans); font-size: var(--fs-meta); color: var(--muted); }
+.fx-card__sub { margin: 1px 0 0; font-size: var(--fs-small); color: var(--muted); }
+.fx-fields { display: grid; grid-template-columns: 7.25rem minmax(0, 1fr); gap: 3px 14px; margin: 8px 0 0; font-size: var(--fs-small); line-height: 1.5; }
+.fx-fields > div { display: contents; }
+.fx-fields dt { font-weight: 600; color: var(--muted); }
+.fx-fields dd { margin: 0; color: var(--ink-soft); overflow-wrap: break-word; max-width: 72ch; }
+.fx-fields dd.fx-fields__scope { font-size: var(--fs-body); line-height: 1.55; color: var(--ink); }
+.fx-fields__gloss { color: var(--muted); }
+@container fxmain (max-width: 520px) {
+  .fx-fields { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .fx-fields dd { margin-bottom: 5px; }
+}
 
 .fx-finds { list-style: none; margin: 0; padding: 0; }
 .fx-find { padding: 9px 0; border-top: 1px solid var(--rule); }
 .fx-find__what { margin: 0; font-size: var(--fs-body); line-height: 1.55; color: var(--ink); max-width: 64ch; }
-.fx-find__who { margin: 3px 0 0; font-size: var(--fs-small); color: var(--muted); }
+.fx-find__who { margin: 0 0 3px; font-size: var(--fs-small); color: var(--muted); }
 #problems + .fx-intro + .fx-finds .fx-find { border-top-color: color-mix(in oklab, var(--brick) 35%, var(--rule)); }
 
 /* Rows of prose keep a reading measure, whatever the column's width. */
@@ -285,11 +345,6 @@
 /* The state of a possible match, and the quiet way to how it was found. */
 .fx-why { font-size: var(--fs-small); color: var(--muted); margin-left: 4px; white-space: nowrap; }
 
-/* The Lean statements, one row each. */
-.fx-idx__list li { display: block; padding: 8px 0; }
-.fx-idx__id { font-size: var(--fs-small); color: var(--muted); }
-.fx-idx__id code { font-family: var(--fx-lean-mono); color: var(--steel-text); overflow-wrap: anywhere; }
-.fx-idx__m { display: block; font-size: var(--fs-small); color: var(--ink-soft); line-height: 1.5; }
 
 /* A cited passage, read in place under the theorem (family.js). */
 .fx-src { margin: 14px 0 4px; padding: 10px 0 8px 16px; border-left: 2px solid var(--rule-control); }

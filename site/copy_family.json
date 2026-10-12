@@ -91,6 +91,8 @@
   "index_intro": "Choose one to see it beside the paper theorem it is paired with.",
   "index_main": "main result",
   "index_support": "supporting statement",
+  "index_paper": "Paper theorem",
+  "index_runs": "Re-runs",
   "paper_side": "The paper states",
   "lean_side": "The Lean",
   "state_head": {
@@ -155,7 +157,9 @@
   "method_link": "How {name} reads",
   "record": "Their record",
   "details": "Details",
+  "details_label": "Details of {who} reading of family {num}",
   "draft_label": "Unreviewed AI draft.",
+  "draft_says": "Unreviewed AI draft:",
   "draft_heading": "An AI agent’s draft classifications, which nobody has reviewed",
   "draft_fold": "{n} AI draft classifications, which nobody has reviewed",
   "producer": "OpenAI’s own note on what its Lean covers",
@@ -164,9 +168,7 @@
  },
  "reruns": {
   "heading": "Who re-ran the Lean",
-  "intro": "Outside groups report re-running the release’s Lean through Comparator. Each line is their report; the atlas did not re-run anything. A re-run concerns the Lean statement it ran, never the paper theorem beside it.",
-  "line": "{who} reports “{term}” for {name}, {pin}.",
-  "line_dated": "{who} reports “{term}” for {name} on {date}, {pin}.",
+  "intro": "Outside groups report re-running the release’s Lean through Comparator. Each row is their report; the atlas did not re-run anything. A re-run concerns the Lean statement it ran, never the paper theorem beside it.",
   "account": "Their account",
   "recorded": "Recorded",
   "none": "No outside group reports re-running this Lean statement.",
@@ -174,7 +176,19 @@
   "other_pin": "at another commit",
   "said": "Their word",
   "receipt": "Receipt",
-  "receipt_label": "Receipt for {who}’s re-run of {name}",
+  "receipt_label": "Receipt for {who} re-run of {name}",
+  "details_label": "Details of {who} re-run of {name}",
+  "cols": {
+   "who": "Reported by",
+   "term": "Their word",
+   "account": "Their account",
+   "date": "Date",
+   "receipt": "Receipt"
+  },
+  "common_pin_one": "One report, at the release’s recorded version.",
+  "common_pin_many": "{n} reports, all at the release’s recorded version.",
+  "common_one": "One report.",
+  "common_many": "{n} reports, each at the version its row gives.",
   "undated": "not recorded",
   "field": {
    "toolchain": "toolchain {v}",
@@ -190,15 +204,25 @@
  },
  "checks": {
   "heading": "Checks by another method",
+  "who": "Reported by",
+  "method_label": "Method",
+  "method": {
+   "finite_checks": "Exact computation",
+   "hol_checks": "A HOL Light proof card"
+  },
   "intro": "Outside checks of the papers’ results that use something other than the release’s Lean: {kinds}. Each is the checker’s own report.",
   "intro_none": "Outside checks of the papers’ results that use something other than the release’s Lean. Each is the checker’s own report.",
   "intro_kind": {
    "hol_checks": "HOL Light proof cards",
    "finite_checks": "exact computation"
   },
-  "line": "{who}, by {kind}: {state}.",
-  "term": "Their verdict: “{term}”.",
   "report": "Their report",
+  "receipt": "Receipt",
+  "report_label": "{who} report on {what}",
+  "details_label": "Details of {who} check of {what}",
+  "id_refs": "{refs} of {paper}",
+  "hol_card": "HOL Light card {card}",
+  "report_id": "report {id}",
   "relation": "What it covers",
   "certifies": "What it checks",
   "detail": "Detail",
