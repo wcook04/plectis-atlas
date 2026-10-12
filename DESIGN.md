@@ -427,6 +427,13 @@ the disc. Try alternative line breaks before truncating; a long second word
 must not leave a title as “The…” or “A…”. Counts use spare room after the name.
 A visible family remains clickable during a map transition. An interrupted
 details request can be retried, and a later selection supersedes a pending one.
+Family boards open as soon as their data is available; they do not wait for a
+decorative zoom. Discipline transitions stay brief. Fit labels at the destination
+radius once and scale them during motion, rather than wrapping every animation
+frame. Retain only the current fit per family and discard old viewport caches.
+A failed or stale detail packet stops loading and reports the failure. Redrawing
+must never restart a rejected request; another selection can retry with fresh
+bytes. Regression checks cover both network failure and a stale generation.
 
 ## Quality floor
 
