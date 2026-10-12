@@ -102,6 +102,7 @@ TXT = {
     "fig_tikz": "Figure drawn in TikZ; see the PDF",
     "fig_image": "Figure image; see the PDF",
     "fig_other": "Figure not reproduced here; see the PDF",
+    "atlas_note": "Atlas note, not part of the paper",
     "lean_k": "Lean.",
     "lean_how": {
         "candidate-pairing": "{lean} is paired with this theorem as a candidate, found by the words the two share; nobody has reviewed the pairing.",
@@ -2642,13 +2643,18 @@ class Paper:
         style = spec["style"]
         self.thm_lines[lid] = env
         self.printed[(f, line)] = (strip_tags(ctx["name"]).strip(), num or None)
-        mark = lean_pairs().get((self.slug, f, line))
-        if mark:
-            body += "".join(lean_evidence_html(x) for x in mark["lean"])
-            if mark["headline"]:
-                body += headline_note_html(mark["headline"])
         out.append(block(f'<div class="pr-thm pr-thm--{style}" id="{self.id_ph(ctx)}" data-env="{esc_a(env)}" '
                          f'data-src="{esc_a(f)}:{line}">{self.xa_ph(ctx)}{body}</div>'))
+        # What the atlas records at this theorem follows it in a box of its own, named as
+        # the atlas's: the paper's statement ends where its author ended it, and the
+        # highlight on a linked theorem covers only the author's text.
+        mark = lean_pairs().get((self.slug, f, line))
+        if mark and (mark["lean"] or mark["headline"]):
+            notes = "".join(lean_evidence_html(x) for x in mark["lean"])
+            if mark["headline"]:
+                notes += headline_note_html(mark["headline"])
+            out.append(block(f'<aside class="pr-atlas" aria-label="{esc_a(TXT["atlas_note"])}">'
+                             f'<p class="pr-atlas__k">{esc_t(TXT["atlas_note"])}</p>{notes}</aside>'))
 
     def walk_inline(self, tex: str, off) -> str:
         if not tex:

@@ -70,6 +70,14 @@
 .pr-lean__ev { display: block; margin-top: 2px; color: var(--muted); }
 .pr-head-note { border-left: 2px solid var(--rule-strong); color: var(--muted); }
 .pr-thm .pr-lean, .pr-thm .pr-lean *, .pr-thm .pr-head-note, .pr-thm .pr-head-note * { font-style: normal; }
+/* What the atlas records at a theorem: a box of its own just after the author's text,
+   in the interface face and named as the atlas's, so it never reads as the paper. */
+.paper > .pr-atlas { max-width: 40em; }
+.pr-atlas { display: grid; gap: 6px; margin: 0 0 1.2em; padding: 8px 12px 10px; border: 1px solid var(--rule); border-radius: var(--r-sm, 6px);
+  background: var(--surface); font-family: var(--sans); }
+.pr-thm + .pr-atlas { margin-top: -0.45em; }
+.paper .pr-atlas p { margin: 0; }
+.pr-atlas__k { font: 600 var(--fs-micro, 0.75rem)/1.3 var(--sans); color: var(--muted); }
 .pr-thm > p:last-child, .pr-proof > p:last-child { margin-bottom: 0; }
 
 /* Proofs */
