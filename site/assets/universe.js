@@ -3414,7 +3414,7 @@
       var tag = e.target && e.target.tagName;
       var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable);
       if (e.key === 'Escape') {
-        if (document.querySelector('dialog[open]')) return;
+        if (document.querySelector('dialog[open], .nav-toggle[aria-expanded="true"]')) return;
         if (mapKeyEl && !mapKeyEl.hidden) { e.preventDefault(); mapKeyPinned = false; showMapKey(false); mapKeyBtn.focus(); return; }
         // The input clears its query before a later Escape steps out of the map selection.
         if (e.target === searchIn && searchIn.value) return;
