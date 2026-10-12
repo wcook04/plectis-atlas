@@ -264,6 +264,27 @@ jumps instead of flying.
 | `explain.html` | Every family as a list, with who has explained it |
 | `sources.html`, `glossary.html`, `numbers.html`, `contribute.html`, `about.html` | Credit, terms, counts with receipts, how to help, why it is built this way |
 
+## What the October rebuild taught
+
+- **Say what was checked, by whom, in their words.** A re-run sentence names
+  the operation and its object ("Comparator accepts OpenAI's proof of this Lean
+  statement, as three outside groups report"). Each group then gets its own
+  line in its own term. Credited names contain commas, so groups are separated
+  by semicolons.
+- **Bring the cited passage to the theorem.** A number a theorem cites, such
+  as (1.5), opens the actual passage from that paper's reading page under the
+  theorem, labelled with the paper and its date. If it cannot be found, the
+  link goes to the passage instead of a guess.
+- **Retrieval stays behind the mathematics.** How a passage was found (the
+  shared words, the method) sits behind "Why this passage is shown". The
+  passage's state, unreviewed and found by wording, stays visible.
+- **No folds.** Content is shown, or opened in the rail on request.
+- **A paper's word macros are words.** `\newcommand{\KN}{Kerr--Newman}` is
+  typeset as text, never sent to the formula renderer.
+- **One owner for each decision.** The pairing heuristics, headline choice,
+  re-run tallies and reader grades that the frontend used to compute have been
+  deleted. The backend decides them; the pages say what it decided.
+
 ## Quality floor
 
 Judge every page at four sizes, in both schemes:
