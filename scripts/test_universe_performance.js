@@ -84,7 +84,7 @@ function boardLayout() {
     narrow: () => false, getComputedStyle: () => ({ fontSize: '16.8px' }),
     clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), T: key => key,
     excerpt: (html, budget) => { excerptCalls++; return { html: `${html}:${budget}`, cut: false }; },
-    katexIn: () => { katexCalls++; }, drawWires: () => { wireCalls++; },
+    katexIn: () => { katexCalls++; }, drawWires: () => { wireCalls++; }, boardFontVersion: 0,
     syncBoard: () => { rebuilds++; throw new Error('layout re-entered syncBoard'); }
   });
   vm.runInContext(source.slice(layoutStart, layoutEnd), state);
@@ -112,6 +112,7 @@ function boardLayout() {
   assert.equal(excerptCalls, 2, 'stable width does no extra excerpt work');
   board.page = 4;
   x.setAttribute('data-u-budget', 100); // a newly visible page still has its old budget
+  delete x.attrs['data-u-fit'];
   vm.runInContext('layoutBoard()', state, { timeout: 1000 });
   assert.deepEqual(cols.map((c, i) => c.hidden ? -1 : i).filter(i => i >= 0), [8, 9]);
   assert.equal(x.innerHTML, 'source statement:170', 'pagination refreshes a stale visible excerpt');
@@ -130,6 +131,89 @@ function boardLayout() {
   console.log('universe board layout: 15 px width toggle, bounded excerpt refresh, no rebuild');
 }
 boardLayout();
+
+// An excerpt that still overflows after six shortening attempts must not repeat
+// those six KaTeX renders on every unrelated board refresh. A width or font
+// change is a new fit and may try again.
+function excerptFitMemo() {
+  const begin = source.indexOf('    function fitExcerpts()');
+  const end = source.indexOf('    function drawWires()', begin);
+  assert.ok(begin >= 0 && end > begin);
+  let width = 180, fontSize = '16px', excerptCalls = 0, katexCalls = 0;
+  const card = { getAttribute: key => key === 'data-bk' ? 'r:test' : 'p:test' };
+  const x = {
+    innerHTML: 'initial', attrs: { 'data-u-budget': '170' },
+    get clientWidth() { return width; }, offsetHeight: 999, scrollWidth: 999,
+    getAttribute(key) { return this.attrs[key]; },
+    setAttribute(key, value) { this.attrs[key] = String(value); },
+    closest: () => card
+  };
+  const state = vm.createContext({
+    board: { fi: 0, budget: 170 }, boardFontVersion: 0, fams: [{ d: 0 }],
+    shards: { 0: { results: { 'r:test': { html: 'long source statement' } } } },
+    boardEl: { querySelectorAll: () => [x] },
+    getComputedStyle: () => ({ fontSize }),
+    excerpt: (html, budget) => { excerptCalls++; return { html: `${html}:${budget}`, cut: true }; },
+    katexIn: () => { katexCalls++; }
+  });
+  vm.runInContext(source.slice(begin, end), state);
+  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
+  assert.equal(excerptCalls, 6, 'first overflowing fit has a six-attempt ceiling');
+  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
+  assert.equal(excerptCalls, 6, 'identical geometry reuses the exhausted fit');
+  width = 150;
+  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
+  assert.equal(excerptCalls, 13, 'changed width restores source, then permits six fit attempts');
+  fontSize = '17px';
+  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
+  assert.equal(excerptCalls, 20, 'changed font restores source, then permits six fit attempts');
+  state.boardFontVersion++;
+  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
+  assert.equal(excerptCalls, 27, 'font-load version restores source before refitting');
+  assert.equal(katexCalls, excerptCalls);
+  console.log('universe excerpts: exhausted fits are cached by width and font');
+}
+excerptFitMemo();
+
+function excerptExpandsAtSameBudget() {
+  const begin = source.indexOf('    function fitExcerpts()');
+  const end = source.indexOf('    function drawWires()', begin);
+  let width = 120, renders = 0;
+  const card = { getAttribute: key => key === 'data-bk' ? 'r:test' : 'p:test' };
+  const x = {
+    innerHTML: 'source:170', attrs: { 'data-u-budget': '170' }, scrollWidth: 0,
+    get clientWidth() { return width; },
+    get offsetHeight() {
+      const shown = Number(this.innerHTML.split(':')[1]);
+      return width < 200 && shown > 80 ? 999 : 20;
+    },
+    getAttribute(key) { return this.attrs[key]; },
+    setAttribute(key, value) { this.attrs[key] = String(value); },
+    closest: () => card
+  };
+  const state = vm.createContext({
+    board: { fi: 0, budget: 170 }, boardFontVersion: 0, fams: [{ d: 0 }],
+    shards: { 0: { results: { 'r:test': { html: 'source' } } } },
+    boardEl: { querySelectorAll: () => [x] },
+    getComputedStyle: () => ({ fontSize: '16px', lineHeight: '24px' }),
+    excerpt: (html, budget) => { renders++; return { html: `${html}:${budget}`, cut: budget < 170 }; },
+    katexIn() {}
+  });
+  vm.runInContext(source.slice(begin, end), state);
+  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
+  const shortened = Number(x.innerHTML.match(/source:(\d+)/)[1]);
+  assert.ok(shortened < 170, 'narrow card shortens the excerpt');
+  assert.equal(state.board.budget, 170, 'fitting a card does not change the board budget');
+  const narrowRenders = renders;
+  width = 300;
+  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
+  assert.equal(x.innerHTML, 'source:170', 'wider card restores the full source at the same board budget');
+  assert.equal(renders, narrowRenders + 1, 'expansion needs one source render');
+  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
+  assert.equal(renders, narrowRenders + 1, 'stable expanded geometry is cached');
+  console.log('universe excerpts: narrow-to-wide card restores text at unchanged budget');
+}
+excerptExpandsAtSameBudget();
 
 async function loads() {
   const begin = source.indexOf('        validate(both[0], both[1]);');

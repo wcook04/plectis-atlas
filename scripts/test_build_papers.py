@@ -140,6 +140,38 @@ class MacroExpansion(unittest.TestCase):
                 self.assertNotIn(gone, t)
 
 
+class MapStatementReferences(unittest.TestCase):
+    def test_packet_urls_change_when_rendering_changes_at_the_same_pin(self):
+        import build_universe as universe
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            packet = directory / "universe-detail-0.json"
+            packet.write_text('{"generation_id":"same-pin","html":"(eq:label)"}')
+            before = universe.packet_version(directory)
+            self.assertEqual(before, universe.packet_version(directory))
+            packet.write_text('{"generation_id":"same-pin","html":"(2.1)"}')
+            self.assertNotEqual(before, universe.packet_version(directory))
+
+    def test_map_excerpts_use_the_papers_printed_equation_numbers(self):
+        import build_universe as universe
+        universe.import_site()
+        cases = [
+            ("A-local-Penrose-inequality-for-conformal-perturbations-of-Schwarzschild-anti-de-Sitter-data-October-5-2026",
+             "thm:main", ("2.1", "2.6"), ("eq:background", "eq:branch")),
+            ("Asymptotic-midpoint-uniform-convexity-and-unbounded-diamond-distortion-in-a-reflexive-tree-space-September-27-2026",
+             "thm:main", ("1.4",), ("eq:segment-norm",)),
+        ]
+        for manuscript, label, numbers, raw_labels in cases:
+            with self.subTest(manuscript=manuscript):
+                result = universe.statement_html(manuscript, {"name": label}, "fixture")
+                self.assertIsNotNone(result)
+                for number in numbers:
+                    self.assertIn(f">({number})</a>", result["html"])
+                for raw in raw_labels:
+                    self.assertNotIn(f">({raw})</span>", result["html"])
+                    self.assertIn(f".html#{raw}", result["html"])
+
+
 class SupportMacros(unittest.TestCase):
     def test_no_fbox_macro(self):
         # KaTeX defines \boxed through \fbox, so a \fbox macro written with \boxed loops.
