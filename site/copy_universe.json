@@ -24,7 +24,7 @@
  "key": {
   "heading": "What the colours mean",
   "intro": "Each colour says what two outside readers find the release’s Lean states for a family’s headline result.",
-  "all": "Both find the whole headline stated",
+  "all": "Both find the whole headline stated or implied",
   "part": "Part of it, or a narrower statement",
   "other": "A supporting or a different result",
   "split": "The two readers disagree",
@@ -53,7 +53,8 @@
   "no_lean": "The release has no Lean statement for this family; its papers can still be read and checked.",
   "lean_one": "One Lean statement.",
   "lean_many": "{n} Lean statements.",
-  "reruns_some": "Outside groups report accepted re-runs of {k} of its {n} Lean statements at the release’s pin."
+  "reruns_some": "Outside groups report accepted re-runs of {k} of its {n} Lean statements at the release’s pin.",
+  "reruns_some_one": "One outside group reports accepted re-runs of {k} of its {n} Lean statements at the release’s pin."
  },
  "switch": {
   "label": "Show",
@@ -110,7 +111,7 @@
   "lead": "Lead paper",
   "results_none": "No headline result is recorded for this paper.",
   "lean_list_heading": "Lean statements",
-  "headline_candidate": "The catalogue’s headline points to a candidate theorem; nobody has reviewed the choice.",
+  "headline_candidate": "Shared words point to a candidate theorem for the catalogue’s headline; nobody has reviewed the choice.",
   "headline_unresolved": "No single theorem in the papers has been identified as the one the catalogue describes.",
   "editions_one": "One previous edition is kept on the family page.",
   "editions": "{n} previous editions are kept on the family page.",

@@ -37,6 +37,7 @@ import re
 from functools import lru_cache
 from html import escape as _esc
 from pathlib import Path
+from urllib.parse import urlparse
 
 import evidence
 import reader
@@ -350,12 +351,36 @@ class Ctx:
         return src
 
     def effort_credit(self, x) -> str:
-        e = self.efforts.get(x.get("effort") or "") or {}
+        """The credit for a community finding: the authors and name of the effort it cites.
+        When the packet holds no record of that effort, the finding is never shown bare: the
+        credit is where its own link points, in plain words, or that the record names no author."""
+        e = self.efforts.get(x.get("effort") or "")
+        if e is None:
+            site = link_site(x.get("url"))
+            return W("said.from_site", site=site) if site else W("said.no_author")
         who = ", ".join(a.get("name") for a in e.get("authors") or [] if a.get("name"))
-        return ", ".join(t for t in (who, e.get("name") or "") if t)
+        return ", ".join(t for t in (who, e.get("name") or "") if t) or W("said.no_author")
 
     def templates(self) -> str:
         return "".join(f'<template id="{tid}">{html}</template>' for tid, html in self.tpls.items())
+
+
+def link_site(url) -> str:
+    """Where a link points, in plain words: the site's name, with the account and project for
+    GitHub and the account for a Mastodon-style address. Nothing is inferred beyond the address."""
+    try:
+        u = urlparse(url or "")
+    except ValueError:
+        return ""
+    host = (u.netloc or "").lower().removeprefix("www.")
+    if not host:
+        return ""
+    parts = [p for p in (u.path or "").split("/") if p]
+    if host == "github.com" and parts:
+        return host + "/" + "/".join(parts[:2])
+    if parts and parts[0].startswith("@"):
+        return host + "/" + parts[0]
+    return host
 
 
 def record(kind: str, title_html: str, rows, links, *, body: str = "", macros: str = "") -> str:
@@ -431,6 +456,27 @@ def head_html(c: Ctx) -> str:
 </header>"""
 
 
+def status_runs(c: Ctx) -> str:
+    """Who reports accepting a re-run, counted by the outside groups in each Lean statement's
+    accepted_current_sources (the backend's record), never by the number of Lean statements.
+    When every accepting group re-ran the same statement their number is exact; across
+    several statements the groups are counted only to tell one group from several."""
+    n = len(c.leans)
+    accepted = [l for l in c.leans if l.get("accepted_current_sources")]
+    groups = {s for l in accepted for s in l.get("accepted_current_sources") or []}
+    by = "one" if len(groups) == 1 else "many"
+    g = c.S.say(len(groups))
+    if not accepted:
+        return W("status.runs_none")
+    if n == 1:
+        return W(f"status.runs_it_by_{by}", g=g)
+    if len(accepted) == 1:
+        return W(f"status.runs_one_by_{by}", g=g)
+    if len(accepted) == n:
+        return W(f"status.runs_all_by_{by}", g=g)
+    return W(f"status.runs_some_by_{by}", k=c.S.say(len(accepted)), g=g)
+
+
 def status_html(c: Ctx) -> str:
     """Two lines kept apart: the formal status and the readable argument."""
     S = c.S
@@ -438,13 +484,7 @@ def status_html(c: Ctx) -> str:
     if not n:
         formal = esc(W("status.formal_none"))
     else:
-        accepted = sum(1 for l in c.leans if l.get("accepted_current_sources"))
-        if accepted == n:
-            runs = W("status.runs_all_one") if n == 1 else W("status.runs_all_many")
-        elif accepted:
-            runs = W("status.runs_some", k=S.say(accepted))
-        else:
-            runs = W("status.runs_none")
+        runs = status_runs(c)
         lean = W("status.lean_one") if n == 1 else W("status.lean_many", n=S.say(n))
         formal = f'<a href="#compare">{esc(cap(lean))}</a> ' + esc(W("status.formal_some", runs=runs))
     cur = [h for h in c.doc.get("paper_history") or [] if h.get("status") == "current"]
@@ -504,15 +544,15 @@ def theorem_html(c: Ctx) -> str:
     alts = [a for a in claim.get("alternatives") or [] if a.get("statement_id") in c.stmts]
     cand = claim.get("primary_candidate")
     parts = []
-    compare = f'<a class="btn btn--ghost" href="#compare">{esc(W("actions.compare"))}</a>' if c.leans else ""
 
     def note(sid, primary):
         terms = next((a.get("matched_terms") for a in alts if a.get("statement_id") == sid), None) or []
         state = W("claim.state_primary") if primary else W("claim.state_alt")
-        return f'<p class="fx-cand">{esc(state)} {why_button(c, sid, terms, primary=primary)}</p>'
+        unpaired = f'<p class="fx-cand">{esc(W("claim.no_lean_paired"))}</p>' if c.leans and not compare_action(c, sid) else ""
+        return f'<p class="fx-cand">{esc(state)} {why_button(c, sid, terms, primary=primary)}</p>{unpaired}'
 
     if claim.get("state") == "candidate" and cand in c.stmts:
-        parts.append(c.stmt_card(cand, aid="claim-theorem", level=2, big=True, actions=compare, note=note(cand, True)))
+        parts.append(c.stmt_card(cand, aid="claim-theorem", level=2, big=True, actions=compare_action(c, cand), note=note(cand, True)))
         rest = [a for a in alts if a.get("statement_id") != cand]
         if rest:
             parts.append(f'<div class="fx-others"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
@@ -525,7 +565,7 @@ def theorem_html(c: Ctx) -> str:
             tied = [a for a in alts if (a.get("score") or 0) == top][:3]
             for i, a in enumerate(tied):
                 parts.append(c.stmt_card(a["statement_id"], aid=f"claim-alt-{i + 1}", level=3, big=len(tied) == 1,
-                                         note=note(a["statement_id"], False), actions=compare if i == len(tied) - 1 else ""))
+                                         note=note(a["statement_id"], False), actions=compare_action(c, a["statement_id"])))
             rest = [a for a in alts if a not in tied]
             if rest:
                 parts.append(f'<div class="fx-others"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
@@ -533,6 +573,19 @@ def theorem_html(c: Ctx) -> str:
     lab = "claim-theorem-h" if (claim.get("state") == "candidate" and cand in c.stmts) else "claim-h"
     return (f'<section class="fx-sec fx-sec--theorem" id="claim" aria-labelledby="{lab}">'
             f'<span class="fx-alias" id="h-bench"></span><span class="fx-alias" id="bench-theorem"></span>{"".join(parts)}</section>')
+
+
+def paired_lean(c: Ctx, sid: str) -> str | None:
+    """The first Lean statement of the family (in the page's order) whose recorded pairing
+    targets this paper statement, or None. Only such a statement has a Lean to compare."""
+    return next((l["id"][2:] for l in c.leans if c.pairs[l["id"]].get("target") == sid), None)
+
+
+def compare_action(c: Ctx, sid: str) -> str:
+    """"Compare with Lean" on a theorem card, only when a Lean statement is paired with that
+    theorem; it opens that pairing's comparison."""
+    name = paired_lean(c, sid)
+    return f'<a class="btn btn--ghost" href="#lean-{esc(name)}">{esc(W("actions.compare"))}</a>' if name else ""
 
 
 def more_label(c: Ctx, n: int) -> str:
@@ -778,7 +831,7 @@ def readings_html(c: Ctx) -> str:
         val = sd.get("value") or {}
         if sd.get("state") != "ai-draft" or not val:
             continue
-        cls = W("readings.draft_classes").get(val.get("class"), val.get("class") or "")
+        cls = evidence.WORDS["draft_class"].get(val.get("class"), val.get("class") or "")
         drafts.append(f'<li><span class="fx-draft__k">{esc(W("readings.draft_label"))}</span> <code translate="no">{esc(l["id"][2:])}</code>: {esc(cls)}. '
                       f'<span class="md-math">{code_spans(val.get("note") or "")}</span></li>')
     draft_html = ""
@@ -799,6 +852,19 @@ def readings_html(c: Ctx) -> str:
 
 def _bytes(n) -> str:
     return f"{n / 2**30:.1f} GiB" if n else ""
+
+
+def run_fields(ru) -> str:
+    """The toolchain, kernels, axioms used, time and memory a re-run report gives as fields
+    of their own, as one sentence, or "" when it gives none. A field the report leaves
+    empty is left out rather than called unrecorded: its account may still name it."""
+    vals = {"toolchain": ru.get("toolchain") or "",
+            "kernels": ", ".join(ru["kernels"]) if ru.get("kernels") else "",
+            "axioms": ", ".join(ru["used_axioms"]) if ru.get("used_axioms") else "",
+            "time": f'{ru["wall_seconds"]} s' if ru.get("wall_seconds") else "",
+            "memory": _bytes(ru.get("peak_memory_bytes"))}
+    parts = [W("reruns.field." + k, v=v) for k, v in vals.items() if v]
+    return cap("; ".join(parts)) + "." if parts else ""
 
 
 def reruns_html(c: Ctx) -> str:
@@ -822,12 +888,10 @@ def reruns_html(c: Ctx) -> str:
                 who = credit.get("name") or ru.get("source")
                 when = S.date_words(ru.get("date"))
                 pin = W("reruns.at_pin") if ru.get("pin_state") == "current" else W("reruns.other_pin")
-                nr = W("reruns.not_recorded")
-                det = {"toolchain": ru.get("toolchain") or nr, "kernels": ", ".join(ru["kernels"]) if ru.get("kernels") else nr,
-                       "axioms": ", ".join(ru["used_axioms"]) if ru.get("used_axioms") else nr,
-                       "time": f'{ru["wall_seconds"]} s' if ru.get("wall_seconds") else nr,
-                       "memory": _bytes(ru.get("peak_memory_bytes")) or nr}
-                recorded = any(v != nr for v in det.values())
+                # Only the fields the report gives as fields of their own are listed; a missing
+                # field is never called unrecorded, since the report's account may name it.
+                det = run_fields(ru)
+                recorded = bool(det)
                 any_detail = any_detail or recorded
                 tid = "ins-run-" + slug_id(rid[4:])
                 c.tpls[tid] = record(W("inspect.kind_run"), f'{esc(who)}, <code translate="no">{esc(name)}</code>',
@@ -835,12 +899,12 @@ def reruns_html(c: Ctx) -> str:
                                       (W("reruns.account"), esc(S.curly(sv.get("text") or ""))),
                                       (W("inspect.date"), esc(when or W("reruns.undated"))), (W("inspect.version"), esc(pin)),
                                       (W("readings.method"), code_spans(first_sentence(credit.get("method") or ""))),
-                                      (W("reruns.recorded"), esc(W("reruns.details", **det)))],
+                                      (W("reruns.recorded"), esc(det))],
                                      [(W("reruns.receipt"), ru.get("receipt"))])
                 sentence = W("reruns.line_dated" if when else "reruns.line", who=who, term=ru.get("source_term") or "", date=when, pin=pin, name=name)
                 items.append(f'<li class="fx-run"><span class="fx-run__s">{esc(sentence)}</span>'
                              f'<span class="fx-run__more"><span class="fx-run__acc">{esc(S.curly(sv.get("text") or ""))}</span> '
-                             + (f'<span class="fx-run__det">{esc(W("reruns.details", **det))}</span> ' if recorded else "")
+                             + (f'<span class="fx-run__det">{esc(det)}</span> ' if recorded else "")
                              + f'<a class="ext" href="{esc(ru.get("receipt") or "")}" rel="noopener" aria-label="{esc(W("reruns.receipt_label", who=who, name=name))}">{esc(W("reruns.receipt"))}</a> '
                              f'{ins_button(tid, esc(W("readings.details")))}</span></li>')
         body = f'<ul class="fx-runs">{"".join(items)}</ul>' if items else f'<p class="fx-muted">{esc(W("reruns.none"))}</p>'
@@ -877,22 +941,50 @@ def other_checks_html(c: Ctx) -> str:
             verdict = v.get("code") or v.get("verdict") or v.get("cold") or ""
             who = credit.get("name") or card.get("source")
             tid = f"ins-card-{i}"
+            covers, whole = card_covers(v)
+            covers_html = (f"“{code_spans(covers)}”" if whole else code_spans(covers)) if covers else ""
             rows = [(W("checks.verdict"), f"“{esc(verdict)}”" if verdict else ""), (W("checks.certifies"), code_spans(what)),
-                    (W("checks.relation"), code_spans(v.get("relation") or v.get("scope") or "")),
-                    (W("checks.detail"), code_spans(v.get("detail") or "")),
+                    (W("checks.relation"), covers_html),
+                    (W("checks.detail"), "" if whole else code_spans(v.get("detail") or "")),
                     (W("inspect.version"), f'<code translate="no">{esc((credit.get("pin") or "")[:7])}</code>' if credit.get("pin") else "")]
             c.tpls[tid] = record(W("inspect.kind_card"), f"{esc(cap(kind))}, {esc(who)}", rows, [(W("inspect.link"), v.get("url") or credit.get("url"))])
             line = W("checks.line", who=who, kind=kind, state=state) + (" " + W("checks.term", term=verdict) if verdict else "")
             items.append(f'<li class="fx-card"><p class="fx-card__s">{esc(line)}</p>'
                          + (f'<p class="fx-card__w"><span class="fx-rd__k">{esc(W("checks.certifies"))}:</span> <span class="md-math">{code_spans(what)}</span></p>' if what else "")
-                         + (f'<p class="fx-card__w"><span class="fx-rd__k">{esc(W("checks.relation"))}:</span> {code_spans(v.get("relation") or v.get("scope"))}</p>' if (v.get("relation") or v.get("scope")) else "")
+                         + (f'<p class="fx-card__w"><span class="fx-rd__k">{esc(W("checks.relation"))}:</span> {covers_html}</p>' if covers else "")
                          + f'<p class="fx-card__l"><a class="ext" href="{esc(v.get("url") or credit.get("url") or "")}" rel="noopener">{esc(W("checks.report"))}</a> {ins_button(tid, esc(W("readings.details")))}</p></li>')
         lst = f'<ul class="fx-cards">{"".join(items)}</ul>'
         parts.append(f'<span class="fx-alias" id="h-hol"></span><span class="fx-alias" id="h-finite"></span>{lst}')
     if unav:
         items = "".join(f'<li><a class="ext" href="{esc(u.get("url") or "")}" rel="noopener">{esc(u.get("name") or u.get("source") or u.get("url"))}</a></li>' for u in unav)
         parts.append(f'<h4 class="fx-h4">{esc(W("checks.unavailable_heading"))}</h4><ul class="fx-plain">{items}</ul>')
-    return f'<h3 class="fx-h3" id="other-checks">{esc(W("checks.heading"))}</h3><p class="fx-intro">{esc(W("checks.intro"))}</p>{"".join(parts)}'
+    return f'<h3 class="fx-h3" id="other-checks">{esc(W("checks.heading"))}</h3><p class="fx-intro">{esc(checks_intro(c, cards))}</p>{"".join(parts)}'
+
+
+def card_covers(v) -> tuple:
+    """What a check card covers, as its record states it, and whether that is the record's
+    whole statement (shown in quotation marks as the checker's words). A HOL Light card's
+    relation is short and carries its own limit. An exact check's scope is only the head of
+    its detail, cut at the first colon by the ingest, once inside a label ("Section
+    sec:computation"); the detail states what was decided and what was not ("NOT the
+    theorem"), so whenever it begins with the scope it is shown whole, never cut."""
+    if v.get("relation"):
+        return v["relation"], False
+    scope, detail = (v.get("scope") or "").strip(), (v.get("detail") or "").strip()
+    if scope and detail.startswith(scope):
+        return detail, True
+    return scope, False
+
+
+def checks_intro(c: Ctx, cards) -> str:
+    """The section's opening sentence, naming only the kinds of check this family's cards carry."""
+    words = W("checks.intro_kind")
+    fields = {card.get("field") for card in cards if card.get("field")}
+    kinds = [words[k] for k in words if k in fields] + sorted(f for f in fields if f not in words)
+    if not kinds:
+        return W("checks.intro_none")
+    named = kinds[0] if len(kinds) == 1 else ", ".join(kinds[:-1]) + " " + c.S.C("family.and") + " " + kinds[-1]
+    return W("checks.intro", kinds=named)
 
 
 def checked_html(c: Ctx) -> str:

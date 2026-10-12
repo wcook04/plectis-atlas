@@ -7,7 +7,7 @@
   ]
  },
  "tone": {
-  "full": "finds the whole headline stated",
+  "full": "finds the whole headline stated or implied",
   "part": "finds part of it stated, or a narrower or weaker statement",
   "other": "finds a supporting or a different result stated",
   "none": "has not read this family"
@@ -73,9 +73,18 @@
  },
  "comparison": {
   "agree:agree": "The two outside readers agree.",
-  "different-scope-descriptions:agree": "The two outside readers agree on how much of the headline the Lean states, and describe it in different terms.",
+  "different-scope-descriptions:agree": "No outside reader finds that the Lean states or implies all of the headline, and they describe what it does state in different terms.",
   "different-scope-descriptions:disagree": "The two outside readers disagree on how much of the headline the Lean states.",
   "unavailable:unknown": "No outside reader has compared a Lean statement with this family’s headline."
  },
- "no_lean": "The release has no Lean statement for this family. The papers can still be read and checked."
+ "no_lean": "The release has no Lean statement for this family. The papers can still be read and checked.",
+ "_draft_class_note": "An AI agent's unreviewed draft class for one Lean statement (scope_draft.value.class), in the same words on the family page, the Lean statement's page and the numbers page. The draft judges each statement against a theorem of one of its papers, which need not be the theorem the statement is paired with or the theorem the catalogue describes, so no class is worded as the headline.",
+ "draft_class": {
+  "as_stated": "states a paper’s theorem as the paper does",
+  "part": "states part of a paper’s theorem",
+  "weaker": "states a weaker form of a paper’s theorem",
+  "consequence": "states a consequence of a paper’s theorem",
+  "supporting": "states a supporting result",
+  "unclear": "unclear"
+ }
 }

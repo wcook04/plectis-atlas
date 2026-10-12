@@ -26,7 +26,7 @@
   "reasons": [
    {
     "kind": "unclear-scope",
-    "text": "The draft scope reading could not tell from OpenAI's note how much of the paper's headline result this file states."
+    "text": "The AI draft scope reading could not tell from OpenAI's note how much of a paper's theorem this file states."
    },
    {
     "kind": "needs-specialist",
@@ -84,7 +84,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    },
    {
     "kind": "axiom",
@@ -144,7 +144,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    },
    {
     "kind": "large",
@@ -176,7 +176,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    },
    {
     "kind": "large",
@@ -208,7 +208,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    },
    {
     "kind": "large",
@@ -716,7 +716,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 49
@@ -730,7 +730,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 50
@@ -744,7 +744,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 51
@@ -758,7 +758,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 52
@@ -772,7 +772,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 53
@@ -786,7 +786,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 54
@@ -800,7 +800,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 55
@@ -814,7 +814,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 56
@@ -828,7 +828,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 57
@@ -842,7 +842,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 58
@@ -856,7 +856,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 59
@@ -870,7 +870,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 60
@@ -884,7 +884,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 61
@@ -898,7 +898,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 62
@@ -912,7 +912,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 63
@@ -926,7 +926,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 64
@@ -940,7 +940,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 65
@@ -954,7 +954,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 66
@@ -968,7 +968,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 67
@@ -982,7 +982,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 68
@@ -996,7 +996,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 69
@@ -1010,7 +1010,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 70
@@ -1024,7 +1024,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 71
@@ -1038,7 +1038,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 72
@@ -1052,7 +1052,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 73
@@ -1066,7 +1066,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 74
@@ -1080,7 +1080,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 75
@@ -1094,7 +1094,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 76
@@ -1108,7 +1108,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 77
@@ -1122,7 +1122,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 78
@@ -1136,7 +1136,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 79
@@ -1150,7 +1150,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 80
@@ -1164,7 +1164,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 81
@@ -1178,7 +1178,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 82
@@ -1192,7 +1192,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 83
@@ -1206,7 +1206,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 84
@@ -1220,7 +1220,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 85
@@ -1234,7 +1234,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 86
@@ -1248,7 +1248,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 87
@@ -1262,7 +1262,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 88
@@ -1276,7 +1276,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 89
@@ -1290,7 +1290,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 90
@@ -1304,7 +1304,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 91
@@ -1318,7 +1318,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 92
@@ -1332,7 +1332,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 93
@@ -1346,7 +1346,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 94
@@ -1360,7 +1360,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 95
@@ -1374,7 +1374,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 96
@@ -1388,7 +1388,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 97
@@ -1402,7 +1402,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 98
@@ -1416,7 +1416,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 99
@@ -1430,7 +1430,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 100
@@ -1444,7 +1444,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 101
@@ -1458,7 +1458,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 102
@@ -1472,7 +1472,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 103
@@ -1486,7 +1486,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 104
@@ -1500,7 +1500,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 105
@@ -1514,7 +1514,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 106
@@ -1528,7 +1528,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 107
@@ -1542,7 +1542,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 108
@@ -1556,7 +1556,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 109
@@ -1570,7 +1570,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 110
@@ -1584,7 +1584,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 111
@@ -1598,7 +1598,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 112
@@ -1612,7 +1612,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 113
@@ -1626,7 +1626,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 114
@@ -1640,7 +1640,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 115
@@ -1654,7 +1654,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 116
@@ -1668,7 +1668,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 117
@@ -1682,7 +1682,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 118
@@ -1696,7 +1696,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 119
@@ -1710,7 +1710,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 120
@@ -1724,7 +1724,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 121
@@ -1738,7 +1738,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 122
@@ -1752,7 +1752,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 123
@@ -1766,7 +1766,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 124
@@ -1780,7 +1780,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 125
@@ -1794,7 +1794,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 126
@@ -1808,7 +1808,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 127
@@ -1822,7 +1822,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 128
@@ -1836,7 +1836,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 129
@@ -1850,7 +1850,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 130
@@ -1864,7 +1864,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 131
@@ -1878,7 +1878,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 132
@@ -1892,7 +1892,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 133
@@ -1906,7 +1906,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 134
@@ -1920,7 +1920,7 @@
   "reasons": [
    {
     "kind": "draft-more-generous",
-    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."
+    "text": "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."
    }
   ],
   "order": 135
@@ -1966,7 +1966,7 @@
    },
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 138
@@ -2078,7 +2078,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 146
@@ -2092,7 +2092,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 147
@@ -2106,7 +2106,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 148
@@ -2120,7 +2120,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 149
@@ -2134,7 +2134,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 150
@@ -2148,7 +2148,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 151
@@ -2162,7 +2162,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 152
@@ -2176,7 +2176,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 153
@@ -2190,7 +2190,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 154
@@ -2204,7 +2204,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 155
@@ -2218,7 +2218,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 156
@@ -2232,7 +2232,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 157
@@ -2246,7 +2246,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 158
@@ -2260,7 +2260,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 159
@@ -2274,7 +2274,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 160
@@ -2288,7 +2288,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 161
@@ -2302,7 +2302,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 162
@@ -2316,7 +2316,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 163
@@ -2330,7 +2330,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 164
@@ -2344,7 +2344,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 165
@@ -2358,7 +2358,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 166
@@ -2372,7 +2372,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 167
@@ -2386,7 +2386,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 168
@@ -2400,7 +2400,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 169
@@ -2414,7 +2414,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 170
@@ -2428,7 +2428,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 171
@@ -2442,7 +2442,7 @@
   "reasons": [
    {
     "kind": "family-without-full-headline",
-    "text": "No Lean statement in its family states the paper's full headline theorem."
+    "text": "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."
    }
   ],
   "order": 172

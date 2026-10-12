@@ -2555,7 +2555,10 @@
       h += '<figure class="u-cat"><figcaption>' + link(D.catalogue_url, T('family.catalogue')) + ' ' + escapeHtml(T('family.catalogue_says')) + '</figcaption>' +
         '<blockquote class="tex-auto">' + det.desc + '</blockquote>' +
         (det.descMore ? '<p class="u-cat__more">' + link(f.href + '#h-desc', T('family.catalogue_more')) + '</p>' : '') + '</figure>';
-      h += '<p class="u-doors">' + door(f.href, T('family.page_link'), true) + (f.lean.length ? door(f.href + '#compare', T('family.compare_link')) : '') + '</p>';
+      // "Compare the theorem with its Lean" only when a Lean statement is paired with the
+      // candidate theorem; it opens that pairing on the family page.
+      var co = det.candidate ? obj(det.candidate) : null, cr = co && co.kind === 'r' ? D.results[co.i] : null;
+      h += '<p class="u-doors">' + door(f.href, T('family.page_link'), true) + (cr && cr.lean.length ? door(f.href + '#lean-' + D.lean[cr.lean[0]].name, T('family.compare_link')) : '') + '</p>';
       h += '<h2 class="u-h2">' + escapeHtml(T('family.readers_heading')) + '</h2>';
       h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(det.evidence) + '</span></p>';
       h += readersHtml(det);
@@ -2637,7 +2640,7 @@
         h += loadingHtml(discOf(o), 'result.loading', 'result.load_failed');
       }
       h += '<p class="u-doors">' + door(r.href || p.href || p.pdf, T('result.read'), true) +
-        (f.lean.length ? door(f.href + '#compare', T('result.compare')) : '') + door(f.href, T('result.family_page')) + '</p>';
+        (r.lean.length ? door(f.href + '#lean-' + D.lean[r.lean[0]].name, T('result.compare')) : '') + door(f.href, T('result.family_page')) + '</p>';
       var states = r.lean.map(function (li) { return D.lean[li].pairing; });
       var kind = function (st) { return st === 'candidate-pairing' ? 'candidate' : st === 'producer-declared-binding' ? 'declared' : 'cited'; };
       var one = states.length && states.every(function (st) { return kind(st) === kind(states[0]); }) ? kind(states[0]) : null;
@@ -2671,7 +2674,7 @@
       h += '<p class="u-lean-label"><code>' + escapeHtml(l.name) + '</code></p>';
       if (l.main) h += para(T('lean.main'));
       if (det && det.snippet) h += '<pre class="lean lean--snippet u-lean"><code>' + det.snippet + '</code></pre>' + para(T('lean.challenge_note'));
-      h += '<p class="u-doors">' + door(l.href, T('lean.page'), true) + door(f.href + '#compare', T('result.compare')) + door(f.href, T('lean.family_page')) + '</p>';
+      h += '<p class="u-doors">' + door(l.href, T('lean.page'), true) + (l.results.length ? door(f.href + '#lean-' + l.name, T('result.compare')) : '') + door(f.href, T('lean.family_page')) + '</p>';
       var lk = l.pairing === 'candidate-pairing' ? 'candidate' : l.pairing === 'producer-declared-binding' ? 'declared' : l.pairing === 'unavailable' ? 'none' : 'cited';
       h += '<h2 class="u-h2">' + escapeHtml(T('lean.paper_heading_' + (l.results.length ? lk : 'none'))) + '</h2>';
       if (l.results.length && lk === 'candidate') h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_candidate')) + '</p>';

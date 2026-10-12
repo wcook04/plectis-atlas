@@ -26,9 +26,14 @@
   "formal_some": "in the release; {runs}.",
   "lean_one": "one Lean statement",
   "lean_many": "{n} Lean statements",
-  "runs_all_one": "an outside group reports accepting a re-run of it at the release’s recorded version",
-  "runs_all_many": "outside groups report accepting re-runs of all of them at the release’s recorded version",
-  "runs_some": "outside groups report accepting re-runs of {k} of them at the release’s recorded version",
+  "runs_it_by_one": "one outside group reports accepting a re-run of it at the release’s recorded version",
+  "runs_it_by_many": "{g} outside groups report accepting re-runs of it at the release’s recorded version",
+  "runs_one_by_one": "one outside group reports accepting a re-run of one of them at the release’s recorded version",
+  "runs_one_by_many": "{g} outside groups report accepting re-runs of one of them at the release’s recorded version",
+  "runs_all_by_one": "one outside group reports accepting re-runs of all of them at the release’s recorded version",
+  "runs_all_by_many": "outside groups report accepting re-runs of all of them at the release’s recorded version",
+  "runs_some_by_one": "one outside group reports accepting re-runs of {k} of them at the release’s recorded version",
+  "runs_some_by_many": "outside groups report accepting re-runs of {k} of them at the release’s recorded version",
   "runs_none": "no outside group reports an accepted re-run at the release’s recorded version",
   "readable_papers_one": "One paper, {reading}.",
   "readable_papers_many": "{n} papers, {reading}.",
@@ -75,6 +80,7 @@
   "unresolved": "No paper theorem has been identified as the catalogue’s intended statement. These passages were found from shared wording.",
   "state_primary": "Possible match to the catalogue description: of the papers’ main statements, it shares the most wording with it. Not reviewed as the catalogue’s statement.",
   "state_alt": "Possible match to the catalogue description, found from shared wording; not reviewed as the catalogue’s statement.",
+  "no_lean_paired": "No Lean statement in the release is paired with this theorem.",
   "more_one": "One more possible match",
   "more_many": "{n} more possible matches"
  },
@@ -130,7 +136,7 @@
   "intro": "Two outside readers have judged whether the release’s Lean states this family’s headline. Their readings concern the headline as a whole, not one paper theorem.",
   "says": "{name} finds that {finds} (their term: “{term}”).",
   "state": {
-   "all": "the Lean states all of the headline",
+   "all": "the Lean states or implies all of the headline",
    "part": "the Lean states part of the headline",
    "narrower": "the Lean states a narrower statement than the headline",
    "weaker": "the Lean states a weaker statement than the headline",
@@ -152,14 +158,6 @@
   "draft_label": "Unreviewed AI draft.",
   "draft_heading": "An AI agent’s draft classifications, which nobody has reviewed",
   "draft_fold": "{n} AI draft classifications, which nobody has reviewed",
-  "draft_classes": {
-   "as_stated": "states the theorem as the paper does",
-   "part": "states part of the theorem",
-   "weaker": "states a weaker statement",
-   "consequence": "states a consequence",
-   "supporting": "states a supporting step",
-   "unclear": "unclear"
-  },
   "producer": "OpenAI’s own note on what its Lean covers",
   "producer_more": "Read the rest of OpenAI’s note",
   "nolean": "With no Lean statement in the release, there is nothing for an outside reader to compare with the headline."
@@ -178,16 +176,26 @@
   "receipt": "Receipt",
   "receipt_label": "Receipt for {who}’s re-run of {name}",
   "undated": "not recorded",
-  "details": "Toolchain {toolchain}; kernels {kernels}; axioms used {axioms}; time {time}; memory {memory}.",
-  "not_recorded": "not recorded",
-  "details_none": "None of these reports records the toolchain, kernels, axioms used, time or memory.",
+  "field": {
+   "toolchain": "toolchain {v}",
+   "kernels": "kernels {v}",
+   "axioms": "axioms used {v}",
+   "time": "time {v}",
+   "memory": "memory {v}"
+  },
+  "details_none": "None of these reports gives the toolchain, kernels, axioms used, time or memory as a separate field; where a report names any of them, it does so in its own words below.",
   "more": "Re-runs of the other {n} Lean statements",
   "others_heading": "Re-runs reported by others",
   "others_intro": "Reports of re-runs from other people, as they describe them."
  },
  "checks": {
   "heading": "Checks by another method",
-  "intro": "Outside checks of the papers’ results that use something other than the release’s Lean: HOL Light proof cards and exact computation. Each is the checker’s own report.",
+  "intro": "Outside checks of the papers’ results that use something other than the release’s Lean: {kinds}. Each is the checker’s own report.",
+  "intro_none": "Outside checks of the papers’ results that use something other than the release’s Lean. Each is the checker’s own report.",
+  "intro_kind": {
+   "hol_checks": "HOL Light proof cards",
+   "finite_checks": "exact computation"
+  },
   "line": "{who}, by {kind}: {state}.",
   "term": "Their verdict: “{term}”.",
   "report": "Their report",
@@ -234,7 +242,9 @@
  },
  "said": {
   "heading": "What people have said",
-  "intro": "Commentary on this family by others, dated and credited. It is commentary, not a finding."
+  "intro": "Commentary on this family by others, dated and credited. It is commentary, not a finding.",
+  "from_site": "From {site}",
+  "no_author": "The record names no author"
  },
  "followups": {
   "heading": "Follow-up work by others"

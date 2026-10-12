@@ -95,7 +95,9 @@ def main() -> int:
         families.setdefault(r["family"], {}).setdefault("finite_checks", []).append({
             "id": r["id"], "manuscript": r.get("dir"),
             "verdict": FINITE_WORDS.get(word, (word, None))[0], "code": word, "text": FINITE_WORDS.get(word, (word, None))[1],
-            "scope": decides.split(":", 1)[0].strip() or None, "detail": r.get("why"),
+            # The scope is the head of "decides" up to the first colon that ends a phrase; a colon
+            # inside a label ("Section sec:computation", "Theorem thm:main") is not a boundary.
+            "scope": decides.split(": ", 1)[0].strip() or None, "detail": r.get("why"),
             "url": f"{REPO}/blob/{commit}/certs/openai-math-finite.json"})
     for r in s["rows"]:
         word = r.get("word")
