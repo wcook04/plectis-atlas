@@ -29,8 +29,8 @@
   --u-t-part: #86a8c6;
   --u-t-other: #8a77a8;
   --u-t-split: #b5801f;
-  --u-t-none: #b4a898;
-  --u-t-unread: #b4a898;
+  --u-t-none: #978a7c;
+  --u-t-unread: #978a7c;
   --u-panel-w: clamp(340px, 26vw, 430px);
 }
 @media (prefers-color-scheme: dark) {
@@ -56,8 +56,8 @@
     --u-t-part: #557c9f;
     --u-t-other: #a493c6;
     --u-t-split: #dba84c;
-    --u-t-none: #5f5869;
-    --u-t-unread: #5f5869;
+    --u-t-none: #8a8396;
+    --u-t-unread: #8a8396;
   }
 }
 :root[data-theme="dark"] [data-universe] {
@@ -82,8 +82,8 @@
   --u-t-part: #557c9f;
   --u-t-other: #a493c6;
   --u-t-split: #dba84c;
-  --u-t-none: #5f5869;
-  --u-t-unread: #5f5869;
+  --u-t-none: #8a8396;
+  --u-t-unread: #8a8396;
 }
 
 main.u-main { padding: 0; max-width: none; }
@@ -331,9 +331,15 @@ main.u-main { padding: 0; max-width: none; }
 .u-key .u-dot { margin: 0; align-self: center; }
 .u-entries { list-style: none; margin: 4px 0 0; padding: 0; }
 .u-entries li + li { border-top: 1px solid var(--rule); }
-.u-entry { display: block; padding: 12px 8px 13px; margin: 0 -8px; border-radius: var(--r-sm); color: var(--ink); text-decoration: none; }
+.u-entry { display: block; padding: 9px 8px 10px; margin: 0 -8px; border-radius: var(--r-sm); color: var(--ink); text-decoration: none; }
 .u-entry__t { display: flex; align-items: baseline; font: 500 var(--fs-base)/1.35 var(--serif); color: var(--ink); text-wrap: balance; }
 .u-entry__t .u-dot { position: relative; top: -0.05em; }
+.u-entry__s { display: block; margin: 3px 0 0 18px; font: 400 var(--fs-small)/1.45 var(--sans); color: var(--muted); }
+.u-entry__more { display: none; }
+.u-entry.is-active .u-entry__more, .u-entry:focus-visible .u-entry__more { display: block; }
+.u-entry.is-active { background: var(--sunk); }
+.u-role { font: 600 var(--fs-micro)/1.4 var(--sans); color: var(--muted); }
+.u-qual { margin: -2px 0 8px; font: italic 400 var(--fs-small)/1.45 var(--sans); color: var(--ink-soft); }
 .u-entry__c { display: block; margin: 5px 0 0 18px; font: 400 var(--fs-meta)/1.5 var(--serif); color: var(--ink-soft); text-wrap: pretty; }
 .u-entry__e { display: block; margin: 5px 0 0 18px; font: 400 var(--fs-small)/1.45 var(--sans); color: var(--muted); text-wrap: pretty; }
 @media (hover: hover) and (pointer: fine) {
@@ -374,4 +380,30 @@ main.u-main { padding: 0; max-width: none; }
 .u-index__d { break-inside: avoid; margin: 0 0 18px; }
 .u-index__dn { font: 600 var(--fs-base)/1.35 var(--serif); color: var(--ink); margin: 0 0 6px; }
 .u-index__fams li { margin: 0 0 4px; }
-.u-index__fams a { display: inline-flex; align-items: baseline; font: 400 var(--fs-meta)/1.4 var(--serif); color: var(--steel-text); }
+.u-index__fams a { display: inline-flex; align-items: baseline; min-height: 24px; padding: 2px 0; font: 400 var(--fs-meta)/1.4 var(--serif); color: var(--steel-text); }
+.u-nowrap { white-space: nowrap; }
+.u-panel .u-lean { font-size: 0.75rem; line-height: 1.5; }
+
+/* Reading a theorem or a Lean statement: the panel takes about two fifths of the
+   workspace so the mathematics keeps its size, and the map refits beside it. */
+@media (min-width: 900px) {
+  .u-explorer.is-reading { grid-template-columns: calc(clamp(440px, 40vw, 760px) + var(--u-gutter) - 20px) minmax(0, 1fr); }
+}
+
+/* The family map's own key, bottom left of the drawing, in words. */
+.u-maplegend { position: absolute; left: 14px; bottom: 12px; max-width: 290px; padding: 9px 12px 10px; background: var(--page); border: 1px solid var(--rule); border-radius: var(--r-md); font: 400 var(--fs-micro)/1.4 var(--sans); color: var(--ink-soft); }
+.u-maplegend[hidden] { display: none; }
+.u-maplegend__h { margin: 0 0 5px; font-weight: 600; color: var(--ink); }
+.u-maplegend ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.u-maplegend li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 6px; align-items: center; }
+.u-maplegend svg { overflow: visible; }
+.u-lg-dot { stroke: none; fill: var(--u-t-none); }
+.u-lg-dot--all { fill: var(--u-t-all); } .u-lg-dot--part { fill: var(--u-t-part); } .u-lg-dot--other { fill: var(--u-t-other); } .u-lg-dot--split { fill: var(--u-t-split); }
+.u-lg-dot--none, .u-lg-dot--unread { fill: var(--u-struct); }
+.u-lg-dia { fill: var(--u-ground); stroke: var(--u-steel); stroke-width: 1.6; }
+.u-lg-ring { fill: none; stroke: var(--u-struct); stroke-width: 1.2; }
+.u-lg-line { fill: none; stroke: var(--u-steel); stroke-width: 1.4; }
+.u-lg-line--cand { stroke-dasharray: 3 3; }
+.u-lg-cite { fill: none; stroke-width: 1.6; }
+.u-lg-cite--out { stroke: var(--u-cites); } .u-lg-cite--in { stroke: var(--u-cited); }
+@media (max-width: 899px) { .u-maplegend { max-width: calc(100% - 28px); } }

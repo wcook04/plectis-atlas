@@ -28,7 +28,9 @@
   "other": "A supporting or a different result",
   "split": "The two readers disagree",
   "none": "No Lean statement in the release",
-  "unread": "Not yet read by either"
+  "unread": "Not yet read by either",
+  "size": "A family’s disc grows with the number of its results and Lean statements.",
+  "citations": "Lines between families are citations between their papers, drawn for the family or discipline you choose: brick where it cites, grey where it is cited."
  },
  "counts": {
   "disc_some": "{n} families, {k} with Lean",
@@ -133,16 +135,23 @@
   "appendix": "Appendix",
   "read": "Read it in the paper",
   "compare": "Compare with Lean",
+  "whole_family": "The whole family on the map: {name}",
   "family_page": "Open the family page",
   "tex_source": "TeX source",
-  "paired_heading": "The Lean statement paired with it",
   "unpaired": "No Lean statement in the release is paired with this result.",
   "loading": "Typesetting the statement…",
   "load_failed": "The statement could not load here. Read it in the paper instead.",
   "numbering_note": "The number is the one the paper prints, as the atlas’s reading page computes it from the TeX source. The PDF is authoritative.",
   "unnumbered": "The paper prints this statement without a number.",
   "number_unavailable": "The atlas has no printed number for this statement.",
-  "unnumbered_label": "{kind}, unnumbered"
+  "unnumbered_label": "{kind}, unnumbered",
+  "edition": "{date} paper",
+  "lean_heading_candidate": "Possible Lean match",
+  "lean_sub_candidate": "Suggested from shared wording. Correspondence not reviewed.",
+  "lean_heading_cited": "The Lean statement whose source cites this theorem",
+  "lean_heading_declared": "The Lean declaration the release binds to this theorem",
+  "lean_heading_mixed": "Lean statements linked to this theorem",
+  "lean_heading_none": "Lean"
  },
  "lean": {
   "kicker": "Lean statement in family {num}",
@@ -154,9 +163,14 @@
   "accepted": "accepted",
   "holes_heading": "Definitions compared by name and type only",
   "holes_note": "Comparator compares these by name and type; their bodies must be read in OpenAI’s library.",
-  "paired_heading": "The paper result paired with it",
   "paired_none": "No paper result is paired with it.",
-  "record": "Record"
+  "record": "Record",
+  "paper_heading_candidate": "Possible paper match",
+  "paper_heading_cited": "The paper theorem its source cites",
+  "paper_heading_declared": "The paper theorem the release binds it to",
+  "paper_heading_none": "Paper theorem",
+  "runs_role": "Re-runs of the Lean file:",
+  "runs_scope": "A re-run checks the Lean file itself. It says nothing about whether the Lean states the paper’s theorem."
  },
  "plate": {
   "lean_ring": "Lean statements",
@@ -216,5 +230,15 @@
   "help_with_link": "The start-here guide",
   "help_queue": "Some Lean files have a specific reason to be read first.",
   "help_queue_link": "See which, and why"
+ },
+ "maplegend": {
+  "heading": "On this family’s map",
+  "paper": "A paper, by its short title and date",
+  "result": "A result, by the number its paper prints",
+  "lean": "A Lean statement, by name",
+  "candidate": "Candidate pairing: shared wording, not reviewed",
+  "cited": "Pairing cited in the Lean source or declared by the release",
+  "cites": "Its papers cite another family",
+  "cited_by": "Another family’s papers cite it"
  }
 }

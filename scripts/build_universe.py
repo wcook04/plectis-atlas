@@ -23,7 +23,8 @@ Writes, after scripts/build_site.py has run (into the same --out, default site/_
 
     index.html                                    the map and the list, then the bands
     universe.html                                 a redirect to index.html, kept for old links
-    site/_build/data/universe-data.json           what is drawn: ids, names, evidence
+    site/_build/data/universe-data.json           the first screen: disciplines, families, citations
+    site/_build/data/universe-parts.json          papers, results and Lean statements, loaded after it
     site/_build/data/universe-layout.json         where it is drawn
     site/_build/data/universe-detail-<n>.json     the list's words, one file per discipline
     site/_build/data/universe-search.json         the map's own search rows
@@ -357,6 +358,24 @@ class Model:
                         results[res_of[sid]]["lean"].append(lean_of[lid])
                         leans[lean_of[lid]]["results"].append(res_of[sid])
                         self.pairs += 1
+        # A printed number can repeat inside a family (two editions or companions each
+        # with a "Theorem 1.1"): such a label carries its paper's date, or its short
+        # title when the dates are the same, so every label on the map names one thing.
+        for f in fams:
+            seen: dict[str, list] = defaultdict(list)
+            for pi in f["papers"]:
+                for ri in papers[pi]["results"]:
+                    if results[ri]["num"]:
+                        seen[results[ri]["num"]].append(ri)
+            for num, ris in seen.items():
+                if len(ris) < 2:
+                    continue
+                dates = [papers[results[ri]["p"]]["date"] for ri in ris]
+                by_date = all(dates) and len(set(dates)) == len(dates)
+                for ri in ris:
+                    p = papers[results[ri]["p"]]
+                    tag = U("result.edition", date=p["date"].rsplit(" ", 1)[0]) if by_date else p["short"]
+                    results[ri]["lab"] = f"{num}, {tag}"
         # Citations between families: the backend's directed family counts (each a count
         # of citing pairs of papers; a citation is never a proof dependency).
         links = defaultdict(lambda: [0, 0])
@@ -904,7 +923,8 @@ def key_html(M) -> str:
         rows.append(f'<li data-tone="{t}"><span class="u-dot u-dot--{t}" aria-hidden="true"></span>'
                     f'<span class="u-key__t">{esc(U("key." + t))}</span><span class="u-key__n">{counts[t]}</span></li>')
     return (f'<h2 class="u-h2" id="u-key-h">{esc(U("key.heading"))}</h2>'
-            f'<p class="u-note">{esc(U("key.intro"))}</p><ul class="u-key" aria-labelledby="u-key-h">{"".join(rows)}</ul>')
+            f'<p class="u-note">{esc(U("key.intro"))}</p><ul class="u-key" aria-labelledby="u-key-h">{"".join(rows)}</ul>'
+            f'<p class="u-note">{esc(U("key.size"))} {esc(U("key.citations"))}</p>')
 
 
 def discipline_rows(M) -> str:
@@ -995,7 +1015,7 @@ def page_body(M, gen) -> str:
     D = M.data
     canvas_label = U("controls.canvas_label", families=len(D["families"]), disciplines=len(D["disciplines"]))
     return f"""<div class="u-explorer" data-universe data-view="list"
- data-universe-data="data/universe-data.json?v={data_v}" data-universe-layout="data/universe-layout.json?v={data_v}"
+ data-universe-data="data/universe-data.json?v={data_v}" data-universe-parts="data/universe-parts.json?v={data_v}" data-universe-layout="data/universe-layout.json?v={data_v}"
  data-universe-detail="data/universe-detail-{{d}}.json?v={data_v}" data-universe-search="data/universe-search.json?v={data_v}"
  data-generation="{esc(gen)}">
  <div class="u-switch" role="group" aria-label="{esc(U('switch.label'))}">
@@ -1024,6 +1044,7 @@ def page_body(M, gen) -> str:
  <div class="u-stage" data-u-stage>
   <canvas class="u-canvas" role="img" aria-label="{esc(canvas_label)}" tabindex="0" data-u-canvas></canvas>
   <div class="u-visually-hidden" aria-live="polite" data-u-live></div>
+  <div class="u-maplegend" data-u-legend hidden></div>
   <div class="u-tools">
    <button type="button" class="u-tool" data-u-zoom="in" aria-label="{esc(U('controls.zoom_in'))}" title="{esc(U('controls.zoom_in'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button>
    <button type="button" class="u-tool" data-u-zoom="out" aria-label="{esc(U('controls.zoom_out'))}" title="{esc(U('controls.zoom_out'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/></svg></button>
@@ -1130,7 +1151,11 @@ def main():
     for old in ddir.glob("universe-*.json"):
         old.unlink()
     dump = lambda o: json.dumps(o, ensure_ascii=False, separators=(",", ":"))
+    # The first screen draws the release's families only; the papers, results and Lean
+    # statements inside them load after it, for the zoom and the panel.
+    parts = {"generation_id": gen, **{k: data.pop(k) for k in ("papers", "results", "lean")}}
     (ddir / "universe-data.json").write_text(dump(data), encoding="utf-8")
+    (ddir / "universe-parts.json").write_text(dump(parts), encoding="utf-8")
     (ddir / "universe-layout.json").write_text(dump(layout), encoding="utf-8")
     for di, sh in enumerate(detail):
         (ddir / f"universe-detail-{di}.json").write_text(dump({"generation_id": gen, **sh}), encoding="utf-8")
@@ -1139,7 +1164,8 @@ def main():
     for name in OWN_ASSETS:
         shutil.copy(ASSETS / name, OUT / "assets" / name)
     v = gen[7:19]
-    extra = ('<link rel="stylesheet" href="assets/universe.css">\n'
+    extra = ('<link rel="stylesheet" href="assets/lean.css">\n'
+             '<link rel="stylesheet" href="assets/universe.css">\n'
              f'<link rel="preload" href="data/universe-data.json?v={v}" as="fetch" crossorigin>\n'
              f'<link rel="preload" href="data/universe-layout.json?v={v}" as="fetch" crossorigin>\n'
              '<meta name="format-detection" content="telephone=no">\n'
@@ -1153,7 +1179,7 @@ def main():
     total_detail = sum(v for k, v in sizes.items() if "detail" in k)
     print(f"universe: generation {gen[:19]}; {counts['families']} families, {counts['papers']} papers, "
           f"{counts['results']} results drawn, {counts['lean']} Lean statements, {counts['pairs']} pairings drawn")
-    print(f"universe: data {sizes['universe-data.json']:,} B, layout {sizes['universe-layout.json']:,} B, "
+    print(f"universe: data {sizes['universe-data.json']:,} B, parts {sizes['universe-parts.json']:,} B, layout {sizes['universe-layout.json']:,} B, "
           f"search {sizes['universe-search.json']:,} B, detail {total_detail:,} B in {len(detail)} files; "
           f"page {(OUT / 'index.html').stat().st_size:,} B")
 
