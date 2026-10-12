@@ -467,12 +467,121 @@ main.u-main { padding: 0; max-width: none; }
 html:not(.js) .u-nojs { display: block; font: 400 var(--fs-meta)/1.5 var(--sans); color: var(--ink-soft); }
 html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
 
+/* ---- The family board -------------------------------------------------------- */
+/* Inside a family the map is a board of cards, read left to right: the families whose
+   papers cite it, its papers in columns (each result's statement, typeset, with the Lean
+   statements paired with it joined beneath), and the families its papers cite. Every
+   name is written on its card; nothing waits for the pointer. Cards grow with the
+   screen, so a 27-inch monitor reads as easily as a laptop. */
+.u-board {
+  position: absolute; inset: 0; z-index: 2; overflow: auto; overscroll-behavior: contain;
+  background: var(--page); color: var(--ink-soft);
+  font: 400 clamp(15px, calc(0.42vw + 9.5px), 20px)/1.45 var(--sans);
+  opacity: 0; visibility: hidden; transform: translateY(8px);
+  transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s linear var(--t-open);
+}
+.u-board.is-on { opacity: 1; visibility: visible; transform: none; transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s; }
+.u-board:focus { outline: none; }
+.u-board:focus-visible { outline: 2px solid var(--steel-text); outline-offset: -2px; }
+.u-title:focus { outline: none; }
+[data-board] .u-tools, [data-board] .u-mapkey-btn, [data-board] .u-mapkey, [data-board] .u-maplegend { display: none; }
+.u-board__in { position: relative; box-sizing: border-box; min-height: 100%; padding: 1em 1.25em 1.25em; }
+.u-board__wires { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.u-board__wires path { fill: none; stroke-width: 1.5; stroke-linecap: round; }
+.u-board__wires .w-lean { stroke: var(--u-steel); }
+.u-board__wires .w-cand { stroke-dasharray: 5 4; }
+.u-board__wires .w-out { stroke: var(--u-cites); opacity: 0.75; }
+.u-board__wires .w-in { stroke: var(--u-cited); opacity: 0.75; }
+.u-board__wires .is-hot { opacity: 1; stroke-width: 2.2; }
+.u-board__head { margin: 0 0 0.9em; max-width: 72em; }
+.u-board__k { margin: 0; font: 600 0.8125em/1.4 var(--sans); color: var(--muted); }
+.u-board__t { display: none; margin: 0.15em 0 0.3em; font: 500 1.3em/1.25 var(--serif); color: var(--ink); text-wrap: balance; }
+.u-board__r { margin: 0.25em 0 0; max-width: 60em; font-size: 0.875em; color: var(--ink-soft); text-wrap: pretty; }
+.u-board__r b { font-weight: 600; color: var(--ink); }
+.u-board__cols { display: grid; grid-template-columns: minmax(8.5em, 11em) minmax(0, 1fr) minmax(8.5em, 11em); gap: 0 2.25em; align-items: start; }
+.u-board__bar { display: flex; justify-content: flex-end; align-items: center; min-height: 2em; margin: -0.35em 0 0; }
+.u-board__side h3, .u-board__colh { margin: 0 0 0.55em; font: 600 0.875em/1.3 var(--sans); color: var(--ink); }
+.u-board__side .u-bc + .u-bc { margin-top: 0.6em; }
+.u-board__none, .u-board__more { margin: 0; font-size: 0.8125em; color: var(--muted); }
+.u-board__more { margin-top: 0.6em; }
+.u-board__papers { display: grid; gap: 1.25em; padding-top: 1.5em; align-items: start; }
+.u-board__papers > [hidden] { display: none; }
+.u-col { min-width: 0; }
+.u-col > ol { list-style: none; margin: 0; padding: 0; }
+.u-col > ol > li { margin: 0.7em 0 0; }
+.u-leans > .u-bc { margin: 0.55em 0 0 1.4em; }
+.u-board__foot { margin: 1.1em 0 0; font-size: 0.8125em; color: var(--muted); }
+.u-board__foot::before { content: ""; display: inline-block; width: 1.6em; margin-right: 0.5em; vertical-align: 0.3em; border-top: 1.5px dashed var(--u-steel); }
+.u-pager { display: inline-flex; align-items: center; gap: 0.5em; }
+.u-pager[hidden] { display: none; }
+.u-pager button { width: 2em; height: 2em; display: grid; place-items: center; padding: 0; border: 1px solid var(--rule-strong); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); cursor: pointer; font: inherit; }
+.u-pager button:disabled { opacity: 0.4; cursor: default; }
+.u-pager button:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 1px; }
+.u-pager svg { width: 0.9em; height: 0.9em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.u-pager span { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
+/* A card: one object, named on it, its words kept inside it. */
+.u-bc {
+  position: relative; display: block; box-sizing: border-box; min-width: 0; padding: 0.55em 0.75em 0.65em;
+  background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-md);
+  color: var(--ink-soft); cursor: pointer; overflow: hidden; overflow-wrap: break-word;
+  transition: border-color var(--t-hover) var(--ease-out), box-shadow var(--t-hover) var(--ease-out);
+}
+.u-bc p { margin: 0; }
+@media (hover: hover) and (pointer: fine) { .u-bc:hover { border-color: var(--ink-soft); } }
+.u-bc:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+.u-bc.is-sel { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+.u-bc.is-pair { border-color: var(--u-steel); box-shadow: 0 0 0 1px var(--u-steel); }
+.u-bc.is-ring { animation: u-bc-ring 700ms var(--ease-out) 1; }
+@keyframes u-bc-ring { from { box-shadow: 0 0 0 1px var(--ink), 0 0 0 0 color-mix(in oklab, var(--ink) 40%, transparent); } to { box-shadow: 0 0 0 1px var(--ink), 0 0 0 12px color-mix(in oklab, var(--ink) 0%, transparent); } }
+.u-bc.is-dim { opacity: 0.45; }
+.u-bc--p { background: var(--sunk); border-color: var(--sunk); }
+.u-bc__pt { font: 500 1.0625em/1.3 var(--serif); color: var(--ink); text-wrap: balance; }
+.u-bc__d { margin-top: 0.15em !important; font-size: 0.8125em; color: var(--muted); }
+.u-bc__acts { display: flex; flex-wrap: wrap; gap: 0.2em 1em; margin-top: 0.35em !important; font: 500 0.8125em/1.4 var(--sans); }
+.u-bc__acts a { color: var(--steel-text); }
+.u-bc__lab { font: 600 0.8125em/1.35 var(--sans); color: var(--ink); }
+.u-bc__lab .u-bc__ttl { font-weight: 400; color: var(--ink-soft); }
+.u-bc__x { margin-top: 0.3em; font: 400 1em/1.5 var(--serif); color: var(--ink); }
+.u-bc__x .katex { font-size: 1.02em; }
+.u-bc__x--none { font: 400 0.8125em/1.45 var(--sans); color: var(--muted); max-height: none; }
+.u-bc--l { border-color: color-mix(in oklab, var(--u-steel) 40%, var(--rule-strong)); }
+.u-bc__lt { font: italic 400 1em/1.35 var(--serif); color: var(--steel-text); }
+.u-bc__id { margin-top: 0.1em !important; }
+.u-bc__id code { font: 400 0.8125em/1.35 var(--mono); color: var(--ink-soft); overflow-wrap: anywhere; }
+.u-bc__ln { margin-top: 0.3em !important; font-size: 0.8125em; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
+.u-bc__ln--q { color: var(--ink); }
+.u-bc--f .u-bc__k { font: 600 0.75em/1.4 var(--sans); color: var(--muted); }
+.u-bc__ft { font: 500 0.9375em/1.3 var(--serif); color: var(--ink); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.u-bc--f .u-bc__ln { margin-top: 0.2em !important; color: var(--muted); }
+.u-bc--f .u-dot { width: 0.6em; height: 0.6em; margin-right: 0.4em; }
+/* On a wide screen the panel beside the board names the family; on a phone the board
+   is one column under the switch and names it first. */
+@media (max-width: 899px) {
+  [data-universe][data-board] .u-stage { height: auto; min-height: 0; overflow: visible; }
+  [data-universe][data-board] .u-canvas { display: none; }
+  .u-board { position: static; overflow: visible; font-size: 15px; transform: none; }
+  .u-board:not(.is-on) { display: none; }
+  .u-board__in { padding: 0.9em 16px 1.5em; }
+  .u-board__t { display: block; }
+  .u-board__cols { display: flex; flex-direction: column; gap: 1.5em; }
+  .u-board__main { order: 1; }
+  .u-board__side--in { order: 2; }
+  .u-board__side--out { order: 3; }
+  .u-board__papers { display: block; padding-top: 0; }
+  .u-board__bar { display: none; }
+  .u-col + .u-col { margin-top: 1.4em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .u-board, .u-board.is-on { transition: none; transform: none; }
+  .u-bc.is-ring { animation: none; }
+}
+
 /* ---- Motion (DESIGN.md "Motion and hover") ---------------------------------- */
 /* The card beside what the pointer names on the map: its name, where it belongs,
    its counts and its state in words. It never takes the pointer, fades in over
    --t-hover and leaves a little faster. */
 .u-card {
-  position: absolute; left: 0; top: 0; z-index: 3; box-sizing: border-box;
+  position: absolute; left: 0; top: 0; z-index: 4; box-sizing: border-box;
   width: max-content; max-width: min(300px, calc(100% - 16px)); padding: 9px 12px 10px;
   background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-md, 8px);
   box-shadow: 0 1px 2px rgba(25, 21, 32, 0.08), 0 6px 18px -8px rgba(25, 21, 32, 0.2);
@@ -491,6 +600,13 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
 .u-card__e { display: flex; align-items: baseline; margin-top: 4px !important; color: var(--ink-soft); text-wrap: pretty; }
 .u-card__e .u-dot { position: relative; top: 0.05em; }
 .u-card__e .u-join { flex: none; }
+/* On the board the card says more (a statement's opening, a pairing's terms), and the
+   pointer can move onto it to read it; a click on it selects what it names. */
+.u-card.is-board { max-width: min(23rem, calc(100% - 16px)); }
+.u-card.is-board.is-on { pointer-events: auto; cursor: pointer; }
+.u-card__x { margin: 5px 0 2px; font: 400 0.9375rem/1.5 var(--serif); color: var(--ink); overflow-wrap: break-word; }
+.u-card__n + .u-card__n { margin-top: 3px !important; }
+.u-card__n b { font-weight: 600; color: var(--ink); }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .u-card { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 10px 26px -10px rgba(0, 0, 0, 0.6); }
 }

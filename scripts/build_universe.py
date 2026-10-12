@@ -532,6 +532,19 @@ def family_map(model, fi, centre_of):
         g = hi if fi == lo else lo
         out_w, in_w = (a, b) if fi == lo else (b, a)
         ends[g] = {"g": g, "way": (1 if out_w else 0) | (2 if in_w else 0), "papers": f["papers"][:1]}
+    # Which of this family's papers carry each citation (the board draws its lines to
+    # them): papers citing that family's papers, and papers its papers cite.
+    own = {model["papers"][p]["id"]: k for k, p in enumerate(f["papers"])}
+    for g, e in ends.items():
+        theirs = {model["papers"][p]["id"] for p in model["families"][g]["papers"]}
+        out_p, in_p = set(), set()
+        for edge in paper_citations():
+            src, dst = "p:" + edge["source"], "p:" + (edge.get("target_latest") or edge["target"])
+            if src in own and dst in theirs:
+                out_p.add(own[src])
+            if dst in own and src in theirs:
+                in_p.add(own[dst])
+        e["out"], e["in"] = sorted(out_p), sorted(in_p)
     fibres = []
     if ends:
         gs = sorted(ends)
@@ -542,7 +555,7 @@ def family_map(model, fi, centre_of):
         ang = spread(pref, 0.42, rounds=600)
         for g, a in zip(gs, ang):
             e = ends[g]
-            fibres.append([r4(a), g, e["way"], [f["papers"].index(p) for p in e["papers"]]])
+            fibres.append([r4(a), g, e["way"], e["out"], e["in"]])
     return {"rings": rings, "res": res_xy, "lean": lean_xy, "leanR": rl if has_lean else 0, "fibres": fibres}
 
 
@@ -599,6 +612,17 @@ def pack_sector(items, a0, a1, r_in, gap):
         placed.append((rho * math.cos(th), rho * math.sin(th), r))
         out[key] = (rho, th)
     return out
+
+
+_PAPER_CITATIONS = None
+
+
+def paper_citations():
+    """The citations between two papers of the release (data/graph.json)."""
+    global _PAPER_CITATIONS
+    if _PAPER_CITATIONS is None:
+        _PAPER_CITATIONS = json.loads((ROOT / "data" / "graph.json").read_text(encoding="utf-8"))
+    return _PAPER_CITATIONS
 
 
 def build_layout(model):
@@ -1062,6 +1086,7 @@ def page_body(M, gen) -> str:
   <canvas class="u-canvas" role="img" aria-label="{esc(canvas_label)}" tabindex="0" data-u-canvas></canvas>
   <div class="u-visually-hidden" aria-live="polite" data-u-live></div>
   <div class="u-maplegend" data-u-legend hidden></div>
+  <div class="u-board" data-u-board role="region" aria-label="{esc(U('board.label'))}"></div>
   <button type="button" class="u-mapkey-btn" data-u-mapkey aria-expanded="false" aria-controls="u-mapkey">{esc(U('mapkey.button'))}</button>
   <div class="u-mapkey" id="u-mapkey" data-u-mapkey-panel hidden></div>
   <div class="u-tools">
