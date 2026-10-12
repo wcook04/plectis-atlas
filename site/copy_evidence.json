@@ -44,9 +44,12 @@
   "supporting-or-different": "The outside readers find that the release’s Lean states a supporting or different result, so the theorem it is paired with is shown under its own heading."
  },
  "reruns": {
-  "none": "No outside group reports re-running this Lean statement at the release’s recorded version.",
-  "one": "Re-run and accepted by one outside group at the release’s recorded version: {names}.",
-  "many": "Re-run and accepted by {n} outside groups at the release’s recorded version: {names}."
+  "none": "No outside group reports running Comparator on OpenAI’s proof of this Lean statement at the release’s recorded version.",
+  "one": "One outside group reports running Comparator on OpenAI’s proof of this Lean statement and accepting it: {names}.",
+  "many": "{n} outside groups report running Comparator on OpenAI’s proof of this Lean statement and accepting it: {names}.",
+  "what_it_checks": "Comparator checks OpenAI’s separate proof against this statement, allowing only the axioms the challenge permits. It does not say whether the statement matches the paper’s theorem.",
+  "names_joiner": "; ",
+  "source_term": "{name} records it as “{term}”."
  },
  "other_checks": "Checked by another method: {kinds}.",
  "check_kind": {
