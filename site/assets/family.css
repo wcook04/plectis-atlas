@@ -161,10 +161,18 @@
 .fx-idx__i { position: relative; padding: 14px 0 15px; border-top: 1px solid var(--rule); }
 .fx-idx__i:last-child { border-bottom: 1px solid var(--rule); }
 .fx-idx__i:has(> .fx-idx__a[aria-current="true"])::before { content: ""; position: absolute; left: -13px; top: 14px; bottom: 15px; width: 3px; border-radius: 2px; background: var(--steel-text); }
+/* The name chooses the comparison shown below (family.js). Every name rests on a faint
+   rule (a border, so it runs unbroken under typeset mathematics) that reads as a control
+   and turns full strength under the pointer; the chosen one is bold over a heavier steel
+   rule, beside the steel marker. The identifier under it opens the Lean page: steel
+   code, underlined on hover. */
 .fx-idx__a { display: inline-flex; align-items: center; min-height: 24px; color: var(--ink); text-decoration: none; }
-.fx-idx__t { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.35; color: var(--ink); }
-.fx-idx__a:hover .fx-idx__t { text-decoration: underline; }
-.fx-idx__a[aria-current="true"] .fx-idx__t { font-weight: 600; text-decoration: underline; text-decoration-color: var(--steel-text); text-underline-offset: 0.25em; }
+.fx-idx__t { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.35; color: var(--ink);
+  padding-bottom: 1px; border-bottom: 1px solid color-mix(in oklab, currentColor 30%, transparent); }
+.fx-idx__a:hover { text-decoration: none; }
+.fx-idx__a:hover .fx-idx__t { border-bottom-color: currentColor; }
+.fx-idx__a[aria-current="true"] .fx-idx__t { font-weight: 600; border-bottom: 2px solid var(--steel-text); }
+.fx-idx__id > a:not(:hover) { text-decoration: none; }
 .fx-idx__id { margin: 1px 0 0; font-size: var(--fs-small); line-height: 1.45; color: var(--muted); }
 .fx-idx__id code { font-family: var(--fx-lean-mono); font-size: 0.95em; color: var(--steel-text); overflow-wrap: anywhere; }
 .fx-idx__dl { display: grid; grid-template-columns: 6.25rem minmax(0, 1fr); gap: 2px 12px; margin: 8px 0 0; font-size: var(--fs-small); line-height: 1.5; }
