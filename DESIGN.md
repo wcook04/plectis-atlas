@@ -383,6 +383,10 @@ is reading, delay the mathematics, or run in a loop.
   case-sensitive and macOS is not; a lower-cased Lean name worked locally and
   404ed on Pages for 220 of 416 statements. `flows_probe.py --serve` serves the
   build as Pages does.
+- **Check clipped text as well as page overflow on phones.** A table cell can
+  retain a desktop minimum width while its wrapper hides the overflow. Compare
+  long titles with their row's bounds at 390px and 320px; reset width constraints
+  with selectors at least as specific as the desktop rules.
 - **A search the reader has acted on steps back.** Opening a match folds the
   matches behind one button, and the map stops dimming what the search did not
   match, so the opened paper's own results read at full strength.
