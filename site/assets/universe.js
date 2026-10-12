@@ -2759,13 +2759,13 @@
         matches = null; matchFam = null; matchList = [];
         resultsEl.hidden = true; resultsEl.innerHTML = '';
         draw();
-        return;
+        return Promise.resolve([]);
       }
       // The site's own search (assets/atlas.js) answers when it is on the page: its
       // hits light their families here and list beside the map. The map's own rows
       // stand in until it is.
       if (window.AtlasSearch && typeof window.AtlasSearch.query === 'function') {
-        Promise.resolve(window.AtlasSearch.query(q)).then(function (hits) {
+        return Promise.resolve(window.AtlasSearch.query(q)).then(function (hits) {
           if (query !== q) return;
           hits = hits || [];
           // Disciplines, families, papers and Lean statements before the paper
@@ -2817,10 +2817,10 @@
           }).join('') + '</ul>';
           if (window.atlasRenderMath) window.atlasRenderMath(resultsEl);
           draw();
+          return matchList;
         }, function () {});
-        return;
       }
-      loadSearch().then(function (rows) {
+      return loadSearch().then(function (rows) {
         if (query !== q) return;
         var words = q.split(/\s+/).filter(Boolean);
         var found = [];
@@ -2849,6 +2849,7 @@
             '</span><span class="u-row__n">' + escapeHtml(where) + '</span>', 'u-row u-row--hit') + '</li>';
         }).join('') + '</ul>';
         draw();
+        return matchList;
       }, function () {});
     }
 
@@ -3053,9 +3054,13 @@
         if (e.key === 'Enter') {
           e.preventDefault();
           clearTimeout(t);
-          runSearch();
-          var go = function () { if (matchList.length) select(matchList[0], { trail: true }); };
-          if (searchLoading) searchLoading.then(function () { setTimeout(go, 0); }); else go();
+          var q = (searchIn.value || '').trim().toLowerCase();
+          Promise.resolve(runSearch()).then(function (found) {
+            if (found && found.length && query === q && (searchIn.value || '').trim().toLowerCase() === q) {
+              select(found[0], { trail: true });
+              foldResults(true);
+            }
+          });
         } else if (e.key === 'Escape' && searchIn.value) {
           e.preventDefault(); e.stopPropagation();
           searchIn.value = ''; runSearch();
@@ -3068,6 +3073,8 @@
       if (e.key === 'Escape') {
         if (document.querySelector('dialog[open]')) return;
         if (mapKeyEl && !mapKeyEl.hidden) { e.preventDefault(); mapKeyPinned = false; showMapKey(false); mapKeyBtn.focus(); return; }
+        // The input clears its query before a later Escape steps out of the map selection.
+        if (e.target === searchIn && searchIn.value) return;
         if (sel || !viewFitted) { e.preventDefault(); stepBack(); }
         return;
       }
