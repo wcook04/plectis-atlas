@@ -982,13 +982,13 @@
        papers cite it on the left, its papers in columns (each result named as its paper
        prints it, with the opening of its statement typeset, and the Lean statements
        paired with it joined beneath), and the families its papers cite on the right.
-       Every name is on its card. Hover explains (the card beside it), click selects
-       (the panel shows the record), double-click or Enter opens, Escape steps back.
+       Every name is on its card. Hover explains (the card beside it), click, Enter
+       or Space selects (the panel shows the record), double-click opens, Escape steps back.
        Lines are the board's only drawing: a result to the Lean statements paired with
        it (dashed for a candidate pairing), and a neighbouring family to the papers that
        carry the citation (brick where this family cites, grey where it is cited). */
     var boardEl = root.querySelector('[data-u-board]');
-    var board = { fi: -1, sig: '', page: 0, per: 1, cols: 0, on: false, pending: false, budget: 170, hideT: 0, ringKey: null };
+    var board = { fi: -1, sig: '', page: 0, per: 1, cols: 0, on: false, pending: false, budget: 170, hideT: 0, ringKey: null, revealKey: null };
     var pendingBoard = null;
     function boardPosition() {
       return board.fi < 0 || !boardEl ? null : { family: D.families[board.fi].id, column: board.page * board.per, y: boardEl.scrollTop };
@@ -1297,6 +1297,18 @@
       var col = c.closest('.u-col'), cols = Array.prototype.slice.call(col.parentNode.children);
       board.page = Math.floor(cols.indexOf(col) / board.per);
     }
+    // A new selection from the panel can sit below the board's visible rows.
+    // Reveal it within the board; history still restores its saved reading place.
+    function revealBoardSelection() {
+      if (!board.revealKey || board.revealKey !== sel || !board.on || narrow() || !shards[fams[board.fi].d]) return;
+      var c = boardEl.querySelector('.u-col:not([hidden]) .u-bc.is-sel');
+      if (!c || !boardEl.clientHeight) return;
+      var view = boardEl.getBoundingClientRect(), card = c.getBoundingClientRect();
+      var top = view.top + 12, bottom = view.top + boardEl.clientHeight - 12;
+      if (card.height > bottom - top || card.top < top) boardEl.scrollTop += card.top - top;
+      else if (card.bottom > bottom) boardEl.scrollTop += card.bottom - bottom;
+      board.revealKey = null;
+    }
     function syncBoard() {
       if (!boardEl || !D) return;
       var fi = boardFamily();
@@ -1329,6 +1341,7 @@
       if (ringWanted || ring) board.ringKey = sel;
       ringBoard();
       restoreBoardPosition();
+      revealBoardSelection();
     }
     function layoutPages() { var keep = board.on; board.on = true; layoutBoard(); pageToSelection(); layoutBoard(); board.on = keep; }
     function showBoard() {
@@ -1341,6 +1354,7 @@
       layoutBoard();
       ringBoard();
       restoreBoardPosition();
+      revealBoardSelection();
     }
     function hideBoard() {
       board.pending = false;
@@ -1504,10 +1518,7 @@
         var c = e.target && e.target.getAttribute && e.target.getAttribute('data-bk') ? e.target : null;
         if (!c) return;
         var key = c.getAttribute('data-bk');
-        if (e.key === 'Enter') {
-          e.preventDefault(); openFromBoard(key);
-          if (!boardEl.contains(c)) focusArrival();
-        } else if (e.key === ' ' || e.key === 'Spacebar') {
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
           e.preventDefault(); selectFromBoard(key);
           if (!boardEl.contains(c)) focusArrival();
         }
@@ -1622,6 +1633,7 @@
       var o = key ? obj(key) : null;
       if (key && !o) return;
       var prev = sel ? obj(sel) : null;
+      var revealSelection = !opts.fromHistory || !pendingBoard;
       var leavingY = savedScrollPos();
       var leavingBoard = boardPosition();
       var leavingViews = viewPositions();
@@ -1637,6 +1649,7 @@
       ringWanted = o && o.kind === 'd' && opts.trail && !opts.fromHistory && fly ? key : null;
       if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view'), y: leavingY, views: leavingViews, board: leavingBoard });
       setReading(o);
+      board.revealKey = revealSelection && o && (o.kind === 'p' || o.kind === 'r' || o.kind === 'l') ? key : null;
       renderPanel(opts.quiet);
       updateHash(!!opts.trail && !opts.fromHistory, leavingY, leavingBoard, leavingViews);
       if (o && liveEl) liveEl.textContent = nameOf(o);
