@@ -3482,11 +3482,11 @@ def build_404():
     base = CFG["base_url"].rstrip("/")
     body = f'<div class="frame page page--narrow"><header class="phead"><h1 class="phead__title">{esc(C("notfound.title"))}</h1><p class="lede">{esc(C("notfound.text"))}</p><p class="actions"><a class="btn btn--primary" href="{esc(base)}/">{esc(C("nav.atlas"))}</a></p></header></div>'
     h = page(rel, C("notfound.title"), C("notfound.text"), body, noindex=True)
-    # Absolute asset paths: the host serves this page at any depth.
+    # The host serves this page at any depth: local assets and links need the site root.
     path = re.sub(r"https?://[^/]+", "", base)
-    h = h.replace('href="assets/', f'href="{path}/assets/').replace('src="assets/', f'src="{path}/assets/').replace('data-root=""', f'data-root="{path}/"')
-    for href, key in NAV:
-        h = h.replace(f'href="{href}"', f'href="{path}/{href}"')
+    h = h.replace('src="assets/', f'src="{path}/assets/').replace('data-root=""', f'data-root="{path}/"')
+    h = re.sub(r'href="(?![a-zA-Z][a-zA-Z0-9+.-]*:|/|#)([^"]+)"',
+               lambda match: f'href="{path}/{match.group(1)}"', h)
     write_page(rel, h, index=False)
 
 
