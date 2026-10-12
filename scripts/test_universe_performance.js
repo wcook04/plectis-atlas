@@ -43,3 +43,46 @@ assert.equal(widths, warm, 'settled paint reuses animation target fits');
 const tiny = vm.runInContext("labelTokens('UnbreakableWord', 1)", c, { timeout: 1000 });
 assert.ok(tiny.length > 0 && tiny.length <= 'UnbreakableWord'.length);
 console.log(`universe performance: 30 frames, ${titles.length} cached family fits, ${widths} width calls`);
+
+async function loads() {
+  const begin = source.indexOf('        validate(both[0], both[1]);');
+  const finish = source.indexOf('\n      })\n      .then(function ()', begin);
+  assert.ok(begin >= 0 && finish > begin);
+  const boot = source.slice(begin, finish);
+  const waiting = new Promise(() => {});
+  let validated = false;
+  const fonts = vm.createContext({
+    both: [{}, {}], validate: () => { validated = true; }, ingest() {}, readFonts() {},
+    SERIF: 'serif', SANS: 'sans', Promise, setTimeout() {},
+    document: { fonts: { load: () => waiting, ready: waiting } }
+  });
+  let ready = false;
+  const readiness = vm.runInContext('(function () {' + boot + '\n})()', fonts);
+  Promise.resolve(readiness).then(() => { ready = true; });
+  for (let i = 0; i < 4; i++) await Promise.resolve();
+  assert.equal(validated, true, 'baseline generation validation remains on readiness path');
+  assert.equal(ready, true, 'map readiness does not depend on unresolved fonts');
+
+  const selectStart = source.indexOf('    function select(key, opts)');
+  const selectEnd = source.indexOf('      var o = key ? obj(key) : null;', selectStart);
+  const clickPrefix = source.slice(selectStart, selectEnd) + '\n    }';
+  const directStart = source.indexOf('          var initialFamily = obj(start);');
+  const directEnd = source.indexOf('          loadParts().then(', directStart);
+  assert.ok(directStart >= 0 && directEnd > directStart);
+  for (const kind of ['clicked', 'direct']) {
+    const events = [];
+    const state = vm.createContext({
+      selectionRequest: 0, partsReady: false, shards: {}, failedShards: {},
+      statusEl: null, T: x => x, start: 'f:033',
+      obj: () => ({ kind: 'f' }), discOf: () => 1,
+      loadShard: () => { events.push('detail-start'); return waiting; },
+      loadParts: () => { events.push('parts-start'); return waiting; }
+    });
+    if (kind === 'clicked') {
+      vm.runInContext(clickPrefix, state); state.select('f:033', {});
+    } else vm.runInContext(source.slice(directStart, directEnd) + 'loadParts();', state);
+    assert.deepEqual(events, ['detail-start', 'parts-start'], `${kind}: both requests start before either resolves`);
+  }
+  console.log('universe loading: unresolved fonts do not block; clicked and direct families start detail + parts together');
+}
+loads().catch(error => { console.error(error); process.exitCode = 1; });
