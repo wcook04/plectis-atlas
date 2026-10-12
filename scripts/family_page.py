@@ -519,15 +519,15 @@ def theorem_html(c: Ctx) -> str:
     alts = [a for a in claim.get("alternatives") or [] if a.get("statement_id") in c.stmts]
     cand = claim.get("primary_candidate")
     parts = []
-    compare = f'<a class="btn btn--ghost" href="#compare">{esc(W("actions.compare"))}</a>' if c.leans else ""
 
     def note(sid, primary):
         terms = next((a.get("matched_terms") for a in alts if a.get("statement_id") == sid), None) or []
         state = W("claim.state_primary") if primary else W("claim.state_alt")
-        return f'<p class="fx-cand">{esc(state)} {why_button(c, sid, terms, primary=primary)}</p>'
+        unpaired = f'<p class="fx-cand">{esc(W("claim.no_lean_paired"))}</p>' if c.leans and not compare_action(c, sid) else ""
+        return f'<p class="fx-cand">{esc(state)} {why_button(c, sid, terms, primary=primary)}</p>{unpaired}'
 
     if claim.get("state") == "candidate" and cand in c.stmts:
-        parts.append(c.stmt_card(cand, aid="claim-theorem", level=2, big=True, actions=compare, note=note(cand, True)))
+        parts.append(c.stmt_card(cand, aid="claim-theorem", level=2, big=True, actions=compare_action(c, cand), note=note(cand, True)))
         rest = [a for a in alts if a.get("statement_id") != cand]
         if rest:
             parts.append(f'<div class="fx-others"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
@@ -540,7 +540,7 @@ def theorem_html(c: Ctx) -> str:
             tied = [a for a in alts if (a.get("score") or 0) == top][:3]
             for i, a in enumerate(tied):
                 parts.append(c.stmt_card(a["statement_id"], aid=f"claim-alt-{i + 1}", level=3, big=len(tied) == 1,
-                                         note=note(a["statement_id"], False), actions=compare if i == len(tied) - 1 else ""))
+                                         note=note(a["statement_id"], False), actions=compare_action(c, a["statement_id"])))
             rest = [a for a in alts if a not in tied]
             if rest:
                 parts.append(f'<div class="fx-others"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
@@ -548,6 +548,19 @@ def theorem_html(c: Ctx) -> str:
     lab = "claim-theorem-h" if (claim.get("state") == "candidate" and cand in c.stmts) else "claim-h"
     return (f'<section class="fx-sec fx-sec--theorem" id="claim" aria-labelledby="{lab}">'
             f'<span class="fx-alias" id="h-bench"></span><span class="fx-alias" id="bench-theorem"></span>{"".join(parts)}</section>')
+
+
+def paired_lean(c: Ctx, sid: str) -> str | None:
+    """The first Lean statement of the family (in the page's order) whose recorded pairing
+    targets this paper statement, or None. Only such a statement has a Lean to compare."""
+    return next((l["id"][2:] for l in c.leans if c.pairs[l["id"]].get("target") == sid), None)
+
+
+def compare_action(c: Ctx, sid: str) -> str:
+    """"Compare with Lean" on a theorem card, only when a Lean statement is paired with that
+    theorem; it opens that pairing's comparison."""
+    name = paired_lean(c, sid)
+    return f'<a class="btn btn--ghost" href="#lean-{esc(name)}">{esc(W("actions.compare"))}</a>' if name else ""
 
 
 def more_label(c: Ctx, n: int) -> str:

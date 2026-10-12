@@ -63,11 +63,39 @@ def main() -> int:
                 check(f'id="lean-{l["id"][2:]}"' in html, f"no comparison for {l['id']}")
         check(" — " not in re.sub(r"“[^”]*”|<code.*?</code>|<pre.*?</pre>|<template.*?</template>", "", html, flags=re.S)
               .split("<main", 1)[-1].split("Their method", 1)[0], "an em dash in the page's own words")
+        for what in compare_buttons(fid, html):
+            check(False, what)
     fails += status_group_counts()
     for f in fails:
         print("FAIL", f)
     print(f"family page: {len(SPECIMENS)} specimens, {len(fails)} failures")
     return 1 if fails else 0
+
+
+def compare_buttons(fid: str, html: str) -> list:
+    """"Compare with Lean" sits only on a theorem card whose statement a Lean statement is
+    paired with, and opens that pairing; a card no Lean is paired with says so instead."""
+    c = family_page.Ctx(S, S.FAM[fid])
+    claim = c.doc.get("claim") or {}
+    if claim.get("state") == "candidate" and claim.get("primary_candidate") in c.stmts:
+        shown = [claim["primary_candidate"]]
+    else:
+        alts = [a for a in claim.get("alternatives") or [] if a.get("statement_id") in c.stmts]
+        top = max([a.get("score") or 0 for a in alts] or [0])
+        shown = [a["statement_id"] for a in alts if (a.get("score") or 0) == top][:3]
+    section = html.split('id="claim"', 1)[-1].split("</section>", 1)[0]
+    cards = re.findall(r'<article class="fx-st[^"]*" id="claim-[^"]+"(.*?)</article>', section, flags=re.S)
+    out = []
+    for sid, body in zip(shown, cards):
+        lean = family_page.paired_lean(c, sid)
+        hrefs = re.findall(r'href="#([^"]+)"[^>]*>' + re.escape(family_page.W("actions.compare")) + "<", body)
+        if lean and hrefs != [f"lean-{lean}"]:
+            out.append(f"{sid}: paired with {lean}, but its compare links are {hrefs}")
+        if not lean and hrefs:
+            out.append(f"{sid}: no Lean statement is paired with it, yet it offers {hrefs}")
+        if not lean and c.leans and family_page.W("claim.no_lean_paired") not in body:
+            out.append(f"{sid}: no Lean statement is paired with it, and the card does not say so")
+    return out
 
 
 NUMBER_WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five"}

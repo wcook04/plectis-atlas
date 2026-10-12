@@ -80,6 +80,7 @@
   "unresolved": "No paper theorem has been identified as the catalogue’s intended statement. These passages were found from shared wording.",
   "state_primary": "Possible match to the catalogue description: of the papers’ main statements, it shares the most wording with it. Not reviewed as the catalogue’s statement.",
   "state_alt": "Possible match to the catalogue description, found from shared wording; not reviewed as the catalogue’s statement.",
+  "no_lean_paired": "No Lean statement in the release is paired with this theorem.",
   "more_one": "One more possible match",
   "more_many": "{n} more possible matches"
  },
