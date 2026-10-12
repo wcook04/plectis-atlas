@@ -847,7 +847,9 @@
       if (hoverVia === 'touch' || (hoverVia !== 'focus' && !(hoverMQ && hoverMQ.matches))) return null;
       var S = chart.shown;
       if (o.kind === 'd') return S.level === 'release' && !chart.start ? o : null;
-      if (o.kind === 'f') return S.nodes[o.i] && S.nodes[o.i].a > 0.5 && !chart.start && S.level !== 'fam' ? o : null;
+      // At discipline depth the labelled circles and sidebar provide the preview.
+      // A floating duplicate would cover neighbouring families and intercept clicks.
+      if (o.kind === 'f') return S.nodes[o.i] && S.nodes[o.i].a > 0.5 && !chart.start && S.level === 'release' ? o : null;
       return null;
     }
     function pairKind(st) { return st === 'candidate-pairing' ? 'candidate' : st === 'producer-declared-binding' ? 'declared' : 'cited'; }
@@ -945,15 +947,18 @@
       }
       var w = cardEl.offsetWidth, h = cardEl.offsetHeight;
       if (!w || !h) { hideCard(); return; }
-      var keep = [m];
+      var keep = [m], anchor = m;
       if (cardPtr) keep.push({ x0: cardPtr[0] - 10, x1: cardPtr[0] + 22, y0: cardPtr[1] - 10, y1: cardPtr[1] + 26 });
       var others = chartBoxes.filter(function (b) { return !(o.kind === 'd' && b.di === o.i) && !(o.kind === 'f' && b.fi === o.i); });
       if (o.kind === 'f' && S.level === 'release') {
-        // A family's dot at the release: the card keeps off the disciplines' names.
+        // Keep this discipline clear so its neighbouring dots remain reachable.
+        var region = S.regions[discOf(o)];
+        anchor = { x0: region.x - region.r, x1: region.x + region.r, y0: region.y - region.r, y1: region.y + region.r };
+        keep.push(anchor);
         others = chartBoxes.filter(function (b) { return b.di !== undefined; });
       }
-      var g2 = 12, spots = [[m.x1 + g2, (m.y0 + m.y1) / 2 - h / 2], [m.x0 - g2 - w, (m.y0 + m.y1) / 2 - h / 2], [m.x0, m.y1 + g2], [m.x0, m.y0 - g2 - h],
-                            [m.x1 + g2, m.y1 - h], [m.x0 - g2 - w, m.y1 - h], [m.x1 - w, m.y1 + g2], [m.x1 - w, m.y0 - g2 - h]];
+      var g2 = 12, spots = [[anchor.x1 + g2, (m.y0 + m.y1) / 2 - h / 2], [anchor.x0 - g2 - w, (m.y0 + m.y1) / 2 - h / 2], [m.x0, anchor.y1 + g2], [m.x0, anchor.y0 - g2 - h],
+                            [anchor.x1 + g2, m.y1 - h], [anchor.x0 - g2 - w, m.y1 - h], [m.x1 - w, anchor.y1 + g2], [m.x1 - w, anchor.y0 - g2 - h]];
       var X1 = Math.max(8, W - w - 8), Y1 = Math.max(8, H - h - 8);
       var best = null, bestScore = Infinity, bestI = -1;
       var tryAt = function (sp, i) {
