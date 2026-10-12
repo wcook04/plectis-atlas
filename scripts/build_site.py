@@ -2981,22 +2981,25 @@ def build_explain():
         checks = ", ".join(say_e("check_kind." + c) for c in ev.checks if c in evidence.WORDS["check_kind"])
         checks = cap(checks) if checks else ""
         checks_cell = esc(checks) if checks else f'<span class="cell__none">{esc(C("explain.checks_none"))}</span>'
-        # explanations: the atlas's own records, then explanations by others
+        # explanations: what there is to read first (a reviewed explanation for the atlas,
+        # explanations by others, reported problems), then the state of the atlas's own
+        # explanation, qualified, then the offer to write one
         rev = reviewed_explanations(fid)
-        expl = [f'<span class="st st--{st}">{esc(C("explain.status_" + st))}</span>']
+        status = [f'<span class="st st--{st}">{esc(C("explain.status_" + st))}</span>']
         if ex:
-            expl.append(f'<span class="cell__sub">{esc(", ".join(e["name"] for e in ex))}</span>')
+            status.append(f'<span class="cell__sub">{esc(", ".join(e["name"] for e in ex))}</span>')
+        reading = []
         if others:
-            expl.append(f'<a class="cell__sub" href="families/{fid}.html#h-explain">'
-                        f'{esc(cap(C("explain.others_1") if others == 1 else C("explain.others_n", n=say(others))))}</a>')
+            reading.append(f'<a class="cell__sub" href="families/{fid}.html#h-explain">'
+                           f'{esc(cap(C("explain.others_1") if others == 1 else C("explain.others_n", n=say(others))))}</a>')
         if problems:
-            expl.append(f'<a class="cell__sub cell__warn" href="families/{fid}.html#h-problems">'
-                        f'{esc(cap(C("explain.problems_1") if problems == 1 else C("explain.problems_n", n=say(problems))))}</a>')
+            reading.append(f'<a class="cell__sub cell__warn" href="families/{fid}.html#h-problems">'
+                           f'{esc(cap(C("explain.problems_1") if problems == 1 else C("explain.problems_n", n=say(problems))))}</a>')
         if rev:
-            expl.append(f'<a class="cell__sub" href="{explanation_rel(rev[0], fid)}">{esc(C("explain.read"))}</a>')
+            expl = status + reading + [f'<a class="cell__sub" href="{explanation_rel(rev[0], fid)}">{esc(C("explain.read"))}</a>']
         else:
             claim = issue_url("claim", C("issues.claim", id=fid, title=tex_plain(f["title"]) if f else ev.name), family=fid)
-            expl.append(f'<a class="cell__sub ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>')
+            expl = reading + status + [f'<a class="cell__sub ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>']
         rows.append(
             f'<tr id="f-{fid}" data-q="{esc((fid + " " + name_plain + " " + dname).lower())}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none") if k else "nolean"}" '
             f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}">'
