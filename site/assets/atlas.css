@@ -1027,8 +1027,13 @@ code.path { overflow-wrap: normal; word-break: normal; }
 
 /* Families list: one invitation to explain for the page, under its lede; a quiet dash in
    an empty cell (its meaning is read out); on a phone a dash-only state is left out of the
-   card except the Lean count. */
+   card except the Lean count, and a Sort menu stands in for the hidden column heads, whose
+   buttons leave the tab order with them. */
 .phead__invite { margin: 6px 0 0; max-width: 80ch; font-size: var(--fs-small); color: var(--muted); }
+.filters__g--sort { display: none; }
 @media (max-width: 760px) {
+  .tbl--families thead { visibility: hidden; }
+  .filters__g--sort { display: block; }
+  .filters--families .filters__g--sort .select { min-width: 0; }
   .tbl--families td[data-label]:not(.t-lean):has(> .cell__dash:only-child) { display: none; }
 }

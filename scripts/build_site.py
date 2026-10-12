@@ -3158,6 +3158,12 @@ def build_explain():
     heads.append(f'<th scope="col" class="t-num" aria-sort="none"><button type="button" class="sort" data-sort="{len(sort_cols) + 2}" data-type="n">{esc(C("explain.col_runs"))}</button></th>')
     heads.append(f'<th scope="col">{esc(C("explain.col_checks"))}</th>')
     heads.append(f'<th scope="col">{esc(C("explain.col_status"))}</th>')
+    # On a phone the column heads are hidden; this menu sorts the list instead.
+    sort_menu = [("0:n:ascending", "sort_id"), ("1:s:ascending", "sort_name"), ("2:s:ascending", "sort_discipline"),
+                 ("3:n:descending", "sort_papers"), ("4:n:descending", "sort_lean"), (f"{len(sort_cols) + 2}:n:descending", "sort_runs")]
+    sort_select = (f'<div class="filters__g filters__g--sort"><label class="filters__h" for="ff-sort">{esc(C("explain.sort_label"))}</label>'
+                   f'<select class="select" id="ff-sort" data-sort-table="families-table">'
+                   + "".join(f'<option value="{v}">{esc(C("explain." + k))}</option>' for v, k in sort_menu) + "</select></div>")
     invite_key = "explain.invite_all" if status_counts["none"] == len(evs) else "explain.invite"
     invite = (f'<p class="phead__invite">{esc(C(invite_key, open=num(status_counts["none"]), families=num(len(evs))))} {esc(C("explain.how"))} '
               f'<a class="ext" href="{esc(REPO + "/" + CFG["contributing_path"])}" rel="noopener">{esc(C("contribute.guide_link"))}</a></p>')
@@ -3172,6 +3178,7 @@ def build_explain():
 <h2 class="h2 vh" id="h-list">{esc(C('explain.list_heading'))}</h2>
 <div class="filters filters--families" data-filter-families="families-table">
  <button type="button" class="btn btn--ghost filters__toggle" aria-expanded="false" aria-controls="families-filters">{esc(C('explain.filter_toggle'))}</button>
+ {sort_select}
  <div class="filters__panel" id="families-filters">{''.join(selects)}</div>
  <div class="filters__status">
   <p class="filters__n" aria-live="polite" data-shown-template="{esc(C('explain.shown', n='{n}', total=NUM('families')))}" data-criteria-lead="{esc(C('explain.criteria_lead'))}">{esc(C('explain.shown', n=NUM('families'), total=NUM('families')))}</p>

@@ -180,25 +180,38 @@
     var p = container && container.querySelector('[data-shown-template]');
     if (p) p.textContent = p.getAttribute('data-shown-template').replace('{n}', n.toLocaleString('en-GB'));
   }
-  Array.prototype.forEach.call(doc.querySelectorAll('.tbl--sortable'), function (table) {
+  function sortTable(table, idx, numeric, dir) {
     var body = table.tBodies[0];
+    table.querySelectorAll('th').forEach(function (h) { h.setAttribute('aria-sort', 'none'); });
+    var btn = table.querySelector('button.sort[data-sort="' + idx + '"]');
+    if (btn) btn.closest('th').setAttribute('aria-sort', dir);
+    var rows = Array.prototype.slice.call(body.rows);
+    rows.sort(function (a, b) {
+      var x = a.cells[idx].getAttribute('data-v'), y = b.cells[idx].getAttribute('data-v');
+      var c = numeric ? (+x - +y) : x.localeCompare(y, 'en-GB');
+      return dir === 'ascending' ? c : -c;
+    });
+    rows.forEach(function (r) { body.appendChild(r); });
+  }
+  Array.prototype.forEach.call(doc.querySelectorAll('.tbl--sortable'), function (table) {
     table.querySelectorAll('button.sort').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var th = btn.closest('th');
-        var idx = +btn.getAttribute('data-sort');
         var numeric = btn.getAttribute('data-type') === 'n';
         var dir = th.getAttribute('aria-sort') === 'ascending' ? 'descending' : 'ascending';
         if (th.getAttribute('aria-sort') === 'none' && numeric) dir = 'descending';
-        table.querySelectorAll('th').forEach(function (h) { h.setAttribute('aria-sort', 'none'); });
-        th.setAttribute('aria-sort', dir);
-        var rows = Array.prototype.slice.call(body.rows);
-        rows.sort(function (a, b) {
-          var x = a.cells[idx].getAttribute('data-v'), y = b.cells[idx].getAttribute('data-v');
-          var c = numeric ? (+x - +y) : x.localeCompare(y, 'en-GB');
-          return dir === 'ascending' ? c : -c;
-        });
-        rows.forEach(function (r) { body.appendChild(r); });
+        sortTable(table, +btn.getAttribute('data-sort'), numeric, dir);
       });
+    });
+  });
+  /* On a phone the column heads are hidden: a menu sorts the list instead
+     (value "column:n|s:ascending|descending"). */
+  Array.prototype.forEach.call(doc.querySelectorAll('select[data-sort-table]'), function (sel) {
+    var table = doc.getElementById(sel.getAttribute('data-sort-table'));
+    if (!table) return;
+    sel.addEventListener('change', function () {
+      var v = sel.value.split(':');
+      sortTable(table, +v[0], v[1] === 'n', v[2]);
     });
   });
   Array.prototype.forEach.call(doc.querySelectorAll('[data-filter-rows]'), function (input) {
