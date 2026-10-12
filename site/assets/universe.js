@@ -1547,9 +1547,9 @@
       if (push && window.history.pushState) {
         // The entry being left keeps how far down the list the reader was, so Back
         // returns them to the same row.
-        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0, v: view }, ''); } catch (e) { /* the address still works */ }
-        window.history.pushState({ o: sel, v: view }, '', url);
-      } else window.history.replaceState({ o: sel, v: view }, '', url);
+        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0, v: view, sf: searchFolded }, ''); } catch (e) { /* the address still works */ }
+        window.history.pushState({ o: sel, v: view, sf: searchFolded }, '', url);
+      } else window.history.replaceState({ o: sel, v: view, sf: searchFolded }, '', url);
     }
     // The list scrolls inside the panel on a wide screen and with the page on a narrow one.
     function panelScroller() {
@@ -2065,13 +2065,39 @@
     }
     var matchList = [];
     var searchFolded = false;   // the reader opened a match and folded the list away
-    function runSearch() {
+    var searchEdited = false;
+    function rememberSearch() {
+      if (!window.history || !window.history.replaceState) return;
+      var url = new URL(window.location.href), raw = (searchIn.value || '').trim();
+      if (raw) url.searchParams.set('q', raw); else url.searchParams.delete('q');
+      window.history.replaceState(Object.assign({}, window.history.state, { sf: searchFolded }), '', url.pathname + url.search + url.hash);
+    }
+    function restoreSearch(state, initial) {
+      if (!searchIn) return;
+      var edited = initial && searchEdited;
+      var raw = edited ? searchIn.value : new URLSearchParams(window.location.search).get('q') || '';
+      var folded = !edited && !!(state && state.sf);
+      searchIn.value = raw;
+      // Exact result and Lean identifiers need the parts index, including on a
+      // direct visit to a saved search before the idle loader has run.
+      (raw ? loadParts() : Promise.resolve()).then(function () {
+        if (searchIn.value !== raw) return;
+        return runSearch(!edited).then(function () {
+          if (searchIn.value !== raw) return;
+          foldResults(folded, true);
+          if (state && typeof state.y === 'number') pendingY = state.y;
+          restorePending();
+        });
+      }).catch(function () {});
+    }
+    function runSearch(restoring) {
       // Pass the typed query to the site's search; only the map's matching is lower case.
       var raw = (searchIn.value || '').trim();
       var q = raw.toLowerCase();
       query = q;
       if (resultsEl) resultsEl.classList.remove('is-folded');
       searchFolded = false;
+      if (!restoring) rememberSearch();
       if (!q) {
         matches = null; matchFam = null; matchList = [];
         resultsEl.hidden = true; resultsEl.innerHTML = '';
@@ -2258,10 +2284,11 @@
       if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
       try { target.focus({ preventScroll: narrow() }); } catch (err) { target.focus(); }
     }
-    function foldResults(fold) {
+    function foldResults(fold, restoring) {
       if (!resultsEl || resultsEl.hidden) return;
       resultsEl.classList.toggle('is-folded', fold);
       searchFolded = !!fold;
+      if (!restoring) rememberSearch();
       draw();
       var b = resultsEl.querySelector('[data-u-unfold]');
       if (fold && !b) {
@@ -2326,7 +2353,7 @@
     if (searchIn) {
       var t = 0;
       searchIn.addEventListener('focus', function () { if (D && !window.AtlasSearch) loadSearch().catch(function () {}); });
-      searchIn.addEventListener('input', function () { clearTimeout(t); t = setTimeout(runSearch, 120); });
+      searchIn.addEventListener('input', function () { searchEdited = true; clearTimeout(t); t = setTimeout(runSearch, 120); });
       searchIn.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
           e.preventDefault();
@@ -2375,12 +2402,13 @@
       if (e.state && (e.state.v === 'map' || e.state.v === 'list')) showView(e.state.v, true);
       if (key !== sel) { trail = []; pendingY = y; select(key, { fromHistory: true }); }
       else if (y != null) { pendingY = y; }
+      restoreSearch(e.state);
       restorePending();
     });
     // Leaving for a paper or a family page, the address's entry keeps the list's place,
     // so coming back finds it.
     window.addEventListener('pagehide', function () {
-      try { window.history.replaceState({ o: sel, y: scrollPos(), v: root.getAttribute('data-view') }, ''); } catch (e) { /* nothing to keep */ }
+      try { window.history.replaceState({ o: sel, y: scrollPos(), v: root.getAttribute('data-view'), sf: searchFolded }, ''); } catch (e) { /* nothing to keep */ }
     });
     function readHash() {
       var hash = window.location.hash || '';
@@ -2458,6 +2486,7 @@
         root.classList.add('is-ready');
         resize();
         chartTo(false);
+        restoreSearch(kept, true);
         window.__universe = {
           select: function (key) { select(key, { trail: true }); },
           state: function () { return { sel: sel, level: chart.level, W: W, H: H, trail: trail.length, moving: !!chart.start }; },
