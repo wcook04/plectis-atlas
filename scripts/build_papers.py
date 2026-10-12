@@ -76,7 +76,7 @@ sys.setrecursionlimit(20000)
 TXT = {
     "kicker": "Reading view",
     "numbering": "Numbering computed from the TeX source; the PDF is the reference.",
-    "converted": "This page is converted from the paper's TeX source at commit {commit}.",
+    "converted": "This page is converted from the paper’s TeX source at commit {commit}.",
     "figures_one": "One figure is shown as a placeholder; see the PDF for it.",
     "figures_many": "{n} figures are shown as placeholders; see the PDF for them.",
     "partial_h": "This reading view is incomplete",
@@ -102,7 +102,15 @@ TXT = {
     "fig_tikz": "Figure drawn in TikZ; see the PDF",
     "fig_image": "Figure image; see the PDF",
     "fig_other": "Figure not reproduced here; see the PDF",
-    "lean_pair": "Candidate Lean statement, chosen automatically by word overlap and not reviewed:",
+    "lean_k": "Lean.",
+    "lean_how": {
+        "candidate-pairing": "{lean} is paired with this theorem as a candidate, found by the words the two share; nobody has reviewed the pairing.",
+        "producer-cited-association": "The source of {lean} cites this theorem by its label; nobody has reviewed whether the two state the same thing.",
+        "producer-declared-binding": "The release binds {lean} to this theorem; nobody has reviewed whether the two state the same thing.",
+    },
+    "family_n": "family {n}",
+    "headline_note": "Of the papers’ main statements, this one shares the most words with OpenAI’s description of {families}, so the atlas shows it as the candidate for the theorem that description names. Nobody has reviewed the choice.",
+    "lean_proof": "Its Lean proof, checked against the Lean statement only:",
     "lean_runs_n": "re-run and accepted by {n} groups outside OpenAI",
     "lean_runs_1": "re-run and accepted by one group outside OpenAI",
     "lean_runs_0": "not yet re-run outside OpenAI",
@@ -2634,10 +2642,11 @@ class Paper:
         style = spec["style"]
         self.thm_lines[lid] = env
         self.printed[(f, line)] = (strip_tags(ctx["name"]).strip(), num or None)
-        lean = lean_pairs().get((self.slug, f, line)) or []
-        if lean:
-            links = "; ".join(lean_evidence_html(sid) for sid in lean)
-            body += f'<p class="pr-lean">{esc_t(TXT["lean_pair"])} {links}.</p>'
+        mark = lean_pairs().get((self.slug, f, line))
+        if mark:
+            body += "".join(lean_evidence_html(x) for x in mark["lean"])
+            if mark["headline"]:
+                body += headline_note_html(mark["headline"])
         out.append(block(f'<div class="pr-thm pr-thm--{style}" id="{self.id_ph(ctx)}" data-env="{esc_a(env)}" '
                          f'data-src="{esc_a(f)}:{line}">{self.xa_ph(ctx)}{body}</div>'))
 
@@ -4351,40 +4360,35 @@ def check_formulas(slug: str, formulas, macros, leqno=False, fleqn=False):
 
 # ------------------------------------------------------------ one paper
 
-_LEAN_PAIRS = None
-
-
 def lean_pairs() -> dict:
-    """(manuscript id, file, line) -> Comparator challenges whose statement page pairs them
-    with that paper statement (scripts/build_site.py pair_statement: a word-overlap candidate,
-    never a review), so a reading page links back to the Lean statement."""
-    global _LEAN_PAIRS
-    if _LEAN_PAIRS is None:
-        import_site()
-        pairs = defaultdict(list)
-        for stmt in S.STATEMENTS:
-            ms, st, how = S.pair_statement(stmt)
-            if how == "candidate" and ms and st:
-                pairs[(ms["id"], st["file"], st["line"])].append(stmt["id"])
-        _LEAN_PAIRS = {k: sorted(v) for k, v in pairs.items()}
-    return _LEAN_PAIRS
-
-
-def lean_evidence_html(sid: str) -> str:
-    """A paired Lean statement and what has happened to it, in the Plectis inks: steel for
-    stated in Lean, brick for re-run and accepted by groups outside OpenAI."""
+    """(manuscript id, file, line) -> the backend's record at that statement: the Lean
+    statements paired with it, with the pairing state, and the families whose catalogue
+    claim names it as the candidate (build_site.paper_marks, from Statement Map's
+    reader packets; nothing is scored here)."""
     import_site()
-    st = S.ST.get(sid) or {}
-    runs = {v["source"] for v in S.sourced_all(st, "replay") if (v.get("value") or {}).get("verdict") == "accepted"}
-    holes = len((st.get("comparator") or {}).get("definition_names") or [])
-    bits = [TXT["lean_runs_n"].format(n=len(runs)) if len(runs) > 1 else
-            TXT["lean_runs_1"] if runs else TXT["lean_runs_0"]]
-    if holes:
-        bits.append(TXT["lean_holes_1"] if holes == 1 else TXT["lean_holes_n"].format(n=holes))
-    run_mark = '<span class="pr-ev pr-ev--run" aria-hidden="true"></span>' if runs else ""
-    return (f'<span class="pr-ev pr-ev--lean" aria-hidden="true"></span>{run_mark}'
-            f'<a href="../statements/{quote(sid)}.html"><code>{esc_t(sid)}</code></a> '
-            f'<span class="pr-lean__ev">({esc_t(", ".join(bits))})</span>')
+    return S.paper_marks()
+
+
+def lean_evidence_html(mark: dict) -> str:
+    """A margin note in words: which Lean statement is paired with this theorem, by what
+    evidence, and who outside OpenAI reports re-running it. No symbol needs a key."""
+    import_site()
+    lid = mark["id"][2:]
+    bits = [TXT["lean_runs_n"].format(n=S.say(mark["accepted"])) if mark["accepted"] > 1 else
+            TXT["lean_runs_1"] if mark["accepted"] == 1 else TXT["lean_runs_0"]]
+    if mark.get("holes"):
+        bits.append(TXT["lean_holes_1"] if mark["holes"] == 1 else TXT["lean_holes_n"].format(n=mark["holes"]))
+    link = f'<a href="../statements/{quote(lid)}.html"><code>{esc_t(lid)}</code></a>'
+    how = TXT["lean_how"][mark["state"]].replace("{lean}", "\x00")
+    return (f'<p class="pr-lean pr-lean--{"candidate" if mark["state"] == "candidate-pairing" else "cited"}">'
+            f'<span class="pr-lean__k">{esc_t(TXT["lean_k"])}</span> '
+            f'{esc_t(how).replace(chr(0), link)}<span class="pr-lean__ev">{esc_t(TXT["lean_proof"])} {esc_t("; ".join(bits))}.</span></p>')
+
+
+def headline_note_html(fids: list) -> str:
+    import_site()
+    links = ", ".join(f'<a href="../families/{quote(f[2:])}.html">{esc_t(TXT["family_n"].format(n=f[2:]))}</a>' for f in fids)
+    return (f'<p class="pr-head-note">{esc_t(TXT["headline_note"]).replace("{families}", links)}</p>')
 
 
 PAPER_SECONDS = int(os.environ.get("ATLAS_PAPER_SECONDS", "1800"))
@@ -4652,7 +4656,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
     if p.author_html:
         facts.append(f'<span class="pr-authors">{p.author_html}</span>')
     if m.get("date"):
-        facts.append(f'<span>{esc(m["date"])}</span>')
+        facts.append(f'<span>{esc(S.date_words(m["date"]))}</span>')
     actions = [S.pdf_button(m, "btn btn--primary"),
                f'<a class="btn btn--ghost ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" rel="noopener">{esc(TXT["tex_source"])}</a>']
     lede = ""
@@ -4710,7 +4714,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
 <header class="phead pr-head">
  <p class="phead__kicker">{esc(TXT['kicker'])}</p>
  <h1 class="phead__title">{S.ms_title_html(m)}</h1>
- <p class="phead__facts pr-facts">{' <span aria-hidden="true">·</span> '.join(facts)}</p>
+ <p class="phead__facts pr-facts">{', '.join(facts)}</p>
  <p class="actions">{''.join(actions)}</p>
 </header>
 {lede}

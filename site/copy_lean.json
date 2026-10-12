@@ -81,5 +81,75 @@
   "card_mathlib": "Mathlib documentation (current)",
   "card_oai": "OpenAI’s library at {commit}",
   "card_library": "The same declaration in OpenAI’s library at {commit}"
+ },
+ "and": "and",
+ "statement_kind": "Statement",
+ "page": {
+  "kicker": "Lean statement",
+  "in_family": "In family {id}: {name}.",
+  "also_in": "Also listed under {families}.",
+  "lean_heading": "The Lean statement",
+  "formal_heading": "Formal status: who has re-run it",
+  "readings_heading": "What outside readers found about family {id}’s headline",
+  "readings_intro": "These readings judge the family’s Lean statements against its headline as a whole, not this statement alone, each by the reader’s own published rules.",
+  "readings_link": "The readings in full are on the family page.",
+  "draft_heading": "OpenAI’s note, and an AI draft reading of it",
+  "alternatives_heading": "Statements that share the most words with it",
+  "alternatives_more": "Other statements that share words with it",
+  "alternatives_none": "The backend records no other statement for it.",
+  "read_in_paper": "Read the theorem in the paper",
+  "pair_heading": {
+   "candidate-pairing": "Candidate paper theorem: matched by shared words, not reviewed",
+   "producer-cited-association": "Paper theorem cited in the Lean source, match not reviewed",
+   "producer-declared-binding": "Paper theorem bound to it by the release, match not reviewed",
+   "unavailable": "No paper theorem is paired with it"
+  },
+  "read_runs": "Who has re-run it",
+  "report_check": "Report a check (GitHub issue)",
+  "read_candidates": "See the statements that share its words"
+ },
+ "pairing": {
+  "ref": "{name} of {title}",
+  "shared": "The two share {n} words, among them {words}.",
+  "alt_shared": "Shares {n} words with it, among them {words}.",
+  "cited_how": "The docstring of {declaration} names the theorem’s TeX label.",
+  "cited_link": "The docstring, from line {line}",
+  "join_label": "How the paper theorem and the Lean statement are linked",
+  "assoc_unresolved": "The Lean source cites labels that do not resolve to a single theorem, so no theorem is paired.",
+  "no_record": "The backend records no candidate theorem for this Lean statement.",
+  "reason": "Why none: {reason}",
+  "shared_all": "The two share {n} words: {words}.",
+  "alt_shared_all": "Shares {n} words with it: {words}.",
+  "shared_none": "The two share {n} words.",
+  "alt_shared_none": "Shares {n} words with it."
+ },
+ "runs": {
+  "state": {
+   "reported-accepted": "accepted",
+   "reported-undecided": "no verdict reached",
+   "reported-built": "built; Comparator not run",
+   "reported-rejected": "rejected"
+  },
+  "pin_current": "at the release’s pinned commit",
+  "pin_other": "at commit {pin}, not the release’s pin",
+  "undated": "undated",
+  "when": "Reported {when}, {pin}.",
+  "receipt": "Their record",
+  "method": "How they ran it, in their words",
+  "reported": "Each group below reports its own run; the atlas has not re-run it.",
+  "none_recorded": "No outside group reports a run of this Lean statement.",
+  "scope": "A re-run checks OpenAI’s proof against this Lean statement. It says nothing about whether the Lean statement matches the paper.",
+  "their_term": "Their term: “{term}”."
+ },
+ "readings": {
+  "note": "Their note:",
+  "defs": "Definitions they ask a reader to check:",
+  "record": "Their record",
+  "gloss": "In plain words, the reader {gloss}."
+ },
+ "card": {
+  "family": "Family {id}:",
+  "reruns_one": "Re-run and accepted by one outside group at the release’s pin.",
+  "reruns_many": "Re-run and accepted by {n} outside groups at the release’s pin."
  }
 }

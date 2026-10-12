@@ -27,6 +27,8 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from urllib.parse import quote, urlencode
 
+import evidence
+
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 SITE = ROOT / "site"
@@ -42,6 +44,7 @@ def load(name):
 
 CFG = json.loads((SITE / "config.json").read_text(encoding="utf-8"))
 COPY = json.loads((SITE / "copy.json").read_text(encoding="utf-8"))
+COPY_LEAN = json.loads((SITE / "copy_lean.json").read_text(encoding="utf-8"))
 SUMMARY = load("summary.json")
 DISCIPLINES = load("disciplines.json")
 FAMILIES = load("families.json")
@@ -230,10 +233,21 @@ def rich(s: str, base_dir: str = "", root: str = "", link_results: bool = False)
             out.append(m.group(0))
         pos = m.end()
     out.append(_esc_keep_entities(s[pos:]))
-    res = "".join(out)
+    res = text_dashes("".join(out))
     if link_results:
         res = re.sub(r"\b(results?) (\d{3})\b", lambda m: (f'{m.group(1)} <a href="{root}families/{m.group(2)}.html">{m.group(2)}</a>' if m.group(2) in FAM else m.group(0)), res)
     return res
+
+
+_MATH_SPAN = re.compile(r"(<[^>]*>|\\\(.*?\\\)|\\\[.*?\\\]|\$\$.*?\$\$|(?<!\\)\$.*?(?<!\\)\$)", re.S)
+
+
+def text_dashes(h: str) -> str:
+    """TeX's text-mode ligatures outside maths: --- an em dash, -- an en dash, as the
+    release's TeX means them (Kerr--Newman is Kerr–Newman). Maths is left for KaTeX,
+    where -- is two minus signs."""
+    parts = _MATH_SPAN.split(h)
+    return "".join(p if i % 2 else p.replace("---", "\u2014").replace("--", "\u2013") for i, p in enumerate(parts))
 
 
 def _esc_keep_entities(t: str) -> str:
@@ -654,6 +668,11 @@ class TexConv:
             return j
         if bare in SYMBOL:
             out.append(SYMBOL[bare])
+            if bare.isalpha():
+                # TeX ends a control word at the first non-letter and drops the spaces after it:
+                # R\o rdam is Rørdam, and \ldots and is "…and".
+                while j < n and s[j] in " \t":
+                    j += 1
             return j
         key = "\\" + bare
         if key in self.macros or bare in GREEK or bare in PLAIN_SYM:
@@ -1229,6 +1248,23 @@ def fam_has_main(f):
     return any(ST[s]["main_result"] for s in f["statements"] if s in ST)
 
 
+def RD():
+    """Statement Map's reader packets, checked against the export (scripts/reader.py).
+    The backend decides every semantic question; the pages render its decisions."""
+    import reader
+    return reader.load()
+
+
+SEARCH_TEXT_KEYS = ("family", "in-paper", "in-family", "discipline-n", "found", "missing-one", "missing-many",
+                    "apart", "failed", "more", "truncated", "kind-family", "kind-lean", "kind-manuscript",
+                    "kind-statement", "kind-discipline")
+
+
+def search_data_attrs() -> str:
+    """The search dialog's words, for the script that fills it (site/copy.json "search")."""
+    return "".join(f' data-{k}="{esc(C("search.js." + k))}"' for k in SEARCH_TEXT_KEYS)
+
+
 def backend_target(alias: str) -> dict | None:
     """Statement Map's contribution target for a reader id ("f:159", "l:ErdosReciprocal"):
     the exact content a contribution concerns, with a fingerprint of its text."""
@@ -1320,7 +1356,7 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 <link rel="preload" href="{root}assets/fonts/plectis-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{root}{KATEX_DIR}/katex.min.css">
 <link rel="stylesheet" href="{root}assets/atlas.css">
-<script>(function(){{try{{var t=localStorage.getItem('atlas-theme');if(t==='dark'||t==='light')document.documentElement.setAttribute('data-theme',t);}}catch(e){{}}}})();</script>
+<script>(function(){{var d=document.documentElement;d.classList.add('js');try{{var t=localStorage.getItem('atlas-theme');if(t==='dark'||t==='light')d.setAttribute('data-theme',t);}}catch(e){{}}}})();</script>
 <script defer src="{root}{KATEX_DIR}/katex.min.js"></script>
 <script defer src="{root}{KATEX_DIR}/contrib/auto-render.min.js"></script>
 <script defer src="{root}assets/atlas.js"></script>
@@ -1341,25 +1377,32 @@ def header(rel: str, current: str | None) -> str:
     for href, key in NAV:
         cur = ' aria-current="page"' if key == current else ""
         links.append(f'<a href="{root}{href}"{cur}>{esc(C("nav." + key))}</a>')
-    return f"""<body data-root="{root}" data-copied="{esc(C('words.copied'))}" data-copy-failed="{esc(C('words.copy_failed'))}" data-tex-failed="{esc(C('words.tex_failed'))}">
+    return f"""<body data-root="{root}" data-generation="{esc(RD().generation)}" data-copied="{esc(C('words.copied'))}" data-copy-failed="{esc(C('words.copy_failed'))}" data-tex-failed="{esc(C('words.tex_failed'))}">
 <a class="skip" href="#main">{esc(C('site.skip'))}</a>
 <header class="top">
  <div class="frame top__in">
   <a class="brand" href="{root}index.html" aria-label="{esc(C('nav.brand_label'))}">{MARK_SVG}<span class="brand__name" translate="no">{esc(C('site.name'))}</span></a>
-  <nav class="nav" aria-label="{esc(C('nav.site_nav'))}">{''.join(links)}</nav>
+  <nav class="nav" id="site-nav" aria-label="{esc(C('nav.site_nav'))}">{''.join(links)}</nav>
   <div class="top__tools">
-   <button class="search-open" type="button" aria-haspopup="dialog" aria-controls="search-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg><span class="search-open__label">{esc(C('nav.search'))}</span><kbd>/</kbd></button>
+   <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg><span>{esc(C('nav.menu'))}</span></button>
+   <a class="search-open" href="{root}explain.html" aria-haspopup="dialog" aria-controls="search-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg><span class="search-open__label">{esc(C('nav.search'))}</span><kbd aria-hidden="true">/</kbd></a>
    <button class="theme-toggle" type="button" data-label-dark="{esc(C('nav.theme_dark'))}" data-label-light="{esc(C('nav.theme_light'))}" aria-label="{esc(C('nav.theme_dark'))}"><span class="theme-toggle__thumb" aria-hidden="true"></span></button>
   </div>
  </div>
 </header>
-<dialog class="search" id="search-dialog" aria-label="{esc(C('nav.search'))}">
- <form method="dialog" class="search__form" role="search">
-  <input class="search__input" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(C('nav.search_placeholder'))}" aria-label="{esc(C('nav.search_placeholder'))}" role="combobox" aria-expanded="true" aria-controls="search-results" aria-autocomplete="list">
+<dialog class="search" id="search-dialog" aria-labelledby="search-title"{search_data_attrs()}>
+ <form class="search__form" role="search">
+  <label class="search__label" id="search-title" for="search-q">{esc(C('search.title'))}</label>
+  <div class="search__bar">
+   <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg>
+   <input class="search__input" id="search-q" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(C('search.placeholder'))}" role="combobox" aria-expanded="true" aria-controls="search-results" aria-autocomplete="list" aria-describedby="search-help">
+   <button class="search__close" type="button">{esc(C('search.close'))}</button>
+  </div>
+  <p class="search__help" id="search-help">{esc(C('search.help'))}</p>
  </form>
- <ul class="search__results" id="search-results" role="listbox" aria-label="{esc(C('nav.search'))}"></ul>
- <p class="search__empty" hidden>{esc(C('nav.search_empty'))}</p>
- <p class="search__failed" hidden>{esc(C('nav.search_failed'))} <a href="{root}index.html#catalogue">{esc(C('nav.search_failed_link'))}</a></p>
+ <p class="search__status" role="status" aria-live="polite"></p>
+ <div class="search__results" id="search-results" role="listbox" aria-label="{esc(C('search.results_label'))}"></div>
+ <p class="search__keys">{C('search.keys')}</p>
 </dialog>"""
 
 
@@ -1413,7 +1456,7 @@ def trail(root, items):
             parts.append(f'<a href="{href}">{label}</a>')
         else:
             parts.append(f'<span aria-current="page">{label}</span>')
-    return '<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '">' + '<span class="trail__sep" aria-hidden="true">/</span>'.join(parts) + "</nav>"
+    return '<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '">' + '<span class="trail__sep" aria-hidden="true">\u2060/</span>'.join(parts) + "</nav>"
 
 
 def json_script(id_, obj):
@@ -1442,8 +1485,26 @@ def pdf_button(m, cls="btn btn--ghost"):
 # --------------------------------------------------------- statements in TeX
 
 
+# A drawing in a statement's TeX (TikZ, xy, picture) is not typeset in the browser; the
+# statement says where it is instead. scripts/family_page.py can import these.
+DIAGRAM = re.compile(r"\\begin\{(tikzpicture|tikzcd|xy|picture)\}.*?\\end\{\1\}", re.S)
+_DIAGRAM_MARK = "ZZATLASDIAGRAMZZ"
+
+
+def statement_blocks(conv: TexConv, text: str, href: str | None = None) -> str:
+    """A statement's TeX as HTML, with each diagram replaced by one line that says the
+    diagram is drawn in the paper (linked to the passage when there is a reading page)."""
+    body = conv.blocks(DIAGRAM.sub(f" {_DIAGRAM_MARK} ", text or ""))
+    if _DIAGRAM_MARK not in body:
+        return body
+    note = (C("words.diagram_link", href=esc(href)) if href else esc(C("words.diagram")))
+    body = re.sub(r'<div class="m-d">\s*<span class="m"[^>]*>\s*' + _DIAGRAM_MARK + r'\s*</span>\s*</div>|<span class="m"[^>]*>\s*'
+                  + _DIAGRAM_MARK + r'\s*</span>', _DIAGRAM_MARK, body)
+    return re.sub(r"(?:<p>)?\s*" + _DIAGRAM_MARK + r"\s*(?:</p>)?", f'<span class="stmt__diagram">{note}</span>', body)
+
+
 def render_paper_statement(m, st, root, conv: TexConv, anchor_prefix="st"):
-    body = conv.blocks(st["text"])
+    body = statement_blocks(conv, st["text"], paper_statement_href(m["id"], st, root))
     title = f' <span class="stmt__title">({conv.text(st["title"], inline=True)})</span>' if st.get("title") else ""
     src_url = f'{BASE_BLOB}preprints/{m["id"]}/{st["file"]}#L{st["line"]}'
     loc_sec = C("words.appendix") if st.get("appendix") else C("words.section", n=st["section"])
@@ -2915,19 +2976,22 @@ def review_records(sid):
     return review, replay
 
 
-def receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pairing, *, standalone=False):
+def receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pinfo, lrec, *, standalone=False):
+    """The shareable comparison card: the paired paper theorem beside the Lean statement,
+    with the pairing state and the re-run record from the backend."""
     fam = FAM.get(stmt["families"][0]) if stmt.get("families") else None
     label = (stmt.get("labels") or [stmt["id"]])[0]
     vtext = vocab_text(stmt)
+    state = pinfo["state"]
     if paper_st:
         kind = esc(paper_st["display"]) + (f' <span class="rc__sttitle">({conv.text(paper_st["title"], inline=True)})</span>' if paper_st.get("title") else "")
-        paper_body = conv.blocks(paper_st["text"])
+        paper_body = statement_blocks(conv, paper_st["text"])
         loc = C("statement.card_locator", label=paper_st["label"], file=paper_st["file"], line=paper_st["line"]) if paper_st.get("label") else C("statement.card_locator_nolabel", file=paper_st["file"], line=paper_st["line"])
         paper_src = f'<p class="rc__src"><span class="tex-auto">{rich(paper_ms["title"])}</span></p><p class="rc__loc">{esc(loc)}</p>'
-        paper_label = C("statement.card_paper_candidate")
+        paper_label = cap(evidence.say("pairing_short." + state))
     else:
         kind = ""
-        paper_body = f'<p class="rc__none">{esc(C("statement.card_paper_abstain_" + pairing))}</p>'
+        paper_body = f'<p class="rc__none">{esc(pinfo.get("reason") or evidence.say("pairing.unavailable"))}</p>'
         paper_src = ""
         paper_label = C("statement.card_paper_none")
     snippet = lean_snippet_html(stmt, lines_html, max_lines=18)
@@ -2938,22 +3002,22 @@ def receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pai
     if hl:
         hole_note = C("statement.card_holes_one", name=hl[0].split(".")[-1]) if len(hl) == 1 else C("statement.card_holes_many", n=len(hl), name=hl[0].split(".")[-1])
         hole_note = f'<p class="rc__note rc__note--hole">{ctext(hole_note)}</p>'
-    review, replay = review_records(stmt["id"])
-    cls = cover_class(stmt["id"])
-    scope_line = C("statement.card_scope_stale") if COVER_STALE else C("statement.card_scope", label=cover_label(cls))
+    review, _replay = review_records(stmt["id"])
+    acc = len((lrec or {}).get("accepted_current_sources") or [])
+    reruns = (evidence.say("reruns.none") if not acc else LW("card.reruns_one") if acc == 1 else LW("card.reruns_many", n=say(acc)))
     shown_url = page_url.replace("https://", "")
     return f"""<div class="rc-wrap{' rc-wrap--solo' if standalone else ''}"><article class="rc" data-macros="{esc(paper_ms['id']) if paper_ms else ''}" aria-label="{esc(C('statement.card_heading'))}">
  <header class="rc__head">
   <p class="rc__brand">{MARK_SVG}<span translate="no">{esc(C('site.name'))}</span></p>
   <h2 class="rc__title md-math">{esc(label)}</h2>
-  <p class="rc__fam">{esc(C('words.result').capitalize())} {esc(fam['id'] if fam else '')}: <span class="tex-auto">{rich(fam['title']) if fam else ''}</span></p>
+  <p class="rc__fam">{esc(LW('card.family', id=fam['id'] if fam else ''))} <span class="tex-auto">{rich(fam['title']) if fam else ''}</span></p>
  </header>
  <div class="rc__cols">
   <section class="rc__paper"><p class="rc__label">{esc(paper_label)}</p><p class="rc__kind">{kind}</p><div class="rc__fit"><div class="rc__body">{paper_body}</div></div>{paper_src}</section>
   <section class="rc__lean"><p class="rc__label">{esc(C('statement.card_lean'))}</p><div class="rc__fit"><pre class="lean lean--card"><code>{snippet}</code></pre></div><p class="rc__note">{ctext(note)}</p>{hole_note}</section>
  </div>
  <footer class="rc__foot">
-  <p class="rc__status"><span class="rc__fact">{esc(scope_line)}</span><span class="rc__fact"><strong>{esc(review)}</strong></span><span class="rc__fact"><strong>{esc(replay)}</strong></span></p>
+  <p class="rc__status"><span class="rc__fact">{esc(evidence.say('pairing.' + state))}</span><span class="rc__fact"><strong>{esc(reruns)}</strong></span><span class="rc__fact"><strong>{esc(review)}</strong></span></p>
   <p class="rc__facts"><span class="rc__fact">{esc(vtext)}</span><span class="rc__fact">{esc(C('statement.card_axioms', axioms=axioms))}</span><span class="rc__fact">{esc(C('statement.card_commit', commit_short=COMMIT_SHORT))}</span><span class="rc__url">{esc(shown_url)}</span></p>
  </footer>
 </article></div>"""
@@ -3067,6 +3131,321 @@ def comparator_box_html(stmt):
             f'<p>{ctext(C("statement.comparator_box_not"))}</p></div>')
 
 
+# --------------------------------------------- Lean pages: the backend's decisions
+#
+# Statement Map (scripts/reader.py) decides which paper theorem a Lean statement is
+# paired with, by what evidence, who re-ran it and what each outside reader found.
+# These helpers only find that record and say it in words.
+
+PAIRED_STATES = ("candidate-pairing", "producer-cited-association", "producer-declared-binding")
+
+
+def cap(s: str) -> str:
+    """Capitalise the first letter only ("cited in the Lean source")."""
+    return s[:1].upper() + s[1:]
+
+
+def prose_credit(name: str) -> str:
+    """A credited name as prose says it: "Carlos Toledo, cert-machine" is
+    "Carlos Toledo’s cert-machine"; "MathVet" stays "MathVet"."""
+    return "’s ".join(name.split(", ", 1)) if ", " in name else name
+
+
+def LW(key: str, **kw) -> str:
+    """A string from site/copy_lean.json by dotted key (the Lean page's own words)."""
+    node = COPY_LEAN
+    for part in key.split("."):
+        node = node[part]
+    return node.format(**kw) if kw else node
+
+
+def lean_family_doc(lid: str):
+    """(family id, family reader packet, the Lean record in it) for a Lean statement,
+    from the first family the backend lists it under."""
+    r = RD()
+    summ = r.lean_summary(lid)
+    if not summ or not summ.get("family_ids"):
+        return None, None, None
+    fid = summ["family_ids"][0]
+    doc = r.family(fid)
+    rec = next((l for l in doc.get("lean") or [] if l["id"] == ("l:" + lid if not lid.startswith("l:") else lid)), None)
+    return fid, doc, rec
+
+
+def lean_pairing(doc: dict, lid: str) -> dict:
+    """The backend's pairing for one Lean statement of a family, as recorded:
+
+    1. the family's selection, when it names this Lean statement;
+    2. otherwise a producer-cited or producer-declared correspondence for it, when the
+       backend records exactly one target;
+    3. otherwise a source association the backend resolved to one local statement
+       (WEB.md: a uniquely cited local target takes precedence over a lexical candidate;
+       several or unresolved targets abstain);
+    4. otherwise the lexical pairing selection, with its abstention reason.
+
+    Returns {state, target, reason, alternatives, method, association, record}. Nothing
+    here scores or compares statements; every field is the backend's."""
+    lid = lid if lid.startswith("l:") else "l:" + lid
+    sel = doc.get("selection") or {}
+    ps = next((p for p in doc.get("pairing_selections") or [] if p.get("source") == lid), None)
+    alts = list((ps or {}).get("alternatives") or [])
+    assoc = [a for a in doc.get("source_associations") or [] if a.get("source_id") == lid]
+    out = {"state": "unavailable", "target": None, "reason": None, "alternatives": alts,
+           "method": (ps or {}).get("method"), "association": assoc[0] if len(assoc) == 1 else None, "record": ps}
+    if sel.get("lean") == lid:
+        out.update(state=sel.get("pairing_state") or "unavailable", target=sel.get("paired_statement"))
+        if out["state"] == "unavailable":
+            out["reason"] = (ps or {}).get("abstention_reason")
+        return out
+    strong = {(c["state"], c.get("target")) for c in doc.get("correspondences") or []
+              if c.get("source") == lid and c.get("state") in ("producer-cited-association", "producer-declared-binding")}
+    if len(strong) == 1:
+        st, tg = next(iter(strong))
+        out.update(state=st, target=tg)
+        return out
+    if assoc:
+        targets = {t for a in assoc for t in (a.get("local_statement_ids") or [])}
+        if all(a.get("state") == "unique" for a in assoc) and len(targets) == 1:
+            out.update(state="producer-cited-association", target=next(iter(targets)))
+        else:
+            out["reason"] = LW("pairing.assoc_unresolved")
+        return out
+    if ps and ps.get("status") == "candidate" and ps.get("target"):
+        out.update(state="candidate-pairing", target=ps["target"])
+    elif ps:
+        out["reason"] = ps.get("abstention_reason")
+    return out
+
+
+def backend_statement(doc: dict, stmt_id: str) -> dict | None:
+    return next((s for s in doc.get("statements") or [] if s.get("id") == stmt_id), None)
+
+
+def ms_statement(doc: dict, stmt_id: str):
+    """(manuscript, statement in data/manuscripts.json, backend statement record) for a
+    backend statement id, joined by manuscript and label, else file and line; the
+    printed TeX lives in the Atlas's own extraction."""
+    rec = backend_statement(doc, stmt_id) if doc else None
+    if not stmt_id or not stmt_id.startswith("r:"):
+        return None, None, rec
+    slug, _, anchor = stmt_id[2:].partition(":")
+    m = MS.get(slug)
+    if not m:
+        return None, None, rec
+    st = None
+    if not anchor.startswith("L-"):
+        label = anchor.split("@", 1)[0]
+        cands = [s for s in m["statements"] if s.get("label") == label]
+        if len(cands) > 1 and rec and rec.get("source"):
+            line = rec["source"].get("line")
+            cands = [s for s in cands if s.get("line") == line] or cands
+        st = cands[0] if cands else None
+    if st is None and rec and rec.get("source"):
+        f = (rec["source"].get("file") or "").split(f"preprints/{slug}/", 1)[-1]
+        st = next((s for s in m["statements"] if s.get("file") == f and s.get("line") == rec["source"].get("line")), None)
+    return m, st, rec
+
+
+def backend_printed(rec: dict | None, st: dict | None = None) -> str:
+    """'Theorem 1.1', or the kind with its numbering state; never a section number."""
+    kind = (rec or {}).get("display") or (st or {}).get("display") or LW("statement_kind")
+    status = (rec or {}).get("printed_number_status")
+    if status == "recorded" and rec.get("printed_number"):
+        return f"{kind} {rec['printed_number']}"
+    return f"{kind} ({C('family.num_' + ('unnumbered' if status == 'unnumbered' else 'unavailable'))})"
+
+
+def statement_ref_html(doc, stmt_id, root) -> str:
+    """'Theorem 1.1 of <paper title>', linked to its place on the paper's reading page."""
+    m, st, rec = ms_statement(doc, stmt_id)
+    name = backend_printed(rec, st)
+    href = (root + rec["reading_page"]) if rec and rec.get("reading_page") else (f"{root}papers/{quote(m['id'])}.html" if m else None)
+    title = ms_title_html(m) if m else esc(stmt_id)
+    link = f'<a href="{esc(href)}">{esc(name)}</a>' if href else esc(name)
+    return LW("pairing.ref", name="\x00", title="\x01").replace("\x00", link).replace("\x01", f'<span class="tex-auto">{title}</span>')
+
+
+def join_html(doc, pinfo, root) -> str:
+    """The words at the join between the paper theorem and the Lean statement: what
+    links them, by what evidence, and that nobody has reviewed the match."""
+    state = pinfo["state"]
+    cls = {"candidate-pairing": "join--candidate", "producer-cited-association": "join--cited",
+           "producer-declared-binding": "join--cited"}.get(state, "join--none")
+    parts = [] if state in PAIRED_STATES else [f'<p class="join__words">{esc(evidence.say("pairing." + state))}</p>']
+    if state == "candidate-pairing":
+        alt = next((a for a in pinfo["alternatives"] if a.get("target") == pinfo["target"]), None)
+        terms = (alt or {}).get("matched_terms") or []
+        n = (alt or {}).get("shared_words") or len(terms)
+        if terms:
+            parts.append(f'<p class="join__how">{esc(shared_words_sentence("pairing.shared", n, terms, 8))}</p>')
+    elif state == "producer-cited-association" and pinfo.get("association"):
+        a = pinfo["association"]
+        src = a.get("source") or {}
+        url = f'https://github.com/openai/math/blob/{src.get("pin") or COMMIT}/{src.get("file")}#L{src.get("start_line")}-L{src.get("end_line")}'
+        parts.append(f'<p class="join__how">{esc(LW("pairing.cited_how", declaration=a.get("declaration") or ""))} '
+                     f'<a class="ext" href="{esc(url)}" rel="noopener">{esc(LW("pairing.cited_link", line=src.get("start_line")))}</a></p>'
+                     f'<pre class="lean lean--quote"><code>{esc(src.get("quote") or "")}</code></pre>')
+    if not parts:
+        return ""
+    return f'<div class="join {cls}" role="note" aria-label="{esc(LW("pairing.join_label"))}">{"".join(parts)}</div>'
+
+
+def shared_words_sentence(key: str, n: int, terms: list, show: int) -> str:
+    """'The two share nine words, among them a, b and c.' or, when every word is listed,
+    'The two share three words: a, b and c.'"""
+    shown = terms[:show]
+    if not shown:
+        return LW(key.replace("shared", "shared_none"), n=say(n))
+    words = ", ".join(shown[:-1]) + (" " + LW("and") + " " if len(shown) > 1 else "") + shown[-1]
+    return LW(key + ("_all" if len(shown) >= n else ""), n=say(n), words=words)
+
+
+def alternatives_html(doc, pinfo, root, limit=4) -> str:
+    """The statements that share the most words with the Lean statement, with the
+    reason each was listed, as the backend recorded them."""
+    rows = [a for a in pinfo["alternatives"] if a.get("target") and a.get("target") != pinfo["target"]][:limit]
+    if not rows:
+        return ""
+    items = []
+    for a in rows:
+        terms = a.get("matched_terms") or []
+        items.append(f'<li>{statement_ref_html(doc, a["target"], root)}. '
+                     f'<span class="muted">{esc(shared_words_sentence("pairing.alt_shared", a.get("shared_words") or len(terms), terms, 6))}</span></li>')
+    return "".join(items)
+
+
+def run_state_words(run) -> str:
+    return LW("runs.state." + run.get("state", "unknown")) if run.get("state") in COPY_LEAN["runs"]["state"] else run.get("state", "")
+
+
+def lean_runs_html(rec, root) -> str:
+    """Re-runs reported by outside groups, grouped by source as the backend groups them,
+    each in the group's own term, dated, with its receipt."""
+    runs = {x["id"]: x for x in rec.get("runs") or []}
+    names = {}
+    for x in runs.values():
+        names.setdefault(x["source"], prose_credit((x.get("credit") or {}).get("name") or x["source"]))
+    acc = [names.get(s, s) for s in rec.get("accepted_current_sources") or []]
+    lead = (evidence.say("reruns.none") if not acc else evidence.say("reruns.one", names=acc[0]) if len(acc) == 1
+            else evidence.say("reruns.many", n=say(len(acc)), names=", ".join(acc[:-1]) + " " + LW("and") + " " + acc[-1]))
+    groups = []
+    for g in rec.get("run_groups") or []:
+        rows = [runs[i] for i in g.get("run_ids") or [] if i in runs]
+        if not rows:
+            continue
+        credit = rows[0].get("credit") or {}
+        who = f'<a class="ext" href="{esc(credit["url"])}" rel="noopener">{esc(names[g["source"]])}</a>' if credit.get("url") else esc(names[g["source"]])
+        lis = []
+        for x in rows:
+            sv = x.get("source_value") or {}
+            pin = LW("runs.pin_current") if x.get("pin_state") == "current" else LW("runs.pin_other", pin=str(x.get("pin") or "")[:7])
+            when = date_words(x["date"]) if x.get("date") else LW("runs.undated")
+            receipt = f' <a class="ext" href="{esc(x["receipt"])}" rel="noopener">{esc(LW("runs.receipt"))}</a>' if x.get("receipt") else ""
+            lis.append(f'<li><p><span class="run__state">{esc(cap(run_state_words(x)))}</span> '
+                       f'<span class="run__term">{esc(LW("runs.their_term", term=x.get("source_term") or ""))}</span></p>'
+                       f'<p>{esc(curly(sv.get("text") or ""))}</p>'
+                       f'<p class="small muted">{esc(LW("runs.when", when=when, pin=pin))}{receipt}</p></li>')
+        method = (credit.get("method") or "").strip()
+        if method and method[-1] not in ".!?)":
+            method += "…"   # the source record stops mid-sentence; say so rather than end abruptly
+        method_html = (f'<details class="run__method"><summary>{esc(LW("runs.method"))}</summary><p class="small">{esc(curly(method))}</p></details>'
+                       if method else "")
+        groups.append(f'<div class="run"><h3 class="h3">{who}</h3>{method_html}<ul class="run__list">{"".join(lis)}</ul></div>')
+    body = "".join(groups) or f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
+    return (f'<p class="lead-sentence">{esc(curly(lead))} {esc(LW("runs.reported"))}</p>'
+            f'<p class="runs__scope">{esc(LW("runs.scope"))}</p>{body}')
+
+
+def family_readings_html(fid, doc, root) -> str:
+    """What the outside readers found about the family's headline, each in their own term,
+    their note under it and their method linked. Family-level, and labelled so."""
+    import evidence as _ev
+    ev = _ev.family_evidence(RD(), fid)
+    readings = doc.get("readings") or []
+    if not readings:
+        return f'<p class="muted">{esc(ev.agreement_sentence())}</p>'
+    by = {r_["source"]: r_ for r_ in readings}
+    order = _ev.reader_order(set(by))
+    items = []
+    for src in order:
+        rd = by.get(src)
+        if not rd:
+            continue
+        cr = rd.get("credit") or {}
+        sv = rd.get("source_value") or {}
+        nm = prose_credit(cr.get("name") or src)
+        name = f'<a class="ext" href="{esc(cr["url"])}" rel="noopener">{esc(nm)}</a>' if cr.get("url") else esc(nm)
+        tone = _ev.TONE.get(rd.get("state"), "none")
+        note = sv.get("note") or sv.get("gap") or ""
+        note_html = f'<p class="reading__note">{esc(LW("readings.note"))} {ctext(note)}</p>' if note and note.strip().rstrip(".").lower() != "none" else ""
+        defs = sv.get("definitions_to_check")
+        defs_html = f'<p class="reading__note">{esc(LW("readings.defs"))} {ctext(defs)}</p>' if defs else ""
+        rec = f' <a class="ext small" href="{esc(sv["url"])}" rel="noopener">{esc(LW("readings.record"))}</a>' if sv.get("url") else ""
+        items.append(f'<li class="reading"><p class="reading__who">{name}</p>'
+                     f'<p class="reading__term"><span class="reading__gloss">{esc(cap(_ev.say("tone." + tone)))}</span> '
+                     f'<span class="run__term">{esc(LW("runs.their_term", term=rd.get("source_term") or ""))}</span></p>'
+                     f'<p>{esc(curly(sv.get("text") or ""))}{rec}</p>{note_html}{defs_html}</li>')
+    return (f'<p class="lead-sentence">{esc(ev.agreement_sentence())}</p>'
+            f'<ul class="readings">{"".join(items)}</ul>')
+
+
+def scope_draft_html(fid, doc, rec) -> str:
+    """OpenAI's own note on what the Lean covers, quoted, then the AI agent's draft
+    classification of it as one quiet line, never styled as a verdict."""
+    sd = (rec or {}).get("scope_draft") or {}
+    val = sd.get("value") or {}
+    if not val:
+        return ""
+    note_url = (((doc.get("producer_scope") or {}).get("value") or {}).get("url"))
+    parts = []
+    if val.get("quote"):
+        foot = (f'<footer>{esc(C("statement.coverage_quote_by"))} <a class="ext" href="{esc(note_url)}" rel="noopener">'
+                f'{esc(C("statement.coverage_source"))}</a></footer>') if note_url else ""
+        parts.append(f'<p class="scope__src">{esc(C("statement.note_heading"))}</p>'
+                     f'<blockquote class="quote md-math"><p>“{esc(val["quote"])}”</p>{foot}</blockquote>')
+    cls = val.get("source_class")
+    if cls:
+        label = cover_label(cls)
+        parts.append(f'<p class="scope__draft">{esc(C("statement.draft_line", cls=label[0].lower() + label[1:]))}</p>')
+    return '<div class="scope">' + "".join(parts) + "</div>"
+
+
+_PAPER_MARKS = None
+
+
+def paper_marks():
+    """(manuscript id, file, line) -> what the backend records at that theorem, for the
+    paper reading pages' margin notes: {"lean": [{id, state, accepted, holes}],
+    "headline": [family ids whose catalogue claim names it as the candidate]}.
+    Every pairing is lean_pairing's reading of the backend's records."""
+    global _PAPER_MARKS
+    if _PAPER_MARKS is not None:
+        return _PAPER_MARKS
+    r = RD()
+    marks = defaultdict(lambda: {"lean": [], "headline": []})
+    for fid in r.family_ids():
+        doc = r.family(fid)
+        for rec in doc.get("lean") or []:
+            pinfo = lean_pairing(doc, rec["id"])
+            if pinfo["state"] not in PAIRED_STATES or not pinfo["target"]:
+                continue
+            m, st, _ = ms_statement(doc, pinfo["target"])
+            if not st:
+                continue
+            row = marks[(m["id"], st["file"], st["line"])]
+            if all(x["id"] != rec["id"] for x in row["lean"]):
+                row["lean"].append({"id": rec["id"], "state": pinfo["state"],
+                                    "accepted": len(rec.get("accepted_current_sources") or []),
+                                    "holes": len(rec["definition_holes"]) if isinstance(rec.get("definition_holes"), list) else None})
+        claim = doc.get("claim") or {}
+        if claim.get("state") == "candidate" and claim.get("primary_candidate"):
+            m, st, _ = ms_statement(doc, claim["primary_candidate"])
+            if st:
+                marks[(m["id"], st["file"], st["line"])]["headline"].append(fid)
+    _PAPER_MARKS = dict(marks)
+    return _PAPER_MARKS
+
+
 OG_DONE: dict = {}   # statement id -> (generic og block, per-statement og block)
 
 
@@ -3078,21 +3457,39 @@ def build_statement(stmt):
     fam = FAM.get(stmt["families"][0]) if stmt.get("families") else None
     label = (stmt.get("labels") or [sid])[0]
     lines_html = lean_lines(stmt["lean"])
-    paper_ms, paper_st, pairing = pair_statement(stmt)
+    # The backend's record for this Lean statement: its family packet, its pairing,
+    # its re-runs and the draft scope reading.
+    fid, doc, lrec = lean_family_doc(sid)
+    summ = RD().lean_summary(sid) or {}
+    pinfo = lean_pairing(doc, sid) if doc else {"state": "unavailable", "target": None, "reason": LW("pairing.no_record"),
+                                                "alternatives": [], "association": None}
+    paper_ms, paper_st, paper_rec = ms_statement(doc, pinfo["target"]) if pinfo["target"] else (None, None, None)
+    if pinfo["target"] and not paper_st:
+        warn(f"{sid}: the backend pairs it with {pinfo['target']}, which data/manuscripts.json does not hold")
     conv = TexConv(paper_ms, root) if paper_ms else None
-    card = receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pairing)
+    card = receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pinfo, lrec)
     # full card page for screenshots
     card_rel = f"cards/{sid}.html"
-    card_body = receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pairing, standalone=True)
+    card_body = receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pinfo, lrec, standalone=True)
     write_page(card_rel, head(card_rel, label, label, noindex=True) + f'\n<body class="card-only" data-root="{root}">\n{card_body}\n{macros_script([paper_ms["id"]] if paper_ms else [])}\n</body></html>\n', index=False)
-    # the selected claim: the paper's statement (a labelled candidate) ...
+    # After the Lean statement: the paper theorem it is paired with, under a heading that
+    # carries the pairing's state, the words at the join first, then the theorem itself.
+    pair_heading = LW("page.pair_heading." + (pinfo["state"] if pinfo["state"] in PAIRED_STATES and paper_st else "unavailable"))
     if paper_st:
-        loc = C("statement.card_locator", label=paper_st["label"], file=paper_st["file"], line=paper_st["line"]) if paper_st.get("label") else C("statement.card_locator_nolabel", file=paper_st["file"], line=paper_st["line"])
-        paper_read = (f'<p class="claim__label">{esc(C("statement.card_paper_candidate"))}</p>'
-                      f'<p class="claim__src"><a href="{esc(paper_statement_href(paper_ms["id"], paper_st, root) or (root + "papers/" + paper_ms["id"] + ".html"))}">{ms_title_html(paper_ms)}</a>. {esc(loc)}</p>'
-                      + render_paper_statement(paper_ms, paper_st, root, conv, "claim"))
+        others = alternatives_html(doc, pinfo, root, limit=6)
+        others_html = (f'<details class="more"><summary>{esc(LW("page.alternatives_more"))}</summary>'
+                       f'<ul class="alts">{others}</ul></details>') if others else ""
+        paper_read = (f'<h2 class="h2" id="h-claim">{esc(pair_heading)}</h2>'
+                      + join_html(doc, pinfo, root)
+                      + f'<p class="claim__src">{statement_ref_html(doc, pinfo["target"], root)}</p>'
+                      + render_paper_statement(paper_ms, paper_st, root, conv, "claim") + others_html)
     else:
-        paper_read = f'<p class="claim__label">{esc(C("statement.card_paper_none"))}</p><p class="muted">{esc(C("statement.card_paper_abstain_" + pairing))} <a href="#h-sbs">{esc(C("statement.all_statements_link"))}</a></p>'
+        alts = alternatives_html(doc, pinfo, root) if doc else ""
+        reason = pinfo.get("reason")
+        paper_read = (f'<h2 class="h2" id="h-claim">{esc(pair_heading)}</h2>'
+                      + join_html(doc, pinfo, root)
+                      + (f'<p>{esc(LW("pairing.reason", reason=reason[0].lower() + reason[1:]))}</p>' if reason else "")
+                      + (f'<h3 class="h3">{esc(LW("page.alternatives_heading"))}</h3><ul class="alts">{alts}</ul>' if alts else ""))
     # ... the Lean statement with the definitions needed to read it ...
     snippet_full = lean_snippet_html(stmt, lines_html)
     defs = definitions_html(stmt, lines_html)
@@ -3120,34 +3517,23 @@ def build_statement(stmt):
         note = ctext(C("statement.axiom_note", line=ax_line, axioms=", ".join(stmt["comparator"]["permitted_axioms"]), solution_link="\x00"))
         note = note.replace("\x00", link)
         axiom = f'<div class="note"><p class="note__h">{esc(C("statement.axiom_heading"))}</p><p>{note}</p></div>'
-    # ... and the scope record with the review and replay states.
-    review, replay = review_records(sid)
-    # The two outside readers judge a family's Lean statements together, so their verdicts
-    # and notes live on the family page; this page points there rather than restating them.
-    readers_link = ""
-    if fam and fam.get("readers_agreement") and fam["readers_agreement"] != "none":
-        readers_link = (f'<p class="readers-link">{esc(C("statement.readers_intro"))} '
-                        f'<a href="{root}families/{esc(fam["id"])}.html#h-readings">{esc(C("statement.readers_link"))}</a></p>')
-    family_note = ""
-    if fam and fam.get("lean_doc") and fam["lean_doc"].get("scope"):
-        family_note = f'<details class="more"><summary>{esc(C("statement.scope_full", id=fam["id"]))}</summary><blockquote class="quote md-math">{md_paragraphs(fam["lean_doc"]["scope"])}<footer><a class="ext" href="{esc(fam["lean_doc"]["url"])}" rel="noopener">{esc(C("statement.scope_source", id=fam["id"]))}</a></footer></blockquote></details>'
+    main = (lrec or summ).get("main_result")
+    main_line = C("statement.main_yes") if main else C("statement.main_no", id=(fid or "f:")[2:])
     # supporting material
     sol_html = ", ".join(f'<a class="ext" href="{esc(x["url"])}" rel="noopener"><code>{esc(x["file"])}</code></a>' for x in sol) or f'<code>{esc(stmt["comparator"].get("solution_module") or "")}</code>'
     nm = stmt["non_mathlib_imports"]
     facts = [
         (C("statement.file_label"), f'<a class="ext" href="{esc(stmt["url"])}" rel="noopener"><code>{esc(stmt["file"])}</code></a>'),
-        (C("statement.main_key"), esc(C("statement.main_yes") if stmt["main_result"] else C("statement.main_no", id=(stmt.get("families") or [""])[0]))),
+        (C("statement.main_key"), esc(main_line)),
         (C("statement.solution"), sol_html),
         (C("statement.permitted_axioms"), ", ".join(f"<code>{esc(a)}</code>" for a in stmt["comparator"]["permitted_axioms"]) + f'<span class="dl__note">{esc(C("statement.permitted_axioms_note"))}</span>'),
         (C("statement.imports"), ", ".join(f"<code>{esc(a)}</code>" for a in stmt["imports"])),
         (C("statement.non_mathlib"), ", ".join(f"<code>{esc(a)}</code>" for a in nm) if nm else esc(C("statements.none"))),
         (C("statement.vocab_key"), esc(vocab_text(stmt))),
         (C("statement.lines"), num(stmt["statement_lines"])),
-        (C("statement.nanoda_key"), esc(C("statement.nanoda_yes") if stmt["comparator"].get("enable_nanoda") else C("statement.nanoda_no"))),
+        (C("statement.nanoda_key"), esc(C("statement.nanoda_yes") if (lrec or summ).get("nanoda_enabled") else C("statement.nanoda_no"))),
     ]
     dl = "".join(f"<div><dt>{esc(k)}</dt><dd>{v}</dd></div>" for k, v in facts)
-    # The file view's "What you must check" panel lists every local declaration, in the order
-    # the theorem reaches them, so the page no longer repeats them in a separate fold.
     paper_cols = []
     for slug in stmt.get("papers") or []:
         m = MS.get(slug)
@@ -3157,7 +3543,7 @@ def build_statement(stmt):
         heads = headline_statements(m)
         inner = "".join(render_paper_statement(m, st, root, cv, "pst") for st in heads) or f'<p class="muted">{esc(C("family.no_headline"))}</p>'
         paper_cols.append(f'<div class="sbs__paper"><h3 class="h3"><a href="{root}papers/{esc(slug)}.html">{ms_title_html(m)}</a></h3>{inner}</div>')
-    import lean_render  # the whole file, every resolved name linked, beside "What you must check"
+    import lean_render  # the whole file, every name the source text resolves linked, beside "What you must check"
     file_section = lean_render.file_section(stmt, commit=COMMIT, root=root)
     checks = CONTRIB["checks"].get(sid, [])
     replays = CONTRIB["replays"].get(sid, [])
@@ -3172,57 +3558,73 @@ def build_statement(stmt):
     trail_items.append((f'<span class="md-math">{esc(label)}</span>', None))
     where = ""
     if fam:
-        where = f'{esc(C("statement.in_result"))} <a href="{root}families/{fam["id"]}.html">{esc(C("words.result").capitalize())} {esc(fam["id"])}: {fam_title_html(fam)}</a>. '
-    where += f'{esc(C("statement.file_label"))} <a class="ext" href="{esc(stmt["url"])}" rel="noopener"><code>{esc(stmt["file"])}</code></a>.'
+        where = (esc(LW("page.in_family", id=fam["id"], name="\x00"))
+                 .replace("\x00", f'<a href="{root}families/{fam["id"]}.html">{fam_title_html(fam)}</a>') + " ")
+    others = [f for f in (summ.get("family_ids") or [])[1:]]
+    if others:
+        where += esc(LW("page.also_in", families=", ".join(o[2:] for o in others))) + " "
+    where += f'{esc(C("statement.file_label"))} <a class="ext" href="{esc(stmt["url"])}" rel="noopener"><code class="path">{esc(stmt["file"]).replace("/", "/<wbr>")}</code></a>.'
     where += f' <a href="{root}index.html#o=l:{quote(sid)}">{esc(C("words.show_on_map"))}</a>'
     reasons = REVIEW_REASONS.get(sid) or []
     reasons_html = (f'<div class="note"><p class="note__h">{esc(C("statement.reasons_heading"))}</p><ul class="rq__why">' + "".join(f'<li class="md-math">{ctext(t)}</li>' for t in reasons) + '</ul></div>') if reasons else ""
     problems = findings_for(sid=sid, kinds={'error-reported', 'correction', 'replay-fail'})
     more_finds = findings_for(sid=sid, kinds={'explanation', 'commentary', 'follow-up-result'})
-    body = f"""<div class="frame page">
+    human_name = summ.get("name")
+    subtitle = (f'<p class="phead__sub"><code>{esc(sid)}</code></p>' if not human_name or human_name == label
+                else f'<p class="phead__sub"><span class="md-math">{esc(human_name)}</span> <code>{esc(sid)}</code></p>')
+    reading_href = (root + paper_rec["reading_page"]) if paper_rec and paper_rec.get("reading_page") else None
+    read_primary = (f'<a class="btn btn--primary" href="{esc(reading_href)}">{esc(LW("page.read_in_paper"))}</a>' if reading_href
+                    else f'<a class="btn btn--primary" href="#h-claim">{esc(LW("page.read_candidates"))}</a>')
+    runs_section = lean_runs_html(lrec, root) if lrec else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
+    readings_section = ""
+    if doc:
+        readings_section = f"""<section class="band band--tight" aria-labelledby="h-readings">
+ <h2 class="h2" id="h-readings">{esc(LW('page.readings_heading', id=fid[2:]))}</h2>
+ <p class="intro">{esc(LW('page.readings_intro'))}</p>
+ {family_readings_html(fid, doc, root)}
+ <p><a href="{root}families/{esc(fid[2:])}.html#h-readings">{esc(LW('page.readings_link'))}</a></p>
+ {scope_draft_html(fid, doc, lrec)}
+</section>"""
+    body = f"""<div class="frame page page--lean">
 {trail(root, trail_items)}
 <header class="phead">
- <p class="phead__kicker">{esc(C('statement.trail_label'))}</p>
+ <p class="phead__kicker">{esc(LW('page.kicker'))}</p>
  <h1 class="phead__title md-math">{esc(label)}</h1>
+ {subtitle}
  <p class="phead__facts">{where}</p>
- <p class="phead__facts">{esc(C('statement.main_yes') if stmt['main_result'] else C('statement.main_no', id=(stmt.get('families') or [''])[0]))}</p>
- <p class="actions"><a class="btn btn--primary ext" href="{esc(check_url(sid))}" rel="noopener">{esc(C('statement.check_button'))}</a><a class="btn btn--ghost" href="#h-share">{esc(C('statement.share_jump'))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p>
+ <p class="phead__facts">{esc(main_line)}</p>
+ <p class="actions">{read_primary}<a class="btn btn--ghost" href="#h-runs">{esc(LW('page.read_runs'))}</a><a class="btn btn--quiet ext" href="{esc(check_url(sid))}" rel="noopener">{esc(LW('page.report_check'))}</a></p>
 </header>
 {('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}
-<section class="band band--tight claim" aria-labelledby="h-claim">
- <h2 class="h2" id="h-claim">{esc(C('statement.claim_paper_heading'))}</h2>
- {paper_read}
-</section>
-<section class="band band--tight claim" aria-labelledby="h-lean-read">
- <h2 class="h2" id="h-lean-read">{esc(C('statement.claim_lean_heading'))}</h2>
+<section class="band band--tight claim claim--lean" aria-labelledby="h-lean-read">
+ <h2 class="h2" id="h-lean-read">{esc(LW('page.lean_heading'))}</h2>
  <p class="intro">{esc(C('statement.claim_lean_intro'))}</p>
  <pre class="lean lean--snippet lean--read"><code>{snippet_full}</code></pre>
  <p class="leanc__note">{ctext(C('statement.sorry_note_axiom') if stmt['declares_axiom'] else C('statement.sorry_note'))}</p>
  {defs}
  {holes_html}
  {axiom}
+</section>
+<section class="band band--tight claim claim--paper" aria-labelledby="h-claim">
+ {paper_read}
+</section>
+<section class="band band--tight" aria-labelledby="h-runs">
+ <h2 class="h2" id="h-runs">{esc(LW('page.formal_heading'))}</h2>
+ {runs_section}
  {comparator_box_html(stmt)}
 </section>
-<section class="band band--tight claim" aria-labelledby="h-scope">
- <h2 class="h2" id="h-scope">{esc(C('statement.claim_scope_heading'))}</h2>
- {independent_reruns_html(stmt, root)}
- {readers_link}
- {coverage_html(sid)}
- {family_note}
- <p class="review-status">{esc(review)}</p>
- <p class="review-status">{esc(replay)}</p>
+{readings_section}
+<section class="band supporting" aria-labelledby="h-support">
+ <h2 class="h2" id="h-support">{esc(C('statement.support_heading'))}</h2>
+ {file_section}
+ <details class="more" id="sbs"><summary><span class="h3" id="h-sbs">{esc(C('statement.paper_heading'))}</span></summary><p class="intro">{esc(C('statement.paper_intro'))}</p><div class="sbs__all">{''.join(paper_cols)}</div></details>
+ <details class="more"><summary><span class="h3">{esc(C('statement.facts_heading'))}</span></summary><dl class="dl">{dl}</dl></details>
 </section>
 <section class="band band--card" aria-labelledby="h-share">
  <h2 class="h2" id="h-share">{esc(C('statement.card_heading'))}</h2>
  <p class="intro">{esc(C('statement.card_intro'))}</p>
  {card}
- <p class="card-tools"><button class="btn btn--ghost copy" type="button" data-copy-text="{esc(page_url)}">{esc(C('statement.copy_link'))}</button><span class="muted small">{esc(C('statement.card_pairing'))}</span></p>
-</section>
-<section class="band supporting" aria-labelledby="h-support">
- <h2 class="h2" id="h-support">{esc(C('statement.support_heading'))}</h2>
- <details class="more" id="sbs"><summary><span class="h3" id="h-sbs">{esc(C('statement.paper_heading'))}</span></summary><p class="intro">{esc(C('statement.paper_intro'))}</p><div class="sbs__all">{''.join(paper_cols)}</div></details>
- <details class="more"><summary><span class="h3">{esc(C('statement.facts_heading'))}</span></summary><dl class="dl">{dl}</dl></details>
- {file_section}
+ <p class="card-tools"><button class="btn btn--ghost copy" type="button" data-copy-text="{esc(page_url)}">{esc(C('statement.copy_link'))}</button></p>
 </section>
 <section class="band explain-box" aria-labelledby="h-checks">
  <h2 class="h2" id="h-checks">{esc(C('statement.checks_heading'))}</h2>
@@ -3235,7 +3637,7 @@ def build_statement(stmt):
 </section>
 </div>
 {macros_script(list(dict.fromkeys(([paper_ms['id']] if paper_ms else []) + list(stmt.get('papers') or []))))}"""
-    desc = f"{label}. " + (C("statement.main_yes") if stmt["main_result"] else C("statement.main_no", id=(stmt.get("families") or [""])[0])) + " " + vocab_text(stmt) + "."
+    desc = f"{label}. " + (f"{human_name}. " if human_name and human_name != label else "") + main_line + " " + cap(evidence.say("pairing_short." + pinfo["state"])) + "."
     # Social image: the generic card unless this build renders the statement's own card
     # successfully; main() swaps the block in only after checking the file it produced.
     generic = generic_og_meta()
@@ -3248,166 +3650,17 @@ def build_statement(stmt):
 # ------------------------------------------------------------------- home
 
 
-def map_data():
-    fams = []
-    for f in FAMILIES:
-        status, _ = family_exposition_status(f["id"])
-        mss = [MS[s] for s in f["manuscripts"] if s in MS]
-        grade, mixed = fam_cover_grade(f)
-        rev = reviewed_explanations(f["id"])
-        fams.append({
-            "id": f["id"],
-            "t": f["title"],
-            "p": tex_plain(f["title"]),
-            "d": DISC_OF[f["id"]],
-            "m": [[m["title"], m.get("date") or "", m["pdf_url"].replace(BASE_BLOB, ""), m["id"]] for m in mss],
-            # label, main result, local vocabulary count, id, draft scope class (or null)
-            "s": [[(ST[s].get("labels") or [s])[0], 1 if ST[s]["main_result"] else 0, ST[s]["vocabulary_count"], s, cover_class(s)] for s in f["statements"] if s in ST],
-            "v": fam_max_vocab(f),
-            "c": FAM_CITES[f["id"]],
-            "b": FAM_CITED_BY[f["id"]],
-            "k": fam_cited_by_ms(f),
-            "x": {"none": 0, "progress": 1, "reviewed": 2}[status],
-            "e": explanation_rel(rev[0], f["id"]) if rev else None,
-            "w": len(COMMUNITY["by_family"].get(f["id"], [])) + len(COMMUNITY["efforts_by_family"].get(f["id"], [])),
-            "ty": (sourced(f, "type") or {}).get("value"),
-            "ti": (sourced(f, "tier") or {}).get("value"),
-            "g": grade,
-            "gm": 1 if mixed else 0,
-            "rd": f.get("readers_agreement") or "none",
-        })
-    vocab = sorted(v for v in (x["v"] for x in fams) if v is not None)
-    return {
-        "blob": BASE_BLOB,
-        "disciplines": [{"name": d["name"], "slug": DISC_SLUG[i], "families": d["families"]} for i, d in enumerate(DISCIPLINES)],
-        "families": fams,
-        "sizeBins": size_bins(vocab),
-        "coverStale": COVER_STALE,
-        "coverClasses": COPY["statement"]["coverage_classes"],
-    }
-
-
-def size_bins(vals):
-    """Four bins for families with Lean: no local vocabulary (0) and three quantile bins above it."""
-    pos = [v for v in vals if v > 0]
-    if not pos:
-        return []
-    q = lambda p: pos[min(len(pos) - 1, int(p * len(pos)))]
-    a, b = q(1 / 3), q(2 / 3)
-    return [[0, 0], [1, a], [a + 1, b], [b + 1, None]]
-
-
-# Labels and computation notes for every summary number. Prose lives in copy.json
-# under numbers.items; this list only fixes the order.
-NUMBER_ORDER = ["families", "disciplines", "manuscripts_current", "manuscripts_withdrawn", "manuscripts_previous_editions",
-                "statements_lean", "statements_lean_main_results", "main_result_declarations", "families_with_lean",
-                "manuscripts_with_lean", "lean_statements_pure_mathlib", "lean_statements_no_local_vocabulary", "lean_statements_with_custom_vocabulary",
-                "lean_statements_importing_non_mathlib", "lean_statements_declaring_axioms", "lean_definition_holes", "lean_vocabulary_total",
-                "lean_vocabulary_median", "lean_vocabulary_max", "internal_citation_edges", "manuscripts_citing_collection",
-                "manuscripts_citing_unformalised_collection_results", "external_works_cited", "external_citations"]
-HOME_NUMBERS = ["families", "manuscripts_current", "statements_lean", "statements_lean_main_results",
-                "families_with_lean", "manuscripts_with_lean", "internal_citation_edges", "external_works_cited"]
-
-
-def num_words(n):
-    words = "zero one two three four five six seven eight nine ten".split()
-    return words[n] if isinstance(n, int) and 0 <= n < len(words) else num(n)
-
-
-def number_item(key):
-    items = COPY["numbers"]["items"]
-    it = items.get(key, {})
-    return it
-
-
-def work_name(i):
-    hl = SUMMARY.get("highlights", {}).get("most_cited_outside_works", [])
-    if i >= len(hl):
-        return ""
-    w = hl[i]
-    title = clean_ref_text(w.get("title") or w.get("text") or "")
-    au = clean_ref_text(w.get("authors") or "")
-    if au and "authors" not in au.lower():
-        sur = au.split(",")[0].split(" and ")[0].strip()
-        return f"{sur}’s {title}"
-    return title if title.lower().startswith("the ") else title
-
-
-def build_home(md):
-    """The treemap with its colour-by lenses, at tiles.html ("Every family as a tile").
-    index.html is the release universe, written by scripts/build_universe.py; it is
-    registered here because the sitemap is written before that script runs."""
-    rel = "tiles.html"
+def build_home():
+    """index.html is the release's front door, written by scripts/build_universe.py; it is
+    registered here because the sitemap is written before that script runs. The tile
+    map that stood at tiles.html is retired: the address now sends a reader to the
+    front door, with a link for browsers that ignore the refresh."""
     PAGES.append("index.html")
-    root = ""
-    s = SUMMARY
-    lede = C("home.lede", families=s["families"], disciplines=s["disciplines"], manuscripts=s["manuscripts_current"],
-             lean=s["statements_lean"], families_with_lean=s["families_with_lean"])
-    nums = []
-    for k in HOME_NUMBERS:
-        it = number_item(k)
-        nums.append(f'<li><a href="numbers.html#{k}"><span class="num__v">{num(s[k])}</span><span class="num__l">{esc(it.get("label", k))}</span></a></li>')
-    # index of every result
-    idx = []
-    for i, d in enumerate(DISCIPLINES):
-        lis = "".join(f'<li><a href="families/{fid}.html">{fam_title_html(FAM[fid])}</a></li>' for fid in d["families"] if fid in FAM)
-        idx.append(f'<section class="idx__d" id="idx-{DISC_SLUG[i]}"><h3 class="h3">{esc(d["name"])} <span class="count">{len(d["families"])}</span></h3><ul>{lis}</ul></section>')
-    ov = [("lean", "home.overlay_lean"), ("readers", "home.overlay_readers"), ("covers", "home.overlay_covers"), ("type", "home.overlay_type"), ("tier", "home.overlay_tier"), ("community", "home.overlay_community"), ("size", "home.overlay_size"), ("citations", "home.overlay_citations"), ("explained", "home.overlay_explained")]
-    ov_btns = "".join(f'<button type="button" class="seg__b" data-overlay="{k}" aria-pressed="{"true" if k == "lean" else "false"}">{esc(C(lab))}</button>' for k, lab in ov)
-    strings = {k: v for k, v in COPY["home"].items()}
-    strings.update({"manuscript": C("words.manuscript"), "manuscripts": C("words.manuscripts"),
-                    "lean_statement": C("words.lean_statement"), "lean_statements": C("words.lean_statements"),
-                    "no_lean": C("words.no_lean"), "main_result": C("words.main_result"),
-                    "supporting_result": C("words.supporting_result"), "result": C("words.result"), "results": C("words.results"),
-                    "pure_ids": sorted(PURE_MATHLIB)})
-    body = f"""<section class="atlas" aria-labelledby="h-atlas">
- <div class="atlas__panel">
-  <div class="atlas__intro">
-   <h1 class="atlas__title" id="h-atlas">{esc(C('home.title'))}</h1>
-   <p class="atlas__lede">{esc(lede)}</p>
-   <p class="actions"><a class="btn btn--primary" href="index.html">{esc(C('home.cta_map'))}</a><a class="btn btn--ghost" href="#catalogue">{esc(C('home.cta_browse'))}</a></p>
-  </div>
-  <div class="atlas__controls">
-   <div class="msearch">
-    <label class="vh" for="map-search">{esc(C('home.search_label'))}</label>
-    <input id="map-search" class="msearch__input" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(C('home.search_placeholder'))}" role="combobox" aria-expanded="false" aria-controls="map-search-list" aria-autocomplete="list">
-    <ul class="msearch__list" id="map-search-list" role="listbox" aria-label="{esc(C('home.search_label'))}" hidden></ul>
-   </div>
-   <div class="seg" role="group" aria-label="{esc(C('home.overlay_label'))}"><span class="seg__label">{esc(C('home.overlay_label'))}</span><div class="seg__row">{ov_btns}</div></div>
-   <div class="legend" aria-live="polite"></div>
-  </div>
-  <nav class="where" aria-label="{esc(C('home.where_label'))}"></nav>
-  <div class="card" hidden tabindex="-1"></div>
-  <section class="mlist" aria-labelledby="mlist-h"><h2 class="mlist__h" id="mlist-h" tabindex="-1"></h2><ul class="mlist__ul"></ul></section>
- </div>
- <div class="atlas__stage">
-  <div class="field" role="group" aria-label="{esc(C('home.map_heading'))}" aria-describedby="map-help map-area"><noscript><p class="field__noscript">{esc(C('home.no_js'))} <a href="#catalogue">{esc(C('home.cta_browse'))}</a></p></noscript></div>
-  <p class="caption__area" id="map-area">{esc(C('home.area_note'))}</p>
-  <p class="caption" id="map-help" aria-live="polite">{esc(C('home.map_help'))}</p>
- </div>
-</section>
-<section class="frame band" aria-labelledby="h-numbers">
- <h2 class="h2" id="h-numbers">{esc(C('home.numbers_heading'))}</h2>
- <p class="intro">{esc(C('home.numbers_intro'))}</p>
- <ul class="nums">{''.join(nums)}</ul>
- <p><a href="numbers.html">{esc(C('home.numbers_more'))}</a></p>
-</section>
-<section class="frame band" aria-labelledby="h-credit">
- <h2 class="h2" id="h-credit">{esc(C('home.credit_heading'))}</h2>
- <div class="cols2">
-  <div><h3 class="h3"><a href="citations-within.html">{esc(C('home.credit_within'))}</a></h3><p>{esc(C('home.credit_within_text'))}</p></div>
-  <div><h3 class="h3"><a href="references-outside.html">{esc(C('home.credit_outside'))}</a></h3><p>{esc(C('home.credit_outside_text', works=s['external_works_cited'], top1=work_name(0), top2=work_name(1)))}</p></div>
-  {('<div><h3 class="h3"><a href="sources.html">' + esc(C('home.credit_community')) + '</a></h3><p>' + esc(C('home.credit_community_text', efforts=len(COMMUNITY['list']), people=len({(a.get('name') or a.get('handle')) for e in COMMUNITY['list'] for a in (e.get('authors') or [])}), findings=len(COMMUNITY['findings']))) + '</p></div>') if COMMUNITY['list'] else ''}
- </div>
-</section>
-<section class="frame band idx" id="catalogue" aria-labelledby="h-index" tabindex="-1">
- <h2 class="h2" id="h-index">{esc(C('home.index_heading'))}</h2>
- <p class="intro">{esc(C('home.index_intro', families=s['families']))}</p>
- <div class="idx__grid">{''.join(idx)}</div>
-</section>
-{json_script('map-strings', strings)}"""
-    extra = '<link rel="preload" href="data/atlas-map.json" as="fetch" crossorigin>\n<script defer src="assets/map.js"></script>'
-    write_page(rel, page(rel, C("home.title"), C("home.description"), body, current=None, extra_head=extra, main_class="main--home"))
+    (OUT / "tiles.html").write_text(
+        '<!doctype html>\n<html lang="en-GB"><head><meta charset="utf-8">'
+        '<meta http-equiv="refresh" content="0; url=index.html"><link rel="canonical" href="' + esc(BASE_URL) + '">'
+        f'<meta name="robots" content="noindex"><title>{esc(C("site.name"))}</title></head>'
+        f'<body><p><a href="index.html">{esc(C("home.tiles_moved"))}</a></p></body></html>\n', encoding="utf-8")
 
 
 def review_queue_html(root):
@@ -3432,69 +3685,187 @@ def review_queue_html(root):
 
 
 def build_explain():
-    """The Families page: every family as a list first, with its Lean statements, the
-    re-runs outside groups report accepting, the outside readers' agreement, withdrawn
-    papers and explanation status; the filters above it; the careful-reading queue after."""
+    """The Families list: all of the release's families as rows, each state said in words
+    from the backend's records (scripts/evidence.py): papers, Lean statements, each
+    outside reader's own term with a plain gloss, accepted re-runs, checks by another
+    method, problems reported and explanations. Complete and readable without
+    JavaScript; with it, filters by discipline and evidence and sortable columns make
+    the list a tool."""
     rel = "explain.html"
-    root = ""
+    r = RD()
+    evs = evidence.all_families(r)
+    counts = evidence.legend_counts(evs)
+    say_e = evidence.say
+    # The two readers' names, in the order the evidence vocabulary sets.
+    reader_names = {}
+    for ev in evs:
+        for rd in ev.readers:
+            if rd.tone != "none" and rd.name and rd.name != rd.source:
+                reader_names.setdefault(rd.source, rd.name)
+    order = evidence.reader_order(set(reader_names))[:2]
+    # "Carlos Toledo, cert-machine" is "Carlos Toledo’s cert-machine" in prose and
+    # "cert-machine" in a column head; "MathVet" is "MathVet" in both.
+    short_name = {s_: reader_names.get(s_, s_).split(", ")[-1] for s_ in order}
+    prose_name = {s_: ("’s ".join(reader_names[s_].split(", ", 1)) if ", " in reader_names.get(s_, "") else reader_names.get(s_, s_)) for s_ in order}
+    disc = {d["id"]: (slugify(d["name"]), d["name"]) for d in r.universe.get("disciplines") or []}
+    status_counts = Counter()
     rows = []
-    counts = Counter()
-    for f in FAMILIES:
-        st, ex = family_exposition_status(f["id"])
-        counts[st] += 1
-        di = DISC_OF[f["id"]]
-        claim = issue_url("claim", C("issues.claim", id=f["id"], title=tex_plain(f["title"])), family=f["id"])
-        rev = reviewed_explanations(f["id"])
-        if rev:
-            action = f'<a class="btn btn--small" href="{explanation_rel(rev[0], f["id"])}">{esc(C("explain.read"))}</a>'
+    for ev in evs:
+        fid = ev.num
+        f = FAM.get(fid)
+        st, ex = family_exposition_status(fid)
+        status_counts[st] += 1
+        dslug, dname = disc.get(ev.discipline, ("", ""))
+        classes = []
+        if ev.has_lean:
+            classes.append("lean")
+            if ev.agreement == "disagree":
+                classes.append("disagree")
+            if ev.pairing == "candidate-pairing":
+                classes.append("thread_candidate")
+            elif ev.pairing in ("producer-cited-association", "producer-declared-binding"):
+                classes.append("thread_cited")
         else:
-            action = f'<a class="btn btn--small ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>'
-        who = f'<span class="muted small"> {esc(", ".join(e["name"] for e in ex))}</span>' if ex else ""
-        lean = [ST[x] for x in f["statements"] if x in ST]
-        accepted = sum(1 for x in lean if any(v["value"].get("verdict") == "accepted" for v in sourced_all(x, "replay")))
-        runs = C("explain.runs_of", k=accepted, n=len(lean)) if lean else ""
-        readers = f.get("readers_agreement") or "none"
-        readers_html = f'<span class="rd-{esc(readers)}">{esc(C("explain.readers_" + readers))}</span>' if lean else ""
-        withdrawn = sum(1 for m in MANUSCRIPTS if m["status"] == "withdrawn" and m.get("family") == f["id"])
-        rows.append(f'<tr data-d="{DISC_SLUG[di]}" data-s="{st}"><td class="t-title"><a href="families/{f["id"]}.html">{fam_title_html(f)}</a></td>'
-                    f'<td>{esc(DISCIPLINES[di]["name"])}</td>'
-                    f'<td class="t-num">{num(len(lean)) if lean else ""}</td>'
-                    f'<td class="t-num">{esc(runs)}</td>'
-                    f'<td>{readers_html}</td>'
-                    f'<td class="t-num">{num(withdrawn) if withdrawn else ""}</td>'
-                    f'<td><span class="st st--{st}">{esc(C("explain.status_" + st))}</span>{who}</td>'
-                    f'<td>{action}</td></tr>')
-    dbtns = [f'<button type="button" class="chip" data-filter-d="" aria-pressed="true">{esc(C("explain.all"))}</button>']
-    for i, d in enumerate(DISCIPLINES):
-        dbtns.append(f'<button type="button" class="chip" data-filter-d="{DISC_SLUG[i]}" aria-pressed="false">{esc(d["name"])} <span class="count">{len(d["families"])}</span></button>')
-    sbtns = [f'<button type="button" class="chip" data-filter-s="" aria-pressed="true">{esc(C("explain.all"))}</button>']
-    for k in ("none", "progress", "reviewed"):
-        sbtns.append(f'<button type="button" class="chip" data-filter-s="{k}" aria-pressed="false">{esc(C("explain.status_" + k))} <span class="count">{counts[k]}</span></button>')
-    # The invitation is said once, after the list, and quietly.
-    invite_key = "explain.invite_all" if counts["none"] == len(FAMILIES) else "explain.invite"
-    invite = (f'<p class="muted">{esc(C(invite_key, open=counts["none"], families=len(FAMILIES)))} {esc(C("explain.how"))} '
+            classes.append("nolean")
+        if ev.checks:
+            classes.append("ring")
+        others = ev.community_count("explanation")
+        problems = ev.community_count("error-reported") + ev.community_count("correction")
+        if others:
+            classes.append("explained_by_others")
+        if problems:
+            classes.append("problems_reported")
+        title = fam_title_html(f) if f else esc(ev.name)
+        name_plain = tex_plain(f["title"]) if f else ev.name
+        # papers
+        extra = []
+        if ev.editions:
+            extra.append(C("explain.editions_1") if ev.editions == 1 else C("explain.editions_n", n=say(ev.editions)))
+        if ev.withdrawn:
+            extra.append(C("explain.withdrawn_1") if ev.withdrawn == 1 else C("explain.withdrawn_n", n=say(ev.withdrawn)))
+        papers = num(ev.papers)
+        editions = f'<span class="cell__sub">{esc(cap(", ".join(extra)))}</span>' if extra else ""
+        # Lean statements and re-runs
+        k = len(ev.lean)
+        if k:
+            lean_cell = num(k)
+            rerun = sum(1 for l in ev.lean if l.accepted)
+            runs_cell = f'{esc(C("explain.runs_of", k=num(rerun), n=num(k)))}'
+        else:
+            lean_cell = f'<span class="cell__none">{esc(C("explain.no_lean"))}</span>'
+            runs_cell = f'<span class="cell__none">{esc(C("explain.no_lean_short"))}</span>'
+            rerun = -1
+        # each reader's own term, with a plain gloss under it
+        rcells = []
+        tones = {}
+        for side, src in enumerate(order):
+            rd = next((x for x in ev.readers if x.source == src), None)
+            tones[side] = rd.tone if rd else "none"
+            if not k:
+                rcells.append(f'<td class="t-reader" data-v=""><span class="cell__none">{esc(C("explain.no_lean_short"))}</span></td>')
+            elif rd is None or rd.tone == "none" or not rd.term:
+                rcells.append(f'<td class="t-reader" data-v="~"><span class="cell__none">{esc(C("explain.not_read"))}</span></td>')
+            else:
+                rcells.append(f'<td class="t-reader" data-v="{esc(rd.tone)}"><span class="cell__plain">{esc(cap(say_e("tone_short." + rd.tone)))}</span>'
+                              f'<span class="cell__sub">{esc(C("explain.their_term", term=rd.term))}</span></td>')
+        agree = ""
+        if k and ev.agreement == "disagree":
+            agree = f'<span class="cell__flag">{esc(C("explain.disagree_flag"))}</span>'
+        checks = ", ".join(say_e("check_kind." + c) for c in ev.checks if c in evidence.WORDS["check_kind"])
+        checks = cap(checks) if checks else ""
+        checks_cell = esc(checks) if checks else f'<span class="cell__none">{esc(C("explain.checks_none"))}</span>'
+        # explanations: the atlas's own records, then explanations by others
+        rev = reviewed_explanations(fid)
+        expl = [f'<span class="st st--{st}">{esc(C("explain.status_" + st))}</span>']
+        if ex:
+            expl.append(f'<span class="cell__sub">{esc(", ".join(e["name"] for e in ex))}</span>')
+        if others:
+            expl.append(f'<a class="cell__sub" href="families/{fid}.html#h-explain">'
+                        f'{esc(cap(C("explain.others_1") if others == 1 else C("explain.others_n", n=say(others))))}</a>')
+        if problems:
+            expl.append(f'<a class="cell__sub cell__warn" href="families/{fid}.html#h-problems">'
+                        f'{esc(cap(C("explain.problems_1") if problems == 1 else C("explain.problems_n", n=say(problems))))}</a>')
+        if rev:
+            expl.append(f'<a class="cell__sub" href="{explanation_rel(rev[0], fid)}">{esc(C("explain.read"))}</a>')
+        else:
+            claim = issue_url("claim", C("issues.claim", id=fid, title=tex_plain(f["title"]) if f else ev.name), family=fid)
+            expl.append(f'<a class="cell__sub ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>')
+        rows.append(
+            f'<tr id="f-{fid}" data-q="{esc((fid + " " + name_plain + " " + dname).lower())}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none") if k else "nolean"}" '
+            f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}">'
+            f'<td class="t-num t-id" data-v="{fid}">{fid}</td>'
+            f'<td class="t-title" data-v="{esc(name_plain.lower())}"><a href="families/{fid}.html">{title}</a>'
+            f'<span class="cell__sub t-disc-inline">{esc(dname)}</span>{editions}{agree}</td>'
+            f'<td class="t-disc" data-v="{esc(dname)}">{esc(dname)}</td>'
+            f'<td class="t-num" data-v="{ev.papers}" data-label="{esc(C("explain.col_papers"))}">{papers}</td>'
+            f'<td class="t-num" data-v="{k}" data-label="{esc(C("explain.col_lean"))}">{lean_cell}</td>'
+            + "".join(c.replace('<td class="t-reader"', f'<td class="t-reader" data-label="{esc(C("explain.col_reader", name=short_name[order[i]]))}"', 1)
+                      for i, c in enumerate(rcells)) +
+            f'<td class="t-num" data-v="{rerun}" data-label="{esc(C("explain.col_runs"))}">{runs_cell}</td>'
+            f'<td data-v="{esc(checks)}" data-label="{esc(C("explain.col_checks"))}">{checks_cell}</td>'
+            f'<td data-v="{st}" data-label="{esc(C("explain.col_status"))}">{"".join(expl)}</td></tr>')
+    # Filters, in one row: discipline, evidence, each reader's finding, and words.
+    def select(fid_, label, key, opts):
+        return (f'<div class="filters__g"><label class="filters__h" for="{fid_}">{esc(label)}</label>'
+                f'<select class="select" id="{fid_}" data-filter="{key}">{"".join(opts)}</select></div>')
+    dopts = [f'<option value="">{esc(C("explain.all_disciplines"))}</option>']
+    for d in r.universe.get("disciplines") or []:
+        dopts.append(f'<option value="{slugify(d["name"])}">{esc(d["name"])} ({num(len(d.get("family_ids") or []))})</option>')
+    eopts = [f'<option value="">{esc(C("explain.all_evidence"))}</option>']
+    for group, keys in (("lean", ("lean", "nolean")), ("readers", ("disagree",)), ("pairing", ("thread_candidate", "thread_cited")),
+                        ("checks", ("ring",)), ("explanations", ("explained_by_others",)), ("problems", ("problems_reported",))):
+        eopts.append(f'<optgroup label="{esc(C("explain.evgroup_" + group))}">' + "".join(
+            f'<option value="{key}">{esc(C("explain.ev_" + key))} ({num(counts.get(key, 0))})</option>' for key in keys) + "</optgroup>")
+    selects = [select("ff-d", C("explain.filter_discipline"), "d", dopts), select("ff-c", C("explain.filter_evidence"), "c", eopts)]
+    for side, src in enumerate(order):
+        opts = [f'<option value="">{esc(C("explain.reader_any"))}</option>']
+        for tone in evidence.TONES:
+            n = counts.get(("left_" if side == 0 else "right_") + tone, 0)
+            opts.append(f'<option value="{tone}">{esc(cap(say_e("tone_short." + tone)))} ({num(n)})</option>')
+        selects.append(select(f"ff-{side}", C("explain.filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts))
+    selects.append(f'<div class="filters__g filters__g--q"><label class="filters__h" for="ff-q">{esc(C("explain.filter_words"))}</label>'
+                   f'<input class="filter-input" id="ff-q" type="search" data-filter="q" autocomplete="off" spellcheck="false" placeholder="{esc(C("explain.filter_words_ph"))}"></div>')
+    sort_cols = [("id", "n"), ("result", "s"), ("discipline", "s"), ("papers", "n"), ("lean", "n")]
+    heads = []
+    for i, (key, typ) in enumerate(sort_cols):
+        cls = ' class="t-num"' if typ == "n" else (' class="t-disc"' if key == "discipline" else "")
+        heads.append(f'<th scope="col"{cls} aria-sort="{"ascending" if key == "id" else "none"}"><button type="button" class="sort" data-sort="{i}" data-type="{typ}">{esc(C("explain.col_" + key))}</button></th>')
+    for src in order:
+        heads.append(f'<th scope="col" class="t-reader">{esc(C("explain.col_reader", name=short_name[src]))}</th>')
+    heads.append(f'<th scope="col" class="t-num" aria-sort="none"><button type="button" class="sort" data-sort="{len(sort_cols) + 2}" data-type="n">{esc(C("explain.col_runs"))}</button></th>')
+    heads.append(f'<th scope="col">{esc(C("explain.col_checks"))}</th>')
+    heads.append(f'<th scope="col">{esc(C("explain.col_status"))}</th>')
+    invite_key = "explain.invite_all" if status_counts["none"] == len(evs) else "explain.invite"
+    invite = (f'<p class="muted">{esc(C(invite_key, open=num(status_counts["none"]), families=num(len(evs))))} {esc(C("explain.how"))} '
               f'<a class="ext" href="{esc(REPO + "/" + CFG["contributing_path"])}" rel="noopener">{esc(C("contribute.guide_link"))}</a></p>')
-    body = f"""<div class="frame page">
-<header class="phead">
+    readers_note = C("explain.readers_note", left=prose_name[order[0]], right=prose_name[order[1]] if len(order) > 1 else "")
+    body = f"""<div class="frame page page--families">
+<header class="phead phead--compact">
  <h1 class="phead__title">{esc(C('explain.title'))}</h1>
- <p class="lede">{esc(C('explain.lede', families=len(FAMILIES)))}</p>
+ <p class="phead__lede">{esc(C('explain.lede', families=NUM('families')))}</p>
 </header>
-<section class="band band--tight" aria-labelledby="h-list">
-<h2 class="h2" id="h-list">{esc(C('explain.list_heading'))}</h2>
-<div class="filters" data-filter-table="explain-table">
- <div class="filters__g"><p class="filters__h">{esc(C('explain.filter_discipline'))}</p><div class="chips">{''.join(dbtns)}</div></div>
- <div class="filters__g"><p class="filters__h">{esc(C('explain.filter_status'))}</p><div class="chips">{''.join(sbtns)}</div></div>
- <p class="filters__n muted" aria-live="polite" data-shown-template="{esc(C('explain.shown', n='{n}'))}">{esc(C('explain.shown', n=len(FAMILIES)))}</p>
+<section class="band band--table" aria-labelledby="h-list">
+<h2 class="h2 vh" id="h-list">{esc(C('explain.list_heading'))}</h2>
+<div class="filters filters--families" data-filter-families="families-table">
+ <button type="button" class="btn btn--ghost filters__toggle" aria-expanded="false" aria-controls="families-filters">{esc(C('explain.filter_toggle'))}</button>
+ <div class="filters__panel" id="families-filters">{''.join(selects)}</div>
+ <div class="filters__status">
+  <p class="filters__n" aria-live="polite" data-shown-template="{esc(C('explain.shown', n='{n}', total=NUM('families')))}" data-criteria-lead="{esc(C('explain.criteria_lead'))}">{esc(C('explain.shown', n=NUM('families'), total=NUM('families')))}</p>
+  <button type="button" class="btn btn--quiet filters__reset" hidden>{esc(C('explain.reset'))}</button>
+ </div>
+ <p class="filters__note">{esc(readers_note)} {esc(C('explain.counts_note'))}</p>
 </div>
-<div class="table-wrap"><table class="tbl" id="explain-table">
- <thead><tr><th scope="col">{esc(C('explain.col_result'))}</th><th scope="col">{esc(C('explain.col_discipline'))}</th><th scope="col" class="t-num">{esc(C('explain.col_lean'))}</th><th scope="col" class="t-num">{esc(C('explain.col_runs'))}</th><th scope="col">{esc(C('explain.col_readers'))}</th><th scope="col" class="t-num">{esc(C('explain.col_withdrawn'))}</th><th scope="col">{esc(C('explain.col_status'))}</th><th scope="col"><span class="vh">{esc(C('explain.col_action'))}</span></th></tr></thead>
+<p class="filters__empty" hidden>{esc(C('explain.none_match'))}</p>
+<div class="table-wrap"><table class="tbl tbl--sortable tbl--families" id="families-table">
+ <caption class="vh">{esc(C('explain.caption'))}</caption>
+ <thead><tr>{''.join(heads)}</tr></thead>
  <tbody>{''.join(rows)}</tbody>
 </table></div>
 {invite}
 </section>
-{review_queue_html(root)}
+{review_queue_html("")}
 </div>"""
-    write_page(rel, page(rel, C("explain.title"), C("explain.lede", families=len(FAMILIES)), body, current="explain"))
+    write_page(rel, page(rel, C("explain.title"), C("explain.lede", families=NUM("families")), body, current="explain"))
 
 
 def build_statements_table():
@@ -3521,7 +3892,7 @@ def build_statements_table():
     body = f"""<div class="frame page">
 <header class="phead">
  <h1 class="phead__title">{esc(C('statements.title'))}</h1>
- <p class="lede">{esc(C('statements.lede', lean=SUMMARY['statements_lean'], main=SUMMARY['statements_lean_main_results']))}</p>
+ <p class="lede">{esc(C('statements.lede', lean=NUM('statements_lean'), main=NUM('statements_lean_main_results')))}</p>
 </header>
 <div class="filters"><label class="vh" for="tbl-filter">{esc(C('statements.filter'))}</label><input id="tbl-filter" class="filter-input" type="search" placeholder="{esc(C('statements.filter'))}" data-filter-rows="stmt-table"><p class="filters__n muted" aria-live="polite" data-shown-template="{esc(C('statements.shown', n='{n}'))}">{esc(C('statements.shown', n=len(STATEMENTS)))}</p></div>
 <div class="table-wrap"><table class="tbl tbl--sortable" id="stmt-table">
@@ -3529,179 +3900,161 @@ def build_statements_table():
  <tbody>{''.join(rows)}</tbody>
 </table></div>
 </div>"""
-    write_page(rel, page(rel, C("statements.title"), C("statements.lede", lean=SUMMARY["statements_lean"], main=SUMMARY["statements_lean_main_results"]), body, current="statements"))
+    write_page(rel, page(rel, C("statements.title"), C("statements.lede", lean=NUM("statements_lean"), main=NUM("statements_lean_main_results")), body, current="statements"))
 
 
-def recompute_checks():
-    """Recount headline numbers from the data files and compare with summary.json."""
-    cur = [m for m in MANUSCRIPTS if m["status"] == "current"]
-    checks = {
-        "families": len(FAMILIES),
-        "disciplines": len(DISCIPLINES),
-        "manuscripts_current": len(cur),
-        "manuscripts_withdrawn": sum(1 for m in MANUSCRIPTS if m["status"] == "withdrawn"),
-        "manuscripts_previous_editions": sum(1 for m in MANUSCRIPTS if m["status"] == "previous-edition"),
-        "statements_lean": len(STATEMENTS),
-        "statements_lean_main_results": sum(1 for s in STATEMENTS if s["main_result"]),
-        "families_with_lean": sum(1 for f in FAMILIES if f["statements"]),
-        "manuscripts_with_lean": sum(1 for m in cur if m["has_lean"]),
-        "lean_statements_declaring_axioms": sum(1 for s in STATEMENTS if s["declares_axiom"]),
-        "lean_vocabulary_total": sum(s["vocabulary_count"] for s in STATEMENTS),
-        "lean_vocabulary_max": max(s["vocabulary_count"] for s in STATEMENTS),
-        "internal_citation_edges": len(GRAPH),
-        "external_citations": sum(len(m.get("references") or []) for m in cur),
-    }
-    out = {}
-    for k, v in checks.items():
-        out[k] = v
-        if SUMMARY.get(k) != v:
-            warn(f"summary.json {k}={SUMMARY.get(k)} but the data files give {v}")
-    return out
+NUMBER_PACKETS = ("number-receipt", "number-members")
+
+# The numbers page's groups, in reading order. Which group a number sits in is
+# presentation; every value, unit, rule, state and credit is the backend's. A sentence
+# key the backend adds later lands in the last group, so nothing is dropped.
+NUMBER_GROUPS = [
+    ("release", ["families", "disciplines", "manuscripts_current", "manuscripts_withdrawn", "manuscripts_previous_editions"]),
+    ("lean", ["statements_lean", "statements_lean_main_results", "main_result_declarations", "distinct_target_theorems",
+              "families_with_lean", "manuscripts_with_lean", "lean_definition_holes", "lean_statements_pure_mathlib",
+              "lean_statements_no_local_vocabulary", "lean_statements_with_custom_vocabulary",
+              "lean_statements_importing_non_mathlib", "lean_statements_declaring_axioms", "lean_vocabulary_total",
+              "lean_vocabulary_median", "lean_vocabulary_max"]),
+    ("citations", ["internal_citation_edges", "atlas_baseline_internal_citation_edges", "manuscripts_citing_collection",
+                   "atlas_baseline_manuscripts_citing_collection", "manuscripts_citing_unformalised_collection_results",
+                   "atlas_baseline_manuscripts_citing_unformalised_collection_results", "external_citations",
+                   "external_works_cited"]),
+    ("scope", ["scope_statements_classified", "scope_class_headline", "scope_class_headline-part", "scope_class_consequence",
+               "scope_class_weaker", "scope_class_supporting", "scope_class_unclear", "scope_families_no_full_headline",
+               "scope_families_partial_headline_only", "scope_families_with_lean_but_no_headline_coverage",
+               "scope_families_mixed_classes"]),
+    ("library", ["lean_projects", "lean_files", "projects_with_model_file", "model_files", "model_statement_definitions",
+                 "model_statement_projects_linked_to_a_family", "manuscript_theorems", "projects_with_manuscript_theorems",
+                 "manuscript_theorems_checked_by_comparator"]),
+    ("papers", ["paper_environments_theorem", "paper_environments_lemma", "paper_environments_proposition",
+                "paper_environments_corollary", "paper_environments_definition", "paper_environments_remark",
+                "paper_environments_hypothesis", "paper_environments_claim", "paper_environments_question"]),
+    ("community", ["community_efforts", "community_findings", "community_people"]),
+    ("other", []),
+]
+
+
+def number_value(summary: dict) -> str:
+    """A number's value as the page prints it: never a zero for an unknown."""
+    v = summary.get("value")
+    if v is None:
+        kv = summary.get("known_value")
+        return C("numbers.value_known", n=num(kv)) if kv is not None else C("numbers.value_unknown")
+    if isinstance(v, float):
+        return f"{v:,.1f}".rstrip("0").rstrip(".") if v != int(v) else num(int(v))
+    return num(v)
+
+
+def NUM(key: str) -> str:
+    """The value of a number the site states in a sentence, from the backend's numbers
+    index (r.number), formatted for a sentence. Unknown values say so in words."""
+    return number_value(RD().number(key))
+
+
+def NUMV(key: str):
+    """The raw value (None when unknown), for choosing singular or plural wording."""
+    return RD().number(key).get("value")
+
+
+def number_credit(summary: dict) -> str:
+    cr = summary.get("credit") or {}
+    names = []
+    for i in cr.get("inputs") or []:
+        n_ = i.get("credit") or i.get("source")
+        if n_ and n_ not in names:
+            names.append(n_)
+    who = "; ".join(names) or cr.get("kind") or ""
+    return who
 
 
 def build_numbers():
     rel = "numbers.html"
-    s = SUMMARY
-    defs = s.get("definitions", {})
-    receipts = {r.get("key"): r for r in (s.get("metric_receipts") or []) if isinstance(r, dict) and r.get("key")}
-    used_receipts = set()
-
-    def receipt_html(key):
-        r = receipts.get(key)
-        if not r:
-            return ""
-        used_receipts.add(key)
-        rows = []
-        for field in ("unit", "universe", "rule", "source"):
-            if r.get(field):
-                val = f'<code>{esc(r[field])}</code>' if field == "source" else esc(r[field])
-                rows.append(f'<div><dt>{esc(C("numbers.receipt_" + field))}</dt><dd>{val}</dd></div>')
-        return f'<details class="receipt"><summary>{esc(C("numbers.receipt_heading"))}</summary><dl class="dl dl--receipt">{"".join(rows)}</dl></details>'
-
-    items = []
-    for k in NUMBER_ORDER:
-        if k not in s or not isinstance(s[k], int):
+    r = RD()
+    # The receipts and their member pages, copied at their logical paths for the page's
+    # script; the build reconstructs every receipt and checks its digest first.
+    dst = OUT / "data"
+    for logical, path in r.browser_files(NUMBER_PACKETS):
+        r.packet(logical)
+        out = dst / logical
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, out)
+    keys = r.numbers_index["sentence_keys"]
+    grouped = {g: [k for k in ks if k in keys] for g, ks in NUMBER_GROUPS}
+    placed = {k for ks in grouped.values() for k in ks}
+    grouped["other"] = [k for k in keys if k not in placed]
+    labels = COPY["numbers"]["labels"]
+    credits = Counter(number_credit(r.number(k)) for k in keys)
+    common_credit = credits.most_common(1)[0][0] if credits else ""
+    sections = []
+    for g, ks in NUMBER_GROUPS:
+        ks = grouped[g]
+        if not ks:
             continue
-        it = number_item(k)
-        # Wording comes from copy.json, which owns every sentence on the site; the
-        # data file's definition is the fallback for a number copy.json does not describe.
-        d = it.get("definition") or defs.get(k) or defs.get(it.get("definition_key", "")) or ""
-        extra = ""
-        if k == "lean_vocabulary_max" and s.get("lean_vocabulary_max_statement") in ST:
-            sid = s["lean_vocabulary_max_statement"]
-            extra = f' <a href="statements/{esc(sid)}.html"><code>{esc(sid)}</code></a>'
-        if k == "lean_statements_declaring_axioms" and s.get("lean_statements_declaring_axioms_ids"):
-            extra = " " + ", ".join(f'<a href="statements/{esc(x)}.html"><code>{esc(x)}</code></a>' for x in s["lean_statements_declaring_axioms_ids"])
-        if k == "lean_statements_pure_mathlib" and s.get("lean_statements_pure_mathlib_ids"):
-            extra = " " + ", ".join(f'<a href="statements/{esc(x)}.html"><code>{esc(x)}</code></a>' for x in s["lean_statements_pure_mathlib_ids"])
-        if k == "lean_definition_holes" and s.get("lean_statements_with_definition_holes"):
-            extra = " " + ", ".join(f'<a href="statements/{esc(x)}.html"><code>{esc(x)}</code></a>' for x in s["lean_statements_with_definition_holes"])
-        items.append(f"""<article class="numrow" id="{k}">
- <p class="numrow__v">{num(s[k])}</p>
+        rows = []
+        for k in ks:
+            s = r.number(k)
+            r.number_receipt(k)            # stops the build if the receipt does not reconstruct
+            state = s.get("state") or "computed"
+            value = number_value(s)
+            label = labels.get(k) or k.replace("_", " ")
+            rule = s.get("rule") or ""
+            credit = number_credit(s)
+            receipt = s.get("receipt") or {}
+            raw = f'data/{receipt.get("path")}' if receipt.get("path") else ""
+            state_words = C("numbers.state." + state) if state in COPY["numbers"]["state"] else state
+            rows.append(f"""<article class="numrow" id="n-{esc(k)}" data-receipt="{esc(receipt.get('path') or '')}">
+ <p class="numrow__v{' numrow__v--unknown' if s.get('value') is None else ''}">{esc(value)}</p>
  <div class="numrow__t">
-  <h2 class="h3">{esc(it.get('label', k))}</h2>
-  <p><span class="numrow__k">{esc(C('numbers.definition'))}.</span> {esc(d)}{extra}</p>
-  <p><span class="numrow__k">{esc(C('numbers.how'))}.</span> {esc(it.get('how', ''))}</p>
-  {receipt_html(k)}
+  <h3 class="h3">{esc(cap(label))}</h3>
+  <p class="numrow__unit">{esc(C('numbers.unit', unit=s.get('unit') or ''))} <span class="numrow__state numrow__state--{esc(state)}">{esc(state_words)}</span></p>
+  <p class="numrow__rule"><span class="numrow__k">{esc(C('numbers.rule'))}</span> {esc(rule)}</p>
+  {f'<p class="numrow__credit"><span class="numrow__k">{esc(C("numbers.credit"))}</span> {esc(credit)}</p>' if credit != common_credit else ''}
+  <details class="receipt" data-key="{esc(k)}"><summary>{esc(C('numbers.records'))}</summary>
+   <div class="receipt__body"><p class="small muted">{esc(C('numbers.records_nojs'))} <a href="{esc(raw)}">{esc(C('numbers.records_raw'))}</a></p></div>
+  </details>
  </div>
 </article>""")
-    # The draft scope reading, with its unclear class kept apart.
-    sc = s.get("scope_coverage") or {}
-    scope_html = ""
-    if sc.get("classes"):
-        if COVER_STALE:
-            scope_body = f'<p>{esc(C("numbers.scope_stale"))}</p>'
-        else:
-            order = ["headline", "headline-part", "consequence", "weaker", "supporting", "unclear"]
-            keys = order + [k for k in sc["classes"] if k not in order]
-            rows_ = "".join(f'<tr><td>{esc(cover_label(k))}</td><td class="t-num">{num(sc["classes"][k])}</td></tr>' for k in keys if k in sc["classes"])
-            total = sum(v for v in sc["classes"].values() if isinstance(v, int))
-            rows_ += f'<tr><td><strong>{esc(C("numbers.scope_total"))}</strong></td><td class="t-num"><strong>{num(total)}</strong></td></tr>'
-            fam_rows = []
-            for key in ("families_no_full_headline", "families_partial_headline_only", "families_with_lean_but_no_headline_coverage", "families_mixed_classes"):
-                v = sc.get(key)
-                if isinstance(v, list):
-                    links = ", ".join(f'<a href="families/{esc(x)}.html">{esc(x)}</a>' for x in v if x in FAM)
-                    fam_rows.append(f'<details class="receipt"><summary>{esc(C("numbers.scope_" + key, n=len(v)))}</summary><p class="small">{links}</p></details>')
-            scope_body = f'<table class="tbl tbl--narrow"><tbody>{rows_}</tbody></table>{"".join(fam_rows)}'
-        scope_html = f'<section class="band" aria-labelledby="h-scope-n" id="scope"><h2 class="h2" id="h-scope-n">{esc(C("numbers.scope_heading"))}</h2><p class="intro">{esc(C("numbers.scope_intro"))}</p>{scope_body}{receipt_html("scope_coverage")}</section>'
-    # The Lean library scan: a source index, never a check.
-    lc = s.get("lean_claim_layer") or {}
-    claim_html = ""
-    if lc:
-        crow = []
-        for key in ("lean_projects", "lean_files", "projects_with_model_file", "model_files", "model_statement_definitions", "model_statement_projects_linked_to_a_family", "manuscript_theorems", "projects_with_manuscript_theorems"):
-            if isinstance(lc.get(key), int):
-                crow.append(f'<tr><td>{esc(C("numbers.claims." + key))}</td><td class="t-num">{num(lc[key])}</td></tr>')
-        direct = lc.get("manuscript_theorems_checked_by_comparator")
-        direct_p = f'<p>{esc(C("numbers.claims.direct", n=num_words(direct), total=lc.get("manuscript_theorems", 0)))}</p>' if isinstance(direct, int) else ""
-        claim_html = f'<section class="band" aria-labelledby="h-claims" id="lean-library"><h2 class="h2" id="h-claims">{esc(C("numbers.claims.heading"))}</h2><p class="intro">{esc(C("numbers.claims.intro"))}</p><table class="tbl tbl--narrow"><tbody>{"".join(crow)}</tbody></table>{direct_p}</section>'
-    def other_receipts():
-        rest = [k for k in receipts if k not in used_receipts]
-        if not rest:
-            return ""
-        out = []
-        for k in rest:
-            r = receipts[k]
-            label = number_item(k).get("label") or r.get("unit") or ""
-            val = num(r["value"]) if isinstance(r.get("value"), int) else ""
-            out.append(f'<article class="numrow" id="receipt-{esc(k)}"><p class="numrow__v">{val}</p><div class="numrow__t"><h3 class="h3">{esc(label)}</h3>{receipt_html(k)}</div></article>')
-        return f'<section class="band" aria-labelledby="h-receipts"><h2 class="h2" id="h-receipts">{esc(C("numbers.receipts_heading"))}</h2>{"".join(out)}</section>'
-
-    # upstream figures
-    upr = s.get("upstream_reported", {})
+        intro = C("numbers.group_intro." + g) if g in COPY["numbers"]["group_intro"] else ""
+        extra = ""
+        if g == "citations":
+            extra = f'<p class="intro">{esc(C("numbers.two_inventories", current=NUM("internal_citation_edges"), baseline=NUM("atlas_baseline_internal_citation_edges")))}</p>'
+        sections.append(f'<section class="band" aria-labelledby="h-n-{g}"><h2 class="h2" id="h-n-{g}">{esc(C("numbers.group." + g))}</h2>'
+                        f'{f"<p class=intro>{esc(intro)}</p>" if intro else ""}{extra}<div class="numrows">{"".join(rows)}</div></section>')
+    # What OpenAI's release says about itself, quoted, beside the backend's count.
+    s_ = SUMMARY
+    upr = s_.get("upstream_reported", {})
     up_html = []
-    if upr:
-        tf = upr.get("top_line_results_formalized")
-        if tf:
-            up_html.append(f"""<article class="pair" id="openai-formalised">
- <div class="pair__a"><p class="pair__k">{esc(C('numbers.col_openai'))}</p><p class="pair__v">{esc(C('numbers.formalised_value', a=tf['formalized'], b=tf['of']))}</p><blockquote class="quote"><p>“{esc(tf['quote'])}”</p><footer>{esc(C('numbers.quoted_from'))} <a class="ext" href="{esc(tf['source'])}" rel="noopener">history.md</a></footer></blockquote></div>
- <div class="pair__b"><p class="pair__k">{esc(C('numbers.col_atlas'))}</p><p class="pair__v">{esc(C('numbers.atlas_formalised_value', n=s['manuscripts_with_lean']))}</p><p>{esc(C('numbers.upstream_formalised_atlas', n=s['manuscripts_with_lean']))}</p><p class="muted small">{esc(defs.get('manuscripts_with_lean', ''))}</p></div>
+    cat = upr.get("catalogue")
+    if cat:
+        up_html.append(f"""<article class="pair">
+ <div class="pair__a"><p class="pair__k">{esc(C('numbers.col_openai'))}</p><blockquote class="quote"><p>“{esc(cat['quote'])}”</p><footer>{esc(C('numbers.quoted_from'))} <a class="ext" href="{esc(cat['source'])}" rel="noopener">README.md</a></footer></blockquote></div>
+ <div class="pair__b"><p class="pair__k">{esc(C('numbers.col_atlas'))}</p><p>{esc(C('numbers.catalogue_atlas_value', manuscripts=NUM('manuscripts_current'), families=NUM('families')))} <a href="#n-manuscripts_current">{esc(C('numbers.see_records'))}</a></p></div>
 </article>""")
-        cat = upr.get("catalogue")
-        if cat:
-            up_html.append(f"""<article class="pair">
- <div class="pair__a"><p class="pair__k">{esc(C('numbers.col_openai'))}</p><p class="pair__v">{esc(C('numbers.catalogue_value', manuscripts=cat['manuscripts'], families=cat['families']))}</p><blockquote class="quote"><p>“{esc(cat['quote'])}”</p><footer>{esc(C('numbers.quoted_from'))} <a class="ext" href="{esc(cat['source'])}" rel="noopener">README.md</a></footer></blockquote></div>
- <div class="pair__b"><p class="pair__k">{esc(C('numbers.col_atlas'))}</p><p class="pair__v">{esc(C('numbers.catalogue_atlas_value', manuscripts=s['manuscripts_current'], families=s['families']))}</p><p>{esc(C('numbers.upstream_catalogue_atlas', manuscripts=s['manuscripts_current'], families=s['families']))}</p></div>
+    tf = upr.get("top_line_results_formalized")
+    if tf:
+        up_html.append(f"""<article class="pair">
+ <div class="pair__a"><p class="pair__k">{esc(C('numbers.col_openai'))}</p><blockquote class="quote"><p>“{esc(tf['quote'])}”</p><footer>{esc(C('numbers.quoted_from'))} <a class="ext" href="{esc(tf['source'])}" rel="noopener">history.md</a></footer></blockquote></div>
+ <div class="pair__b"><p class="pair__k">{esc(C('numbers.col_atlas'))}</p><p>{esc(C('numbers.upstream_formalised_atlas', n=NUM('manuscripts_with_lean')))} <a href="#n-manuscripts_with_lean">{esc(C('numbers.see_records'))}</a></p></div>
 </article>""")
-        pp = upr.get("problems_posed")
-        if pp:
-            up_html.append(f"""<article class="pair">
- <div class="pair__a"><p class="pair__k">{esc(C('numbers.col_openai'))}</p><p class="pair__v">{esc(C('numbers.problems_value', n=pp['approximately']))}</p><blockquote class="quote"><p>“{esc(pp['quote'])}”</p><footer>{esc(C('numbers.quoted_from'))} <a class="ext" href="{esc(pp['source'])}" rel="noopener">README.md</a></footer></blockquote></div>
- <div class="pair__b"><p class="pair__k">{esc(C('numbers.col_atlas'))}</p><p>{esc(C('numbers.upstream_problems_atlas'))}</p></div>
-</article>""")
-    rc = s.get("lean_count_reconciliation") or {}
-    recon_rows = []
-    for key in ("families_with_lean_in_scope_notes", "families_with_a_paper_in_formalization_yaml_sources", "papers_in_formalization_yaml_sources", "tier_list_families_with_lean", "tier_list_lean_formalisations_total",
-                "mathvet_families_full", "mathvet_families_partial", "mathvet_families_weaker_or_supporting",
-                "cert_machine_families_matching", "cert_machine_families_narrower_declared", "cert_machine_families_narrower_undeclared_or_unlinked", "cert_machine_families_different_or_supporting",
-                "mathvet_challenges_accepted", "cert_machine_challenges_accepted"):
-        if rc.get(key) is not None:
-            recon_rows.append(f'<tr><td>{esc(C("numbers.recon." + key))}</td><td class="t-num">{num(rc[key])}</td></tr>')
-    if rc.get("openai_reported_top_line_formalized"):
-        recon_rows.append(f'<tr><td>{esc(C("numbers.recon.openai_reported"))}</td><td class="t-num">\u201c{esc(rc["openai_reported_top_line_formalized"])}\u201d</td></tr>')
-    recon_html = (f'<section class="band" aria-labelledby="h-recon"><h2 class="h2" id="h-recon">{esc(C("numbers.recon.heading"))}</h2><p class="intro">{esc(C("numbers.recon.intro"))}</p><table class="tbl"><tbody>{"".join(recon_rows)}</tbody></table><p class="muted small">{esc(C("numbers.recon.note"))}</p></section>') if recon_rows else ""
-    envs = s.get("paper_statement_environments", {})
-    env_rows = "".join(f'<tr><td>{esc(k)}</td><td class="t-num">{num(v)}</td></tr>' for k, v in sorted(envs.items(), key=lambda kv: -kv[1]))
     wd = [m for m in MANUSCRIPTS if m["status"] == "withdrawn"]
     wd_html = "".join(f'<article class="note note--warn"><h3 class="h3"><a href="papers/{esc(m["id"])}.html">{ms_title_html(m)}</a></h3><div class="md-math">{md_paragraphs(m.get("withdrawal_note") or "")}</div><p class="muted small">{esc(C("paper.withdrawn_on", date=m.get("withdrawn_on") or ""))}</p></article>' for m in wd)
     hist = "".join(f'<article class="changelog"><h3 class="h3">{esc(h["date"])}</h3><blockquote class="quote md-math">{md_paragraphs(h["markdown"])}<footer><a class="ext" href="{BASE_BLOB}history.md" rel="noopener">{esc(C("numbers.changelog_source"))}</a></footer></blockquote></article>' for h in HISTORY)
-    body = f"""<div class="frame page">
+    toc = "".join(f'<li><a href="#h-n-{g}">{esc(C("numbers.group." + g))}</a></li>' for g, _ in NUMBER_GROUPS if grouped[g])
+    body = f"""<div class="frame page page--numbers" data-generation="{esc(r.generation)}">
 <header class="phead">
  <h1 class="phead__title">{esc(C('numbers.title'))}</h1>
- <p class="lede">{esc(C('numbers.lede', commit_short=COMMIT_SHORT))}</p>
+ <p class="lede">{esc(C('numbers.lede'))}</p>
+ <p class="phead__facts">{esc(C('numbers.states_note'))}</p>
+ <p class="phead__facts">{esc(C('numbers.credit_common', credit=common_credit))}</p>
+ <nav class="numtoc" aria-label="{esc(C('numbers.toc_label'))}"><ul>{toc}</ul></nav>
 </header>
+{''.join(sections)}
 <section class="band" aria-labelledby="h-up"><h2 class="h2" id="h-up">{esc(C('numbers.upstream_heading'))}</h2><p class="intro">{esc(C('numbers.upstream_intro'))}</p>{''.join(up_html)}</section>
-{recon_html}
-<section class="band" aria-labelledby="h-atlas-n"><h2 class="h2" id="h-atlas-n">{esc(C('numbers.atlas_heading'))}</h2>{''.join(items)}</section>
-{scope_html}
-{claim_html}
-<section class="band" aria-labelledby="h-envs"><h2 class="h2" id="h-envs">{esc(C('numbers.envs_heading'))}</h2><p class="intro">{esc(C('numbers.envs_intro', manuscripts=s['manuscripts_current'], unparsed=len(s.get('manuscripts_tex_unparsed') or [])))}</p><table class="tbl tbl--narrow"><tbody>{env_rows}</tbody></table>{receipt_html('paper_statement_environments')}</section>
-{other_receipts()}
-<section class="band" aria-labelledby="h-wd"><h2 class="h2" id="h-wd">{esc(C('numbers.withdrawn_heading'))}</h2><p class="intro">{esc(C('numbers.withdrawn_intro', n=len(wd)))}</p>{wd_html}</section>
+<section class="band" aria-labelledby="h-wd"><h2 class="h2" id="h-wd">{esc(C('numbers.withdrawn_heading'))}</h2><p class="intro">{esc(C('numbers.withdrawn_intro', n=NUM('manuscripts_withdrawn')))}</p>{wd_html}</section>
 <section class="band" aria-labelledby="h-hist"><h2 class="h2" id="h-hist">{esc(C('numbers.changelog_heading'))}</h2>{hist}</section>
-</div>"""
-    write_page(rel, page(rel, C("numbers.title"), C("numbers.lede", commit_short=COMMIT_SHORT), body, current="numbers"))
+</div>
+{json_script('number-words', COPY['numbers']['js'])}"""
+    write_page(rel, page(rel, C("numbers.title"), C("numbers.lede"), body, current="numbers"))
 
 
 def build_references_outside():
@@ -3736,13 +4089,13 @@ def build_references_outside():
     body = f"""<div class="frame page">
 <header class="phead">
  <h1 class="phead__title">{esc(C('references_outside.title'))}</h1>
- <p class="lede">{esc(C('references_outside.lede', works=SUMMARY['external_works_cited'], citations=SUMMARY['external_citations'], n=len(hl)))}</p>
+ <p class="lede">{esc(C('references_outside.lede', works=NUM('external_works_cited'), citations=NUM('external_citations'), n=len(hl)))}</p>
  <p>{esc(C('references_outside.credit'))}</p>
  <p class="muted small">{esc(C('references_outside.how'))}</p>
 </header>
 <section class="band band--tight">{''.join(rows)}</section>
 </div>"""
-    write_page(rel, page(rel, C("references_outside.title"), C("references_outside.lede", works=SUMMARY["external_works_cited"], citations=SUMMARY["external_citations"], n=len(hl)), body))
+    write_page(rel, page(rel, C("references_outside.title"), C("references_outside.lede", works=NUM("external_works_cited"), citations=NUM("external_citations"), n=len(hl)), body))
 
 
 def build_sources():
@@ -3752,7 +4105,7 @@ def build_sources():
     up = f"""<article class="ceff" id="src-openai-math">
  <h3 class="h3"><a class="ext" href="{esc(CFG['upstream_repo'])}/tree/{COMMIT}" rel="noopener">openai/math</a></h3>
  <p class="muted small">OpenAI, {esc(C('sources.pinned', commit=COMMIT_SHORT))}, Apache-2.0</p>
- <p>{esc(C('sources.openai_uses', families=s['families'], manuscripts=s['manuscripts_current'], lean=s['statements_lean']))}</p>
+ <p>{esc(C('sources.openai_uses', families=NUM('families'), manuscripts=NUM('manuscripts_current'), lean=NUM('statements_lean')))}</p>
 </article>"""
     own = f"""<article class="ceff" id="src-atlas">
  <h3 class="h3"><a class="ext" href="{esc(REPO)}" rel="noopener">{esc(C('site.name'))}</a></h3>
@@ -3784,7 +4137,7 @@ def build_sources():
  {adopted_list_html(e.get('adopted'))}
 </article>""")
     people = {(a.get("name") or a.get("handle")) for e in COMMUNITY["list"] for a in (e.get("authors") or [])}
-    lede = C("sources.lede", sources=2 + len(s.get("sources", [])) + len(COMMUNITY["list"]), people=len(people), findings=len(COMMUNITY["findings"]))
+    lede = C("sources.lede", sources=num(2 + len(s.get("sources", [])) + (NUMV("community_efforts") or len(COMMUNITY["list"]))), people=NUM("community_people"), findings=NUM("community_findings"))
     body = f"""<div class="frame page">
 <header class="phead">
  <h1 class="phead__title">{esc(C('sources.title'))}</h1>
@@ -3821,12 +4174,12 @@ def build_citations_within():
     body = f"""<div class="frame page">
 <header class="phead">
  <h1 class="phead__title">{esc(C('citations_within.title'))}</h1>
- <p class="lede">{esc(C('citations_within.lede', edges=SUMMARY['internal_citation_edges'], n=len(hl)))}</p>
+ <p class="lede">{esc(C('citations_within.lede', edges=NUM('internal_citation_edges'), n=len(hl)))}</p>
  <p class="muted small">{esc(C('citations_within.how'))}</p>
 </header>
 <section class="band band--tight">{''.join(rows)}</section>
 </div>"""
-    write_page(rel, page(rel, C("citations_within.title"), C("citations_within.lede", edges=SUMMARY["internal_citation_edges"], n=len(hl)), body))
+    write_page(rel, page(rel, C("citations_within.title"), C("citations_within.lede", edges=NUM("internal_citation_edges"), n=len(hl)), body))
 
 
 def contributor_names():
@@ -3857,10 +4210,27 @@ def build_contribute():
     write_page(rel, page(rel, C("contribute.title"), C("contribute.lede"), body, current="contribute"))
 
 
+def credited_groups() -> list[str]:
+    """Every outside group whose record the backend carries: readings, re-runs and check
+    cards, by their credited names, in first-seen order."""
+    r = RD()
+    names = []
+    for fid in r.family_ids():
+        d = r.family(fid)
+        recs = [x.get("credit") for x in d.get("readings") or []]
+        recs += [run.get("credit") for l in d.get("lean") or [] for run in l.get("runs") or []]
+        recs += [c.get("credit") for c in d.get("independent_check_cards") or []]
+        for cr in recs:
+            n_ = (cr or {}).get("name")
+            if n_ and n_ not in names:
+                names.append(n_)
+    return names
+
+
 def build_about():
     rel = "about.html"
-    s = SUMMARY
-    fill = dict(release_date=CFG["release_date"], families=s["families"], families_with_lean=s["families_with_lean"],
+    r = RD()
+    fill = dict(release_date=CFG["release_date"], families=NUM("families"), families_with_lean=NUM("families_with_lean"),
                 commit_short=COMMIT_SHORT, author=CFG["author"])
     cite = C("about.cite_format", author=CFG["author"], name=C("site.name"), url=BASE_URL, commit=COMMIT)
     ur = SUMMARY.get("upstream_reported", {})
@@ -3880,21 +4250,26 @@ def build_about():
         for a in COPY["about"]["approach_items"])
     approach += "</ul>" + f'<p class="approach__then">{esc(C("about.approach_response_intro"))}</p><ul class="adds">' + "".join(
         f"<li>{esc(t)}</li>" for t in COPY["about"]["approach_responses"])
-    reading = list(PAPER_READING.values())
-    groups = len({v["source"] for s_ in STATEMENTS for v in sourced_all(s_, "replay")})
-    adds_fill = dict(manuscripts=num(s["manuscripts_current"]), lean=num(s["statements_lean"]), families=num(s["families"]),
-                     accepted=num(reading.count("accepted")), partial=num(reading.count("partial")), groups=num(groups))
+    adds_fill = dict(manuscripts=NUM("manuscripts_current"), lean=NUM("statements_lean"), families=NUM("families"))
     adds = "".join(f"<li>{esc(t.format(**adds_fill))}</li>" for t in COPY["about"]["adds_items"])
-    import backend
-    b = backend.load()
-    backend_p = f'<p>{esc(C("about.backend", generation=b.generation.split(":")[-1][:12]))}</p>' if b else ""
+    receipt = r.export.get("acceptance_receipt") or {}
+    backend_p = (f'<p>{esc(C("about.backend"))}</p>'
+                 f'<p>{esc(C("about.backend_pin", generation=r.generation.split(":")[-1][:12], commit=(r.commit or "")[:12], runtime=(r.runtime or "")[:12], exporter=r.exporter or "", receipt=(receipt.get("sha256") or "").split(":")[-1][:12], schema=r.export.get("reader_schema") or ""))} '
+                 f'<a href="numbers.html">{esc(C("about.backend_numbers"))}</a></p>')
+    groups = [prose_credit(g) for g in credited_groups()]
+    group_list = ", ".join(groups[:-1]) + (" " + C("about.and") + " " if len(groups) > 1 else "") + (groups[-1] if groups else "")
+    since = "".join(
+        f'<li class="approach__item"><p><span class="approach__who">{esc(a["who"])}</span>, in '
+        f'<a class="ext" href="{esc(a["url"])}" rel="noopener">{esc(a["title"])}</a>, {esc(a["says"])}</p></li>'
+        for a in COPY["about"]["since_items"])
     body = f"""<div class="frame page page--narrow prose-page">
 <header class="phead"><h1 class="phead__title">{esc(C('about.title'))}</h1></header>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.what_heading'))}</h2><p>{esc(C('about.what', **fill))}</p></section>
 <section class="band band--tight" id="approach" aria-labelledby="h-approach"><h2 class="h2" id="h-approach">{esc(C('about.approach_heading'))}</h2><p>{esc(C('about.approach_intro'))}</p><ul class="approach">{approach}</ul></section>
+<section class="band band--tight" id="since" aria-labelledby="h-since"><h2 class="h2" id="h-since">{esc(C('about.since_heading'))}</h2><p>{esc(C('about.since_intro'))}</p><ul class="approach">{since}</ul><p>{esc(C('about.since_note'))}</p></section>
 <section class="band band--tight" id="adds" aria-labelledby="h-adds"><h2 class="h2" id="h-adds">{esc(C('about.adds_heading'))}</h2><p>{esc(C('about.adds_intro', **adds_fill))}</p><ul class="adds">{adds}</ul></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.how_heading'))}</h2><p>{esc(C('about.how', **fill))}</p>{backend_p}</section>
-<section class="band band--tight"><h2 class="h2">{esc(C('about.independence_heading'))}</h2><p>{esc(C('about.independence'))}</p></section>
+<section class="band band--tight" id="independence"><h2 class="h2">{esc(C('about.independence_heading'))}</h2><p>{esc(C('about.independence'))}</p><p>{esc(C('about.independence_groups', groups=group_list))}</p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.made_heading'))}</h2><p>{esc(C('about.made'))}</p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.not_heading'))}</h2><p>{esc(C('about.not'))}</p></section>
 {('<section class="band band--tight"><h2 class="h2">' + esc(C('about.interests_heading')) + '</h2><p>' + esc(C('about.interests')) + '</p></section>') if C('about.interests') else ''}
@@ -3920,18 +4295,74 @@ def build_404():
     write_page(rel, h, index=False)
 
 
-def build_search_index():
-    idx = []
-    for f in FAMILIES:
-        idx.append({"t": tex_plain(f["title"]), "k": C("words.result").capitalize() + " " + f["id"], "u": f"families/{f['id']}.html", "s": DISCIPLINES[DISC_OF[f["id"]]]["name"]})
-    for m in MANUSCRIPTS:
-        if m["status"] not in ("current", "withdrawn"):
-            continue
-        idx.append({"t": tex_plain(m["title"]), "k": C("words.manuscript").capitalize() + (", " + C("words.status_withdrawn").lower() if m["status"] == "withdrawn" else ""), "u": f"papers/{m['id']}.html", "s": m.get("date") or ""})
-    for s in STATEMENTS:
-        idx.append({"t": (s.get("labels") or [s["id"]])[0], "k": C("words.lean_statement"), "u": f"statements/{s['id']}.html", "s": s["id"]})
-    (OUT / "data").mkdir(parents=True, exist_ok=True)
-    (OUT / "data" / "search.json").write_text(json.dumps(idx, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+SEARCH_PACKETS = ("search-index", "search-shard", "search-entries")
+
+
+def search_url(entry_id: str, kind: str) -> str | None:
+    """The Atlas page that reads a search entry (mirrors urlFor in site/assets/atlas.js;
+    scripts/test_search.py checks both against the backend's own reading_page routes)."""
+    head, _, rest = entry_id.partition(":")
+    quote_c = lambda v: quote(v, safe="-_.!~*'()")    # encodeURIComponent
+    if kind == "family":
+        return f"families/{quote_c(rest)}.html"
+    if kind == "lean":
+        return f"statements/{quote_c(rest)}.html"
+    if kind == "manuscript":
+        return f"papers/{quote_c(rest)}.html"
+    if kind == "discipline":
+        return "index.html#o=" + quote_c(entry_id)
+    if kind == "statement":
+        slug, _, anchor = rest.partition(":")
+        return f"papers/{quote_c(slug)}.html#" + quote(anchor, safe=";,/?:@&=+$-_.!~*'()")
+    return None
+
+
+def build_search_data():
+    """Copy Statement Map's compact search into data/search/ at its logical paths, and
+    write labels.json beside it: which index range holds which kind of entry, each
+    paper's title and each family's name, discipline and holdings in words, so a result list can
+    show them without loading the reader packets. Every file carries the generation."""
+    r = RD()
+    dst = OUT / "data" / "search"
+    for logical, path in r.browser_files(SEARCH_PACKETS):
+        r.packet(logical)       # checks bytes, release, pin and generation
+        out = dst / logical
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, out)
+    idx = r.search_index
+    entries = []
+    for k, chunk in enumerate(idx["entry_chunks"]):
+        doc = r.packet(chunk)
+        if doc.get("start") != k * idx["entry_chunk_size"]:
+            raise SystemExit(f"{chunk} starts at {doc.get('start')}")
+        entries.extend(doc["entries"])
+    if len(entries) != idx["entry_count"]:
+        raise SystemExit(f"search entries: {len(entries)} read, the index says {idx['entry_count']}")
+    runs = []
+    for i, e in enumerate(entries):
+        if runs and runs[-1][0] == e["kind"] and runs[-1][2] == i - 1:
+            runs[-1][2] = i
+        else:
+            runs.append([e["kind"], i, i])
+    import evidence
+    disc_name = {}
+    for d in r.universe.get("disciplines") or []:
+        for fid in d.get("family_ids") or []:
+            disc_name[fid] = d["name"]
+    say = evidence.say
+
+    def holdings(ev):
+        papers = say("sentence.papers_one") if ev.papers == 1 else say("sentence.papers_many", n=ev.papers)
+        k = len(ev.lean)
+        lean = say("sentence.lean_none") if k == 0 else say("sentence.lean_one") if k == 1 else say("sentence.lean_many", n=k)
+        return f"{papers}, {lean}"
+
+    fams = {ev.id: {"n": ev.name, "d": disc_name.get(ev.id, ""), "e": holdings(ev)} for ev in evidence.all_families(r)}
+    labels = {"schema": "plectis-atlas-search-labels/1", "generation_id": r.generation,
+              "source": "search-index.json and its entry chunks; family holdings from the reader packets",
+              "kinds": runs, "papers": {e["id"]: e["name"] for e in entries if e["kind"] == "manuscript"},
+              "families": fams}
+    (dst / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
 
 def build_sitemap():
@@ -3962,7 +4393,7 @@ def social_card_html():
         for f, (a, b, c, e) in zip(fams, inner):
             cls = "sc-main" if fam_has_main(FAM[f]) else ("sc-sup" if FAM[f]["statements"] else "sc-none")
             svg.append(f'<rect x="{a + 1:.1f}" y="{b + 1:.1f}" width="{max(c - 2, 0):.1f}" height="{max(e - 2, 0):.1f}" class="{cls}"/>')
-    line = C("social.card_line", families=s["families"], manuscripts=s["manuscripts_current"], lean=s["statements_lean"], commit_short=COMMIT_SHORT)
+    line = C("social.card_line", families=NUM("families"), manuscripts=NUM("manuscripts_current"), lean=NUM("statements_lean"), commit_short=COMMIT_SHORT)
     return f"""<!doctype html><html lang="en-GB" data-theme="dark"><head><meta charset="utf-8"><link rel="stylesheet" href="../assets/atlas.css"></head>
 <body class="social"><div class="social__card"><div class="social__text"><p class="social__brand">{MARK_SVG}</p><h1>{esc(C('social.card_title'))}</h1><p>{esc(line)}</p><p class="social__key"><span class="k"><span class="sw sw--main"></span><span>{esc(C('home.legend_lean_main'))}</span></span><span class="k"><span class="sw sw--sup"></span><span>{esc(C('home.legend_lean_support'))}</span></span><span class="k"><span class="sw sw--none"></span><span>{esc(C('home.legend_lean_none'))}</span></span></p></div>
 <svg class="social__map" viewBox="0 0 {W} {H}" width="{W}" height="{H}">{''.join(svg)}</svg></div></body></html>"""
@@ -4084,12 +4515,9 @@ def main():
     shutil.copytree(ASSETS, OUT / "assets")
     (OUT / ".nojekyll").write_text("")
     (OUT / "cards").mkdir(exist_ok=True)
-    recompute_checks()
 
-    md = map_data()
     (OUT / "data").mkdir(parents=True, exist_ok=True)
-    (OUT / "data" / "atlas-map.json").write_text(json.dumps(md, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    build_home(md)
+    build_home()
     for f in FAMILIES:
         build_family(f)
     for m in MANUSCRIPTS:
@@ -4106,7 +4534,7 @@ def main():
     build_contribute()
     build_about()
     build_404()
-    build_search_index()
+    build_search_data()
     (OUT / "cards" / "site.html").write_text(social_card_html(), encoding="utf-8")
     build_sitemap()
 

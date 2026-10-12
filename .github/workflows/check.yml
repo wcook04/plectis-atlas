@@ -36,6 +36,10 @@ jobs:
             mkdir -p ".trusted/$(dirname "$f")" && cp -- "$f" ".trusted/$f"
           done < "$RUNNER_TEMP/changed"
           cd .trusted && xargs -0 -r python3 scripts/check_contributions.py --strict < "$RUNNER_TEMP/changed"
+      - name: Statement Map's vendored packets pass the reader's checks
+        run: python3 scripts/test_reader.py
+      - name: The site search normalises queries exactly as Statement Map indexed them
+        run: python3 scripts/test_search.py
       - name: The data parsers read their fixtures correctly
         run: python3 scripts/test_build_data.py
       - name: The paper reader converts its fixtures correctly

@@ -25,44 +25,44 @@ def n(x: int) -> str:
 
 
 def numbers_block(s: dict) -> str:
-    env = s["paper_statement_environments"]
+    """The README's numbers, every one from Statement Map's numbers index (scripts/reader.py),
+    the same receipts the site's Numbers page shows. A number the backend cannot compute
+    says so in words; none becomes a zero."""
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import reader
+    r = reader.load()
+
+    def v(key):
+        x = r.number(key).get("value")
+        if x is None:
+            return "an unknown number of"
+        return n(x) if isinstance(x, int) else (f"{x:g}")
+
+    biggest = ", ".join(m[2:] for m in r.number_receipt("lean_vocabulary_max").get("maximizing_members") or [])
     rows = [
-        f"- **{n(s['families'])} result families** in {s['disciplines']} disciplines, from **{n(s['manuscripts_current'])} current manuscripts** "
-        f"({s['manuscripts_withdrawn']} more were withdrawn and {s['manuscripts_previous_editions']} earlier editions remain in the collection).",
-        f"- **{n(s['statements_lean'])} Comparator challenge files**, {n(s['statements_lean_main_results'])} of them named in OpenAI's list of main results "
-        f"({n(s['main_result_declarations'])} declarations). {n(s['families_with_lean'])} families have a Lean scope note linking at least one challenge file, "
-        f"and those notes name {n(s['manuscripts_with_lean'])} current manuscripts as accompanying papers.",
-        f"- **{n(s['lean_statements_pure_mathlib'])} challenge files** import only Mathlib and add no local vocabulary. The median file adds "
-        f"{s['lean_vocabulary_median']} local vocabulary declarations (definitions, structures, instances, notation and similar), and the largest "
-        f"({s['lean_vocabulary_max_statement']}) adds {n(s['lean_vocabulary_max'])}. Each one is part of what the statement means, so a reader checks it against the paper.",
-        f"- **{n(s['manuscripts_citing_collection'])} manuscripts** cite other manuscripts in the collection ({n(s['internal_citation_edges'])} citation links). "
-        f"{n(s['manuscripts_citing_unformalised_collection_results'])} of them cite at least one manuscript with no accompanying Lean statement.",
-        f"- **{n(s['external_citations'])} resolved references** to work outside the collection, which group automatically into {n(s['external_works_cited'])} works "
+        f"- **{v('families')} result families** in {v('disciplines')} disciplines, from **{v('manuscripts_current')} current manuscripts** "
+        f"({v('manuscripts_withdrawn')} more were withdrawn and {v('manuscripts_previous_editions')} earlier editions remain in the collection).",
+        f"- **{v('statements_lean')} Comparator challenge files**, {v('statements_lean_main_results')} of them named in OpenAI's list of main results "
+        f"({v('main_result_declarations')} declarations). {v('families_with_lean')} families have a Lean scope note linking at least one challenge file, "
+        f"and those notes name {v('manuscripts_with_lean')} current manuscripts as accompanying papers.",
+        f"- **{v('lean_statements_pure_mathlib')} challenge files** import only Mathlib and add no local vocabulary. The median file adds "
+        f"{v('lean_vocabulary_median')} local vocabulary declarations (definitions, structures, instances, notation and similar), and the largest "
+        f"({biggest}) adds {v('lean_vocabulary_max')}. Each one is part of what the statement means, so a reader checks it against the paper.",
+        f"- **{v('manuscripts_citing_collection')} manuscripts** cite other manuscripts in the collection ({v('internal_citation_edges')} citation links in "
+        f"the current extraction; the Atlas baseline inventory counts {v('atlas_baseline_internal_citation_edges')}). "
+        f"{v('manuscripts_citing_unformalised_collection_results')} of them cite at least one manuscript without associated Lean.",
+        f"- **{v('external_citations')} resolved references** to work outside the collection, which group automatically into {v('external_works_cited')} works "
         f"(by DOI, then arXiv identifier, then title; the grouping is unaudited).",
-        f"- The TeX sources of the current manuscripts contain {n(env.get('theorem', 0))} theorem, {n(env.get('proposition', 0))} proposition, "
-        f"{n(env.get('corollary', 0))} corollary and {n(env.get('lemma', 0))} lemma environments, repeated statements included.",
+        f"- The TeX sources of the current manuscripts contain {v('paper_environments_theorem')} theorem, {v('paper_environments_proposition')} proposition, "
+        f"{v('paper_environments_corollary')} corollary and {v('paper_environments_lemma')} lemma environments, repeated statements included.",
+        f"- **Draft scope reading.** Of {v('scope_statements_classified')} challenge files, an AI agent drafted {v('scope_class_headline')} as stating a paper's "
+        f"headline theorem, {v('scope_class_headline-part')} part of one, {v('scope_class_consequence')} a consequence, {v('scope_class_weaker')} a weaker form "
+        f"and {v('scope_class_supporting')} a supporting result; for {v('scope_class_unclear')} OpenAI's note leaves it unclear. "
+        "The agent classified each file from OpenAI's scope note, quoting the note; no person has reviewed it.",
+        "- **Outside readers.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine) "
+        "each read every family's Lean against its headline, independently of OpenAI and of each other. Their findings, in their own terms, "
+        "are on each family page and in the Families list.",
     ]
-    sc = s.get("scope_coverage")
-    if sc and sc.get("stale"):
-        rows.append("- **Draft scope reading.** Withheld: it was made for a different upstream commit or set of challenge files "
-                    f"({'; '.join(sc.get('stale_reasons') or [])}).")
-    elif sc:
-        k = sc["classes"]
-        rows.append(
-            f"- **Draft scope reading.** Of {n(sc['statements_classified'])} challenge files, {n(k.get('headline', 0))} state a paper's headline theorem as stated, "
-            f"{n(k.get('headline-part', 0))} part of one, {n(k.get('consequence', 0))} a consequence, {n(k.get('weaker', 0))} a weaker form and "
-            f"{n(k.get('supporting', 0))} a supporting result; for {n(k.get('unclear', 0))} the note leaves it unclear. "
-            f"In {n(len(sc['families_with_lean_but_no_headline_coverage']))} families with Lean statements, no statement covers the headline result or part of it, "
-            f"and in {n(len(sc.get('families_partial_headline_only') or []))} more only part of it is covered. "
-            "An AI agent classified each file from OpenAI's scope note, quoting the note (`curated/scope_coverage.json`); no person has reviewed it."
-        )
-    ra = s.get("readers_agreement") or {}
-    if ra.get("agree-full") is not None:
-        rows.append(
-            f"- **Two independent readers.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine), "
-            f"reading each family's Lean against its headline independently of OpenAI and of each other, agree that {n(ra.get('agree-full', 0))} families' "
-            f"Lean states the headline and {n(ra.get('agree-less', 0))} states less; they disagree on {n(ra.get('disagree', 0))}. "
-            "Their verdicts sit on each family page, credited.")
     try:
         pa = load("paper_acceptance.json")
     except FileNotFoundError:
@@ -78,8 +78,8 @@ def numbers_block(s: dict) -> str:
             + ". Formulas are checked with the KaTeX version the site loads. The PDF stays the reference (`data/paper_acceptance.json`).")
     rows += [
         "",
-        f"Counted from [openai/math at `{s['upstream']['commit'][:12]}`](https://github.com/openai/math/tree/{s['upstream']['commit']}) by "
-        "`scripts/build_data.py`. The unit, universe and rule behind each number are in `data/summary.json` under `metric_receipts`.",
+        f"Counted by Statement Map from [openai/math at `{r.pin[:12]}`](https://github.com/openai/math/tree/{r.pin}), generation "
+        f"`{r.generation.split(':')[-1][:12]}`. The unit, rule, state and credit behind each number, and its members, are on the site's Numbers page.",
     ]
     return "\n".join(rows)
 

@@ -1,6 +1,6 @@
 /* Plectis Atlas: shared page behaviour.
    Theme switch, mathematics (KaTeX, with the TeX source kept where it cannot be
-   typeset), copy buttons, site search, sortable and filterable tables, and the
+   typeset), copy buttons, sortable and filterable tables, and the
    receipt card's fitting. No frameworks. */
 (function () {
   'use strict';
@@ -38,6 +38,25 @@
   if (toggle) {
     syncToggle();
     toggle.addEventListener('click', function () { setTheme(effectiveTheme() === 'dark' ? 'light' : 'dark'); });
+  }
+
+  /* ---- Site menu (phones) ------------------------------------------------ */
+  /* Below 760px the navigation folds behind one Menu button so the header stays one
+     row; without JavaScript the links simply wrap. Escape or a click outside closes it. */
+  var navBtn = doc.querySelector('.nav-toggle');
+  var nav = doc.getElementById('site-nav');
+  if (navBtn && nav) {
+    var setNav = function (open) {
+      navBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      nav.classList.toggle('nav--open', open);
+    };
+    navBtn.addEventListener('click', function () { setNav(navBtn.getAttribute('aria-expanded') !== 'true'); });
+    doc.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape' && navBtn.getAttribute('aria-expanded') === 'true') { setNav(false); navBtn.focus(); }
+    });
+    doc.addEventListener('click', function (ev) {
+      if (navBtn.getAttribute('aria-expanded') === 'true' && !nav.contains(ev.target) && !navBtn.contains(ev.target)) setNav(false);
+    });
   }
 
   /* ---- Mathematics ---------------------------------------------------- */
@@ -142,98 +161,8 @@
     } catch (e) { failed(); }
   });
 
-  /* ---- Site search ------------------------------------------------------ */
-  var dlg = doc.getElementById('search-dialog');
-  var index = null;
-  var indexFailed = false;
-  var sel = -1;
-  function norm(s) { return (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
-  function loadIndex(cb) {
-    if (index) return cb();
-    fetch(root + 'data/search.json').then(function (r) {
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    }).then(function (j) {
-      index = j.map(function (e) { e.n = norm(e.t + ' ' + e.k + ' ' + e.s); return e; });
-      indexFailed = false;
-      cb();
-    }).catch(function () { index = null; indexFailed = true; cb(); });
-  }
-  function runSearch() {
-    var input = dlg.querySelector('.search__input');
-    var list = dlg.querySelector('.search__results');
-    var empty = dlg.querySelector('.search__empty');
-    var failedEl = dlg.querySelector('.search__failed');
-    var q = norm(input.value).trim();
-    list.innerHTML = '';
-    sel = -1;
-    input.removeAttribute('aria-activedescendant');
-    /* An index that did not load is not the same as no matches. */
-    if (failedEl) failedEl.hidden = !indexFailed;
-    if (indexFailed || !index) { empty.hidden = true; return; }
-    if (!q) { empty.hidden = true; return; }
-    var terms = q.split(/\s+/);
-    var hits = [];
-    for (var i = 0; i < index.length && hits.length < 400; i++) {
-      var e = index[i];
-      var ok = true;
-      for (var t = 0; t < terms.length; t++) if (e.n.indexOf(terms[t]) < 0) { ok = false; break; }
-      if (ok) hits.push(e);
-    }
-    hits.sort(function (a, b) { return (norm(a.t).indexOf(terms[0]) === 0 ? 0 : 1) - (norm(b.t).indexOf(terms[0]) === 0 ? 0 : 1); });
-    hits = hits.slice(0, 40);
-    empty.hidden = hits.length > 0;
-    hits.forEach(function (e, k) {
-      var li = doc.createElement('li');
-      var a = doc.createElement('a');
-      a.href = root + e.u;
-      a.setAttribute('role', 'option');
-      a.id = 'sr-' + k;
-      a.textContent = e.t;
-      var s = doc.createElement('span');
-      s.className = 'k';
-      s.textContent = e.k + (e.s ? ', ' + e.s : '');
-      a.appendChild(s);
-      li.appendChild(a);
-      list.appendChild(li);
-    });
-  }
-  function moveSel(d) {
-    var items = dlg.querySelectorAll('.search__results a');
-    if (!items.length) return;
-    if (sel >= 0 && items[sel]) items[sel].removeAttribute('aria-selected');
-    sel = (sel + d + items.length) % items.length;
-    items[sel].setAttribute('aria-selected', 'true');
-    items[sel].scrollIntoView({ block: 'nearest' });
-    dlg.querySelector('.search__input').setAttribute('aria-activedescendant', items[sel].id);
-  }
-  function openSearch() {
-    if (!dlg || dlg.open) return;
-    loadIndex(function () { runSearch(); });
-    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
-    dlg.querySelector('.search__input').focus();
-  }
-  if (dlg) {
-    var ob = doc.querySelector('.search-open');
-    if (ob) ob.addEventListener('click', openSearch);
-    dlg.querySelector('.search__input').addEventListener('input', function () { loadIndex(runSearch); });
-    dlg.addEventListener('keydown', function (ev) {
-      if (ev.key === 'ArrowDown') { ev.preventDefault(); moveSel(1); }
-      else if (ev.key === 'ArrowUp') { ev.preventDefault(); moveSel(-1); }
-      else if (ev.key === 'Enter') {
-        var items = dlg.querySelectorAll('.search__results a');
-        var pick = items[sel >= 0 ? sel : 0];
-        if (pick) { ev.preventDefault(); location.href = pick.href; }
-      }
-    });
-    dlg.addEventListener('click', function (ev) { if (ev.target === dlg) dlg.close(); });
-    doc.addEventListener('keydown', function (ev) {
-      if (ev.key === '/' && !ev.metaKey && !ev.ctrlKey && !/^(INPUT|TEXTAREA|SELECT)$/.test((doc.activeElement || {}).tagName || '') && !(doc.activeElement && doc.activeElement.isContentEditable)) {
-        ev.preventDefault();
-        openSearch();
-      }
-    });
-  }
+  /* Loose matching for the tables' own filters (site search is the separate block below). */
+  function norm(s) { return (s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
 
   /* ---- Tables ----------------------------------------------------------- */
   function shownCount(container, n) {
@@ -302,6 +231,247 @@
     if (params.get('d')) { var cb = wrap.querySelector('[data-filter-d="' + params.get('d') + '"]'); if (cb) cb.click(); }
     apply();
   });
+
+  /* The Families list: filters by discipline, evidence, each outside reader's finding
+     and words, combined; the state lives in the address (?d=&c=&l=&r=&q=) so a
+     filtered list can be shared. Without JavaScript the whole list shows and the
+     filters stay hidden. */
+  Array.prototype.forEach.call(doc.querySelectorAll('[data-filter-families]'), function (wrap) {
+    var table = doc.getElementById(wrap.getAttribute('data-filter-families'));
+    if (!table) return;
+    var empty = doc.querySelector('.filters__empty');
+    var reset = wrap.querySelector('.filters__reset');
+    var KEYS = ['d', 'c', 'l', 'r', 'q'];
+    var state = { d: '', c: '', l: '', r: '', q: '' };
+    var controls = {};
+    wrap.querySelectorAll('[data-filter]').forEach(function (el) { controls[el.getAttribute('data-filter')] = el; });
+    wrap.hidden = false;
+    var toggle = wrap.querySelector('.filters__toggle');
+    if (toggle) toggle.addEventListener('click', function () {
+      var open = toggle.getAttribute('aria-expanded') !== 'true';
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      wrap.classList.toggle('is-open', open);
+    });
+    function sync() { KEYS.forEach(function (k) { if (controls[k]) controls[k].value = state[k]; }); }
+    function apply(push) {
+      var n = 0;
+      var words = norm(state.q).trim().split(/\s+/).filter(Boolean);
+      Array.prototype.forEach.call(table.tBodies[0].rows, function (row) {
+        var q = row.getAttribute('data-q') || '';
+        var ok = (!state.d || row.getAttribute('data-d') === state.d) &&
+          (!state.c || (' ' + row.getAttribute('data-c') + ' ').indexOf(' ' + state.c + ' ') >= 0) &&
+          (!state.l || row.getAttribute('data-l') === state.l) &&
+          (!state.r || row.getAttribute('data-r') === state.r) &&
+          words.every(function (w) { return norm(q).indexOf(w) >= 0; });
+        row.hidden = !ok;
+        if (ok) n++;
+      });
+      shownCount(wrap, n);
+      /* The active criteria in words, after the count. */
+      var parts = [];
+      KEYS.forEach(function (k) {
+        var el = controls[k];
+        if (!state[k] || !el) return;
+        if (el.tagName === 'SELECT') {
+          var opt = el.options[el.selectedIndex];
+          var txt = opt ? opt.textContent.replace(/\s*\([\d,]+\)$/, '') : state[k];
+          var lab = wrap.querySelector('label[for="' + el.id + '"]');
+          parts.push((k === 'l' || k === 'r') && lab ? lab.textContent + ': ' + txt.toLowerCase() : k === 'c' ? txt.charAt(0).toLowerCase() + txt.slice(1) : txt);
+        } else {
+          parts.push('\u201c' + state[k] + '\u201d');
+        }
+      });
+      var nEl = wrap.querySelector('.filters__n');
+      if (nEl && parts.length) {
+        var tot = table.tBodies[0].rows.length;
+        nEl.textContent = nEl.getAttribute('data-criteria-lead').replace('{n}', n.toLocaleString('en-GB')).replace('{total}', tot.toLocaleString('en-GB')) + ' ' + parts.join('; ') + '.';
+      }
+      if (empty) empty.hidden = n > 0;
+      if (reset) reset.hidden = !KEYS.some(function (k) { return state[k]; });
+      if (push !== false && window.history && history.replaceState) {
+        var u = new URLSearchParams();
+        KEYS.forEach(function (k) { if (state[k]) u.set(k, state[k]); });
+        history.replaceState(null, '', location.pathname + (u.toString() ? '?' + u.toString() : '') + location.hash);
+      }
+    }
+    var t = 0;
+    wrap.addEventListener('input', function (ev) {
+      var el = ev.target.closest('[data-filter]');
+      if (!el) return;
+      state[el.getAttribute('data-filter')] = el.value;
+      clearTimeout(t);
+      t = setTimeout(apply, el.tagName === 'INPUT' ? 120 : 0);
+    });
+    if (reset) reset.addEventListener('click', function () { KEYS.forEach(function (k) { state[k] = ''; }); sync(); apply(); });
+    var params = new URLSearchParams(location.search);
+    KEYS.forEach(function (k) {
+      var v = params.get(k) || '';
+      var el = controls[k];
+      if (!v || !el) return;
+      if (el.tagName === 'SELECT' && !el.querySelector('option[value="' + v.replace(/"/g, '') + '"]')) return;
+      state[k] = v;
+    });
+    sync();
+    apply(false);
+  });
+
+  /* ---- Number receipts (numbers.html) ---------------------------------------
+     "The records behind this number": the receipt header, then its member pages in
+     order, as Statement Map's WEB.md describes. Each packet must carry this page's
+     generation; each page must start where the last ended; the total must match
+     the header. The build has already reconstructed every receipt and checked its
+     digest; the page shows the members a reader asks for, a page at a time. */
+  var numWords = {};
+  try { numWords = JSON.parse((doc.getElementById('number-words') || {}).textContent || '{}'); } catch (e) { numWords = {}; }
+  var NW = function (k, o) { var t = numWords[k] || ''; return t.replace(/\{(\w+)\}/g, function (m, x) { return o && o[x] != null ? o[x] : m; }); };
+  var GEN_PAGE = (doc.body && doc.body.getAttribute('data-generation')) || '';
+  var numCache = {};
+  function getNum(path) {
+    if (!numCache[path]) {
+      numCache[path] = fetch(root + 'data/' + path).then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      }).then(function (j) {
+        if (GEN_PAGE && j.generation_id !== GEN_PAGE) { var e = new Error('generation'); e.generation = true; throw e; }
+        return j;
+      });
+      numCache[path].catch(function () { delete numCache[path]; });
+    }
+    return numCache[path];
+  }
+  function memberLabel(item) {
+    if (typeof item === 'string') return { id: item, text: item };
+    var id = item.id || '';
+    var ident = item.identity;
+    var text = item.name || (Array.isArray(ident) ? ident.join(', ') : (ident != null ? String(ident) : id));
+    if (item.value != null) text += ': ' + item.value;
+    return { id: id, text: text };
+  }
+  var LAB = null;   /* family names and paper titles, from the search's labels.json */
+  function named(id) {
+    if (!LAB) return null;
+    if (id.slice(0, 2) === 'f:' && LAB.families[id]) return id.slice(2) + ' ' + LAB.families[id].n;
+    if (id.slice(0, 2) === 'p:' && LAB.papers[id]) return LAB.papers[id];
+    if (id.slice(0, 2) === 'r:') { var rest = id.slice(2), j = rest.indexOf(':'); var t = LAB.papers['p:' + rest.slice(0, j)]; return rest.slice(j + 1) + (t ? ', ' + t : ''); }
+    if (id.slice(0, 2) === 'l:') return id.slice(2);
+    return null;
+  }
+  function memberLi(item) {
+    var li = doc.createElement('li');
+    var m = memberLabel(item);
+    var url = /^[fplrd]:/.test(m.id) && window.AtlasSearch ? window.AtlasSearch.url(m.id) : null;
+    if (url) {
+      var a = doc.createElement('a');
+      a.href = root + url;
+      a.textContent = m.text === m.id ? (named(m.id) || m.id.replace(/^[fplrd]:/, '')) : m.text;
+      li.appendChild(a);
+    } else {
+      li.textContent = m.text;
+    }
+    return li;
+  }
+  function loadCollection(header, name, upto) {
+    var coll = (header.collections || {})[name];
+    if (!coll || !coll.pages || !coll.pages.length) return Promise.resolve([]);
+    var pages = coll.pages.slice(0, upto == null ? coll.pages.length : upto);
+    return Promise.all(pages.map(getNum)).then(function (docs) {
+      var items = [], expect = 0;
+      docs.forEach(function (d) {
+        if (d.start !== expect) throw new Error('page out of order');
+        items = items.concat(d.items);
+        expect += d.items.length;
+      });
+      if (pages.length === coll.pages.length && expect !== coll.count) throw new Error('count');
+      return items;
+    });
+  }
+  function renderReceipt(det) {
+    var row = det.closest('.numrow');
+    var body = det.querySelector('.receipt__body');
+    var path = row && row.getAttribute('data-receipt');
+    if (!path || det.getAttribute('data-loaded')) return;
+    det.setAttribute('data-loaded', '1');
+    var keep = body.innerHTML;
+    var status = doc.createElement('p');
+    status.className = 'small muted';
+    status.setAttribute('role', 'status');
+    status.textContent = NW('loading');
+    body.insertBefore(status, body.firstChild);
+    getNum(path).then(function (header) {
+      var number = header.number || {};
+      var colls = header.collections || {};
+      var show = colls.observations && colls.observations.count ? 'observations' : 'members';
+      var frag = doc.createDocumentFragment();
+      var facts = doc.createElement('p');
+      facts.className = 'receipt__facts';
+      ['members', 'universe', 'observations'].forEach(function (n) {
+        if (colls[n]) { var sp = doc.createElement('span'); sp.textContent = NW(n, { n: colls[n].count.toLocaleString('en-GB') }); facts.appendChild(sp); }
+      });
+      frag.appendChild(facts);
+      if (number.membership === 'unavailable' || !(colls[show] && colls[show].count)) {
+        var p = doc.createElement('p'); p.textContent = number.state === 'reported' ? NW('none_listed') : NW('empty'); frag.appendChild(p);
+      }
+      if (number.issues && number.issues.length) {
+        var ih = doc.createElement('p'); ih.textContent = NW('issues'); frag.appendChild(ih);
+        var il = doc.createElement('ul');
+        number.issues.forEach(function (x) { var li = doc.createElement('li'); li.textContent = typeof x === 'string' ? x : JSON.stringify(x); il.appendChild(li); });
+        frag.appendChild(il);
+      }
+      var ul = doc.createElement('ul');
+      ul.className = 'receipt__members';
+      frag.appendChild(ul);
+      var total = colls[show] ? colls[show].count : 0;
+      var more = null;
+      function fill(items, limit) {
+        ul.innerHTML = '';
+        items.slice(0, limit).forEach(function (it) { ul.appendChild(memberLi(it)); });
+      }
+      if (total) {
+        var labelsReady = window.AtlasSearch ? window.AtlasSearch.labels().then(function (l) { LAB = l; }, function () {}) : Promise.resolve();
+        Promise.all([loadCollection(header, show, 1), labelsReady]).then(function (r2) { var items = r2[0];
+          fill(items, 50);
+          if (total > 50) {
+            more = doc.createElement('button');
+            more.type = 'button';
+            more.className = 'btn btn--small';
+            more.textContent = NW('more', { n: total.toLocaleString('en-GB') });
+            more.addEventListener('click', function () {
+              more.disabled = true;
+              loadCollection(header, show).then(function (all) { fill(all, all.length); more.remove(); })
+                .catch(function () { more.disabled = false; status.textContent = NW('failed'); });
+            });
+            ul.insertAdjacentElement('afterend', more);
+          }
+        }).catch(function () { status.textContent = NW('failed'); });
+      }
+      if (number.sha256) {
+        var dg = doc.createElement('p'); dg.className = 'small muted receipt__digest';
+        dg.textContent = NW('digest', { sha: number.sha256.replace('sha256:', '').slice(0, 16) });
+        frag.appendChild(dg);
+      }
+      status.textContent = '';
+      body.innerHTML = '';
+      body.appendChild(frag);
+      body.insertAdjacentHTML('beforeend', keep);
+    }).catch(function (e) {
+      status.textContent = e && e.generation ? NW('generation') : NW('failed');
+      det.removeAttribute('data-loaded');
+    });
+  }
+  doc.addEventListener('toggle', function (ev) {
+    var det = ev.target;
+    if (det && det.matches && det.matches('details.receipt[data-key]') && det.open) renderReceipt(det);
+  }, true);
+  /* A link to numbers.html#n-<key> opens that number's records. */
+  function openNumberFromHash() {
+    var m = /^#n-(.+)$/.exec(location.hash);
+    if (!m) return;
+    var row = doc.getElementById('n-' + decodeURIComponent(m[1]));
+    var det = row && row.querySelector('details.receipt');
+    if (det && !det.open) det.open = true;
+  }
+  window.addEventListener('hashchange', openNumberFromHash);
+  openNumberFromHash();
 
   /* ---- Receipt card fitting ---------------------------------------------- */
   /* On a narrow screen the inline comparison reflows into stacked, readable text
@@ -435,3 +605,420 @@
   doc.addEventListener('keydown', function (e) { if (e.key === 'Escape' && pop && !pop.hidden) hide(); });
   window.addEventListener('scroll', function () { if (current && pop && !pop.hidden) place(current); }, { passive: true });
 })();
+
+/* Site search over Statement Map's compact search (statement-map-web/2).
+   The backend's search-index.json names the algorithm and this follows it exactly:
+   unescape HTML, Unicode NFKC, Python's casefold, unwrap \mathbb \mathcal \mathrm
+   \mathbf \text, then the tokens [^\W_]+(?:-[^\W_]+)*. Each token lives in one of 64
+   shards, chosen by the first byte of SHA-256 of its UTF-8 bytes. A query matches an
+   entry only when every one of its words is among that entry's exact tokens; the
+   search fetches only the shards and entry chunks it needs, and every packet must
+   carry this page's generation. Exact words, never meanings.
+   window.AtlasSearch = { query(q, opts) -> Promise<[{id, kind, name, family_ids, url}]>,
+   tokens(q), url(id, kind) }. The front door's plate reads it too. */
+(function (global) {
+  'use strict';
+
+  /* search-normalise:start (scripts/test_search.py runs this block in Node) */
+  /* Python's str.casefold() where it differs from str.lower(), by code point; the
+     Cherokee ranges are folded in foldChar. Generated from Python 3.12. */
+  var FOLD = {"181":"\u03bc","223":"ss","329":"\u02bcn","383":"s","496":"j\u030c","837":"\u03b9","912":"\u03b9\u0308\u0301","944":"\u03c5\u0308\u0301","962":"\u03c3","976":"\u03b2","977":"\u03b8","981":"\u03c6","982":"\u03c0","1008":"\u03ba","1009":"\u03c1","1013":"\u03b5","1415":"\u0565\u0582","7296":"\u0432","7297":"\u0434","7298":"\u043e","7299":"\u0441","7300":"\u0442","7301":"\u0442","7302":"\u044a","7303":"\u0463","7304":"\ua64b","7830":"h\u0331","7831":"t\u0308","7832":"w\u030a","7833":"y\u030a","7834":"a\u02be","7835":"\u1e61","7838":"ss","8016":"\u03c5\u0313","8018":"\u03c5\u0313\u0300","8020":"\u03c5\u0313\u0301","8022":"\u03c5\u0313\u0342","8064":"\u1f00\u03b9","8065":"\u1f01\u03b9","8066":"\u1f02\u03b9","8067":"\u1f03\u03b9","8068":"\u1f04\u03b9","8069":"\u1f05\u03b9","8070":"\u1f06\u03b9","8071":"\u1f07\u03b9","8072":"\u1f00\u03b9","8073":"\u1f01\u03b9","8074":"\u1f02\u03b9","8075":"\u1f03\u03b9","8076":"\u1f04\u03b9","8077":"\u1f05\u03b9","8078":"\u1f06\u03b9","8079":"\u1f07\u03b9","8080":"\u1f20\u03b9","8081":"\u1f21\u03b9","8082":"\u1f22\u03b9","8083":"\u1f23\u03b9","8084":"\u1f24\u03b9","8085":"\u1f25\u03b9","8086":"\u1f26\u03b9","8087":"\u1f27\u03b9","8088":"\u1f20\u03b9","8089":"\u1f21\u03b9","8090":"\u1f22\u03b9","8091":"\u1f23\u03b9","8092":"\u1f24\u03b9","8093":"\u1f25\u03b9","8094":"\u1f26\u03b9","8095":"\u1f27\u03b9","8096":"\u1f60\u03b9","8097":"\u1f61\u03b9","8098":"\u1f62\u03b9","8099":"\u1f63\u03b9","8100":"\u1f64\u03b9","8101":"\u1f65\u03b9","8102":"\u1f66\u03b9","8103":"\u1f67\u03b9","8104":"\u1f60\u03b9","8105":"\u1f61\u03b9","8106":"\u1f62\u03b9","8107":"\u1f63\u03b9","8108":"\u1f64\u03b9","8109":"\u1f65\u03b9","8110":"\u1f66\u03b9","8111":"\u1f67\u03b9","8114":"\u1f70\u03b9","8115":"\u03b1\u03b9","8116":"\u03ac\u03b9","8118":"\u03b1\u0342","8119":"\u03b1\u0342\u03b9","8124":"\u03b1\u03b9","8126":"\u03b9","8130":"\u1f74\u03b9","8131":"\u03b7\u03b9","8132":"\u03ae\u03b9","8134":"\u03b7\u0342","8135":"\u03b7\u0342\u03b9","8140":"\u03b7\u03b9","8146":"\u03b9\u0308\u0300","8147":"\u03b9\u0308\u0301","8150":"\u03b9\u0342","8151":"\u03b9\u0308\u0342","8162":"\u03c5\u0308\u0300","8163":"\u03c5\u0308\u0301","8164":"\u03c1\u0313","8166":"\u03c5\u0342","8167":"\u03c5\u0308\u0342","8178":"\u1f7c\u03b9","8179":"\u03c9\u03b9","8180":"\u03ce\u03b9","8182":"\u03c9\u0342","8183":"\u03c9\u0342\u03b9","8188":"\u03c9\u03b9","64256":"ff","64257":"fi","64258":"fl","64259":"ffi","64260":"ffl","64261":"st","64262":"st","64275":"\u0574\u0576","64276":"\u0574\u0565","64277":"\u0574\u056b","64278":"\u057e\u0576","64279":"\u0574\u056d"};
+  var ENTITY = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+  function unescapeHtml(s) {
+    if (s.indexOf('&') < 0) return s;
+    if (typeof document !== 'undefined' && document.createElement) {
+      var t = document.createElement('textarea');   /* RCDATA: entities decode, tags stay text */
+      t.innerHTML = s;
+      return t.value;
+    }
+    return s.replace(/&(#[xX][0-9a-fA-F]+|#[0-9]+|[A-Za-z][A-Za-z0-9]*);/g, function (m, e) {
+      if (e.charAt(0) === '#') {
+        var cp = e.charAt(1) === 'x' || e.charAt(1) === 'X' ? parseInt(e.slice(2), 16) : parseInt(e.slice(1), 10);
+        return cp > 0 && cp < 0x110000 && !(cp >= 0xD800 && cp < 0xE000) ? String.fromCodePoint(cp) : '�';
+      }
+      return Object.prototype.hasOwnProperty.call(ENTITY, e) ? ENTITY[e] : m;
+    });
+  }
+  function foldChar(ch) {
+    var cp = ch.codePointAt(0);
+    if (cp >= 0x13A0 && cp <= 0x13F5) return ch;
+    if (cp >= 0x13F8 && cp <= 0x13FD) return String.fromCodePoint(cp - 8);
+    if (cp >= 0xAB70 && cp <= 0xABBF) return String.fromCodePoint(cp - 0xAB70 + 0x13A0);
+    var f = FOLD[cp];
+    return f !== undefined ? f : ch.toLowerCase();   /* one character at a time: no final-sigma context */
+  }
+  function casefold(s) {
+    var out = '';
+    for (var i = 0; i < s.length;) {
+      var cp = s.codePointAt(i);
+      var ch = String.fromCodePoint(cp);
+      out += foldChar(ch);
+      i += ch.length;
+    }
+    return out;
+  }
+  var UNWRAP = /\\(?:mathbb|mathcal|mathrm|mathbf|text)\s*\{([^{}]*)\}/g;
+  var TOKEN = /[\p{L}\p{N}]+(?:-[\p{L}\p{N}]+)*/gu;
+  function searchTokens(text) {
+    var t = casefold(unescapeHtml(String(text == null ? '' : text)).normalize('NFKC'));
+    t = t.replace(UNWRAP, ' $1 ');
+    var seen = Object.create(null), out = [], m = t.match(TOKEN) || [];
+    for (var i = 0; i < m.length; i++) if (!seen[m[i]]) { seen[m[i]] = 1; out.push(m[i]); }
+    return out.sort();
+  }
+  /* SHA-256, for the shard of a token when crypto.subtle is unavailable (an http page
+     outside localhost). Only the first byte is used. */
+  var K256 = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+  function utf8(s) {
+    if (typeof TextEncoder !== 'undefined') return Array.prototype.slice.call(new TextEncoder().encode(s));
+    var b = unescape(encodeURIComponent(s)), out = [];
+    for (var i = 0; i < b.length; i++) out.push(b.charCodeAt(i));
+    return out;
+  }
+  function sha256FirstByte(s) {
+    var bytes = utf8(s), l = bytes.length * 8;
+    bytes.push(0x80);
+    while (bytes.length % 64 !== 56) bytes.push(0);
+    for (var s8 = 7; s8 >= 0; s8--) bytes.push(s8 >= 4 ? 0 : (l >>> (s8 * 8)) & 0xff);
+    var h = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    var w = new Array(64);
+    for (var off = 0; off < bytes.length; off += 64) {
+      for (var i = 0; i < 16; i++) w[i] = (bytes[off + 4 * i] << 24) | (bytes[off + 4 * i + 1] << 16) | (bytes[off + 4 * i + 2] << 8) | bytes[off + 4 * i + 3];
+      for (i = 16; i < 64; i++) {
+        var a0 = w[i - 15], a1 = w[i - 2];
+        var s0 = ((a0 >>> 7) | (a0 << 25)) ^ ((a0 >>> 18) | (a0 << 14)) ^ (a0 >>> 3);
+        var s1 = ((a1 >>> 17) | (a1 << 15)) ^ ((a1 >>> 19) | (a1 << 13)) ^ (a1 >>> 10);
+        w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+      }
+      var a = h[0], b = h[1], c = h[2], d = h[3], e = h[4], f = h[5], g = h[6], hh = h[7];
+      for (i = 0; i < 64; i++) {
+        var S1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7));
+        var t1 = (hh + S1 + ((e & f) ^ (~e & g)) + K256[i] + w[i]) | 0;
+        var S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10));
+        var t2 = (S0 + ((a & b) ^ (a & c) ^ (b & c))) | 0;
+        hh = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+      }
+      h[0] = (h[0] + a) | 0; h[1] = (h[1] + b) | 0; h[2] = (h[2] + c) | 0; h[3] = (h[3] + d) | 0;
+      h[4] = (h[4] + e) | 0; h[5] = (h[5] + f) | 0; h[6] = (h[6] + g) | 0; h[7] = (h[7] + hh) | 0;
+    }
+    return (h[0] >>> 24) & 0xff;
+  }
+  function hex2(n) { n = n % 64; return (n < 16 ? '0' : '') + n.toString(16); }
+  function shardSync(token) { return hex2(sha256FirstByte(token)); }
+  function shardOf(token) {
+    var subtle = global.crypto && global.crypto.subtle;
+    if (!subtle || typeof TextEncoder === 'undefined') return Promise.resolve(shardSync(token));
+    return subtle.digest('SHA-256', new TextEncoder().encode(token))
+      .then(function (buf) { return hex2(new Uint8Array(buf)[0]); }, function () { return shardSync(token); });
+  }
+  /* The Atlas page that reads each object. */
+  function urlFor(id, kind) {
+    var i = id.indexOf(':'), rest = id.slice(i + 1);
+    var k = kind || { f: 'family', l: 'lean', p: 'manuscript', r: 'statement', d: 'discipline' }[id.slice(0, i)];
+    if (k === 'family') return 'families/' + encodeURIComponent(rest) + '.html';
+    if (k === 'lean') return 'statements/' + encodeURIComponent(rest) + '.html';
+    if (k === 'manuscript') return 'papers/' + encodeURIComponent(rest) + '.html';
+    if (k === 'discipline') return 'index.html#o=' + encodeURIComponent(id);
+    if (k === 'statement') {
+      var j = rest.indexOf(':');
+      return 'papers/' + encodeURIComponent(rest.slice(0, j)) + '.html#' + encodeURI(rest.slice(j + 1)).replace(/#/g, '%23');
+    }
+    return null;
+  }
+  var NORMALISE = { searchTokens: searchTokens, casefold: casefold, shardSync: shardSync, urlFor: urlFor };
+  /* search-normalise:end */
+
+  if (typeof document === 'undefined') { global.AtlasSearchNormalise = NORMALISE; return; }
+
+  var doc = document;
+  var body = doc.body || doc.documentElement;
+  var root = body.getAttribute('data-root') || '';
+  var BASE = root + 'data/search/';
+  var GEN = body.getAttribute('data-generation') || '';
+  var KIND_ORDER = ['family', 'lean', 'manuscript', 'statement', 'discipline'];
+  var cache = {};
+
+  function getJSON(path) {
+    if (!cache[path]) {
+      cache[path] = fetch(BASE + path).then(function (r) {
+        if (!r.ok) throw new Error(path + ': HTTP ' + r.status);
+        return r.json();
+      }).then(function (j) {
+        /* A page and its search must come from one generation of the backend. */
+        if (GEN && j.generation_id !== GEN) throw new Error(path + ' is from another generation');
+        return j;
+      });
+      cache[path].catch(function () { delete cache[path]; });
+    }
+    return cache[path];
+  }
+  function index() { return getJSON('search-index.json'); }
+  function labels() { return getJSON('labels.json'); }
+
+  function intersect(lists) {
+    lists = lists.slice().sort(function (a, b) { return a.length - b.length; });
+    var out = lists[0].slice();
+    for (var k = 1; k < lists.length && out.length; k++) {
+      var set = {};
+      for (var i = 0; i < lists[k].length; i++) set[lists[k][i]] = 1;
+      out = out.filter(function (x) { return set[x]; });
+    }
+    return out.sort(function (a, b) { return a - b; });
+  }
+  function kindOf(lab, i) {
+    for (var k = 0; k < lab.kinds.length; k++) if (i >= lab.kinds[k][1] && i <= lab.kinds[k][2]) return lab.kinds[k][0];
+    return 'other';
+  }
+  function entries(idx, list) {
+    var size = idx.entry_chunk_size, need = {};
+    list.forEach(function (i) { need[Math.floor(i / size)] = 1; });
+    var chunks = Object.keys(need).map(Number);
+    return Promise.all(chunks.map(function (c) { return getJSON(idx.entry_chunks[c]); })).then(function (docs) {
+      var by = {};
+      chunks.forEach(function (c, k) { by[c] = docs[k]; });
+      return list.map(function (i) {
+        var d = by[Math.floor(i / size)];
+        if (d.start !== Math.floor(i / size) * size) throw new Error('entry chunk out of order');
+        return d.entries[i % size];
+      });
+    });
+  }
+  function decorate(e, lab) {
+    var paper = null;
+    if (e.kind === 'statement') {
+      var rest = e.id.slice(2), j = rest.indexOf(':');
+      paper = lab.papers['p:' + rest.slice(0, j)] || null;
+    }
+    return { id: e.id, kind: e.kind, name: e.name, family_ids: e.family_ids || [], url: urlFor(e.id, e.kind), paper: paper };
+  }
+
+  /* Postings for a query: every token's list, intersected. */
+  function postings(q) {
+    var toks = searchTokens(q);
+    if (!toks.length) return Promise.resolve({ tokens: [], missing: [], hits: [] });
+    return Promise.all([index(), Promise.all(toks.map(shardOf))]).then(function (r) {
+      var idx = r[0], shards = r[1];
+      return Promise.all(shards.map(function (s) {
+        var path = idx.shards[s];
+        return path ? getJSON(path) : Promise.resolve({ terms: {} });
+      })).then(function (docs) {
+        var lists = docs.map(function (d, k) { return (d.terms && d.terms[toks[k]]) || []; });
+        var missing = toks.filter(function (t, k) { return !lists[k].length; });
+        return { tokens: toks, missing: missing, hits: missing.length ? [] : intersect(lists), idx: idx };
+      });
+    });
+  }
+
+  /* query(q, {statements: n}): every matching family, Lean statement, paper and
+     discipline, and the first n matching paper statements (default 400). The array
+     also carries .counts by kind, .tokens, .missing and .truncated. */
+  function query(q, opts) {
+    var limit = (opts && opts.statements != null) ? opts.statements : 400;
+    return Promise.all([postings(q), labels()]).then(function (r) {
+      var p = r[0], lab = r[1], counts = { family: 0, lean: 0, manuscript: 0, statement: 0, discipline: 0 };
+      var pick = [], st = 0;
+      p.hits.forEach(function (i) {
+        var k = kindOf(lab, i);
+        counts[k] = (counts[k] || 0) + 1;
+        if (k !== 'statement' || st++ < limit) pick.push(i);
+      });
+      return (pick.length ? entries(p.idx, pick) : Promise.resolve([])).then(function (es) {
+        var out = es.map(function (e) { return decorate(e, lab); });
+        out.counts = counts; out.tokens = p.tokens; out.missing = p.missing;
+        out.truncated = counts.statement > limit;
+        return out;
+      });
+    });
+  }
+  global.AtlasSearch = { query: query, tokens: searchTokens, url: urlFor, labels: labels,
+    family: function (fid) { return labels().then(function (l) { return l.families[fid] || null; }); } };
+
+  /* ---- The search dialog ------------------------------------------------ */
+  var dlg = doc.getElementById('search-dialog');
+  if (!dlg) return;
+  var input = dlg.querySelector('.search__input');
+  var list = dlg.querySelector('.search__results');
+  var status = dlg.querySelector('.search__status');
+  var T = function (k) { return dlg.getAttribute('data-' + k) || ''; };
+  var fmt = function (s, o) { return s.replace(/\{(\w+)\}/g, function (m, k) { return o[k] != null ? o[k] : m; }); };
+  var SHOW = 6, shown = {}, last = null, seq = 0, sel = -1, timer = 0;
+
+  function el(tag, cls, text) {
+    var e = doc.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    return e;
+  }
+  function quoteList(words) { return words.map(function (w) { return '‘' + w + '’'; }).join(', '); }
+  function option(r, lab, k) {
+    var a = el('a', 'sr');
+    a.href = root + r.url;
+    a.id = 'sr-' + k;
+    a.setAttribute('role', 'option');
+    a.tabIndex = -1;
+    if (r.kind === 'family') {
+      var fam = lab.families[r.id] || {};
+      var t = el('span', 'sr__t');
+      t.appendChild(el('span', 'sr__name md-math', r.name));
+      t.appendChild(el('span', 'sr__k', fmt(T('family'), { n: r.id.slice(2) }) + (fam.d ? ', ' + fam.d : '') + (fam.e ? '. ' + fam.e.charAt(0).toUpperCase() + fam.e.slice(1) + '.' : '')));
+      a.appendChild(t);
+    } else {
+      var tt = el('span', 'sr__t');
+      if (r.kind === 'statement') {
+        tt.appendChild(el('code', 'sr__name sr__code', r.name));
+        tt.appendChild(el('span', 'sr__k md-math', r.paper ? fmt(T('in-paper'), { title: r.paper }) : ''));
+      } else if (r.kind === 'lean') {
+        var nm = el('span', 'sr__name');
+        nm.appendChild(el('code', 'sr__code', r.id.slice(2)));
+        tt.appendChild(nm);
+        tt.appendChild(el('span', 'sr__k md-math', r.name));
+      } else {
+        tt.appendChild(el('span', 'sr__name md-math', r.name));
+        var fams = r.family_ids.map(function (f) { return (lab.families[f] || {}).n || f; });
+        if (r.kind === 'manuscript' && fams.length) tt.appendChild(el('span', 'sr__k md-math', fmt(T('in-family'), { name: fams[0] })));
+        if (r.kind === 'discipline') tt.appendChild(el('span', 'sr__k', fmt(T('discipline-n'), { n: r.family_ids.length })));
+      }
+      a.appendChild(tt);
+    }
+    return a;
+  }
+  function render(res, lab, toks) {
+    list.innerHTML = '';
+    sel = -1;
+    input.removeAttribute('aria-activedescendant');
+    var total = 0, k = 0;
+    KIND_ORDER.forEach(function (kind) { total += res.counts[kind] || 0; });
+    if (!toks.length) { status.textContent = ''; dlg.removeAttribute('data-state'); return; }
+    if (!total) {
+      dlg.setAttribute('data-state', 'empty');
+      status.textContent = res.missing.length
+        ? fmt(res.missing.length === 1 ? T('missing-one') : T('missing-many'), { words: quoteList(res.missing) })
+        : fmt(T('apart'), { words: quoteList(toks) });
+      return;
+    }
+    dlg.setAttribute('data-state', 'results');
+    status.textContent = fmt(T('found'), { n: total.toLocaleString('en-GB'), words: quoteList(toks) });
+    KIND_ORDER.forEach(function (kind) {
+      var n = res.counts[kind] || 0;
+      if (!n) return;
+      var rows = res.filter(function (r) { return r.kind === kind; });
+      /* Entries whose own name holds every word come first; otherwise the release's order. */
+      rows.sort(function (a, b) {
+        var na = searchTokens(a.name), nb = searchTokens(b.name);
+        var ha = toks.every(function (t) { return na.indexOf(t) >= 0; }) ? 0 : 1;
+        var hb = toks.every(function (t) { return nb.indexOf(t) >= 0; }) ? 0 : 1;
+        return ha - hb;
+      });
+      var g = el('div', 'sr-group');
+      g.setAttribute('role', 'group');
+      var hid = 'srg-' + kind;
+      var h = el('p', 'sr-group__h');
+      h.id = hid;
+      h.appendChild(el('span', '', T('kind-' + kind)));
+      h.appendChild(el('span', 'count', n.toLocaleString('en-GB')));
+      g.setAttribute('aria-labelledby', hid);
+      g.appendChild(h);
+      var cap = shown[kind] || SHOW;
+      rows.slice(0, cap).forEach(function (r) { g.appendChild(option(r, lab, k++)); });
+      var have = Math.min(rows.length, cap);
+      if (have < n) {
+        var more = el('button', 'sr sr--more', fmt(T('more'), { n: (n - have).toLocaleString('en-GB'), kind: T('kind-' + kind).toLowerCase() }));
+        more.type = 'button';
+        more.id = 'sr-' + k++;
+        more.setAttribute('role', 'option');
+        more.tabIndex = -1;
+        more.setAttribute('data-kind', kind);
+        g.appendChild(more);
+      }
+      list.appendChild(g);
+    });
+    if (res.truncated && (shown.statement || SHOW) >= res.filter(function (r) { return r.kind === 'statement'; }).length) {
+      list.appendChild(el('p', 'sr-note', T('truncated')));
+    }
+    if (window.atlasRenderMath) window.atlasRenderMath(list);
+  }
+  function run() {
+    var q = input.value, my = ++seq;
+    var toks = searchTokens(q);
+    dlg.setAttribute('aria-busy', 'true');
+    var want = Math.max(400, shown.statement || 0);
+    Promise.all([query(q, { statements: want }), labels()]).then(function (r) {
+      if (my !== seq) return;
+      last = r[0];
+      dlg.removeAttribute('aria-busy');
+      render(r[0], r[1], toks);
+    }).catch(function () {
+      if (my !== seq) return;
+      dlg.removeAttribute('aria-busy');
+      list.innerHTML = '';
+      dlg.setAttribute('data-state', 'failed');
+      status.textContent = T('failed');
+    });
+  }
+  function options() { return list.querySelectorAll('[role="option"]'); }
+  function moveSel(d) {
+    var items = options();
+    if (!items.length) return;
+    if (sel >= 0 && items[sel]) items[sel].removeAttribute('aria-selected');
+    sel = d === 'home' ? 0 : d === 'end' ? items.length - 1 : (sel + d + items.length) % items.length;
+    items[sel].setAttribute('aria-selected', 'true');
+    items[sel].scrollIntoView({ block: 'nearest' });
+    input.setAttribute('aria-activedescendant', items[sel].id);
+  }
+  function choose(item) {
+    if (!item) return;
+    if (item.tagName === 'BUTTON') {
+      var kind = item.getAttribute('data-kind');
+      shown[kind] = (shown[kind] || SHOW) + 60;
+      var keep = item.id;
+      run();
+      setTimeout(function () { var n = doc.getElementById(keep); if (n && sel >= 0) input.setAttribute('aria-activedescendant', keep); }, 400);
+      return;
+    }
+    location.href = item.href;
+  }
+  var opener = doc.querySelector('.search-open');
+  var returnTo = null;
+  function openSearch(ev) {
+    if (ev) ev.preventDefault();
+    if (dlg.open) return;
+    returnTo = doc.activeElement;
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+    input.focus();
+    input.select();
+    index().catch(function () {});
+    labels().catch(function () {});
+    if (input.value) run();
+  }
+  if (opener) opener.addEventListener('click', openSearch);
+  dlg.addEventListener('close', function () { if (returnTo && returnTo.focus) returnTo.focus(); });
+  input.addEventListener('input', function () {
+    shown = {};
+    clearTimeout(timer);
+    timer = setTimeout(run, 120);
+  });
+  dlg.addEventListener('keydown', function (ev) {
+    if (ev.key === 'ArrowDown') { ev.preventDefault(); moveSel(1); }
+    else if (ev.key === 'ArrowUp') { ev.preventDefault(); moveSel(-1); }
+    else if ((ev.key === 'Home' || ev.key === 'End') && ev.ctrlKey) { ev.preventDefault(); moveSel(ev.key === 'Home' ? 'home' : 'end'); }
+    else if (ev.key === 'Enter' && ev.target === input) {
+      var items = options();
+      ev.preventDefault();
+      choose(items[sel >= 0 ? sel : 0]);
+    }
+  });
+  list.addEventListener('click', function (ev) {
+    var b = ev.target.closest('button.sr--more');
+    if (b) { ev.preventDefault(); choose(b); }
+  });
+  dlg.addEventListener('click', function (ev) { if (ev.target === dlg) dlg.close(); });
+  var closeBtn = dlg.querySelector('.search__close');
+  if (closeBtn) closeBtn.addEventListener('click', function () { dlg.close(); });
+  dlg.querySelector('form').addEventListener('submit', function (ev) { ev.preventDefault(); });
+  doc.addEventListener('keydown', function (ev) {
+    var a = doc.activeElement || {};
+    if (ev.key === '/' && !ev.metaKey && !ev.ctrlKey && !ev.altKey && !/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName || '') && !a.isContentEditable) {
+      openSearch(ev);
+    }
+  });
+})(typeof window !== 'undefined' ? window : globalThis);

@@ -32,7 +32,7 @@ def main() -> int:
     for p in sorted((build / "papers").glob("*.html")):
         t = pages[p.stem] = p.read_text(encoding="utf-8")
         starts = [(m.start(), m.group(1)) for m in re.finditer(r'<div class="pr-thm[^"]*" id="([^"]+)"', t)]
-        for note in re.finditer(r'<p class="pr-lean">(.*?)</p>', t, re.S):
+        for note in re.finditer(r'<p class="pr-lean[^"]*">(.*?)</p>', t, re.S):
             owner = [bid for pos, bid in starts if pos < note.start()]
             for sid in re.findall(r'href="\.\./statements/([^"]+)\.html"', note.group(1)):
                 up[unquote(sid)] = (p.stem, html.unescape(owner[-1]) if owner else None)
