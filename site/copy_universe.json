@@ -270,7 +270,7 @@
  },
  "chart": {
   "_note": "The words standing with the drawing at the release and at a discipline.",
-  "release_cap": "{families} families in {disciplines} disciplines, each disc coloured by what its Lean states. Choose a discipline to see its families by name.",
+  "release_cap": "{families} families in {disciplines} disciplines. Point at a dot to see its family; choose it to open the family. Choose a discipline’s name to see all its families.",
   "disc_cap": "{name}: {counts}. Choose a family to open its papers, results and Lean statements."
  },
  "board": {

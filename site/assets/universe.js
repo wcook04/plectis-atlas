@@ -803,16 +803,19 @@
       ctx.beginPath(); ctx.arc(c.x, c.y, c.r + 3 + RING_GROW * easeOut(u), 0, TAU); ctx.stroke();
       ctx.restore();
     }
-    // What is under the point: a family's disc at a discipline, a discipline's region at the release.
+    // Family dots take precedence over their enclosing discipline at the release.
     function hitAt(x, y) {
       var S = chart.shown;
       if (!S || chart.start) return null;
-      if (S.level === 'disc') {
+      if (S.level === 'disc' || S.level === 'release') {
+        var closest = null, distance = Infinity;
         for (var fi = 0; fi < fams.length; fi++) {
           var q = S.nodes[fi];
-          if (q && q.a > 0.5 && Math.hypot(x - q.x, y - q.y) <= q.r + 2) return D.families[fi].id;
+          if (!q || q.a <= 0.5) continue;
+          var d = Math.hypot(x - q.x, y - q.y);
+          if (d <= q.r + 2 && d < distance) { closest = D.families[fi].id; distance = d; }
         }
-        return null;
+        if (closest || S.level === 'disc') return closest;
       }
       if (S.level === 'release') {
         for (var di = 0; di < S.regions.length; di++) {
@@ -908,9 +911,8 @@
       cardEl.classList.remove('is-on');
       cardOn = false; cardSpot = -1; cardBox = null;
     }
-    // Beside what it names, in the place that covers the fewest other words and discs:
-    // eight places round it first, then any place in the stage, never over the thing
-    // pointed at (for a discipline, its name) or under the pointer, off the map's bar.
+    // Keep the preview beside what it names. Prefer a clear adjacent spot without
+    // sending it across the stage merely to avoid an unselected object.
     var cardDismissed = null, cardSwept = -1e9, cardTimer = 0;
     function hoverBox(o) {
       var S = chart.shown;
@@ -958,14 +960,13 @@
         var x0 = clamp(sp[0], 8, X1), y0 = clamp(sp[1], 8, Y1);
         var b = { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h };
         var gapX = Math.max(0, m.x0 - b.x1, b.x0 - m.x1), gapY = Math.max(0, m.y0 - b.y1, b.y0 - m.y1);
-        var score = (sp[2] ? 40 : i * 2) + Math.hypot(gapX, gapY) * 0.8 - (i === cardSpot && !sp[2] ? 25 : 0);
+        var score = i * 2 + Math.hypot(gapX, gapY) * 2 - (i === cardSpot ? 25 : 0);
         keep.forEach(function (k) { var ov = overlap(b, k); if (ov > 0) score += 1e5 + ov * 20; });
-        others.forEach(function (k) { var ov = overlap(b, k); if (ov > 2) score += 400 + ov * 0.02; });
+        score += Math.min(20, others.reduce(function (sum, k) { return sum + Math.max(0, overlap(b, k)) * 0.0005; }, 0));
         chrome.forEach(function (k) { var ov = overlap(b, k); if (ov > 0) score += 600 + ov * 0.05; });
-        if (score < bestScore) { bestScore = score; best = b; bestI = sp[2] ? -1 : i; }
+        if (score < bestScore) { bestScore = score; best = b; bestI = i; }
       };
       spots.forEach(tryAt);
-      if (bestScore >= 400) for (var gx = 8; gx <= X1; gx += 24) for (var gy = 8; gy <= Y1; gy += 24) tryAt([gx, gy, 1], 0);
       cardSpot = bestI; cardBox = best;
       cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
       if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
@@ -1386,6 +1387,7 @@
     }
     function hideBoardCard() {
       clearTimeout(board.hideT);
+      board.hoverVia = '';
       if (board.hoverKey) { board.hoverKey = null; if (board.on) drawWires(); }
       if (cardEl) cardEl.classList.remove('is-board');
       hideCard();
@@ -1394,6 +1396,7 @@
       if (!cardEl || !board.on || narrow()) return;
       if (via !== 'focus' && !(hoverMQ && hoverMQ.matches)) return;
       var key = el.getAttribute('data-bk');
+      board.hoverVia = via;
       clearTimeout(board.hideT);
       if (board.hoverKey !== key) { board.hoverKey = key; drawWires(); }
       cardEl.classList.add('is-board');
@@ -1413,8 +1416,7 @@
         if (b.y1 < 0 || b.y0 > sr.height) return;
         if (c.classList.contains('is-sel')) keep.push(b); else others.push(b);
       });
-      // The eight places beside the card first; failing those, any place in the stage
-      // (a 24 px lattice), nearest first, that keeps off the card and the selection.
+      // Adjacent placements keep the preview reachable across a small gap.
       var g = 10, spots = [[me.x1 + g, me.y0], [me.x0 - g - w, me.y0], [me.x0, me.y1 + g], [me.x0, me.y0 - g - h],
                            [me.x1 + g, me.y1 - h], [me.x0 - g - w, me.y1 - h], [me.x1 - w, me.y1 + g], [me.x1 - w, me.y0 - g - h]];
       var X1 = Math.max(8, sr.width - w - 8), Y1 = Math.max(8, sr.height - h - 8);
@@ -1423,20 +1425,20 @@
         var x0 = clamp(sp[0], 8, X1), y0 = clamp(sp[1], 8, Y1);
         var b = { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h };
         var gapX = Math.max(0, me.x0 - b.x1, b.x0 - me.x1), gapY = Math.max(0, me.y0 - b.y1, b.y0 - me.y1);
-        var score = (sp[2] ? 40 : i * 2) + Math.hypot(gapX, gapY) * 0.8;
+        var score = i * 2 + Math.hypot(gapX, gapY) * 2;
         // Over the card itself or the selection only where nothing else is free, and then
         // over as little of them as it can.
         keep.forEach(function (q) { var ov = overlap(b, q); if (ov > 0) score += 1e5 + ov * 20; });
-        others.forEach(function (q) { var ov = overlap(b, q); if (ov > 0) score += 400 + ov * 0.02; });
+        score += Math.min(20, others.reduce(function (sum, q) { return sum + Math.max(0, overlap(b, q)) * 0.0005; }, 0));
         if (score < bestScore) { bestScore = score; best = b; }
       };
       spots.forEach(tryAt);
-      if (bestScore >= 400) for (var gx = 8; gx <= X1; gx += 24) for (var gy = 8; gy <= Y1; gy += 24) tryAt([gx, gy, 1], 0);
       cardBox = best;
       cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
       if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
     }
     function selectFromBoard(key) {
+      hideBoardCard();
       if (key !== sel) select(key, { trail: true });
       // On a phone the detail panel is a separate view, so reveal the record
       // that a paper, theorem or Lean card just selected.
@@ -1495,7 +1497,7 @@
         try { visible = !!c && c.matches(':focus-visible'); } catch (err) { visible = false; }
         if (visible) showBoardCard(c, 'focus');
       });
-      boardEl.addEventListener('focusout', function () { if (cardEl && cardEl.classList.contains('is-board')) hideBoardCard(); });
+      boardEl.addEventListener('focusout', function () { if (board.hoverVia === 'focus') hideBoardCard(); });
       boardEl.addEventListener('scroll', function () { if (cardEl && cardEl.classList.contains('is-board')) hideBoardCard(); }, { passive: true });
       if (cardEl) {
         cardEl.addEventListener('pointerenter', function () { if (cardEl.classList.contains('is-board')) clearTimeout(board.hideT); });
@@ -2173,7 +2175,14 @@
       if (h === hover) return;
       // On the way from the object to its card the pointer may cross the ground or the
       // edge of a neighbour: inside the box spanning both, the card stays.
-      if (cardOn && cardBox && hoverVia === 'map' && cardFor && cardFor.key === hover && hover) {
+      var nextObject = h ? obj(h) : null;
+      var sameRegion = nextObject && nextObject.kind === 'd' && hover && obj(hover).kind === 'f' && discOf(obj(hover)) === nextObject.i;
+      if (sameRegion) {
+        var region = chart.shown.regions[nextObject.i];
+        if (p[0] >= region.x - region.lab.w / 2 && p[0] <= region.x + region.lab.w / 2 &&
+            p[1] >= region.ly && p[1] <= region.ly + region.lab.h) sameRegion = false;
+      }
+      if ((!h || sameRegion) && cardOn && cardBox && hoverVia === 'map' && cardFor && cardFor.key === hover && hover) {
         var hb = hoverBox(obj(hover));
         if (hb && p[0] >= Math.min(hb.x0, cardBox.x0) && p[0] <= Math.max(hb.x1, cardBox.x1) &&
             p[1] >= Math.min(hb.y0, cardBox.y0) && p[1] <= Math.max(hb.y1, cardBox.y1) &&
