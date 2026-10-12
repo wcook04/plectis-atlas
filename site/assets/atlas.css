@@ -69,6 +69,11 @@ math { font-family: "Plectis MathML", math; }
   --top-h: 64px;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-move: cubic-bezier(0.65, 0, 0.35, 1);
+  /* Motion (DESIGN.md "Motion and hover"): pointing and pressing answer in --t-hover,
+     a change of state in --t-state, an opening panel in --t-open. */
+  --t-hover: 120ms;
+  --t-state: 180ms;
+  --t-open: 240ms;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -213,6 +218,13 @@ p { margin: 0 0 0.8em; text-wrap: pretty; }
 :root[data-theme="dark"] .theme-toggle__thumb { transform: translateX(20px); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .theme-toggle__thumb { transform: translateX(20px); } }
 .no-transitions, .no-transitions * { transition: none !important; }
+/* Pointing previews and pressing commits; both answer at once, in colour and border
+   only, so no reading text moves. The theme switch turns these off for its two frames. */
+a, .btn, .nav a, .seg__b, .chip, .trail a, .idx a, .nums a { transition: color var(--t-hover) var(--ease-out), background-color var(--t-hover) var(--ease-out),
+  border-color var(--t-hover) var(--ease-out), text-decoration-color var(--t-hover) var(--ease-out); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}
 
 /* ---- Search dialog ---------------------------------------------------- */
 /* Statement Map's exact-word search (atlas.js). Results grouped by kind, each with its
@@ -523,7 +535,7 @@ code.sr__name { font-size: 0.86rem; }
 .lean { margin: 0; background: var(--code-bg); border: 1px solid var(--rule); border-radius: var(--r-md); padding: 10px 0; overflow-x: auto; font-size: 0.8rem; line-height: 1.55; tab-size: 2; }
 .lean code { display: block; min-width: max-content; font-size: inherit; }
 .lean .ln { display: block; padding: 0 14px 0 0; white-space: pre; }
-.lean .ln::before { content: attr(data-n); display: inline-block; width: 3.6em; padding-right: 1em; text-align: right; color: var(--faint); opacity: 0.75; user-select: none; -webkit-user-select: none; }
+.lean .ln::before { content: attr(data-n); display: inline-block; width: 3.6em; padding-right: 1em; white-space: pre; text-align: right; color: var(--faint); opacity: 0.75; user-select: none; -webkit-user-select: none; }
 .lean .ln--gap { color: var(--faint); padding-left: 3.6em; }
 .lean .ln--gap::before { content: none; }
 .lean--file .ln:target { background: color-mix(in oklab, var(--steel) 18%, transparent); }

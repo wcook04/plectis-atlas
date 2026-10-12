@@ -243,15 +243,31 @@ Each of these states has its own wording. Unknown is neither red nor green.
 | Cited in the Lean source, or declared by the release | A source link between the two, not a review of their match |
 | A number whose inputs are incomplete | Its known part and what is missing; never a zero |
 
-## Motion
+## Motion and hover
 
-Motion only answers an action:
-- the camera moving to a discipline or a family when you select it;
-- the thread brightening when you point at a pairing;
-- the theme cross-fade.
+Pointing previews; selecting commits. Motion answers an action and says one of
+three things: what you are pointing at, where what you chose went, or what
+changed. Nothing moves on its own, nothing replays on a visit, and no reading
+text fades or slides in as it is scrolled to.
 
-There are no entrance animations and nothing moves on its own. Reduced motion
-jumps instead of flying.
+| Moment | What answers | Time |
+|---|---|---|
+| Pointing at a link, button, row or card | Colour, border or background; a card's border darkens | `--t-hover`, 120 ms |
+| Pointing at a family, paper, result or Lean statement on the map | A small card at the pointer names it in words (title, family, discipline, counts, the evidence line); its neighbours stay, the rest of the map steps back, and its row in the list lights | fades in `--t-hover`; map alphas ease over about 150 ms |
+| Selecting on the map | The camera flies (300 to 900 ms, slow in and out); the chosen object gets one ring that widens and fades once it settles; the panel's new content rises 6 px into place | ring about 700 ms once; panel `--t-state`, 180 ms |
+| Opening the Details rail or a preview | The rail slides 8 px in from its side (a sheet rises on a phone); a preview fades in | `--t-open`, 240 ms; preview `--t-hover` |
+| Choosing a comparison tab | The tab's mark moves; the panels swap without a jump | `--t-state` |
+| Arriving at a paper theorem | Its highlight fades out once | 2.4 s, once |
+| Pressing a button | It sinks slightly (scale 0.97) | 120 ms |
+| Switching theme | No colour transition runs (`.no-transitions` for two frames) | none |
+
+Easing: arrivals use `--ease-out`; the camera and anything that travels use
+`--ease-move`. Under reduced motion every transition is instant, the camera
+jumps and the ring is not drawn. Touch screens get no hover card; tapping
+selects.
+
+What motion must never do: make a candidate look settled, move text a reader
+is reading, delay the mathematics, or run in a loop.
 
 ## The pages and their one job
 
@@ -284,6 +300,27 @@ jumps instead of flying.
 - **One owner for each decision.** The pairing heuristics, headline choice,
   re-run tallies and reader grades that the frontend used to compute have been
   deleted. The backend decides them; the pages say what it decided.
+- **A gloss is true of every term mapped to it.** MathVet's "full" means the
+  Lean implies the headline; cert-machine's "MATCHES" means it states it. The
+  shared state `all` reads "states or implies all of the headline".
+- **An AI draft's class names a paper's theorem, never "the headline".** On a
+  family whose catalogue claim is unresolved, no page calls any theorem the
+  headline.
+- **"Compare with Lean" sits only where a pairing exists**, and opens that
+  pairing (`#lean-<name>`).
+- **A record's own limit sits on its card, quoted** ("not the theorem"), and a
+  scope is never cut at a colon.
+- **The author's text ends where the author ended it.** What the atlas records
+  at a paper's theorem follows it in a box headed "Atlas note, not part of the
+  paper"; the highlight on a linked theorem covers only the author's words.
+- **A short formula is one unit.** A formula of 32 TeX characters or fewer is
+  braced, so "Re s > 11/12" never ends a line on its relation; longer ones keep
+  their breaks.
+- **On a phone, the list starts with something to open.** The disciplines come
+  straight after the release's two sentences; the colour key is a link away.
+- **A search the reader has acted on steps back.** Opening a match folds the
+  matches behind one button, and the map stops dimming what the search did not
+  match, so the opened paper's own results read at full strength.
 
 ## Quality floor
 

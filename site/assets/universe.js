@@ -1085,7 +1085,9 @@
         if (focusF >= 0 && openF < 0) a = i === focusF ? 1 : fams[focusF].hop[i] ? 0.95 : picked ? 0.32 : 0.5;
         else if (fd >= 0) a = fams[i].d === fd ? 1 : 0.16;
         else if (hd >= 0) a = fams[i].d === hd ? 1 : 0.55;
-        if (matchFam) a *= matchFam[i] ? 1 : 0.22;
+        // Search matches lead while the list of matches is open; once the reader opens one
+        // and the list folds, the map draws the selection in its ordinary grammar.
+        if (matchFam && !searchFolded) a *= matchFam[i] ? 1 : 0.22;
         if (openF >= 0 && i !== openF) a *= ctxA;
         out[i] = a;
       }
@@ -1299,7 +1301,7 @@
         ctx.setLineDash([]);
       }
       // Each result is a dot in its family's one colour; selected or pointed at, it is ringed.
-      var dim = function (key) { return matches && !matches[key] ? 0.28 : 1; };
+      var dim = function (key) { return matches && !searchFolded && !matches[key] ? 0.28 : 1; };
       var hotKey = function (key) { return inHand(key); };
       var dotInk = hollow ? palette.struct : ink;
       fd.papers.forEach(function (pi) {
@@ -2747,10 +2749,12 @@
       return searchLoading;
     }
     var matchList = [];
+    var searchFolded = false;   // the reader opened a match and folded the list away
     function runSearch() {
       var q = (searchIn.value || '').trim().toLowerCase();
       query = q;
       if (resultsEl) resultsEl.classList.remove('is-folded');
+      searchFolded = false;
       if (!q) {
         matches = null; matchFam = null; matchList = [];
         resultsEl.hidden = true; resultsEl.innerHTML = '';
@@ -2986,6 +2990,8 @@
     function foldResults(fold) {
       if (!resultsEl || resultsEl.hidden) return;
       resultsEl.classList.toggle('is-folded', fold);
+      searchFolded = !!fold;
+      draw();
       var b = resultsEl.querySelector('[data-u-unfold]');
       if (fold && !b) {
         b = document.createElement('button');
