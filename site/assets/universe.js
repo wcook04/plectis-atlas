@@ -2798,10 +2798,15 @@
             // A statement with no title of its own is named by its label in the
             // index ("thm:main"); the map names it as its paper prints it.
             var own = obj(hit.id);
-            var name = own && hit.kind === 'statement' && /^[A-Za-z]+:\S*$/.test(hit.name || '') ? nameOf(own) : words(hit.name);
-            var inner = '<span class="u-row__k">' + escapeHtml(kindWord(hit.kind)) + '</span><span class="u-row__t md-math">' + escapeHtml(name) + '</span>';
+            var AS = window.AtlasSearch, isLabel = /^[A-Za-z]+:\S*$/.test(hit.name || '');
+            var nameHtml = own && hit.kind === 'statement' && isLabel ? escapeHtml(nameOf(own))
+              : isLabel && AS.statementName ? escapeHtml(AS.statementName(hit.name))
+              : AS.richName ? AS.richName(hit.name) : escapeHtml(words(hit.name));
+            var inner = '<span class="u-row__k">' + escapeHtml(kindWord(hit.kind)) + '</span><span class="u-row__t md-math">' + nameHtml + '</span>';
             var fo = obj((hit.family_ids || [])[0]);
             if (own && own.kind === 'd') inner += '<span class="u-row__n">' + escapeHtml(discCounts(D.disciplines[own.i])) + '</span>';
+            // A family's row names its discipline; any other row names its family.
+            else if (fo && hit.kind === 'family') inner += '<span class="u-row__n">' + escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.disciplines[D.families[fo.i].d].name) + '</span>';
             else if (fo) inner += '<span class="u-row__n">' + escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.families[fo.i].title) + '</span>';
             if (obj(hit.id)) return '<li>' + goBtn(hit.id, inner, 'u-row u-row--hit') + '</li>';
             return '<li><a class="u-row u-row--hit" href="' + escapeHtml(hit.url) + '">' + inner + '</a></li>';

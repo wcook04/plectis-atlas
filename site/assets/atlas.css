@@ -911,10 +911,12 @@ a.term:hover, a.term:focus-visible { text-decoration-color: currentColor; }
 .filters--families { align-items: flex-end; gap: 10px 14px; padding: 12px 0 8px; margin: 0; }
 :root:not(.js) .filters--families { display: none; }  /* shown before first paint when scripts run, so nothing shifts */
 .filters--families .filters__h { display: block; margin: 0 0 4px; }
-.filters--families .select { width: 12.5rem; max-width: 100%; }
+.filters--families .select { width: auto; min-width: 12.5rem; max-width: 100%; }  /* the longest discipline reads whole */
 .filters__g--q { flex: 0 1 12rem; }
 .filters__g--q .filter-input { width: 100%; min-height: 34px; padding: 4px 10px; border: 1px solid var(--rule-control); border-radius: var(--r-sm); background: var(--surface); font-size: var(--fs-meta); }
-.filters--families .filters__n { flex: 0 0 auto; align-self: flex-end; margin: 0 0 6px; color: var(--ink-soft); font-size: var(--fs-meta); }
+/* The count sentence takes its own row under the controls and wraps, so a long list of
+   criteria never pushes the page sideways. */
+.filters--families .filters__n { flex: 1 0 100%; min-width: 0; align-self: flex-end; margin: 0 0 6px; color: var(--ink-soft); font-size: var(--fs-meta); }
 .filters__reset { align-self: flex-end; min-height: 32px; }
 .filters__empty { margin: 16px 0; color: var(--ink-soft); }
 .select { min-height: 34px; padding: 4px 30px 4px 10px; border: 1px solid var(--rule-control); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); font-size: var(--fs-meta); }

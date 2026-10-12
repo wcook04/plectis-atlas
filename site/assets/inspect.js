@@ -21,6 +21,7 @@
   var DWELL = 300, LINGER = 260;
   var pop = null, popFor = null, showT = 0, hideT = 0;
   var rail = null, railBody = null, railHead = null, pinnedFor = null, returnY = 0;
+  var restoring = false;   /* focus handed back by closing the rail */
   var hover = window.matchMedia ? window.matchMedia('(hover: hover) and (pointer: fine)') : { matches: true };
 
   function trig(t) { return t && t.closest ? t.closest('[data-inspect]') : null; }
@@ -171,7 +172,11 @@
     if (back && back.isConnected) {
       back.classList.remove('is-pinned');
       back.removeAttribute('aria-expanded');
+      // Focus goes back to the trigger without opening its preview over the text: the
+      // reader has just read that record.
+      restoring = true;
       try { back.focus({ preventScroll: true }); } catch (e) { back.focus(); }
+      restoring = false;
     }
     if (wasSheet) window.scrollTo(window.scrollX, returnY);
   }
@@ -200,7 +205,7 @@
     try { keyboard = el.matches(':focus-visible'); } catch (err) { /* older engines: treat as keyboard */ }
     highlight(el);
     clearTimeout(hideT);
-    if (keyboard) showPop(el);
+    if (keyboard && !restoring) showPop(el);
   });
   doc.addEventListener('focusout', function (e) {
     var el = trig(e.target);

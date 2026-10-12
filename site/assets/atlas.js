@@ -823,7 +823,7 @@
   /* query(q, {statements: n}): every matching family, Lean statement, paper and
      discipline, and the first n matching paper statements (default 400). The array
      also carries .counts by kind, .tokens, .missing and .truncated. */
-  function query(q, opts) {
+  function exactQuery(q, opts) {
     var limit = (opts && opts.statements != null) ? opts.statements : 400;
     return Promise.all([postings(q), labels()]).then(function (r) {
       var p = r[0], lab = r[1], counts = { family: 0, lean: 0, manuscript: 0, statement: 0, discipline: 0 };
@@ -841,7 +841,120 @@
       });
     });
   }
+  /* A name as the paper or the catalogue prints it: TeX dashes as dashes outside
+     mathematics, and the catalogue's own italics; every other tag stays text. */
+  function richName(s) {
+    var t = String(s == null ? '' : s).split(/(\$[^$]*\$)/).map(function (part, j) {
+      return j % 2 ? part : part.replace(/---/g, '—').replace(/--/g, '–');
+    }).join('');
+    var e = doc.createElement('span');
+    e.textContent = t;
+    return e.innerHTML.replace(/&lt;(\/?)(i|em|sub|sup)&gt;/g, '<$1$2>');
+  }
+  function richEl(tag, cls, s) { var e = el(tag, cls); e.innerHTML = richName(s); return e; }
+  /* A statement the index names only by its LaTeX label ("thm:main") is named by the
+     kind the label's prefix declares and the rest of the label in words. */
+  var LABEL_KIND = { thm: 'Theorem', theorem: 'Theorem', lem: 'Lemma', lemma: 'Lemma', prop: 'Proposition',
+    cor: 'Corollary', def: 'Definition', defn: 'Definition', conj: 'Conjecture', rem: 'Remark', ex: 'Example',
+    eq: 'Equation', fact: 'Fact', fac: 'Fact', claim: 'Claim', obs: 'Observation', q: 'Question', question: 'Question',
+    prob: 'Problem', hyp: 'Hypothesis', ass: 'Assumption', assump: 'Assumption', cond: 'Condition', alg: 'Algorithm',
+    sec: 'Section', op: 'Open problem', not: 'Notation', step: 'Step', app: 'Appendix', fig: 'Figure', tab: 'Table' };
+  function statementName(name) {
+    var m = /^([A-Za-z]+):(\S+)$/.exec(name || '');
+    if (!m) return null;
+    return (LABEL_KIND[m[1].toLowerCase()] || 'Statement') + ' (' + m[2].replace(/[-_:.]+/g, ' ').trim() + ')';
+  }
+  /* When the exact words find nothing, the usual spellings are tried in turn, and the
+     result says which one matched (.respelled): a hyphen where the release prints a dash
+     ("Landau-Siegel"), hyphens for spaces ("quasi Riemann"), a name without its accents
+     ("Kahler", "Erdos") spelled as the titles spell it, the titles themselves read
+     without accents, and a Lean statement's exact name. Nothing is guessed beyond the
+     release's own words. */
+  function bare(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  var accented = null;   /* unaccented word -> the word as the titles print it */
+  function accentMap(lab) {
+    if (accented) return accented;
+    accented = {};
+    var add = function (t) { searchTokens(t).forEach(function (w) { var b = bare(w); if (b !== w && !accented[b]) accented[b] = w; }); };
+    Object.keys(lab.papers || {}).forEach(function (k) { add(lab.papers[k]); });
+    Object.keys(lab.families || {}).forEach(function (k) { add((lab.families[k] || {}).n); });
+    return accented;
+  }
+  function titleMatches(q, lab) {
+    var words = searchTokens(bare(q));
+    if (!words.length) return [];
+    var hit = function (title) { var t = searchTokens(bare(title)).join(' '); return words.every(function (w) { return (' ' + t + ' ').indexOf(w) >= 0; }); };
+    var out = [];
+    Object.keys(lab.families || {}).forEach(function (id) {
+      var f = lab.families[id] || {};
+      if (hit(f.n)) out.push({ id: id, kind: 'family', name: f.n, family_ids: [id], url: urlFor(id, 'family'), paper: null });
+    });
+    Object.keys(lab.papers || {}).forEach(function (id) {
+      if (hit(lab.papers[id])) out.push({ id: id, kind: 'manuscript', name: lab.papers[id], family_ids: [], url: urlFor(id, 'manuscript'), paper: null });
+    });
+    return out;
+  }
+  function query(q, opts) {
+    return exactQuery(q, opts).then(function (res) {
+      if (!searchTokens(q).length) return res;
+      if (res.length) {
+        // Exact hits for an unaccented name ("Erdos") come with the hits for the name as
+        // the titles print it ("Erdős").
+        return labels().then(function (lab) {
+          var map = accentMap(lab), toks = searchTokens(q);
+          if (!toks.some(function (t) { return map[t]; })) return res;
+          return exactQuery(toks.map(function (t) { return map[t] || t; }).join(' '), opts).then(function (more) {
+            var seen = {}, out = res.slice();
+            res.forEach(function (r) { seen[r.id] = 1; });
+            more.forEach(function (r) { if (!seen[r.id]) { seen[r.id] = 1; out.push(r); } });
+            out.counts = {};
+            Object.keys(res.counts).forEach(function (k) { out.counts[k] = (res.counts[k] || 0) + ((more.counts || {})[k] || 0); });
+            out.tokens = res.tokens; out.missing = []; out.truncated = res.truncated || more.truncated;
+            return out;
+          });
+        }, function () { return res; });
+      }
+      return labels().then(function (lab) {
+        var alts = [];
+        if (/[-‐‑–—]/.test(q)) alts.push(q.replace(/[-‐‑–—]+/g, ' '));
+        var words = q.trim().split(/\s+/);
+        if (words.length > 1 && words.length < 5) alts.push(words.join('-'));
+        var map = accentMap(lab), toks = searchTokens(q);
+        if (toks.some(function (t) { return map[t]; })) alts.push(toks.map(function (t) { return map[t] || t; }).join(' '));
+        var tryAlt = function (k) {
+          if (k < alts.length) {
+            return exactQuery(alts[k], opts).then(function (r2) {
+              if (r2.length) { r2.respelled = alts[k]; return r2; }
+              return tryAlt(k + 1);
+            });
+          }
+          var byTitle = titleMatches(q, lab);
+          if (byTitle.length) {
+            var out = byTitle.slice();
+            out.counts = { family: 0, lean: 0, manuscript: 0, statement: 0, discipline: 0 };
+            out.forEach(function (r) { out.counts[r.kind]++; });
+            out.tokens = searchTokens(bare(q)); out.missing = []; out.truncated = false; out.respelled = bare(q);
+            return out;
+          }
+          // A Lean statement by its exact name, when the index does not hold it as a word.
+          if (/^[A-Za-z][A-Za-z0-9_']{3,}$/.test(q.trim()) && typeof fetch === 'function') {
+            var name = q.trim();
+            return fetch(root + 'statements/' + encodeURIComponent(name) + '.html', { method: 'HEAD' }).then(function (r) {
+              if (!r.ok) return res;
+              var one = [{ id: 'l:' + name, kind: 'lean', name: name, family_ids: [], url: urlFor('l:' + name, 'lean'), paper: null }];
+              one.counts = { family: 0, lean: 1, manuscript: 0, statement: 0, discipline: 0 };
+              one.tokens = [name]; one.missing = []; one.truncated = false; one.respelled = name;
+              return one;
+            }, function () { return res; });
+          }
+          return res;
+        };
+        return tryAlt(0);
+      }, function () { return res; });
+    });
+  }
   global.AtlasSearch = { query: query, tokens: searchTokens, url: urlFor, labels: labels,
+    statementName: function (n) { return statementName(n); }, richName: function (n) { return richName(n); },
     family: function (fid) { return labels().then(function (l) { return l.families[fid] || null; }); } };
 
   /* ---- The search dialog ------------------------------------------------ */
@@ -870,23 +983,24 @@
     if (r.kind === 'family') {
       var fam = lab.families[r.id] || {};
       var t = el('span', 'sr__t');
-      t.appendChild(el('span', 'sr__name md-math', r.name));
+      t.appendChild(richEl('span', 'sr__name md-math', r.name));
       t.appendChild(el('span', 'sr__k', fmt(T('family'), { n: r.id.slice(2) }) + (fam.d ? ', ' + fam.d : '') + (fam.e ? '. ' + fam.e.charAt(0).toUpperCase() + fam.e.slice(1) + '.' : '')));
       a.appendChild(t);
     } else {
       var tt = el('span', 'sr__t');
       if (r.kind === 'statement') {
-        tt.appendChild(el('code', 'sr__name sr__code', r.name));
-        tt.appendChild(el('span', 'sr__k md-math', r.paper ? fmt(T('in-paper'), { title: r.paper }) : ''));
+        var sn = statementName(r.name);
+        tt.appendChild(sn ? el('span', 'sr__name', sn) : richEl('span', 'sr__name md-math', r.name));
+        tt.appendChild(richEl('span', 'sr__k md-math', r.paper ? fmt(T('in-paper'), { title: r.paper }) : ''));
       } else if (r.kind === 'lean') {
         var nm = el('span', 'sr__name');
         nm.appendChild(el('code', 'sr__code', r.id.slice(2)));
         tt.appendChild(nm);
-        tt.appendChild(el('span', 'sr__k md-math', r.name));
+        tt.appendChild(richEl('span', 'sr__k md-math', r.name));
       } else {
-        tt.appendChild(el('span', 'sr__name md-math', r.name));
+        tt.appendChild(richEl('span', 'sr__name md-math', r.name));
         var fams = r.family_ids.map(function (f) { return (lab.families[f] || {}).n || f; });
-        if (r.kind === 'manuscript' && fams.length) tt.appendChild(el('span', 'sr__k md-math', fmt(T('in-family'), { name: fams[0] })));
+        if (r.kind === 'manuscript' && fams.length) tt.appendChild(richEl('span', 'sr__k md-math', fmt(T('in-family'), { name: fams[0] })));
         if (r.kind === 'discipline') tt.appendChild(el('span', 'sr__k', fmt(T('discipline-n'), { n: r.family_ids.length })));
       }
       a.appendChild(tt);
@@ -957,7 +1071,7 @@
       if (my !== seq) return;
       last = r[0];
       dlg.removeAttribute('aria-busy');
-      render(r[0], r[1], toks);
+      render(r[0], r[1], r[0].respelled ? searchTokens(r[0].respelled) : toks);
     }).catch(function () {
       if (my !== seq) return;
       dlg.removeAttribute('aria-busy');
