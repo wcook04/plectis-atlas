@@ -1696,6 +1696,30 @@
       }
       if (sel) select(parentKey(obj(sel)), {});
     }
+    function selectAncestor(key) {
+      var saved = null, remaining = [];
+      for (var i = trail.length - 1; i >= 0; i--) {
+        if (trail[i].prev === key) {
+          saved = trail[i];
+          if (key) remaining = trail.slice(0, i);
+          break;
+        }
+      }
+      // Browser Back still records the click. Escape and blank-map clicks continue
+      // out from this ancestor, rather than reopening the child just left.
+      select(key, { trail: true });
+      trail = remaining;
+      if (!saved) return;
+      restoreViewPositions({ ys: saved.views, v: saved.view, y: saved.y });
+      pendingY = typeof saved.y === 'number' ? saved.y : null;
+      pendingBoard = saved.board || null;
+      if (saved.view) showView(saved.view, true);
+      restorePending();
+      restoreBoardPosition();
+      if (window.history && window.history.replaceState) {
+        try { window.history.replaceState(Object.assign({}, window.history.state, { y: saved.y, v: saved.view, ys: phoneViewY, b: saved.board }), ''); } catch (e) { /* navigation still works */ }
+      }
+    }
     function openPage(o) {
       if (!o) return;
       var href = null;
@@ -2318,7 +2342,8 @@
       if (outside) window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
       var fromResults = !!(resultsEl && resultsEl.contains(go));
       var byKey = e.detail === 0 && root.contains(go);
-      select(key || null, { trail: true });
+      if (go.classList.contains('u-crumb')) selectAncestor(key || null);
+      else select(key || null, { trail: true });
       // A match opened from the search folds the list of matches away, so what was
       // opened starts at the top of the panel; one button brings the matches back.
       if (fromResults) foldResults(true);
