@@ -22,6 +22,7 @@
   var pop = null, popFor = null, showT = 0, hideT = 0;
   var rail = null, railBody = null, railHead = null, pinnedFor = null, returnY = 0;
   var restoring = false;   /* focus handed back by closing the rail */
+  var dismissedFor = null; /* do not reopen until the reader leaves its trigger */
   var hover = window.matchMedia ? window.matchMedia('(hover: hover) and (pointer: fine)') : { matches: true };
 
   function trig(t) { return t && t.closest ? t.closest('[data-inspect]') : null; }
@@ -84,7 +85,7 @@
     p.style.top = (top + window.scrollY) + 'px';
   }
   function showPop(el) {
-    if (el === pinnedFor) return;
+    if (el === pinnedFor || el === dismissedFor) return;
     var t = tpl(el);
     if (!t) return;
     ensurePop();
@@ -164,6 +165,8 @@
     if (!rail || rail.hidden) return;
     var back = pinnedFor;
     var wasSheet = sheet();
+    dismissedFor = back;
+    hidePop();
     rail.hidden = true;
     doc.documentElement.classList.remove('ins-open');
     if (railBody) railBody.textContent = '';
@@ -196,6 +199,7 @@
     if (!el) return;
     var to = e.relatedTarget;
     if (to && (el.contains(to) || (pop && pop.contains(to)))) return;
+    if (dismissedFor === el) dismissedFor = null;
     scheduleHide();
   });
   doc.addEventListener('focusin', function (e) {
@@ -209,6 +213,7 @@
   });
   doc.addEventListener('focusout', function (e) {
     var el = trig(e.target);
+    if (dismissedFor === el) dismissedFor = null;
     if (el) scheduleHide();
   });
   doc.addEventListener('click', function (e) {
