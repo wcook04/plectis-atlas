@@ -89,3 +89,20 @@ python3 scripts/build_site.py
 ```
 
 The workflow `.github/workflows/check.yml` also runs reader, search, data-parser, paper-renderer and community checks, including the contribution self-test. Run the relevant focused tests for changed code. For documentation-only changes, check relative links, README/skill synchronisation and `git diff --check`; a full site build is not necessary.
+
+## Source credit and distributed notices
+
+Follow `docs/ATTRIBUTION.md` when adding external material. Record the author,
+source version, role, applicable terms and modifications. Do not credit an
+Atlas compilation to the authors of the pages it surveyed or describe a
+planned validation as completed. Correct consumed evidence through its source
+and an accepted Statement Map export, never by editing backend packets.
+
+`LICENSES/manifest.json` owns the distributed font and code inventory. A new
+asset or changed byte needs a source and licence review before its hash is
+updated. Run `python3 scripts/attribution.py` and, after a site build, add
+`--built site/_build` to verify that the notices accompany the assets. The
+checker is a coverage check, not a permission grant or a priority assessment.
+Inspect embedded font copyright and licence metadata as well as repository
+licences. In particular, KaTeX's fonts use OFL-1.1 even though its code uses
+MIT; keep components with different terms in separate inventory records.

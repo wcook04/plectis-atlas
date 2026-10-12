@@ -65,6 +65,10 @@ judgement or rebuild a count from a different population. The separate
 `data/` indexes support source browsing and rendering. They are not permission
 to override the evidence packets.
 
+`LICENSES/manifest.json` owns the distributed component inventory.
+`scripts/attribution.py` checks its bytes and source-licence coverage, then copies
+licence notices into each website build. See [attribution](ATTRIBUTION.md).
+
 ## Source and output boundaries
 
 [`backend/EXPORT.json`](../backend/EXPORT.json) records the Statement Map commit, acceptance receipt,
@@ -228,6 +232,7 @@ For documentation or skill edits:
 python3 scripts/sync_skills.py          # only when canonical skills changed
 python3 scripts/sync_skills.py --check
 python3 scripts/sync_readme.py --check
+python3 scripts/attribution.py
 git diff --check
 ```
 

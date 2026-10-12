@@ -1,0 +1,123 @@
+{
+  "schema": "atlas-attribution/1",
+  "checked_on": "2026-10-12",
+  "note": "An inventory of distributed components and imported-source terms, not a grant of rights or a complete scholarly bibliography. Font versions are read from their embedded name tables; file hashes bind this inventory to shipped bytes.",
+  "components": [
+    {
+      "id": "katex",
+      "name": "KaTeX",
+      "version": "0.18.9",
+      "credit": "Khan Academy and KaTeX contributors",
+      "url": "https://katex.org/",
+      "source": "https://github.com/KaTeX/KaTeX/tree/71a7bc02435353b4ed2420bb7b904cae6a0231bc",
+      "licence": "MIT",
+      "licence_file": "LICENSES/MIT-KaTeX.txt",
+      "use": "Typesets formulas in the browser; the paper builder checks formulas with the same version.",
+      "changes": "Selected unmodified minified JavaScript, CSS and auto-render extension. Verified against the npm 0.18.9 distribution; the accompanying fonts are listed separately.",
+      "files": {
+        "site/assets/vendor/katex-0.18.9/contrib/auto-render.min.js": "e5372d199bcdae8b4de71d0f7ceba72a4ba12774a27c60a6f1f77d03b3228ee4",
+        "site/assets/vendor/katex-0.18.9/katex.min.css": "b9ce0e8ce93f0c18c4986fe1f1c3c269d921b56a69e6c97f83a507916b38aab5",
+        "site/assets/vendor/katex-0.18.9/katex.min.js": "155f6c2d673c5912e3b48f45d8830eaad18ae1953915939ceb648ea8b9c3e7e2"
+      }
+    },
+    {
+      "id": "katex-fonts",
+      "name": "KaTeX fonts",
+      "version": "bundled with 0.18.9",
+      "credit": "Design Science, Inc. (2009–2010); Khan Academy (2014–2018)",
+      "url": "https://github.com/KaTeX/KaTeX/issues/339",
+      "source": "https://github.com/KaTeX/KaTeX/tree/71a7bc02435353b4ed2420bb7b904cae6a0231bc",
+      "licence": "OFL-1.1",
+      "licence_file": "LICENSES/OFL-KaTeX-Fonts.txt",
+      "use": "Formula glyphs used by KaTeX.",
+      "changes": "Selected unmodified WOFF2 files from the npm distribution. Original embedded copyright, licence notices and reserved font names are retained.",
+      "files": {
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Caligraphic-Bold.woff2": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Caligraphic-Regular.woff2": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Fraktur-Bold.woff2": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Fraktur-Regular.woff2": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Main-Bold.woff2": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Main-BoldItalic.woff2": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Main-Italic.woff2": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Main-Regular.woff2": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Math-BoldItalic.woff2": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Math-Italic.woff2": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_SansSerif-Bold.woff2": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_SansSerif-Italic.woff2": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_SansSerif-Regular.woff2": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Script-Regular.woff2": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Size1-Regular.woff2": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Size2-Regular.woff2": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Size3-Regular.woff2": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Size4-Regular.woff2": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b"
+      }
+    },
+    {
+      "id": "stix-two-text",
+      "name": "STIX Two Text",
+      "version": "2.13 b171",
+      "credit": "The STIX Fonts Project Authors; Tiro Typeworks",
+      "url": "https://github.com/stipub/stixfonts",
+      "source": "https://github.com/google/fonts/tree/main/ofl/stixtwotext",
+      "licence": "OFL-1.1",
+      "licence_file": "LICENSES/OFL-STIX-Two.txt",
+      "use": "Reading text.",
+      "changes": "Subset, hints removed and renamed Plectis Serif; copied from the Plectis website font build.",
+      "files": {
+        "site/assets/fonts/plectis-serif-italic.woff2": "4282bee600d181f7068a27070348016e4beb87cd185d025eb16a6d55cb757670",
+        "site/assets/fonts/plectis-serif.woff2": "e5a716ac386bc42783eadd507c7e8bee0581d5255630f9da6c0a9210137a074c"
+      }
+    },
+    {
+      "id": "stix-two-math",
+      "name": "STIX Two Math",
+      "version": "2.12 b168a",
+      "credit": "The STIX Fonts Project Authors; Tiro Typeworks",
+      "url": "https://github.com/stipub/stixfonts",
+      "source": "https://github.com/google/fonts/tree/main/ofl/stixtwomath",
+      "licence": "OFL-1.1",
+      "licence_file": "LICENSES/OFL-STIX-Two.txt",
+      "use": "Mathematical symbols and the MathML font.",
+      "changes": "Subset and renamed Plectis Math and Plectis MathML; copied from the Plectis website font build.",
+      "files": {
+        "site/assets/fonts/plectis-math-extra.woff2": "d013b264e29f2d9afcd3ef46ff8176cec23cbaf742e7c8b56d329eebc344f76d",
+        "site/assets/fonts/plectis-math.woff2": "fea6f5d33f53c047ec2bf7f27bc8c118da02b2a271f37ee4c340a0da734a988b",
+        "site/assets/fonts/plectis-mathml.woff2": "856a913a515753382d9ed88afc1556bb05ba7376b0bbcb17a9d3a9f4a29a36bb"
+      }
+    },
+    {
+      "id": "source-sans-3",
+      "name": "Source Sans 3",
+      "version": "3.052",
+      "credit": "Adobe; designed by Paul D. Hunt",
+      "url": "https://github.com/adobe-fonts/source-sans",
+      "source": "https://github.com/adobe-fonts/source-sans/tree/3.052R",
+      "licence": "OFL-1.1",
+      "licence_file": "LICENSES/OFL-Source-Sans-3.txt",
+      "use": "Interface text.",
+      "changes": "Subset, hints removed and renamed Plectis Sans; copied from the Plectis website font build. The fonts retain their 2023 Adobe copyright metadata.",
+      "files": {
+        "site/assets/fonts/plectis-sans-italic.woff2": "e25ef55b493bd88f33cbba98c0a251806ced7ad4e8d5560c7e00247269894640",
+        "site/assets/fonts/plectis-sans.woff2": "032c386357fd4b764c66881e2a8b738ca1e2c195439757aa695e23f768acde55"
+      }
+    }
+  ],
+  "source_licences": {
+    "cert-machine": [
+      "LICENSES/MIT-cert-machine.txt"
+    ],
+    "mathvet": [
+      "LICENSES/Apache-2.0.txt"
+    ],
+    "nealmcb-lean-tooling": [
+      "LICENSES/MIT-openai-math-lean-tooling.txt"
+    ],
+    "hol-cards": [
+      "LICENSES/CC-BY-4.0.txt"
+    ],
+    "erdos-problems": [],
+    "tier-list": []
+  }
+}

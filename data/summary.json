@@ -756,7 +756,7 @@
    "licence": "Apache-2.0",
    "reuse": "import",
    "snapshot": "2026-10-10",
-   "method": "An independent, pre-referee review of each family's challenge statements against its headline claim under a published rubric (PROTOCOL.md), with its own Comparator runs per challenge. MathVet publishes the error rate of its own verdicts.",
+   "method": "An independent, model-assisted, pre-referee reading of each family's challenge statements against its headline claim under a published rubric (PROTOCOL.md), with its own Comparator runs per challenge. Its protocol describes a planned error-rate study; this import does not establish that the study has been completed.",
    "fields": {
     "scope_reading": "Per family: MathVet's verdict on whether the challenge statements state the headline claim, with its review note.",
     "replay": "Per challenge: MathVet's own machine check."
@@ -775,7 +775,7 @@
     },
     {
      "kind": "idea",
-     "what": "A published rubric with a stated error rate for statement-fidelity verdicts",
+     "what": "A published rubric and a protocol for measuring the error rate of statement-fidelity verdicts",
      "where": "the about and numbers pages"
     }
    ],

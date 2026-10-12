@@ -8,7 +8,9 @@
   "built_from": "Built from {upstream} at commit {commit_short}, dated {commit_date}.",
   "skip": "Skip to content",
   "repo_link": "This atlas on GitHub",
-  "upstream_link": "The release at the pinned commit"
+  "upstream_link": "The release at the pinned commit",
+  "citation_title": "Plectis Atlas: OpenAI's mathematics release, read and checked",
+  "notices_link": "Credits and licence notices"
  },
  "nav": {
   "atlas": "Atlas",
@@ -742,7 +744,7 @@
   "what_heading": "What it is",
   "what": "The Plectis Atlas is an independent guide to OpenAI’s mathematics release of {release_date}. It follows the release’s grouping of its papers into {families} families, sets the Lean statements of {families_with_lean} of them beside the paper theorems they are paired with, gives each paper a reading page, and records who has checked what.",
   "approach_heading": "The essays behind the design",
-  "approach_intro": "In August and September 2026, mathematicians wrote about what AI-generated results ask of the people who read them. Their authors have not reviewed the atlas and are not involved in it.",
+  "approach_intro": "These essays shaped how the Atlas approaches explanation, credit and formal statements. Their authors are cited for their ideas; this does not imply endorsement or review of the Atlas.",
   "approach_response_intro": "What the atlas does in response:",
   "approach_responses": [
    "Each family page opens with the claim as the paper prints it, with its hypotheses and its place in the paper, and every paper has a reading page.",
@@ -804,9 +806,9 @@
   "independence_heading": "Independence",
   "independence": "The atlas is an independent project. It is not affiliated with or endorsed by OpenAI. It describes what is in the release and what has been checked, and quotes OpenAI’s own words where it describes the results.",
   "licence_heading": "Licence and attribution",
-  "licence": "The release is published by OpenAI under the Apache License 2.0. The atlas typesets selected descriptions, abstracts, statements and notes from the pinned release and links to their source files.",
+  "licence": "Original Atlas code and documentation use Apache-2.0; contributed explanations use CC BY 4.0. Imported source material, KaTeX and font subsets retain their own terms. The website includes their notices and licence texts.",
   "cite_heading": "How to cite",
-  "cite": "Cite a page by its address and the pinned commit it describes.",
+  "cite": "Use the citation below for the Atlas, with its revision or your access date. Also cite the original paper or outside report when relying on its result; a citation to the Atlas does not replace that credit.",
   "author_heading": "Author",
   "author": "{author} builds and maintains the atlas. His own work on Erdős problems, with its Lean proofs, is at Plectis.",
   "author_link": "Plectis",
@@ -821,7 +823,8 @@
   "disclosed_intro": "OpenAI’s README records the following about how the release was produced:",
   "disclosed_traces": "Abridged reasoning summaries for {n} results, linked from those results’ pages here.",
   "related_heading": "Related efforts",
-  "related_intro": "Other places where people are examining AI-generated mathematics."
+  "related_intro": "Other places where people are examining AI-generated mathematics.",
+  "licence_link": "Sources, credits and licence texts"
  },
  "notfound": {
   "title": "Page not found",
@@ -918,8 +921,8 @@
  },
  "sources": {
   "title": "Sources",
-  "lede": "Everything on the atlas comes from {sources} sources: OpenAI’s repository, the atlas’s own checks, and public work by {people} other people, with {findings} of their findings attached to specific results.",
-  "credit": "Other people’s data and findings are folded into the atlas’s own rows and credited at every point of use. Code, data files and prose are copied only where the author’s licence allows; otherwise the atlas cites the finding and links the original.",
+  "lede": "Source records for the release, its outside assessments and public reports, with {findings} findings attached to specific results. Software and font credits are listed below.",
+  "credit": "The Atlas attributes outside records where they appear and links their source. Original material retains its authorship and terms. A reported check, an Atlas extraction and a reviewed mathematical claim are different kinds of evidence.",
   "base_heading": "The base",
   "pinned": "pinned at {commit}",
   "openai_uses": "The catalogue, the {manuscripts} current manuscripts in {families} families with their TeX sources and bibliographies, the {lean} Comparator challenge files and the Lean library, OpenAI’s Lean notes and its history file.",
@@ -951,9 +954,16 @@
   "explanations_heading": "Explanations elsewhere",
   "statement_more": "More about this statement",
   "adopted_heading": "Taken into the atlas",
-  "adopted_kind_idea": "Idea, re-implemented with credit",
+  "adopted_kind_idea": "Idea or design reference",
   "adopted_kind_code": "Code, reused under its licence",
-  "adopted_kind_data": "Data, reused under its licence"
+  "adopted_kind_data": "Data or source records",
+  "components_heading": "Software and fonts",
+  "components_intro": "These components are distributed with the website. The listed modifications describe how they were included; the original licences remain in force.",
+  "notices_link": "Attribution notice",
+  "licence_copy": "Licence text",
+  "component_source": "Component source",
+  "citation_link": "Citation metadata",
+  "pin_link": "Captured source revision"
  },
  "glossary": {
   "title": "Glossary",

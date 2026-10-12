@@ -21,6 +21,7 @@ That guide owns the order of the commands and the paper-metadata refresh rule.
 | [lean_render.py](lean_render.py) | Renders Lean source for the page builders. |
 | [cards.py](cards.py) | Renders share images. |
 | [sync_readme.py](sync_readme.py) | Refreshes the root README's computed blocks and the data folder's generated guide. |
+| [attribution.py](attribution.py) | Checks distributed asset credits and source licence copies; includes notices in the website build. |
 | [sync_skills.py](sync_skills.py) | Copies canonical `skills/` into the generated agent skill folders. |
 
 `backend.py` is a compatibility import for the reader. New code should use
@@ -62,6 +63,7 @@ python3 scripts/test_family_page.py
 For documentation and skill changes:
 
 ```sh
+python3 scripts/attribution.py
 python3 scripts/sync_readme.py --check
 python3 scripts/sync_skills.py --check
 git diff --check

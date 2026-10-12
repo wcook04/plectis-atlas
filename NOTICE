@@ -9,8 +9,10 @@ License, Version 2.0. Quoted titles, abstracts, theorem statements, Lean
 statement files and scope notes are reproduced from the commit recorded in
 upstream.json, with links to their source files.
 
-Code, generated data and documentation in this repository are licensed under
-the Apache License, Version 2.0 (LICENSE). Explanations contributed under
+Original Atlas code and documentation are licensed under the Apache License,
+Version 2.0 (LICENSE). Imported code, fonts, quotations and source records
+retain their own copyright and licence terms; generated collections do not
+relicense the material they contain. Explanations contributed under
 contributions/explanations/ are licensed under the Creative Commons
 Attribution 4.0 International licence (LICENSES/CC-BY-4.0.txt), and their
 authors are credited by name.
@@ -40,11 +42,39 @@ people's public work, each linked to its source and credited by name.
 
 Type and mathematics served with the site:
 
-- site/assets/fonts/: subsets of STIX Two Text and Source Sans 3, copied from
+- site/assets/fonts/: subsets of STIX Two Text, STIX Two Math and Source Sans 3, copied from
   Will Cook's Plectis site, under the SIL Open Font License 1.1
   (LICENSES/OFL-STIX-Two.txt, LICENSES/OFL-Source-Sans-3.txt); the faces are
-  renamed Plectis Serif, Plectis Sans and Plectis Math as the Reserved Font
-  Name rules require.
-- site/assets/vendor/katex-0.18.9/: KaTeX 0.18.9, Copyright (c) 2013-2020
+  renamed Plectis Serif, Plectis Sans, Plectis Math and Plectis MathML.
+  STIX is credited to the STIX Fonts Project Authors and Tiro Typeworks;
+  Source Sans 3 to Adobe and designer Paul D. Hunt. The font files retain
+  their original copyright metadata, including Adobe 2023 for Source Sans 3.
+- site/assets/vendor/katex-0.18.9/: KaTeX 0.18.9 JavaScript and CSS, Copyright (c) 2013-2020
   Khan Academy and other contributors, MIT License (LICENSES/MIT-KaTeX.txt);
-  only the minified build, its auto-render extension and its WOFF2 fonts.
+  the minified build and its auto-render extension.
+- site/assets/vendor/katex-0.18.9/fonts/: unmodified KaTeX WOFF2 fonts,
+  Copyright (c) 2009-2010 Design Science, Inc. and Copyright (c) 2014-2018
+  Khan Academy, under SIL Open Font License 1.1. Their embedded notices,
+  reserved font names and full licence are retained in
+  LICENSES/OFL-KaTeX-Fonts.txt. The software's MIT licence does not replace
+  the fonts' terms. See https://github.com/KaTeX/KaTeX/issues/339.
+
+The distributed file inventory, source links, versions and modifications are
+recorded in LICENSES/manifest.json. The website includes copies of this notice,
+LICENSE, CITATION.cff, LICENSES/ and the imported backend notice.
+
+backend/ contains a generated export from Statement Map by Will Cook, at the
+revision in backend/EXPORT.json. Its original NOTICE.md is retained byte for
+byte. That notice describes the wider backend repository; its source-relative
+paths refer to that repository, and its implementation is not included here.
+The exported third-party records retain the terms and credits above.
+
+Thomas Bloom's erdosproblems.com and the OpenAI Math Tier List are cited source
+records with no general reuse licence asserted by the Atlas. Their explanatory
+prose is not covered by the Atlas licence. See curated/sources/ for the actual
+captured fields and docs/ATTRIBUTION.md for the difference between citing a
+source, reproducing material, recording a report and using an idea.
+
+The squarified-treemap routine in scripts/build_site.py implements the method
+of Mark Bruls, Kees Huizing and Jarke J. van Wijk, Squarified Treemaps (2000),
+DOI 10.1007/978-3-7091-6783-0_4. The paper is cited, not redistributed.

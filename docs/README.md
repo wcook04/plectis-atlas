@@ -6,6 +6,7 @@ These guides explain how to contribute to it and work on the repository.
 | I want to | Read |
 |---|---|
 | Suggest a correction or explanation | [Contributing](../CONTRIBUTING.md) |
+| Cite the Atlas or check source credit | [Sources, credit and citation](ATTRIBUTION.md) |
 | Write a contribution file | [Formats and templates](../contributions/README.md) |
 | Write a mathematical explanation | [Writing guide](../STYLE.md) |
 | Understand the repository | [Architecture and source ownership](ARCHITECTURE.md#where-responsibilities-live) |

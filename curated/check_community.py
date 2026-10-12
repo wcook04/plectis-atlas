@@ -68,6 +68,12 @@ def check(doc: dict, families: set, statements: set) -> list[str]:
         for a in e.get("authors") or []:
             if not (a.get("name") or a.get("handle")):
                 errs.append(f"{where}: an author has neither name nor handle")
+            # An issue's host is not necessarily the author of its report or comment.
+            host = re.match(r"https://github\.com/([^/]+)/[^/]+/(?:issues|pull|commit)/", e.get("url", ""), re.I)
+            profile = re.fullmatch(r"https://github\.com/([^/]+)/?", a.get("url", ""), re.I)
+            handle = (a.get("handle") or "").lstrip("@").lower()
+            if host and profile and handle and profile[1].lower() == host[1].lower() != handle:
+                errs.append(f"{where}: author profile points to the repository owner, not the recorded handle; verify the report or comment author")
         for f in e.get("families") or []:
             if f not in families and f != "release":
                 errs.append(f"{where}: unknown family {f!r}")
@@ -123,6 +129,9 @@ def self_test(families, statements) -> int:
             "findings": [{"effort": "x", "family": fam, "statement": None, "kind": "replay-pass",
                           "summary": "Comparator accepted the proof.", "url": "https://example.org/x/1", "date": "2026-10-08"}]}
     bad_cases = [
+        ("repository owner used as issue author", {**good, "efforts": [{**good["efforts"][0],
+            "url": "https://github.com/host/project/issues/1",
+            "authors": [{"handle": "writer", "url": "https://github.com/host"}]}]}),
         ("unknown kind", {**good, "efforts": [{**good["efforts"][0], "kind": "rumour"}]}),
         ("missing licence", {**good, "efforts": [{**good["efforts"][0], "licence": ""}]}),
         ("import without licence", {**good, "efforts": [{**good["efforts"][0], "reuse": "import", "licence": "none stated"}]}),
