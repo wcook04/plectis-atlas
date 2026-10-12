@@ -52,24 +52,38 @@ The release on one screen as our map, with a readable list beside it, the way
 a good maps app pairs a map with its results. 700-plus results need both: the
 map for where things are, the list for reading them.
 
-- **The map** (the existing map engine): the seventeen disciplines labelled in
-  words on the drawing with counts from the current reader records: the number
-  of families and how many have Lean. Family nodes are coloured by one meaning (what the outside readers
-  find the release's Lean states), each colour named in one line. Citations
-  are drawn only for the selected family, and called citations.
+- **The map is an illustrated chart, never a to-scale one.** Every object a
+  reader can act on is big enough to read and carries its name; the space is
+  used; geometry is kept only where it means something. (Will rejected the
+  earlier wheel, 12 October 2026: tiny dots on rings, an empty centre and a key
+  needed to decode them read as "an arbitrary orbiting thing".)
+- **The release:** the seventeen disciplines as labelled regions packed to fill
+  the stage, each with its name and counts (families, how many with Lean) and
+  its families as discs coloured by one meaning (what the outside readers find
+  the release's Lean states), each colour named in one line. The region is what
+  a reader chooses.
+- **A discipline:** its families as large discs filling the stage, each with
+  its title written inside and tinted by its evidence colour. Pointing at one
+  draws its citations to its neighbours (brick out, grey in) and steps the rest
+  back; a click opens the family board. Every level fits its stage, so the map
+  has no zoom or pan.
 - **The list** (the left panel): the release in sentences, search, then the
   disciplines. Choosing one zooms the map to it and lists its families as plain
   entries: title, the claim's first sentence with its mathematics typeset
   (credited to OpenAI's catalogue), and one sentence saying what the Lean
   states and who checked it. Pointing at an entry lights its node; clicking
   opens the family.
-- **A family**: the map shows its papers (short title, date), their results
-  labelled by printed number ("Theorem 1.1") and its Lean statements by name.
-  Selecting a result shows the theorem typeset as printed, the Lean statement
-  paired with it if any, and the routes on: read it in the paper, compare with
-  Lean, open the family page. A click always leads to mathematics, never to a
-  status page.
-- Hover to read, click to open. Selection lives in the URL (`#o=f%3A003`,
+- **A family: a board of cards** in the Zenith Code Map Focus grammar. Its
+  papers are columns in date order (short title, date, "Read the paper");
+  under each, a card per result with its printed number and the opening of the
+  statement typeset with the paper's macros; under a result, the Lean statement
+  paired with it (label, identifier, the pairing in words, the re-run
+  sentence), joined by a connector, dashed for a candidate. "Cited by" families
+  on the left, "Cites" on the right. One line at the foot says what a dashed
+  line means; there is no key. On a phone the board is one column of the same
+  cards. A click always leads to mathematics, never to a status page.
+- Hover explains, click selects, double-click or Enter opens, Escape steps
+  back. Selection lives in the URL (`#o=f%3A003`,
   `#o=d%3Anumber-theory`, `#o=r:...`, `#o=l:...`); Back and Forward restore it;
   older `#d=...&f=...` links still land. Keyboard: Tab, arrows, Enter, Escape.
 
@@ -295,17 +309,17 @@ text fades or slides in as it is scrolled to.
 | Moment | What answers | Time |
 |---|---|---|
 | Pointing at a link, button, row or card | Colour, border or background; a card's border darkens | `--t-hover`, 120 ms |
-| Pointing at a family, paper, result or Lean statement on the map | A small card at the pointer names it in words (title, family, discipline, counts, the evidence line); its neighbours stay, the rest of the map steps back, and its row in the list lights | fades in `--t-hover`; map alphas ease over about 150 ms |
-| Selecting on the map | The camera flies (300 to 900 ms, slow in and out); the chosen object gets one ring that widens and fades once it settles; the panel's new content rises 6 px into place | ring about 700 ms once; panel `--t-state`, 180 ms |
+| Pointing at a discipline, family or board card on the map | A card beside it names it in words (title, family, discipline, counts, the evidence line, a statement's opening); it is placed where it covers the fewest other names and never the pointed object; the rest of the map steps back and its row in the list lights | fades in `--t-hover` after a 70 ms pause; map alphas ease over about 150 ms |
+| Moving between levels on the map | Each disc moves from where it was to where it goes; a family's disc grows to fill the stage and its board fades in 8 px; the chosen card gets one ring once; the panel's new content rises 6 px into place | discs 640 ms, slow in and out; board `--t-open`; panel `--t-state` |
 | Opening the Details rail or a preview | The rail slides 8 px in from its side (a sheet rises on a phone); a preview fades in | `--t-open`, 240 ms; preview `--t-hover` |
 | Choosing a comparison tab | The tab's mark moves; the panels swap without a jump | `--t-state` |
 | Arriving at a paper theorem | Its highlight fades out once | 2.4 s, once |
 | Pressing a button | It sinks slightly (scale 0.97) | 120 ms |
 | Switching theme | No colour transition runs (`.no-transitions` for two frames) | none |
 
-Easing: arrivals use `--ease-out`; the camera and anything that travels use
-`--ease-move`. Under reduced motion every transition is instant, the camera
-jumps and the ring is not drawn. Touch screens get no hover card; tapping
+Easing: arrivals use `--ease-out`; anything that travels uses `--ease-move`.
+Under reduced motion every transition is instant, discs jump and the ring is
+not drawn. Touch screens get no hover card; tapping
 selects.
 
 What motion must never do: make a candidate look settled, move text a reader
@@ -360,6 +374,15 @@ is reading, delay the mathematics, or run in a loop.
   their breaks.
 - **On a phone, the list starts with something to open.** The disciplines come
   straight after the release's two sentences; the colour key is a link away.
+- **Draw the illustrated chart, never the to-scale one.** A view that needs a
+  key to decode its marks has failed. Show each object's name and a concise line
+  of its content (a theorem's opening, a Lean statement's label) on the drawing
+  itself, and let cards in columns with exact connectors replace rings and
+  orbits.
+- **Test URL logic on a case-sensitive server.** GitHub Pages is
+  case-sensitive and macOS is not; a lower-cased Lean name worked locally and
+  404ed on Pages for 220 of 416 statements. `flows_probe.py --serve` serves the
+  build as Pages does.
 - **A search the reader has acted on steps back.** Opening a match folds the
   matches behind one button, and the map stops dimming what the search did not
   match, so the opened paper's own results read at full strength.
