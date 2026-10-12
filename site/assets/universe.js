@@ -761,9 +761,9 @@
             var sa = Math.atan2(my - A.y, mx - A.x), sb = Math.atan2(my - B.y, mx - B.x);
             var x0 = A.x + (A.r + 2) * Math.cos(sa), y0 = A.y + (A.r + 2) * Math.sin(sa), x1 = B.x + (B.r + 3) * Math.cos(sb), y1 = B.y + (B.r + 3) * Math.sin(sb);
             var ink = from === hf ? palette.cites : palette.cited;
-            ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.4 + 0.6 * Math.log(1 + w);
+            ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.8 + 0.6 * Math.log(1 + w);
             ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(mx, my, x1, y1); ctx.stroke();
-            var ex = x1 - mx, ey = y1 - my, el = Math.hypot(ex, ey) || 1, hs = 8;
+            var ex = x1 - mx, ey = y1 - my, el = Math.hypot(ex, ey) || 1, hs = 10;
             ex /= el; ey /= el;
             ctx.beginPath(); ctx.moveTo(x1, y1);
             ctx.lineTo(x1 - ex * hs - ey * hs * 0.5, y1 - ey * hs + ex * hs * 0.5);
@@ -781,7 +781,7 @@
         var f = fams[fi].data, tone = f.tone || 'none', hollow = tone === 'none' || tone === 'unread';
         var a = q.a;
         if (matchFam && !searchFolded && !matchFam[fi]) a *= 0.22;
-        if (lvl === 'disc' && hf >= 0 && !near[fi]) a *= 0.45;
+        if (lvl === 'disc' && hf >= 0 && !near[fi]) a *= 0.14;
         var hot = fi === hf || (sel && obj(sel) && obj(sel).kind === 'f' && obj(sel).i === fi);
         ctx.save();
         ctx.globalAlpha = a;
@@ -824,7 +824,7 @@
               return edge < labelR && textWidth(line, t.font) <= 2 * Math.sqrt(labelR * labelR - edge * edge) * 0.9 - 6;
             });
             var blockH = t.lines.length * t.lead + (showCnt ? cl : 0);
-            var a2 = n.a * words * (matchFam && !searchFolded && !matchFam[fj] ? 0.3 : 1) * (hf >= 0 && !near[fj] ? 0.55 : 1);
+            var a2 = n.a * words * (matchFam && !searchFolded && !matchFam[fj] ? 0.3 : 1) * (hf >= 0 && !near[fj] ? 0.18 : 1);
             ctx.save(); ctx.globalAlpha = a2;
             // Fit once at the destination, then scale that fit with the moving disc.
             // Wrapping at every fractional animation radius stalls slower machines.
@@ -1137,7 +1137,7 @@
       if (!sh) h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T(failedShards[fams[r.f].d] ? 'result.load_failed' : 'board.loading')) + '</p>';
       else if (det && det.html) {
         var ex = excerpt(det.html, board.budget);
-        h += '<div class="u-bc__x">' + ex.html + (ex.cut ? '…' : '') + '</div>';
+        h += '<div class="u-bc__x" data-u-budget="' + board.budget + '">' + ex.html + (ex.cut ? '…' : '') + '</div>';
       } else h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T('board.no_statement')) + ' ' + link(r.href || p.href, T('result.read')) + '</p>';
       return h + '</div>';
     }
@@ -1262,7 +1262,7 @@
       if (rc && rc.clientWidth > 0) {
         var cpl = (rc.clientWidth - 1.5 * fpx) / (fpx * 0.48);
         var want = clamp(Math.round(cpl * 4 / 10) * 10, 90, 420);
-        if (Math.abs(want - board.budget) >= 20) { board.budget = want; board.sig = ''; syncBoard(); return; }
+        if (Math.abs(want - board.budget) >= 20) board.budget = want;
       }
       fitExcerpts();
       drawWires();
@@ -1276,6 +1276,14 @@
         var c = x.closest('.u-bc'), det = sh.results[c.getAttribute('data-bk')];
         if (!det || !det.html || !x.clientWidth) return;
         var b = board.budget, n = 0, most = 7.6 * (parseFloat(getComputedStyle(x).fontSize) || 16);
+        // Resize and pagination change only visible excerpts. Rebuilding the whole
+        // board from layout can toggle its scrollbar and column count indefinitely.
+        if (+x.getAttribute('data-u-budget') !== b) {
+          var fresh = excerpt(det.html, b);
+          x.innerHTML = fresh.html + (fresh.cut ? '…' : '');
+          x.setAttribute('data-u-budget', b);
+          katexIn(x, c.getAttribute('data-paper'), di);
+        }
         while ((x.offsetHeight > most || x.scrollWidth > x.clientWidth + 1) && n < 6) {
           b = Math.round(b * 0.8); n++;
           var ex = excerpt(det.html, b);
@@ -1329,7 +1337,8 @@
         });
       }
       svg.setAttribute('width', inEl.scrollWidth); svg.setAttribute('height', inEl.scrollHeight);
-      svg.innerHTML = paths.join('');
+      svg.innerHTML = '<defs><marker id="u-cite-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="w-arrow-in" d="M0 0 10 5 0 10Z"/></marker>' +
+        '<marker id="u-cite-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="w-arrow-out" d="M0 0 10 5 0 10Z"/></marker></defs>' + paths.join('');
     }
     function markBoard() {
       if (!boardEl) return;
@@ -1370,7 +1379,7 @@
       var near = f.cites.concat(f.citedBy).map(function (c) { return fams[c[0]].d; });
       var ready = near.filter(function (d2) { return shards[d2]; }).length;
       near.forEach(function (d2) { if (!shards[d2] && !failedShards[d2]) loadShard(d2).then(syncBoard, function () {}); });
-      var sig = fi + '|' + (shards[di] ? 1 : failedShards[di] ? 'failed' : 0) + '|' + ready + '|' + board.budget;
+      var sig = fi + '|' + (shards[di] ? 1 : failedShards[di] ? 'failed' : 0) + '|' + ready;
       var fresh = board.fi !== fi;
       if (sig !== board.sig) {
         var keepScroll = board.fi === fi ? boardEl.scrollTop : 0;
@@ -1848,7 +1857,11 @@
     function updateCap(o) {
       if (!capEl) return;
       if (!o) capEl.textContent = T('chart.release_cap', { families: D.families.length, disciplines: D.disciplines.length });
-      else if (o.kind === 'd') capEl.textContent = T('chart.disc_cap', { name: D.disciplines[o.i].name, counts: discCounts(D.disciplines[o.i]) });
+      else if (o.kind === 'd') {
+        capEl.innerHTML = escapeHtml(T('chart.disc_cap', { name: D.disciplines[o.i].name, counts: discCounts(D.disciplines[o.i]) })) +
+          '<span class="u-edge-guide"><span class="u-edge-key u-edge-key--out"><span aria-hidden="true">⟶</span> ' + escapeHtml(T('board.cites')) + '</span> ' +
+          '<span class="u-edge-key u-edge-key--in"><span aria-hidden="true">⟶</span> ' + escapeHtml(T('board.cited_by')) + '</span> ' + escapeHtml(T('mapkey.arrow')) + '</span>';
+      }
     }
     function updateFit() {
       var b = root.querySelector('[data-u-zoom="fit"]');
