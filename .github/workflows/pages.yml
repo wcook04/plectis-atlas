@@ -34,6 +34,18 @@ jobs:
         run: python3 scripts/build_universe.py
       - name: Statement pages and reading pages link each other both ways
         run: python3 scripts/check_paper_links.py site/_build
+      # Share cards: the picture a family's link shows when someone posts it, in words and
+      # typeset mathematics. A card that overflows or whose formulas fail is not rendered, and
+      # that family keeps the generic picture; if the headless browser cannot be installed,
+      # every family keeps it and the deploy goes on.
+      - name: Install a headless browser for the share cards
+        continue-on-error: true
+        run: |
+          python3 -m pip install --quiet playwright==1.52.0
+          python3 -m playwright install --with-deps chromium
+      - name: Render each family's share card
+        continue-on-error: true
+        run: python3 scripts/cards.py
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
