@@ -835,7 +835,15 @@
       });
       return (pick.length ? entries(p.idx, pick) : Promise.resolve([])).then(function (es) {
         var out = es.map(function (e) { return decorate(e, lab); });
-        out.counts = counts; out.tokens = p.tokens; out.missing = p.missing;
+        // Family numbers are in the map's own search rows. Preserve that lookup
+        // when the shared word index answers instead, retaining its other hits.
+        var number = String(q == null ? '' : q).trim(), fid = 'f:' + number;
+        var family = /^\d{3}$/.test(number) && (lab.families || {})[fid];
+        if (family && !out.some(function (r) { return r.id === fid; })) {
+          out.unshift({ id: fid, kind: 'family', name: family.n, family_ids: [fid], url: urlFor(fid, 'family'), paper: null });
+          counts.family++;
+        }
+        out.counts = counts; out.tokens = p.tokens; out.missing = family ? [] : p.missing;
         out.truncated = counts.statement > limit;
         return out;
       });
