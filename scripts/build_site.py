@@ -1326,14 +1326,15 @@ _ASSET_V: dict = {}
 
 
 def head(rel: str, title: str, description: str, *, og_block: str | None = None, noindex=False,
-         extra_head: str = "", page_type="website") -> str:
+         extra_head: str = "", page_type="website", canonical_rel: str | None = None) -> str:
     depth = rel.count("/")
     root = "../" * depth
     # Titles and descriptions are plain text: a formula in one is written in Unicode
     # (CAT(0), L₁), never as TeX, in the tab, the search result and a pasted link's preview.
     title = tex_plain(title)
     description = tex_plain(description)
-    canonical = BASE_URL + ("" if rel == "index.html" else rel)
+    crel = canonical_rel or rel
+    canonical = BASE_URL + ("" if crel == "index.html" else crel)
     full_title = title if title == C("site.name") else f"{title} | {C('site.name')}"
     og = og_block or generic_og_meta()
     desc = esc(short(description, 300))
@@ -1451,8 +1452,9 @@ def write_page(rel: str, html_text: str, index=True):
 
 
 def page(rel, title, description, body, *, current=None, og_block=None, noindex=False, extra_head="",
-         page_type="website", main_class=""):
-    h = head(rel, title, description, og_block=og_block, noindex=noindex, extra_head=extra_head, page_type=page_type)
+         page_type="website", main_class="", canonical_rel=None):
+    h = head(rel, title, description, og_block=og_block, noindex=noindex, extra_head=extra_head, page_type=page_type,
+             canonical_rel=canonical_rel)
     return f'{h}\n{header(rel, current)}\n<main id="main" class="{main_class}" tabindex="-1">\n{body}\n</main>\n{footer(rel)}'
 
 
@@ -2243,7 +2245,19 @@ def build_paper(m):
 </div>
 {macros_script([slug])}"""
     desc = tex_plain(m.get("abstract") or m["title"])
-    write_page(rel, page(rel, title_plain, desc, body, page_type="article"), index=(m["status"] == "current"))
+    # An earlier edition or a withdrawn paper shares its title with the current edition:
+    # its tab names its status and date, and search engines are pointed at the current one.
+    page_title, canonical_rel = title_plain, None
+    if m["status"] != "current":
+        st_word = status_label(m["status"]).lower()
+        dated = date_words(m.get("date"))
+        page_title = (C("paper.title_status", title=title_plain, status=st_word, date=dated) if dated
+                      else C("paper.title_status_undated", title=title_plain, status=st_word))
+        cur = MS.get(m.get("superseded_by") or "")
+        if m["status"] == "previous-edition" and cur and cur.get("status") == "current":
+            canonical_rel = f"papers/{cur['id']}.html"
+    write_page(rel, page(rel, page_title, desc, body, page_type="article", canonical_rel=canonical_rel),
+               index=(m["status"] == "current"))
 
 
 def record_items(items):

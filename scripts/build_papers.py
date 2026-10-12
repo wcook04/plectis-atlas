@@ -127,6 +127,7 @@ TXT = {
     "permalink": "Link to this passage",
     "fn_label": "Note {n}",
     "description": "Reading view of {title}, converted from its TeX source.",
+    "title_dated": "{title} ({date})",
 }
 
 
@@ -4815,7 +4816,11 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
     desc = S.tex_plain(m.get("abstract") or "") or TXT["description"].format(title=title_plain)
     extra = (f'{PAGE_MARK}\n<link rel="stylesheet" href="{root}assets/{S.asset_v("paper.css")}">\n'
              f'<script defer src="{root}assets/{S.asset_v("paper.js")}"></script>')
-    return S.page(rel, title_plain, desc, body, extra_head=extra, page_type="article", main_class="pr-main")
+    # Two current papers can share a title: each tab then carries its date.
+    page_title = title_plain
+    if sum(1 for x in S.MS.values() if x.get("status") == "current" and S.tex_plain(x["title"]) == title_plain) > 1:
+        page_title = TXT["title_dated"].format(title=title_plain, date=S.date_words(m.get("date")) or m["id"])
+    return S.page(rel, page_title, desc, body, extra_head=extra, page_type="article", main_class="pr-main")
 
 
 # ------------------------------------------------------------ main

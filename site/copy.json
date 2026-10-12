@@ -480,7 +480,9 @@
   "abstract": "Abstract",
   "withdrawn_on": "Withdrawn on {date}.",
   "archived": "Archived manuscript",
-  "dated": "Dated {date}."
+  "dated": "Dated {date}.",
+  "title_status": "{title} ({status}, {date})",
+  "title_status_undated": "{title} ({status})"
  },
  "explain": {
   "title": "Families",
