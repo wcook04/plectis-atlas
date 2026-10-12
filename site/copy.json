@@ -46,6 +46,7 @@
    "in-family": "in the family {name}",
    "discipline-n": "{n} families",
    "found": "{n} entries contain {words}.",
+   "found-one": "1 entry contains {words}.",
    "missing-one": "No family, paper, theorem or Lean statement contains the word {words}. Search matches whole words as they are spelled, accents included.",
    "missing-many": "No family, paper, theorem or Lean statement contains the words {words}. Search matches whole words as they are spelled, accents included.",
    "apart": "Each of {words} appears somewhere, but no single entry contains them all. Try fewer words.",

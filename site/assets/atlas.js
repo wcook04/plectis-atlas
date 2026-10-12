@@ -878,12 +878,20 @@
      ("Kahler", "Erdos") spelled as the titles spell it, the titles themselves read
      without accents, and a Lean statement's exact name. Nothing is guessed beyond the
      release's own words. */
-  function bare(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+  function bare(s) { return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').normalize('NFC'); }
+  /* The words of a query as the reader typed them (case kept), once each, in order:
+     what the result line echoes. */
+  function typedWords(text) {
+    var t = unescapeHtml(String(text == null ? '' : text)).normalize('NFKC').replace(UNWRAP, ' $1 ');
+    var seen = Object.create(null), out = [], m = t.match(TOKEN) || [];
+    for (var i = 0; i < m.length; i++) { var k = casefold(m[i]); if (!seen[k]) { seen[k] = 1; out.push(m[i]); } }
+    return out;
+  }
   var accented = null;   /* unaccented word -> the word as the titles print it */
   function accentMap(lab) {
     if (accented) return accented;
     accented = {};
-    var add = function (t) { searchTokens(t).forEach(function (w) { var b = bare(w); if (b !== w && !accented[b]) accented[b] = w; }); };
+    var add = function (t) { typedWords(t).forEach(function (w) { var f = casefold(w), b = bare(f); if (b !== f && !accented[b]) accented[b] = w; }); };
     Object.keys(lab.papers || {}).forEach(function (k) { add(lab.papers[k]); });
     Object.keys(lab.families || {}).forEach(function (k) { add((lab.families[k] || {}).n); });
     return accented;
@@ -902,7 +910,7 @@
     });
     return out;
   }
-  function query(q, opts) {
+  function baseQuery(q, opts) {
     return exactQuery(q, opts).then(function (res) {
       if (!searchTokens(q).length) return res;
       if (res.length) {
@@ -944,20 +952,55 @@
             out.tokens = searchTokens(bare(q)); out.missing = []; out.truncated = false; out.respelled = bare(q);
             return out;
           }
-          // A Lean statement by its exact name, when the index does not hold it as a word.
-          if (/^[A-Za-z][A-Za-z0-9_']{3,}$/.test(q.trim()) && typeof fetch === 'function') {
-            var name = q.trim();
-            return fetch(root + 'statements/' + encodeURIComponent(name) + '.html', { method: 'HEAD' }).then(function (r) {
-              if (!r.ok) return res;
-              var one = [{ id: 'l:' + name, kind: 'lean', name: name, family_ids: [], url: urlFor('l:' + name, 'lean'), paper: null }];
-              one.counts = { family: 0, lean: 1, manuscript: 0, statement: 0, discipline: 0 };
-              one.tokens = [name]; one.missing = []; one.truncated = false; one.respelled = name;
-              return one;
-            }, function () { return res; });
-          }
           return res;
         };
         return tryAlt(0);
+      }, function () { return res; });
+    });
+  }
+  /* A Lean statement by its exact name, in any case ("ErdosReciprocal", "erdosreciprocal"),
+     from labels.json's table of every Lean statement: its own row, with its name in words
+     and its family. The index holds only some Lean names as words; the host is never
+     asked for a page that may not exist (GitHub Pages matches paths by case). */
+  var leanFold = null;
+  function leanByName(lab, q) {
+    var name = String(q == null ? '' : q).trim();
+    if (!lab.lean || !/^[A-Za-z][A-Za-z0-9_']*$/.test(name)) return null;
+    if (!leanFold) { leanFold = {}; Object.keys(lab.lean).forEach(function (id) { leanFold[id.toLowerCase()] = id; }); }
+    var id = leanFold[name.toLowerCase()];
+    if (!id) return null;
+    var row = lab.lean[id] || [];
+    return { id: 'l:' + id, kind: 'lean', name: row[0] || id, family_ids: row[1] || [], url: urlFor('l:' + id, 'lean'), paper: null };
+  }
+  /* How closely an entry's own name answers the query: 0 for the Lean statement the query
+     names exactly, 1 when its name holds every word (accents aside, so "erdos" ranks the
+     Erdős families as "Erdős" does), 2 otherwise. */
+  function nameRank(r, q) {
+    var words = searchTokens(bare(q));
+    if (r.kind === 'lean' && casefold(r.id.slice(2)) === casefold(String(q == null ? '' : q).trim())) return 0;
+    if (!words.length) return 2;
+    var own = searchTokens(bare(r.name));
+    return words.every(function (w) { return own.indexOf(w) >= 0; }) ? 1 : 2;
+  }
+  function rankByName(res, q) {
+    var keyed = res.map(function (r, i) { return { r: r, i: i, k: nameRank(r, q) }; });
+    keyed.sort(function (a, b) { return a.k - b.k || a.i - b.i; });
+    keyed.forEach(function (x, i) { res[i] = x.r; });
+    return res;
+  }
+  function query(q, opts) {
+    return baseQuery(q, opts).then(function (res) {
+      return labels().then(function (lab) {
+        var hit = leanByName(lab, q), out = res;
+        if (hit && !res.some(function (r) { return r.id === hit.id; })) {
+          out = [hit].concat(res);
+          out.counts = {};
+          Object.keys(res.counts || {}).forEach(function (k) { out.counts[k] = res.counts[k]; });
+          out.counts.lean = (out.counts.lean || 0) + 1;
+          out.tokens = res.tokens; out.truncated = res.truncated;
+          out.missing = []; out.respelled = res.length ? res.respelled : null;
+        }
+        return rankByName(out, q);
       }, function () { return res; });
     });
   }
@@ -1004,7 +1047,8 @@
         var nm = el('span', 'sr__name');
         nm.appendChild(el('code', 'sr__code', r.id.slice(2)));
         tt.appendChild(nm);
-        tt.appendChild(richEl('span', 'sr__k md-math', r.name));
+        var lf = (r.family_ids || [])[0];
+        tt.appendChild(richEl('span', 'sr__k md-math', r.name + (lf ? ', ' + fmt(T('family'), { n: lf.slice(2) }) : '')));
       } else {
         tt.appendChild(richEl('span', 'sr__name md-math', r.name));
         var fams = r.family_ids.map(function (f) { return (lab.families[f] || {}).n || f; });
@@ -1020,7 +1064,11 @@
     }
     return a;
   }
-  function render(res, lab, toks) {
+  function render(res, lab, said) {
+    /* The status echoes the words as typed ("SiegelZeros", not "siegelzeros"). */
+    var toks = searchTokens(said), typed = typedWords(said), asTyped = {};
+    typed.forEach(function (w) { asTyped[casefold(w)] = w; });
+    var shownWords = function (ws) { return quoteList(ws.map(function (w) { return asTyped[w] || w; })); };
     list.innerHTML = '';
     sel = -1;
     input.removeAttribute('aria-activedescendant');
@@ -1030,23 +1078,18 @@
     if (!total) {
       dlg.setAttribute('data-state', 'empty');
       status.textContent = res.missing.length
-        ? fmt(res.missing.length === 1 ? T('missing-one') : T('missing-many'), { words: quoteList(res.missing) })
-        : fmt(T('apart'), { words: quoteList(toks) });
+        ? fmt(res.missing.length === 1 ? T('missing-one') : T('missing-many'), { words: shownWords(res.missing) })
+        : fmt(T('apart'), { words: quoteList(typed) });
       return;
     }
     dlg.setAttribute('data-state', 'results');
-    status.textContent = fmt(T('found'), { n: total.toLocaleString('en-GB'), words: quoteList(toks) });
+    status.textContent = fmt(total === 1 ? T('found-one') : T('found'), { n: total.toLocaleString('en-GB'), words: quoteList(typed) });
     KIND_ORDER.forEach(function (kind) {
       var n = res.counts[kind] || 0;
       if (!n) return;
       var rows = res.filter(function (r) { return r.kind === kind; });
-      /* Entries whose own name holds every word come first; otherwise the release's order. */
-      rows.sort(function (a, b) {
-        var na = searchTokens(a.name), nb = searchTokens(b.name);
-        var ha = toks.every(function (t) { return na.indexOf(t) >= 0; }) ? 0 : 1;
-        var hb = toks.every(function (t) { return nb.indexOf(t) >= 0; }) ? 0 : 1;
-        return ha - hb;
-      });
+      /* In query()'s order: the Lean statement named exactly, then entries whose own name
+         holds every word (accents aside), then the release's order. */
       var g = el('div', 'sr-group');
       g.setAttribute('role', 'group');
       var hid = 'srg-' + kind;
@@ -1078,14 +1121,13 @@
   function run() {
     var q = input.value, my = ++seq;
     renderedQuery = null;
-    var toks = searchTokens(q);
     dlg.setAttribute('aria-busy', 'true');
     var want = Math.max(400, shown.statement || 0);
     return Promise.all([query(q, { statements: want }), labels()]).then(function (r) {
       if (my !== seq || input.value !== q) return false;
       last = r[0];
       dlg.removeAttribute('aria-busy');
-      render(r[0], r[1], r[0].respelled ? searchTokens(r[0].respelled) : toks);
+      render(r[0], r[1], r[0].respelled || q);
       renderedQuery = q;
       return true;
     }).catch(function () {

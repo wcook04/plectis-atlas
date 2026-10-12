@@ -1244,7 +1244,7 @@ def RD():
     return reader.load()
 
 
-SEARCH_TEXT_KEYS = ("family", "in-paper", "in-family", "discipline-n", "found", "missing-one", "missing-many",
+SEARCH_TEXT_KEYS = ("family", "in-paper", "in-family", "discipline-n", "found", "found-one", "missing-one", "missing-many",
                     "apart", "failed", "more", "truncated", "kind-family", "kind-lean", "kind-manuscript",
                     "kind-statement", "kind-discipline")
 
@@ -3676,10 +3676,20 @@ def build_search_data():
         m = MS.get(pid[2:])
         if m and (title_counts[title] > 1 or m.get("status") != "current"):
             editions[pid] = ", ".join(filter(None, (date_words(m.get("date")), status_label(m.get("status")))))
+    # Every Lean statement by its exact name, so a name typed in any case finds its
+    # statement without asking the host for a page (GitHub Pages matches paths by case).
+    lean = {}
+    for e in entries:
+        if e["kind"] != "lean":
+            continue
+        name = e["id"][2:]
+        if any(k.lower() == name.lower() for k in lean):
+            raise SystemExit(f"search labels: two Lean statements differ only in case: {name}")
+        lean[name] = [curly_prose(e["name"]), e.get("family_ids") or []]
     labels = {"schema": "plectis-atlas-search-labels/1", "generation_id": r.generation,
               "source": "search-index.json and its entry chunks; family holdings from the reader packets; edition dates and status from the manuscript source index",
               "kinds": runs, "papers": papers, "paper_editions": editions,
-              "families": fams}
+              "families": fams, "lean": lean}
     (dst / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
 
