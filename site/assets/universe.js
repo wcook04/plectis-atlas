@@ -1697,6 +1697,13 @@
       });
       // Each result by the label its paper prints, beside its dot; the selected or
       // pointed-at result first, so it always keeps its label.
+      // A result is in hand when it is selected or pointed at, or paired with the Lean
+      // statement that is.
+      var lk = [sel, hover].map(function (k) { var o = k ? obj(k) : null; return o && o.kind === 'l' ? o.i : -1; });
+      var hotResult = function (ri) {
+        var r = D.results[ri];
+        return r.id === sel || r.id === hover || r.lean.some(function (li) { return lk.indexOf(li) >= 0; });
+      };
       var hotFirst = function (list, keyOf) {
         return list.slice().sort(function (a, b) {
           var ka = keyOf(a), kb = keyOf(b);
@@ -1705,7 +1712,7 @@
       };
       var resultOrder = [];
       f.data.papers.forEach(function (pi) { D.papers[pi].results.forEach(function (ri) { resultOrder.push([pi, ri]); }); });
-      hotFirst(resultOrder, function (x) { return D.results[x[1]].id; }).forEach(function (pr) {
+      resultOrder.sort(function (a, b) { return (hotResult(b[1]) ? 1 : 0) - (hotResult(a[1]) ? 1 : 0); }).forEach(function (pr) {
         var pi = pr[0];
         [pr[1]].forEach(function (ri) {
           var r = D.results[ri];
@@ -1714,9 +1721,9 @@
           var p = L.results[ri], x = sx + p[0] * sr, y = sy + p[1] * sr, g = L.papers[pi];
           var ox = x - (sx + g[0] * sr), oy = y - (sy + g[1] * sr), len = Math.hypot(ox, oy) || 1;
           var ux = ox / len, uy = oy / len;
-          var w = textWidth(text, r.id === sel || r.id === hover ? NUM_HOT_FONT : NUM_FONT), d = dotRadius(sr) * 1.35 + 5;
+          var w = textWidth(text, hotResult(ri) ? NUM_HOT_FONT : NUM_FONT), d = dotRadius(sr) * 1.35 + 5;
           var dirs = [[ux, uy], [-ux, -uy], [-uy, ux], [uy, -ux], [ux - uy, uy + ux], [ux + uy, uy - ux], [-ux - uy, -uy + ux], [-ux + uy, -uy - ux]];
-          var hot = r.id === sel || r.id === hover;
+          var hot = hotResult(ri);
           // A label in hand may sit over the paper's ring line; the others keep clear of it.
           var tests = hot ? [clear, free] : [clear];
           for (var ti = 0; ti < tests.length; ti++) {
@@ -1864,25 +1871,15 @@
             routes.push({ ink: 'steel', dash: D.lean[li].pairing === 'candidate-pairing', w: 1.2, pair: [D.results[ri].id, D.lean[li].id], pts: trimEnds(way, dotRadius(sr) * 1.4 + 2, dotRadius(sr) * 1.7 + 2) });
           });
         });
-        // Fibres: from each citing or cited paper to the end that names the other family.
+        // Citations: a short stub from the family's edge out to the end that names the
+        // other family, so a citation never runs across the family's own drawing.
         (L.fibres[fi] || []).forEach(function (fb) {
-          var a = fb[0], E = [sx + 1.24 * sr * Math.cos(a), sy + 1.24 * sr * Math.sin(a)];
-          var ends = plan.open.filter(function (it) { return it.kind === 'end' && it.g === fb[1] && it.box; }).map(function (it) { return it.box; });
-          fb[3].forEach(function (pIdx) {
-            var pi = f.data.papers[pIdx], g = L.papers[pi], whole = g[4] - g[3] >= TAU - 1e-3;
-            var at = whole ? a : clampAngle(a, g[3], g[4]);
-            var Sx = sx + g[0] * sr + g[2] * sr * Math.cos(at), Sy = sy + g[1] * sr + g[2] * sr * Math.sin(at);
-            var r0 = Math.hypot(Sx - sx, Sy - sy), a0 = Math.atan2(Sy - sy, Sx - sx), a1 = a0 + Loom.turn(a0, a);
-            // A polar curve that leaves its paper along the radius and arrives along it.
-            var pol = Loom.polarBezier([a0, r0], [a0, r0 + (1.24 * sr - r0) * 0.55], [a1, r0 + (1.24 * sr - r0) * 0.45], [a1, 1.24 * sr], 4);
-            var pts = Loom.polarXY(sx, sy, pol);
-            var obs = obstacles.filter(function (o) { return ends.indexOf(o) < 0 && !insideBox(pts[0], o) && !insideBox(E, o); });
-            if (routeIntrusion(pts, obs) > 0) pts = shortestWay(pts[0], E, obs) || pts;
-            var ways = fb[2] === 3 ? ['cites', 'cited'] : fb[2] === 1 ? ['cites'] : ['cited'];
-            ways.forEach(function (ink, n) {
-              var off = ways.length > 1 ? (n ? 1.3 : -1.3) : 0;
-              routes.push({ ink: ink, dash: false, w: 1.3, end: true, pts: offsetLine(pts, off) });
-            });
+          var a = fb[0];
+          var pts = [[sx + 1.01 * sr * Math.cos(a), sy + 1.01 * sr * Math.sin(a)], [sx + 1.24 * sr * Math.cos(a), sy + 1.24 * sr * Math.sin(a)]];
+          var ways = fb[2] === 3 ? ['cites', 'cited'] : fb[2] === 1 ? ['cites'] : ['cited'];
+          ways.forEach(function (ink, n) {
+            var off = ways.length > 1 ? (n ? 1.6 : -1.6) : 0;
+            routes.push({ ink: ink, dash: false, w: 1.4, end: true, pts: offsetLine(pts, off) });
           });
         });
         routeCache = { key: sig, routes: routes.map(function (r) {
@@ -2549,7 +2546,7 @@
           var l = D.lean[li], ld = detail(obj(l.id));
           return '<li>' + goBtn(l.id, '<span class="u-sub__t">' + escapeHtml(l.label) + '</span><code class="u-sub__n">' + escapeHtml(l.name) + '</code>', 'u-sub') +
             (ld ? '<p class="u-sub__w"><span class="u-join u-join--' + (l.pairing === 'candidate-pairing' ? 'candidate' : 'cited') + '" aria-hidden="true"></span>' + escapeHtml(ld.pairing) + '</p>' +
-              (ld.snippet ? '<pre class="lean lean--snippet u-lean"><code>' + ld.snippet + '</code></pre>' : '') +
+              (ld.snippet ? '<pre class="lean lean--snippet u-lean"><code>' + ld.snippet + '</code></pre><p class="u-sub__w">' + escapeHtml(T('lean.challenge_note')) + '</p>' : '') +
               '<p class="u-sub__w"><span class="u-role">' + escapeHtml(T('lean.runs_role')) + '</span> ' + escapeHtml(ld.reruns) + '</p>' : '') + '</li>';
         }).join('') + '</ul>';
       } else h += para(T('result.unpaired'));
@@ -2569,7 +2566,7 @@
       var h = '<p class="u-kicker">' + escapeHtml(T('lean.kicker', { num: f.num })) + '</p>';
       h += '<p class="u-lean-label"><code>' + escapeHtml(l.name) + '</code></p>';
       if (l.main) h += para(T('lean.main'));
-      if (det && det.snippet) h += '<pre class="lean lean--snippet u-lean"><code>' + det.snippet + '</code></pre>';
+      if (det && det.snippet) h += '<pre class="lean lean--snippet u-lean"><code>' + det.snippet + '</code></pre>' + para(T('lean.challenge_note'));
       h += '<p class="u-doors">' + door(l.href, T('lean.page'), true) + door(f.href + '#compare', T('result.compare')) + door(f.href, T('lean.family_page')) + '</p>';
       var lk = l.pairing === 'candidate-pairing' ? 'candidate' : l.pairing === 'producer-declared-binding' ? 'declared' : l.pairing === 'unavailable' ? 'none' : 'cited';
       h += '<h2 class="u-h2">' + escapeHtml(T('lean.paper_heading_' + (l.results.length ? lk : 'none'))) + '</h2>';

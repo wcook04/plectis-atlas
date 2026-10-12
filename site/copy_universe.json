@@ -22,7 +22,7 @@
  },
  "key": {
   "heading": "What the colours mean",
-  "intro": "A family’s colour says what the two outside readers, MathVet and Carlos Toledo’s cert-machine, find the release’s Lean states for its headline result.",
+  "intro": "Each colour says what two outside readers find the release’s Lean states for a family’s headline result.",
   "all": "Both find the whole headline stated",
   "part": "Part of it, or a narrower statement",
   "other": "A supporting or a different result",
@@ -30,7 +30,8 @@
   "none": "No Lean statement in the release",
   "unread": "Not yet read by either",
   "size": "A family’s disc grows with the number of its results and Lean statements.",
-  "citations": "Lines between families are citations between their papers, drawn for the family or discipline you choose: brick where it cites, grey where it is cited."
+  "citations": "Lines between families are citations between their papers, drawn for the family or discipline you choose: brick where it cites, grey where it is cited.",
+  "readers": "The readers are MathVet and Carlos Toledo’s cert-machine; each one’s own words are on every family page."
  },
  "counts": {
   "disc_some": "{n} families, {k} with Lean",
@@ -170,7 +171,8 @@
   "paper_heading_declared": "The paper theorem the release binds it to",
   "paper_heading_none": "Paper theorem",
   "runs_role": "Re-runs of the Lean file:",
-  "runs_scope": "A re-run checks the Lean file itself. It says nothing about whether the Lean states the paper’s theorem."
+  "runs_scope": "A re-run checks the Lean file itself. It says nothing about whether the Lean states the paper’s theorem.",
+  "challenge_note": "This is a challenge file: it states the theorem and leaves the proof as sorry. Comparator checks OpenAI’s separate proof against this statement."
  },
  "plate": {
   "lean_ring": "Lean statements",

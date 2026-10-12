@@ -923,7 +923,7 @@ def key_html(M) -> str:
         rows.append(f'<li data-tone="{t}"><span class="u-dot u-dot--{t}" aria-hidden="true"></span>'
                     f'<span class="u-key__t">{esc(U("key." + t))}</span><span class="u-key__n">{counts[t]}</span></li>')
     return (f'<h2 class="u-h2" id="u-key-h">{esc(U("key.heading"))}</h2>'
-            f'<p class="u-note">{esc(U("key.intro"))}</p><ul class="u-key" aria-labelledby="u-key-h">{"".join(rows)}</ul>'
+            f'<p class="u-note">{esc(U("key.intro"))} <a href="sources.html">{esc(U("key.readers"))}</a></p><ul class="u-key" aria-labelledby="u-key-h">{"".join(rows)}</ul>'
             f'<p class="u-note">{esc(U("key.size"))} {esc(U("key.citations"))}</p>')
 
 
