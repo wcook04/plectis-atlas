@@ -11,6 +11,8 @@ function range(start, end) {
   return source.slice(a, b);
 }
 const hit = range('    function hitAt(', '\n    /* ---- The card:');
+const previewGuard = range('    function guardPreviewClicks(el)', '    if (stage) {');
+const wires = range('    function drawWires()', '    function markBoard()');
 const load = range('    function loadParts()', '    function obj(');
 const select = range('    function select(key, opts)', '    // A paper, theorem or Lean statement');
 const click = range("    canvas.addEventListener('pointerdown',", '\n    if (cardEl)');
@@ -22,6 +24,11 @@ const boardPages = range('    function layoutPages()', '    function showBoard()
 const boardSync = range('    function refreshBoardNeighbours()', '    function showBoard()');
 const boardPointer = range("    if (boardEl) {\n      boardEl.addEventListener('pointerdown'", "      boardEl.addEventListener('pointerover'") + '    }';
 const detailAgain = range('          var again = function () {', '          loadShard(di).then(again, again);');
+const hashState = range('    function updateHash(', '    function panelScroller()');
+const backSteps = range('    function stepBack()', '    function selectAncestor(');
+const ancestorStep = range('    function selectAncestor(', '    function openPage(');
+const popstate = range("    window.addEventListener('popstate'", '    // Leaving for a paper or a family page');
+const pagehide = range("    window.addEventListener('pagehide'", '    function readHash()');
 const chartNavigation = range('    function copyLayout(l)', '    function chartAnimating()');
 function deferred() {
   let resolve, reject;
@@ -45,6 +52,7 @@ function context(extra = {}) {
     ], regions: [] } },
     root: { getAttribute: () => 'map' }, window: { scrollTo() {} }, obj: key => objects.get(key),
     sel: 'd:test', board: {}, pendingBoard: null, pendingViewSwitch: null,
+    historyBackPending: null, historySelection: null,
     pendingY: null, pin: -1, hover: null, hoverVia: '', cardDismissed: null,
     ring: null, ringWanted: null, reduceMotion: false, trail: [], liveEl: { textContent: '' },
     savedScrollPos: () => 0, boardPosition: () => null, viewPositions: () => ({}),
@@ -59,6 +67,97 @@ function context(extra = {}) {
 const packet = () => ({ generation_id: 'g', papers: [], results: [], lean: [] });
 async function flush() { for (let i = 0; i < 6; i++) await Promise.resolve(); }
 async function main() {
+  function historyFixture(start = 'd:test') {
+    const listeners = {}, location = { pathname: '/atlas', search: '', hash: '#o=' + encodeURIComponent(start) };
+    const entries = [{ hash: location.hash, state: { o: start, uPrev: null, v: 'map', y: 8 } }];
+    let index = 0, backCalls = 0, pendingBack = false, focused = 0;
+    const history = {
+      get state() { return entries[index].state; },
+      replaceState(state, _unused, url) {
+        entries[index] = { hash: url ? url.slice(url.indexOf('#')) : entries[index].hash, state };
+        location.hash = entries[index].hash;
+      },
+      pushState(state, _unused, url) {
+        entries.splice(index + 1);
+        entries.push({ hash: url.slice(url.indexOf('#')), state });
+        index++; location.hash = entries[index].hash;
+      },
+      back() { backCalls++; pendingBack = true; }
+    };
+    const rendered = [];
+    const state = context({
+      window: { history, location, addEventListener: (type, fn) => { listeners[type] = fn; }, scrollTo() {} },
+      sel: start, partsReady: true, board: {}, searchFolded: false, phoneViewY: { map: 0, list: 0 },
+      historyBackPending: null, historySelection: null,
+      root: { getAttribute: () => 'map' },
+      readHash: () => location.hash ? decodeURIComponent(location.hash.slice(3)) : null,
+      parentKey: () => 'd:test',
+      savedScrollPos: () => 27, viewPositions: () => ({ map: 27, list: 0 }),
+      boardPosition: () => null,
+      renderPanel: () => { rendered.push(state.sel); },
+      showView() {}, restoreSearch() {}, restorePending() {}, restoreBoardPosition() {},
+      focusArrival: () => { focused++; }
+    });
+    vm.runInContext(hashState + select + backSteps + ancestorStep + popstate + pagehide, state);
+    return {
+      state, history, entries, location, rendered, listeners,
+      get backCalls() { return backCalls; }, get focused() { return focused; },
+      deliverBack() {
+        assert.equal(pendingBack, true, 'a browser traversal was requested');
+        pendingBack = false; index--;
+        location.hash = entries[index].hash;
+        listeners.popstate({ state: history.state });
+      }
+    };
+  }
+  const historyWalk = historyFixture();
+  historyWalk.state.select('f:a', { trail: true });
+  assert.equal(historyWalk.entries[1].state.uPrev, 'd:test', 'first map visit records its predecessor');
+  historyWalk.state.select('f:b', { trail: true });
+  assert.equal(historyWalk.entries[2].state.uPrev, 'f:a', 'nested map visit records its predecessor');
+  historyWalk.listeners.pagehide();
+  assert.equal(historyWalk.history.state.uPrev, 'f:a', 'pagehide scroll receipt preserves predecessor');
+  assert.equal(historyWalk.history.state.y, 27);
+  historyWalk.state.stepBack();
+  historyWalk.state.stepBack();
+  assert.equal(historyWalk.backCalls, 1, 'repeated back while popstate is pending is ignored');
+  assert.equal(historyWalk.state.sel, 'f:b', 'selection waits for browser history traversal');
+  historyWalk.state.select('d:test', { trail: true });
+  historyWalk.state.select('f:b', { trail: true });
+  assert.equal(historyWalk.history.state.o, 'f:b', 'selection during pending back does not race the URL');
+  historyWalk.deliverBack();
+  assert.deepEqual(historyWalk.rendered.slice(-2), ['f:a', 'f:b'], 'popstate settles before latest queued selection');
+  assert.equal(historyWalk.state.sel, 'f:b');
+  assert.equal(historyWalk.state.trail.length, 2, 'expected popstate keeps the in-map trail');
+  assert.equal(historyWalk.focused, 1, 'back traversal restores focus');
+  historyWalk.history.replaceState({ ...historyWalk.history.state, uPrev: 'external' }, '');
+  const pushesBeforeAncestor = historyWalk.entries.length;
+  historyWalk.state.stepBack();
+  assert.equal(historyWalk.backCalls, 1, 'nonmatching predecessor does not leave the site');
+  assert.equal(historyWalk.state.sel, 'f:a', 'nonmatching predecessor opens the map ancestor');
+  assert.equal(historyWalk.history.state.uPrev, 'f:b');
+  assert.equal(historyWalk.entries.length, pushesBeforeAncestor + 1, 'ancestor is a new browser entry');
+
+  const replacedVisit = historyFixture();
+  replacedVisit.state.select('f:a', { trail: true });
+  replacedVisit.state.select('f:b', {});
+  assert.equal(replacedVisit.history.state.uPrev, 'd:test', 'nonpush hash update preserves predecessor');
+  assert.equal(replacedVisit.entries.length, 2, 'nonpush update replaces the current visit');
+
+  const queuedAncestor = historyFixture();
+  queuedAncestor.state.select('f:a', { trail: true });
+  queuedAncestor.state.select('f:b', { trail: true });
+  queuedAncestor.state.stepBack();
+  queuedAncestor.state.selectAncestor('d:test');
+  queuedAncestor.deliverBack();
+  assert.equal(queuedAncestor.state.sel, 'd:test', 'breadcrumb click during pending back is replayed');
+  assert.equal(queuedAncestor.location.hash, '#o=d%3Atest');
+  const deepLink = historyFixture('f:a');
+  deepLink.state.stepBack();
+  assert.equal(deepLink.backCalls, 0, 'direct deep link does not traverse to a previous website');
+  assert.equal(deepLink.state.sel, 'd:test', 'direct deep link steps to its map parent');
+  assert.equal(deepLink.history.state.uPrev, 'f:a');
+
   for (const [from, to, moving] of [
     ['fam', 'disc', false], ['fam', 'release', false],
     ['release', 'disc', true], ['disc', 'fam', false]
@@ -363,6 +462,77 @@ async function main() {
   boardHandlers.click(boardEvent(cardText, 40, 10));
   assert.equal(boardSelected.length, 4, 'keyboard activation and later click both select');
   assert.equal(boardOpens, 0, 'none of these gestures double-open a result');
+
+  // The preview guard is registered before both map and board click handlers.
+  // A text drag must stop their selection handler, then release the next click.
+  const previewListeners = {};
+  const previewCard = {
+    addEventListener(type, fn) { (previewListeners[type] ||= []).push(fn); }
+  };
+  const preview = vm.createContext({ Math });
+  vm.runInContext(previewGuard, preview);
+  preview.guardPreviewClicks(previewCard);
+  const previewSelections = [];
+  previewCard.addEventListener('click', () => previewSelections.push('selected'));
+  const previewEvent = (x, y, extra = {}) => ({
+    clientX: x, clientY: y, button: 0, isPrimary: true, detail: 1,
+    defaultPrevented: false, stopped: false,
+    preventDefault() { this.defaultPrevented = true; },
+    stopImmediatePropagation() { this.stopped = true; }, ...extra
+  });
+  const dispatchPreview = (type, event) => {
+    for (const listener of previewListeners[type] || []) {
+      listener(event);
+      if (event.stopped) break;
+    }
+    return event;
+  };
+  dispatchPreview('pointerdown', previewEvent(10, 10));
+  const previewDrag = dispatchPreview('click', previewEvent(30, 10));
+  assert.equal(previewDrag.defaultPrevented, true, 'dragged preview text suppresses default click');
+  assert.deepEqual(previewSelections, [], 'drag never reaches downstream preview selection');
+  dispatchPreview('pointerdown', previewEvent(10, 10));
+  dispatchPreview('click', previewEvent(12, 10));
+  assert.deepEqual(previewSelections, ['selected'], 'ordinary click reaches preview selection');
+  dispatchPreview('pointerdown', previewEvent(10, 10));
+  dispatchPreview('pointercancel', previewEvent(10, 10));
+  assert.equal(dispatchPreview('click', previewEvent(10, 10)).defaultPrevented, true,
+    'cancelled gesture never reaches preview selection');
+  dispatchPreview('pointerdown', previewEvent(10, 10));
+  dispatchPreview('click', previewEvent(10, 10));
+  assert.deepEqual(previewSelections, ['selected', 'selected'], 'next clean click works after cancellation');
+  assert.equal(dispatchPreview('click', previewEvent(10, 10, { metaKey: true })).defaultPrevented, true,
+    'modified preview click stays with the browser');
+  assert.equal(dispatchPreview('click', previewEvent(10, 10, { button: 2 })).defaultPrevented, true,
+    'secondary preview click does not navigate');
+  dispatchPreview('pointerdown', previewEvent(10, 10));
+  dispatchPreview('click', previewEvent(10, 10, { detail: 0 }));
+  assert.equal(previewSelections.length, 3, 'keyboard click clears any older pointer gesture');
+
+  const dimensions = { width: 1280, height: 900 };
+  const wireAttrs = {};
+  const wireSvg = { setAttribute(name, value) { wireAttrs[name] = value; }, innerHTML: '' };
+  const wireInner = {
+    get clientWidth() { return dimensions.width; }, get clientHeight() { return dimensions.height; },
+    scrollWidth: 1280, scrollHeight: 900,
+    getBoundingClientRect: () => ({ left: 0, top: 0 }),
+    querySelector: selector => selector === '[data-u-wires]' ? wireSvg : null,
+    querySelectorAll: () => []
+  };
+  const wireState = vm.createContext({
+    boardEl: { querySelector: () => wireInner }, board: { on: true },
+    getComputedStyle: () => ({ fontSize: '16px' }), Math
+  });
+  vm.runInContext(wires, wireState);
+  wireState.drawWires();
+  assert.deepEqual(wireAttrs, { width: 1280, height: 900 });
+  dimensions.width = 963; dimensions.height = 768;
+  wireState.drawWires();
+  assert.deepEqual(wireAttrs, { width: 963, height: 768 },
+    'old SVG overflow cannot hold wires at its stale scroll dimensions');
+  dimensions.width = 810; dimensions.height = 600;
+  wireState.drawWires();
+  assert.deepEqual(wireAttrs, { width: 810, height: 600 }, 'wires follow a further board resize');
 
   let requests = 0;
   const caches = [];
