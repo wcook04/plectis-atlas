@@ -161,34 +161,92 @@ GREEK = {k: v for k, v in zip(
 PLAIN_SYM = {"le": "≤", "leq": "≤", "ge": "≥", "geq": "≥", "lt": "<", "gt": ">", "ne": "≠", "neq": "≠", "cdot": "·",
              "times": "×", "infty": "∞", "to": "→", "in": "∈", "pm": "±", "ldots": "…", "cdots": "⋯", "dots": "…",
              "log": "log", "exp": "exp", "Re": "Re", "sim": "∼", "approx": "≈", "subset": "⊂", "subseteq": "⊆",
-             "ell": "ℓ", "partial": "∂", "sqrt": "√", "mid": "|", "colon": ":", "otimes": "⊗", "oplus": "⊕"}
-SUPS = str.maketrans("0123456789+-=()niak", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱᵃᵏ")
+             "ell": "ℓ", "partial": "∂", "sqrt": "√", "mid": "|", "colon": ":", "otimes": "⊗", "oplus": "⊕",
+             "exists": "∃", "forall": "∀", "notin": "∉", "supset": "⊃", "supseteq": "⊇", "cap": "∩", "cup": "∪",
+             "setminus": "∖", "emptyset": "∅", "varnothing": "∅", "circ": "∘", "ast": "∗", "star": "⋆",
+             "wedge": "∧", "vee": "∨", "neg": "¬", "nabla": "∇", "hbar": "ℏ", "aleph": "ℵ", "langle": "⟨",
+             "rangle": "⟩", "Vert": "‖", "mapsto": "↦", "rightarrow": "→", "leftarrow": "←", "Rightarrow": "⇒",
+             "iff": "⟺", "equiv": "≡", "cong": "≅", "simeq": "≃", "ll": "≪", "gg": "≫", "prec": "≺", "perp": "⊥",
+             "sum": "∑", "prod": "∏", "int": "∫", "lvert": "|", "rvert": "|", "vert": "|", "lfloor": "⌊",
+             "rfloor": "⌋", "lceil": "⌈", "rceil": "⌉", "dagger": "†", "prime": "′", "quad": " ", "qquad": " "}
+# Commands that print nothing in a plain title: sizes, spacing and delimiters' sizing.
+PLAIN_DROP = {"left", "right", "big", "Big", "bigg", "Bigg", "bigl", "bigr", "Bigl", "Bigr", "biggl", "biggr",
+              "displaystyle", "textstyle", "scriptstyle", "limits", "nolimits", "mathop", "mathord", "mathrel",
+              "mathbin", "mathopen", "mathclose", "nonumber", "notag", "label", "boldsymbol", "bm", "middle"}
+BLACKBOARD = {"R": "ℝ", "Z": "ℤ", "N": "ℕ", "Q": "ℚ", "C": "ℂ", "P": "ℙ", "H": "ℍ", "F": "𝔽", "E": "𝔼",
+              "A": "𝔸", "T": "𝕋", "K": "𝕂", "S": "𝕊"}
+SUPS = str.maketrans("0123456789+-=()niak/", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿⁱᵃᵏ\u2044")
+# A longer exponent (2^{0.49n}, C^{1,α}) in modifier letters, when every character has one.
+SUP_MORE = {**{chr(c): v for c, v in zip(b"0123456789+-=()/", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾\u2044")},
+            **dict(zip("abcdefghijklmnoprstuvwxyz", "ᵃᵇᶜᵈᵉᶠᵍʰⁱʲᵏˡᵐⁿᵒᵖʳˢᵗᵘᵛʷˣʸᶻ")),
+            **dict(zip("αβγδεθφχ", "ᵅᵝᵞᵟᵋᶿᵠᵡ")), ".": "·", ",": ",", " ": ""}
+
+
+def _sup(body: str) -> str:
+    if re.fullmatch(r"[0-9+\-=()niak/]+", body):
+        return body.translate(SUPS)
+    if body and all(ch in SUP_MORE for ch in body):
+        return "".join(SUP_MORE[ch] for ch in body)
+    return "^(" + body + ")"
 SUBS = str.maketrans("0123456789+-=()", "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎")
+SUB_LETTERS = dict(zip("aehijklmnoprstuvx", "ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓ"))
+_RELATION = re.compile(r"\s*([≤≥≠<>∈∉⊂⊆⊃⊇≈∼≡≅≃≪≫→←⇒⟺↦=×⊗⊕])\s*")
+_OPERATOR_WORD = re.compile(r"(?<=[\w)\]])(?=\\(?:log|exp|sin|cos|tan|det|dim|ker|max|min|sup|inf|lim|gcd|deg|arg)(?![A-Za-z]))")
+
+
+def _plain_math(t: str) -> str:
+    """One formula as plain Unicode text: CAT(0), L₁, c₀, C¹, ℤ³, P ≠ NP."""
+    t = re.sub(r"\\mathbb\s*\{?\s*([A-Z])\s*\}?", lambda mm: BLACKBOARD.get(mm.group(1), mm.group(1)), t)
+    t = re.sub(r"\\(?:mathsf|mathcal|mathbb|mathrm|mathbf|operatorname\*?|text|mathit|mathfrak|mathscr|mathtt|"
+               r"textsf|textbf|textit|texttt|textrm|textup|textnormal|mbox|hbox|emph|boldsymbol|bm)\s*\{([^{}]*)\}", r"\1", t)
+    t = re.sub(r"\\(?:mathsf|mathcal|mathbb|mathrm|mathbf)\s+(\w)", r"\1", t)
+    t = re.sub(r"\\[dt]?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}", r"\1/\2", t)
+    t = _OPERATOR_WORD.sub(" ", t)
+    t = re.sub(r"\\([A-Za-z]+)", lambda mm: GREEK.get(mm.group(1)) or PLAIN_SYM.get(mm.group(1))
+               or ("" if mm.group(1) in PLAIN_DROP else mm.group(1)), t)
+    t = re.sub(r"\\[,;:!> ]", " ", t)
+    t = re.sub(r"\^\{([^{}]*)\}", lambda mm: _sup(mm.group(1)), t)
+    t = re.sub(r"\^(\w)", lambda mm: mm.group(1).translate(SUPS), t)
+    t = re.sub(r"_\{([^{}]*)\}", lambda mm: mm.group(1).translate(SUBS) if re.fullmatch(r"[0-9+\-=()]+", mm.group(1)) else "_" + mm.group(1), t)
+    t = re.sub(r"_(\d)", lambda mm: mm.group(1).translate(SUBS), t)
+    t = re.sub(r"_(?:\{([aehijklmnoprstuvx])\}|([aehijklmnoprstuvx]))", lambda mm: SUB_LETTERS[mm.group(1) or mm.group(2)], t)
+    t = re.sub(r"_(?=[∞αβγδεπσωℓ])", "", t)
+    t = t.replace("{", "").replace("}", "").replace("\\", "")
+    t = _RELATION.sub(r" \1 ", t)
+    return re.sub(r"\s+", " ", t).strip()
+
+
+# An apostrophe inside a word, after any letter (Erdős's, Patterson's), is typographic in
+# prose. A prime in TeX, a code span, a tag and an identifier keep their straight quote.
+_APOS = re.compile(r"(?<=[^\W_])'(?=[^\W\d_])")
+_PROSE_SKIP = re.compile(r"(`[^`]*`|<[^>]+>|\]\([^)\s]*\)|\\\(.*?\\\)|\\\[.*?\\\]|\$\$.*?\$\$|(?<!\\)\$[^$]*(?<!\\)\$)", re.S)
+
+
+def curly_prose(s) -> str:
+    """Typographic apostrophes in a name or title from the release, outside formulas,
+    tags and code spans."""
+    if not s or "'" not in s:
+        return s or ""
+    return "".join(p if i % 2 else _APOS.sub("\u2019", p) for i, p in enumerate(_PROSE_SKIP.split(s)))
 
 
 def tex_plain(s: str) -> str:
-    """Plain-text rendering of a title or description for <title>, meta tags and search."""
+    """Plain-text rendering of a title or description for <title>, meta tags and search:
+    its formulas in Unicode (CAT(0), L₁, c₀, C¹), no dollar signs or backslashes."""
     if not s:
         return ""
     s = re.sub(r"<[^>]+>", "", s)
-    s = html.unescape(s)
-
-    def math(m):
-        t = m.group(1)
-        t = re.sub(r"\\(?:mathsf|mathcal|mathbb|mathrm|mathbf|operatorname|text|mathit|mathfrak|mathscr)\s*\{([^{}]*)\}", r"\1", t)
-        t = re.sub(r"\\(?:mathsf|mathcal|mathbb|mathrm|mathbf)\s+(\w)", r"\1", t)
-        t = re.sub(r"\\([A-Za-z]+)", lambda mm: GREEK.get(mm.group(1), PLAIN_SYM.get(mm.group(1), "")), t)
-        t = re.sub(r"\^\{([^{}]*)\}", lambda mm: mm.group(1).translate(SUPS) if re.fullmatch(r"[0-9+\-=()niak]+", mm.group(1)) else "^" + mm.group(1), t)
-        t = re.sub(r"\^(\w)", lambda mm: mm.group(1).translate(SUPS), t)
-        t = re.sub(r"_\{([^{}]*)\}", lambda mm: mm.group(1).translate(SUBS) if re.fullmatch(r"[0-9+\-=()]+", mm.group(1)) else "_" + mm.group(1), t)
-        t = re.sub(r"_(\d)", lambda mm: mm.group(1).translate(SUBS), t)
-        t = t.replace("{", "").replace("}", "").replace("\\", "")
-        return re.sub(r"\s+", " ", t).strip()
-
+    s = curly_prose(html.unescape(s))
+    math = lambda m: _plain_math(m.group(1))
     s = re.sub(r"\\\((.*?)\\\)", math, s, flags=re.S)
     s = re.sub(r"\\\[(.*?)\\\]", math, s, flags=re.S)
-    s = re.sub(r"\$([^$]+)\$", math, s)
+    s = re.sub(r"\$\$(.+?)\$\$", math, s, flags=re.S)
+    s = re.sub(r"(?<!\\)\$([^$]+)\$", math, s)
+    # A superscript or subscript the source writes outside $...$ ("A C^1 Counterexample").
+    s = re.sub(r"(?<=[A-Za-z)])\^\{?([0-9]+)\}?", lambda mm: mm.group(1).translate(SUPS), s)
+    s = re.sub(r"(?<=[A-Za-z])_\{?([0-9]+)\}?(?![\w])", lambda mm: mm.group(1).translate(SUBS), s)
     s = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", s)
+    s = re.sub(r"\\([%&#_$])", r"\1", s)
     return re.sub(r"\s+", " ", s).strip()
 
 
@@ -1257,6 +1315,10 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
          extra_head: str = "", page_type="website") -> str:
     depth = rel.count("/")
     root = "../" * depth
+    # Titles and descriptions are plain text: a formula in one is written in Unicode
+    # (CAT(0), L₁), never as TeX, in the tab, the search result and a pasted link's preview.
+    title = tex_plain(title)
+    description = tex_plain(description)
     canonical = BASE_URL + ("" if rel == "index.html" else rel)
     full_title = title if title == C("site.name") else f"{title} | {C('site.name')}"
     og = og_block or generic_og_meta()
@@ -2929,6 +2991,12 @@ def review_queue_html(root):
             f'<p class="muted small">{esc(C("explain.queue_not_verdict"))}</p></section>')
 
 
+def quiet_none(label: str) -> str:
+    """An empty table cell: a dash to the eye and its meaning to a screen reader, so a long
+    list does not repeat the same sentence on every row."""
+    return f'<span class="cell__none cell__dash"><span aria-hidden="true">\u2013</span><span class="vh">{esc(label)}</span></span>'
+
+
 def build_explain():
     """The Families list: all of the release's families as rows, each state said in words
     from the backend's records (scripts/evidence.py): papers, Lean statements, each
@@ -2997,8 +3065,8 @@ def build_explain():
             rerun = sum(1 for l in ev.lean if l.accepted)
             runs_cell = f'{esc(C("explain.runs_of", k=num(rerun), n=num(k)))}'
         else:
-            lean_cell = f'<span class="cell__none">{esc(C("explain.no_lean"))}</span>'
-            runs_cell = f'<span class="cell__none">{esc(C("explain.no_lean_short"))}</span>'
+            lean_cell = quiet_none(C("explain.no_lean_label"))
+            runs_cell = quiet_none(C("explain.no_lean_label"))
             rerun = -1
         # each reader's own term, with a plain gloss under it
         rcells = []
@@ -3007,7 +3075,7 @@ def build_explain():
             rd = next((x for x in ev.readers if x.source == src), None)
             tones[side] = rd.tone if rd else "none"
             if not k:
-                rcells.append(f'<td class="t-reader" data-v=""><span class="cell__none">{esc(C("explain.no_lean_short"))}</span></td>')
+                rcells.append(f'<td class="t-reader" data-v="">{quiet_none(C("explain.no_lean_label"))}</td>')
             elif rd is None or rd.tone == "none" or not rd.term:
                 rcells.append(f'<td class="t-reader" data-v="~"><span class="cell__none">{esc(C("explain.not_read"))}</span></td>')
             else:
@@ -3018,12 +3086,13 @@ def build_explain():
             agree = f'<span class="cell__flag">{esc(C("explain.disagree_flag"))}</span>'
         checks = ", ".join(say_e("check_kind." + c) for c in ev.checks if c in evidence.WORDS["check_kind"])
         checks = cap(checks) if checks else ""
-        checks_cell = esc(checks) if checks else f'<span class="cell__none">{esc(C("explain.checks_none"))}</span>'
+        checks_cell = esc(checks) if checks else quiet_none(C("explain.checks_none"))
         # explanations: what there is to read first (a reviewed explanation for the atlas,
         # explanations by others, reported problems), then the state of the atlas's own
         # explanation, qualified, then the offer to write one
         rev = reviewed_explanations(fid)
-        status = [f'<span class="st st--{st}">{esc(C("explain.status_" + st))}</span>']
+        # A family with no explanation yet says so quietly; the page invites explanations once.
+        status = [quiet_none(C("explain.status_none"))] if st == "none" else [f'<span class="st st--{st}">{esc(C("explain.status_" + st))}</span>']
         if ex:
             status.append(f'<span class="cell__sub">{esc(", ".join(e["name"] for e in ex))}</span>')
         reading = []
@@ -3035,9 +3104,10 @@ def build_explain():
                            f'{esc(cap(C("explain.problems_1") if problems == 1 else C("explain.problems_n", n=say(problems))))}</a>')
         if rev:
             expl = status + reading + [f'<a class="cell__sub" href="{explanation_rel(rev[0], fid)}">{esc(C("explain.read"))}</a>']
+        elif st == "none":
+            expl = reading or status
         else:
-            claim = issue_url("claim", C("issues.claim", id=fid, title=tex_plain(f["title"]) if f else ev.name), family=fid)
-            expl = reading + status + [f'<a class="cell__sub ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>']
+            expl = reading + status
         rows.append(
             f'<tr id="f-{fid}" data-q="{esc((fid + " " + name_plain + " " + dname).lower())}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none") if k else "nolean"}" '
             f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}">'
@@ -3046,7 +3116,7 @@ def build_explain():
             f'<span class="cell__sub t-disc-inline">{esc(dname)}</span>{editions}{agree}</td>'
             f'<td class="t-disc" data-v="{esc(dname)}">{esc(dname)}</td>'
             f'<td class="t-num" data-v="{ev.papers}" data-label="{esc(C("explain.col_papers"))}">{papers}</td>'
-            f'<td class="t-num" data-v="{k}" data-label="{esc(C("explain.col_lean"))}">{lean_cell}</td>'
+            f'<td class="t-num t-lean" data-v="{k}" data-label="{esc(C("explain.col_lean"))}">{lean_cell}</td>'
             + "".join(c.replace('<td class="t-reader"', f'<td class="t-reader" data-label="{esc(C("explain.col_reader", name=short_name[order[i]]))}"', 1)
                       for i, c in enumerate(rcells)) +
             f'<td class="t-num" data-v="{rerun}" data-label="{esc(C("explain.col_runs"))}">{runs_cell}</td>'
@@ -3062,13 +3132,18 @@ def build_explain():
     eopts = [f'<option value="">{esc(C("explain.all_evidence"))}</option>']
     for group, keys in (("lean", ("lean", "nolean")), ("readers", ("disagree",)), ("pairing", ("thread_candidate", "thread_cited")),
                         ("checks", ("ring",)), ("explanations", ("explained_by_others",)), ("problems", ("problems_reported",))):
-        eopts.append(f'<optgroup label="{esc(C("explain.evgroup_" + group))}">' + "".join(
-            f'<option value="{key}">{esc(C("explain.ev_" + key))} ({num(counts.get(key, 0))})</option>' for key in keys) + "</optgroup>")
+        # An option that would lead to an empty list is not offered.
+        shown_opts = "".join(f'<option value="{key}">{esc(C("explain.ev_" + key))} ({num(counts.get(key, 0))})</option>'
+                             for key in keys if counts.get(key, 0))
+        if shown_opts:
+            eopts.append(f'<optgroup label="{esc(C("explain.evgroup_" + group))}">{shown_opts}</optgroup>')
     selects = [select("ff-d", C("explain.filter_discipline"), "d", dopts), select("ff-c", C("explain.filter_evidence"), "c", eopts)]
     for side, src in enumerate(order):
         opts = [f'<option value="">{esc(C("explain.reader_any"))}</option>']
         for tone in evidence.TONES:
             n = counts.get(("left_" if side == 0 else "right_") + tone, 0)
+            if not n:
+                continue   # an option that leads to an empty list is not offered
             opts.append(f'<option value="{tone}">{esc(cap(say_e("tone_short." + tone)))} ({num(n)})</option>')
         selects.append(select(f"ff-{side}", C("explain.filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts))
     selects.append(f'<div class="filters__g filters__g--q"><label class="filters__h" for="ff-q">{esc(C("explain.filter_words"))}</label>'
@@ -3083,19 +3158,27 @@ def build_explain():
     heads.append(f'<th scope="col" class="t-num" aria-sort="none"><button type="button" class="sort" data-sort="{len(sort_cols) + 2}" data-type="n">{esc(C("explain.col_runs"))}</button></th>')
     heads.append(f'<th scope="col">{esc(C("explain.col_checks"))}</th>')
     heads.append(f'<th scope="col">{esc(C("explain.col_status"))}</th>')
+    # On a phone the column heads are hidden; this menu sorts the list instead.
+    sort_menu = [("0:n:ascending", "sort_id"), ("1:s:ascending", "sort_name"), ("2:s:ascending", "sort_discipline"),
+                 ("3:n:descending", "sort_papers"), ("4:n:descending", "sort_lean"), (f"{len(sort_cols) + 2}:n:descending", "sort_runs")]
+    sort_select = (f'<div class="filters__g filters__g--sort"><label class="filters__h" for="ff-sort">{esc(C("explain.sort_label"))}</label>'
+                   f'<select class="select" id="ff-sort" data-sort-table="families-table">'
+                   + "".join(f'<option value="{v}">{esc(C("explain." + k))}</option>' for v, k in sort_menu) + "</select></div>")
     invite_key = "explain.invite_all" if status_counts["none"] == len(evs) else "explain.invite"
-    invite = (f'<p class="muted">{esc(C(invite_key, open=num(status_counts["none"]), families=num(len(evs))))} {esc(C("explain.how"))} '
+    invite = (f'<p class="phead__invite">{esc(C(invite_key, open=num(status_counts["none"]), families=num(len(evs))))} {esc(C("explain.how"))} '
               f'<a class="ext" href="{esc(REPO + "/" + CFG["contributing_path"])}" rel="noopener">{esc(C("contribute.guide_link"))}</a></p>')
     readers_note = C("explain.readers_note", left=prose_name[order[0]], right=prose_name[order[1]] if len(order) > 1 else "")
     body = f"""<div class="frame page page--families">
 <header class="phead phead--compact">
  <h1 class="phead__title">{esc(C('explain.title'))}</h1>
  <p class="phead__lede">{esc(C('explain.lede', families=NUM('families')))}</p>
+ {invite}
 </header>
 <section class="band band--table" aria-labelledby="h-list">
 <h2 class="h2 vh" id="h-list">{esc(C('explain.list_heading'))}</h2>
 <div class="filters filters--families" data-filter-families="families-table">
  <button type="button" class="btn btn--ghost filters__toggle" aria-expanded="false" aria-controls="families-filters">{esc(C('explain.filter_toggle'))}</button>
+ {sort_select}
  <div class="filters__panel" id="families-filters">{''.join(selects)}</div>
  <div class="filters__status">
   <p class="filters__n" aria-live="polite" data-shown-template="{esc(C('explain.shown', n='{n}', total=NUM('families')))}" data-criteria-lead="{esc(C('explain.criteria_lead'))}">{esc(C('explain.shown', n=NUM('families'), total=NUM('families')))}</p>
@@ -3109,7 +3192,6 @@ def build_explain():
  <thead><tr>{''.join(heads)}</tr></thead>
  <tbody>{''.join(rows)}</tbody>
 </table></div>
-{invite}
 </section>
 {review_queue_html("")}
 </div>"""
@@ -3316,9 +3398,9 @@ def build_references_outside():
         authors = clean_ref_text(w.get("authors"))
         title = clean_ref_text(w.get("title"))
         if title:
-            head_ = f'<span class="work__ti">{esc(title)}</span>' + (f' <span class="work__au">{esc(authors)}</span>' if authors else "")
+            head_ = f'<span class="work__ti md-math">{esc(curly_prose(title))}</span>' + (f' <span class="work__au">{esc(authors)}</span>' if authors else "")
         else:
-            head_ = f'<span class="work__tx">{esc(clean_ref_text(w.get("text") or w["id"]))}</span>'
+            head_ = f'<span class="work__tx md-math">{esc(curly_prose(clean_ref_text(w.get("text") or w["id"])))}</span>'
         rr = rec.get("record", {})
         links = []
         if rr.get("doi"):
@@ -3366,7 +3448,7 @@ def build_sources():
         flist = "".join(f"<li><strong>{esc(k)}</strong>: {esc(v)}</li>" for k, v in fields.items())
         authors = ", ".join(a.get("name") or a.get("handle") or "" for a in (src.get("authors") or []))
         ingested.append(f"""<article class="ceff" id="src-{esc(src['id'])}">
- <h3 class="h3"><a class="ext" href="{esc(src.get('url') or '')}" rel="noopener">{esc(src.get('name') or src['id'])}</a></h3>
+ <h3 class="h3"><a class="ext" href="{esc(src.get('url') or '')}" rel="noopener"><span class="md-math">{esc(src.get('name') or src['id'])}</span></a></h3>
  <p class="muted small">{esc(authors)}, {esc(C('sources.snapshot', date=src.get('snapshot') or ''))}, {esc(C('sources.licence', licence=src.get('licence') or 'n/a'))}</p>
  <p>{esc(short(src.get('method') or '', 400))}</p>
  <ul class="small">{flist}</ul>
@@ -3378,10 +3460,10 @@ def build_sources():
         fams = sorted({f["family"] for f in COMMUNITY["findings"] if f.get("effort") == e["id"] and f.get("family") in FAM} | {x for x in (e.get("families") or []) if x in FAM})
         fam_links = ", ".join(f'<a href="families/{esc(x)}.html">{esc(x)}</a>' for x in fams[:10]) + (" …" if len(fams) > 10 else "")
         efforts.append(f"""<article class="ceff" id="src-{esc(e['id'])}">
- <h3 class="h3"><a class="ext" href="{esc(e['url'])}" rel="noopener">{esc(e['name'])}</a></h3>
+ <h3 class="h3"><a class="ext" href="{esc(e['url'])}" rel="noopener"><span class="md-math">{esc(curly_prose(e['name']))}</span></a></h3>
  <p class="muted small">{esc(credit_names(e))}{', ' if credit_names(e) else ''}{esc(e.get('date') or '')}, {esc(C('community.reuse_' + e.get('reuse', 'link')))} {esc(C('community.licence', licence=e.get('licence') or 'n/a'))}</p>
- <p>{esc(e['summary'])}</p>
- {('<p class="small">' + esc(C('sources.used_on', n=nf)) + ' ' + fam_links + '</p>') if fams else ''}
+ <p class="md-math">{esc(e['summary'])}</p>
+ {('<p class="small">' + esc(C('sources.used_on', findings=C('sources.findings_one') if nf == 1 else C('sources.findings_many', n=nf), results=C('sources.on_result' if len(fams) == 1 else 'sources.on_results'))) + ' ' + fam_links + '</p>') if fams else ''}
  {adopted_list_html(e.get('adopted'))}
 </article>""")
     people = {(a.get("name") or a.get("handle")) for e in COMMUNITY["list"] for a in (e.get("authors") or [])}
@@ -3615,11 +3697,20 @@ def build_search_data():
         m = MS.get(pid[2:])
         if m and (title_counts[title] > 1 or m.get("status") != "current"):
             editions[pid] = ", ".join(filter(None, (date_words(m.get("date")), status_label(m.get("status")))))
+    # Every Lean statement by its exact name, so a name typed in any case finds its
+    # statement without asking the host for a page (GitHub Pages matches paths by case).
+    lean = {}
+    for e in entries:
+        if e["kind"] != "lean":
+            continue
+        name = e["id"][2:]
+        if any(k.lower() == name.lower() for k in lean):
+            raise SystemExit(f"search labels: two Lean statements differ only in case: {name}")
+        lean[name] = [curly_prose(e["name"]), e.get("family_ids") or []]
     labels = {"schema": "plectis-atlas-search-labels/1", "generation_id": r.generation,
               "source": "search-index.json and its entry chunks; family holdings from the reader packets; edition dates and status from the manuscript source index",
               "kinds": runs, "papers": papers, "paper_editions": editions,
-              "families": fams,
-              "lean": {e["id"]: e.get("family_ids") or [] for e in entries if e["kind"] == "lean"}}
+              "families": fams, "lean": lean}
     (dst / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
 

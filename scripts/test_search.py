@@ -96,7 +96,8 @@ def check_lean_filename_search(node, build_site, entries):
         finally:
             build_site.OUT = previous_out
         labels = json.loads(Path(tmp, "data/search/labels.json").read_text())
-        expected = {e["id"]: e.get("family_ids") or [] for e in entries if e["kind"] == "lean"}
+        expected = {e["id"][2:]: [build_site.curly_prose(e["name"]), e.get("family_ids") or []]
+                    for e in entries if e["kind"] == "lean"}
         assert labels["lean"] == expected, "Lean filenames must come from the search catalogue"
         assert len({key.lower() for key in expected}) == len(expected), "ambiguous Lean filename case"
         js = Path(tmp, "query.cjs")
