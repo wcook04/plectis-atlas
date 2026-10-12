@@ -431,6 +431,27 @@ def head_html(c: Ctx) -> str:
 </header>"""
 
 
+def status_runs(c: Ctx) -> str:
+    """Who reports accepting a re-run, counted by the outside groups in each Lean statement's
+    accepted_current_sources (the backend's record), never by the number of Lean statements.
+    When every accepting group re-ran the same statement their number is exact; across
+    several statements the groups are counted only to tell one group from several."""
+    n = len(c.leans)
+    accepted = [l for l in c.leans if l.get("accepted_current_sources")]
+    groups = {s for l in accepted for s in l.get("accepted_current_sources") or []}
+    by = "one" if len(groups) == 1 else "many"
+    g = c.S.say(len(groups))
+    if not accepted:
+        return W("status.runs_none")
+    if n == 1:
+        return W(f"status.runs_it_by_{by}", g=g)
+    if len(accepted) == 1:
+        return W(f"status.runs_one_by_{by}", g=g)
+    if len(accepted) == n:
+        return W(f"status.runs_all_by_{by}", g=g)
+    return W(f"status.runs_some_by_{by}", k=c.S.say(len(accepted)), g=g)
+
+
 def status_html(c: Ctx) -> str:
     """Two lines kept apart: the formal status and the readable argument."""
     S = c.S
@@ -438,13 +459,7 @@ def status_html(c: Ctx) -> str:
     if not n:
         formal = esc(W("status.formal_none"))
     else:
-        accepted = sum(1 for l in c.leans if l.get("accepted_current_sources"))
-        if accepted == n:
-            runs = W("status.runs_all_one") if n == 1 else W("status.runs_all_many")
-        elif accepted:
-            runs = W("status.runs_some", k=S.say(accepted))
-        else:
-            runs = W("status.runs_none")
+        runs = status_runs(c)
         lean = W("status.lean_one") if n == 1 else W("status.lean_many", n=S.say(n))
         formal = f'<a href="#compare">{esc(cap(lean))}</a> ' + esc(W("status.formal_some", runs=runs))
     cur = [h for h in c.doc.get("paper_history") or [] if h.get("status") == "current"]

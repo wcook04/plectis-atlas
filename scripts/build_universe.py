@@ -755,7 +755,10 @@ def evidence_words(M, ev, names) -> str:
         parts.append(reruns_sentence(ev.lean[0].accepted, names))
     else:
         k = sum(1 for lm in ev.lean if lm.accepted)
-        parts.append(U("evidence.reruns_some", k=k, n=n) if k else E.say("reruns.none").replace("this Lean statement", "these Lean statements"))
+        # Groups are counted from each statement's accepted sources: one group is never "groups".
+        one = len({s for lm in ev.lean for s in lm.accepted}) == 1
+        parts.append(U("evidence.reruns_some_one" if one else "evidence.reruns_some", k=k, n=n) if k
+                     else E.say("reruns.none").replace("this Lean statement", "these Lean statements"))
     return " ".join(parts)
 
 

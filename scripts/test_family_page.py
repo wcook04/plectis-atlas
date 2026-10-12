@@ -63,10 +63,37 @@ def main() -> int:
                 check(f'id="lean-{l["id"][2:]}"' in html, f"no comparison for {l['id']}")
         check(" — " not in re.sub(r"“[^”]*”|<code.*?</code>|<pre.*?</pre>|<template.*?</template>", "", html, flags=re.S)
               .split("<main", 1)[-1].split("Their method", 1)[0], "an em dash in the page's own words")
+    fails += status_group_counts()
     for f in fails:
         print("FAIL", f)
     print(f"family page: {len(SPECIMENS)} specimens, {len(fails)} failures")
     return 1 if fails else 0
+
+
+NUMBER_WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five"}
+
+
+def status_group_counts() -> list:
+    """Every family's status line counts the outside groups in accepted_current_sources:
+    one group is never "groups", and on a single Lean statement the number is exact."""
+    fails = []
+    for fid in S.FAM:
+        c = family_page.Ctx(S, S.FAM[fid])
+        if not c.leans:
+            continue
+        line = family_page.status_runs(c)
+        groups = {s for l in c.leans for s in l.get("accepted_current_sources") or []}
+        if not groups:
+            ok = line.startswith("no outside group")
+        elif len(groups) == 1:
+            ok = line.startswith("one outside group ") and "groups" not in line
+        else:
+            ok = "outside groups" in line and not line.startswith("one outside group")
+            if len(c.leans) == 1 or sum(1 for l in c.leans if l.get("accepted_current_sources")) == 1:
+                ok = ok and line.startswith(f"{NUMBER_WORDS.get(len(groups), len(groups))} outside groups ")
+        if not ok:
+            fails.append(f"{fid}: status line {line!r} for {len(groups)} accepting groups")
+    return fails
 
 
 if __name__ == "__main__":

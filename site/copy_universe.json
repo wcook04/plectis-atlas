@@ -52,7 +52,8 @@
   "no_lean": "The release has no Lean statement for this family; its papers can still be read and checked.",
   "lean_one": "One Lean statement.",
   "lean_many": "{n} Lean statements.",
-  "reruns_some": "Outside groups report accepted re-runs of {k} of its {n} Lean statements at the release’s pin."
+  "reruns_some": "Outside groups report accepted re-runs of {k} of its {n} Lean statements at the release’s pin.",
+  "reruns_some_one": "One outside group reports accepted re-runs of {k} of its {n} Lean statements at the release’s pin."
  },
  "switch": {
   "label": "Show",
