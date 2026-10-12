@@ -2128,6 +2128,9 @@ def build_paper(m):
         if heads:
             stm = f'<section class="band band--tight"><h2 class="h2">{esc(C("family.headline_heading"))}</h2>{"".join(render_paper_statement(m, st, root, conv) for st in heads)}</section>'
     date = esc(C("paper.dated", date=m["date"])) if m.get("date") else ""
+    abstract = ""
+    if (m.get("abstract") or "").strip():
+        abstract = f'<section class="band band--tight"><h2 class="h2">{esc(C("paper.abstract"))}</h2><div class="prose tex-auto">{rich(m["abstract"])}</div></section>'
     body = f"""<div class="frame page page--narrow">
 {tr}
 <header class="phead">
@@ -2138,7 +2141,7 @@ def build_paper(m):
 </header>
 {''.join(items)}
 {notes}
-<section class="band band--tight"><h2 class="h2">{esc(C('paper.abstract'))}</h2><div class="prose tex-auto">{rich(m.get('abstract') or '')}</div></section>
+{abstract}
 {stm}
 </div>
 {macros_script([slug])}"""
