@@ -916,15 +916,17 @@ def other_checks_html(c: Ctx) -> str:
             verdict = v.get("code") or v.get("verdict") or v.get("cold") or ""
             who = credit.get("name") or card.get("source")
             tid = f"ins-card-{i}"
+            covers, whole = card_covers(v)
+            covers_html = (f"“{code_spans(covers)}”" if whole else code_spans(covers)) if covers else ""
             rows = [(W("checks.verdict"), f"“{esc(verdict)}”" if verdict else ""), (W("checks.certifies"), code_spans(what)),
-                    (W("checks.relation"), code_spans(v.get("relation") or v.get("scope") or "")),
-                    (W("checks.detail"), code_spans(v.get("detail") or "")),
+                    (W("checks.relation"), covers_html),
+                    (W("checks.detail"), "" if whole else code_spans(v.get("detail") or "")),
                     (W("inspect.version"), f'<code translate="no">{esc((credit.get("pin") or "")[:7])}</code>' if credit.get("pin") else "")]
             c.tpls[tid] = record(W("inspect.kind_card"), f"{esc(cap(kind))}, {esc(who)}", rows, [(W("inspect.link"), v.get("url") or credit.get("url"))])
             line = W("checks.line", who=who, kind=kind, state=state) + (" " + W("checks.term", term=verdict) if verdict else "")
             items.append(f'<li class="fx-card"><p class="fx-card__s">{esc(line)}</p>'
                          + (f'<p class="fx-card__w"><span class="fx-rd__k">{esc(W("checks.certifies"))}:</span> <span class="md-math">{code_spans(what)}</span></p>' if what else "")
-                         + (f'<p class="fx-card__w"><span class="fx-rd__k">{esc(W("checks.relation"))}:</span> {code_spans(v.get("relation") or v.get("scope"))}</p>' if (v.get("relation") or v.get("scope")) else "")
+                         + (f'<p class="fx-card__w"><span class="fx-rd__k">{esc(W("checks.relation"))}:</span> {covers_html}</p>' if covers else "")
                          + f'<p class="fx-card__l"><a class="ext" href="{esc(v.get("url") or credit.get("url") or "")}" rel="noopener">{esc(W("checks.report"))}</a> {ins_button(tid, esc(W("readings.details")))}</p></li>')
         lst = f'<ul class="fx-cards">{"".join(items)}</ul>'
         parts.append(f'<span class="fx-alias" id="h-hol"></span><span class="fx-alias" id="h-finite"></span>{lst}')
@@ -932,6 +934,21 @@ def other_checks_html(c: Ctx) -> str:
         items = "".join(f'<li><a class="ext" href="{esc(u.get("url") or "")}" rel="noopener">{esc(u.get("name") or u.get("source") or u.get("url"))}</a></li>' for u in unav)
         parts.append(f'<h4 class="fx-h4">{esc(W("checks.unavailable_heading"))}</h4><ul class="fx-plain">{items}</ul>')
     return f'<h3 class="fx-h3" id="other-checks">{esc(W("checks.heading"))}</h3><p class="fx-intro">{esc(checks_intro(c, cards))}</p>{"".join(parts)}'
+
+
+def card_covers(v) -> tuple:
+    """What a check card covers, as its record states it, and whether that is the record's
+    whole statement (shown in quotation marks as the checker's words). A HOL Light card's
+    relation is short and carries its own limit. An exact check's scope is only the head of
+    its detail, cut at the first colon by the ingest, once inside a label ("Section
+    sec:computation"); the detail states what was decided and what was not ("NOT the
+    theorem"), so whenever it begins with the scope it is shown whole, never cut."""
+    if v.get("relation"):
+        return v["relation"], False
+    scope, detail = (v.get("scope") or "").strip(), (v.get("detail") or "").strip()
+    if scope and detail.startswith(scope):
+        return detail, True
+    return scope, False
 
 
 def checks_intro(c: Ctx, cards) -> str:
