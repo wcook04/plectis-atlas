@@ -307,6 +307,7 @@
   "button": "Why this passage is shown",
   "button_alt": "why it is listed",
   "button_label": "{button}: {label}, in {where}",
+  "button_label_lean": "{button}: {label}, in {where}, for the Lean statement {lean}",
   "kind": "Why this passage is shown",
   "from": "In {where}",
   "method": "How it was found",

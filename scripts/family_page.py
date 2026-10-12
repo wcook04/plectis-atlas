@@ -697,7 +697,8 @@ def why_button(c: Ctx, sid: str, terms, *, primary: bool, lean: str | None = Non
             rows.append((W("why.reason"), esc(claim["reason"])))
         c.tpls[tid] = record(W("why.kind"), esc(c.label(sid)) + c.stmt_title_html(sid), rows, [], sub=sub)
     return ins_button(tid, esc(W(label_key)), "fx-why",
-                      name=W("why.button_label", button=W(label_key), label=c.label_plain(sid), where=c.where_plain(sid)))
+                      name=W("why.button_label_lean" if lean else "why.button_label", button=W(label_key),
+                             label=c.label_plain(sid), where=c.where_plain(sid), lean=lean or ""))
 
 
 def theorem_html(c: Ctx) -> str:
