@@ -324,7 +324,11 @@ main.u-main { padding: 0; max-width: none; }
   .u-panel__body { overflow: visible; padding: 4px 16px 28px; }
   .u-stage { height: 72vh; height: 72svh; }
   [data-universe][data-view="list"] .u-stage { display: none; }
-  [data-universe][data-view="map"] .u-panel { display: none; }
+  [data-universe][data-view="map"] .u-panel { display: block; }
+  [data-universe][data-view="map"] .u-panel__body,
+  [data-universe][data-view="map"] .u-panel__head > :not(.u-trail) { display: none; }
+  [data-universe][data-view="map"] .u-panel__head { padding: 0; border-bottom: 0; }
+  [data-universe][data-view="map"] .u-trail:not([hidden]) { margin: 0; padding: 10px 16px; border-bottom: 1px solid var(--rule); }
   .u-help { display: none; }
   /* The list starts with something to open: the disciplines and the ways in come
      straight after the release's two sentences, and the colour key, which explains

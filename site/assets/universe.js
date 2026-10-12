@@ -1436,6 +1436,16 @@
       cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
       if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
     }
+    function selectFromBoard(key) {
+      if (key !== sel) select(key, { trail: true });
+      // On a phone the detail panel is a separate view, so reveal the record
+      // that a paper, theorem or Lean card just selected.
+      if (narrow() && obj(key) && obj(key).kind !== 'f') {
+        showView('list');
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        focusArrival();
+      }
+    }
     if (boardEl) {
       boardEl.addEventListener('click', function (e) {
         if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -1455,7 +1465,7 @@
           return;
         }
         var key = c.getAttribute('data-bk');
-        if (key !== sel) select(key, { trail: true });
+        selectFromBoard(key);
       });
       boardEl.addEventListener('dblclick', function (e) {
         if (e.target.closest('a')) return;
@@ -1467,7 +1477,7 @@
         if (!c) return;
         var key = c.getAttribute('data-bk');
         if (e.key === 'Enter') { e.preventDefault(); openFromBoard(key); }
-        else if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); if (key !== sel) select(key, { trail: true }); }
+        else if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); selectFromBoard(key); }
       });
       boardEl.addEventListener('pointerover', function (e) {
         var c = e.target.closest && e.target.closest('[data-bk]');
@@ -1525,13 +1535,14 @@
       if (!window.history || !window.history.replaceState) return;
       var base = window.location.pathname + window.location.search;
       var url = sel ? base + '#o=' + encodeURIComponent(sel) : base;
+      var view = root.getAttribute('data-view');
       if (url === window.location.pathname + window.location.search + window.location.hash) return;
       if (push && window.history.pushState) {
         // The entry being left keeps how far down the list the reader was, so Back
         // returns them to the same row.
-        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0 }, ''); } catch (e) { /* the address still works */ }
-        window.history.pushState({ o: sel }, '', url);
-      } else window.history.replaceState({ o: sel }, '', url);
+        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0, v: view }, ''); } catch (e) { /* the address still works */ }
+        window.history.pushState({ o: sel, v: view }, '', url);
+      } else window.history.replaceState({ o: sel, v: view }, '', url);
     }
     // The list scrolls inside the panel on a wide screen and with the page on a narrow one.
     function panelScroller() {
@@ -1568,7 +1579,7 @@
       var fly = opts.fly !== false;
       ring = null;
       ringWanted = o && o.kind === 'd' && opts.trail && !opts.fromHistory && fly ? key : null;
-      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null });
+      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view') });
       renderPanel(opts.quiet);
       updateHash(!!opts.trail && !opts.fromHistory, leavingY);
       if (o && liveEl) liveEl.textContent = nameOf(o);
@@ -1618,6 +1629,7 @@
       if (trail.length) {
         var last = trail.pop();
         sel = last.prev;
+        if (last.view) showView(last.view, true);
         hover = null; hoverVia = ''; ring = null; ringWanted = null; cardDismissed = null;
         renderPanel();
         updateHash();
@@ -1689,6 +1701,8 @@
       if (!viewEl) return;
       var o = sel ? obj(sel) : null;
       var changed = panelKey !== null && panelKey !== (sel || '');
+      var listSwitch = root.querySelector('[data-u-show="list"]');
+      if (listSwitch) listSwitch.textContent = T(o && o.kind !== 'd' ? 'switch.details' : 'switch.list');
       panelKey = sel || '';
       updateFit();
       updateMapKey();
@@ -2283,9 +2297,12 @@
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
       if (go && hoverVia === 'focus' && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
     });
-    function showView(v) {
+    function showView(v, restoring) {
       root.setAttribute('data-view', v);
       root.querySelectorAll('[data-u-show]').forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-u-show') === v ? 'true' : 'false'); });
+      if (!restoring && window.history && window.history.replaceState) {
+        try { window.history.replaceState(Object.assign({}, window.history.state, { v: v }), ''); } catch (e) { /* the view still switches */ }
+      }
       if (v === 'map') { resize(); draw(); }
     }
     root.querySelectorAll('[data-u-show]').forEach(function (b) {
@@ -2340,6 +2357,7 @@
     window.addEventListener('popstate', function (e) {
       var key = readHash();
       var y = e.state && typeof e.state.y === 'number' ? e.state.y : null;
+      if (e.state && (e.state.v === 'map' || e.state.v === 'list')) showView(e.state.v, true);
       if (key !== sel) { trail = []; pendingY = y; select(key, { fromHistory: true }); }
       else if (y != null) { pendingY = y; }
       restorePending();
@@ -2347,7 +2365,7 @@
     // Leaving for a paper or a family page, the address's entry keeps the list's place,
     // so coming back finds it.
     window.addEventListener('pagehide', function () {
-      try { window.history.replaceState({ o: sel, y: scrollPos() }, ''); } catch (e) { /* nothing to keep */ }
+      try { window.history.replaceState({ o: sel, y: scrollPos(), v: root.getAttribute('data-view') }, ''); } catch (e) { /* nothing to keep */ }
     });
     function readHash() {
       var hash = window.location.hash || '';
@@ -2407,6 +2425,7 @@
         // Back from a paper or a family page: the entry remembers the list's place.
         var kept = window.history && window.history.state;
         if (kept && typeof kept.y === 'number') pendingY = kept.y;
+        if (kept && (kept.v === 'map' || kept.v === 'list')) showView(kept.v, true);
         if (start && !/^d:/.test(start)) {
           loadParts().then(function () {
             var key = readHash(), o = key ? obj(key) : null;
