@@ -109,7 +109,7 @@
   "readers_scope": "Each reader judged whether the release’s Lean states the family’s headline result as a whole.",
   "reader_term": "Their term: “{term}”.",
   "record": "Their record",
-  "papers_heading": "Papers and their results",
+  "papers_heading": "Papers",
   "lead": "Lead paper",
   "results_none": "No headline result is recorded for this paper.",
   "lean_list_heading": "Lean statements",
@@ -134,7 +134,8 @@
   "kicker": "Paper in family {num}",
   "read": "Read the paper",
   "pdf": "PDF",
-  "results_heading": "Its results"
+  "results_heading": "Its results",
+  "abstract_heading": "Abstract"
  },
  "result": {
   "in_paper": "In “{paper}”",
@@ -311,5 +312,20 @@
   "disc_inks": "Brick arrows leave a family in {name}; grey arrows arrive at one from another discipline.",
   "fam_inks": "Brick arrows leave {name}; grey arrows arrive at it.",
   "release_inks": "Inside a discipline, pointing at a family draws its citations."
+ },
+ "panel": {
+  "sections": "In this selection",
+  "papers": "Papers",
+  "lean": "Lean",
+  "readers": "Readers",
+  "connections": "Citations",
+  "results": "Results",
+  "abstract": "Abstract",
+  "statement": "Statement",
+  "checks": "Re-runs",
+  "preview": "Statement preview",
+  "open_result": "Read the full statement",
+  "paper_counts": "{results} shown on the map",
+  "family_counts": "{papers}, {lean}"
  }
 }
