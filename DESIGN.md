@@ -458,6 +458,9 @@ heading and breadcrumbs back into view; scrolling a sidebar must not leave the
 next selection cropped above the screen.
 Dragging across board text selects text without selecting a record or stepping
 back. Board pointer clicks use the same movement tolerance as map circles.
+Map statements use the paper reader's printed reference numbers and anchors.
+Packet URLs change with the rendered packet bytes, even at the same backend
+generation, so a corrected preview is not hidden by an old cached response.
 Discipline citation arrows carry a visible direction key. Arrowheads point to
 the cited family, including on the board; the line does not assert a proof
 dependency. Fade unrelated circles and their labels enough to keep citations

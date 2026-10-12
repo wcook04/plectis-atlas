@@ -814,7 +814,7 @@ def statement_html(slug: str, st_backend: dict | None, rid: str):
         hit = next((st for st in m.get("statements") or [] if st.get("label") == label), None)
     if hit is None:
         return None
-    conv = S.TexConv(m, "")
+    conv = S.LabelTexConv(m, "")
     sec = U("result.appendix") if hit.get("appendix") else U("result.section", n=hit.get("section") or "?")
     return {
         "html": keep_punctuation(conv.blocks(hit["text"])),
@@ -1054,8 +1054,8 @@ def checked_band() -> str:
 </section>"""
 
 
-def page_body(M, gen) -> str:
-    data_v = gen[7:19]
+def page_body(M, gen, data_version=None) -> str:
+    data_v = data_version or gen[7:19]
     copy = json.loads(json.dumps(COPY_U))
     # Two of the reader's sentences are the shared evidence vocabulary's own.
     copy["lean"]["what_it_checks"] = E.say("reruns.what_it_checks")
@@ -1165,6 +1165,15 @@ def canonical(obj) -> bytes:
     return json.dumps(obj, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8")
 
 
+def packet_version(directory: Path) -> str:
+    """Invalidate cached map packets when rendering changes at the same source pin."""
+    digest = hashlib.sha256()
+    for packet in sorted(directory.glob("universe-*.json")):
+        digest.update(packet.name.encode("utf-8") + b"\0")
+        digest.update(packet.read_bytes())
+    return digest.hexdigest()[:12]
+
+
 def main():
     global OUT
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -1216,14 +1225,14 @@ def main():
     (OUT / "assets").mkdir(parents=True, exist_ok=True)
     for name in OWN_ASSETS:
         shutil.copy(ASSETS / name, OUT / "assets" / name)
-    v = gen[7:19]
+    v = packet_version(ddir)
     extra = ('<link rel="stylesheet" href="assets/lean.css">\n'
              f'<link rel="stylesheet" href="assets/universe.css?v={asset_version()}">\n'
              f'<link rel="preload" href="data/universe-data.json?v={v}" as="fetch" crossorigin>\n'
              f'<link rel="preload" href="data/universe-layout.json?v={v}" as="fetch" crossorigin>\n'
              '<meta name="format-detection" content="telephone=no">\n'
              f'<script defer src="assets/universe.js?v={asset_version()}"></script>')
-    body = page_body(M, gen)
+    body = page_body(M, gen, v)
     html_text = S.page("index.html", U("page.title"), U("page.description"), body, current="map",
                        extra_head=extra, main_class="u-main")
     (OUT / "index.html").write_text(html_text, encoding="utf-8")
