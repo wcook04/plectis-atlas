@@ -49,9 +49,15 @@ Type and mathematics served with the site:
   STIX is credited to the STIX Fonts Project Authors and Tiro Typeworks;
   Source Sans 3 to Adobe and designer Paul D. Hunt. The font files retain
   their original copyright metadata, including Adobe 2023 for Source Sans 3.
-- site/assets/vendor/katex-0.18.9/: KaTeX 0.18.9, Copyright (c) 2013-2020
+- site/assets/vendor/katex-0.18.9/: KaTeX 0.18.9 JavaScript and CSS, Copyright (c) 2013-2020
   Khan Academy and other contributors, MIT License (LICENSES/MIT-KaTeX.txt);
-  only the minified build, its auto-render extension and its WOFF2 fonts.
+  the minified build and its auto-render extension.
+- site/assets/vendor/katex-0.18.9/fonts/: unmodified KaTeX WOFF2 fonts,
+  Copyright (c) 2009-2010 Design Science, Inc. and Copyright (c) 2014-2018
+  Khan Academy, under SIL Open Font License 1.1. Their embedded notices,
+  reserved font names and full licence are retained in
+  LICENSES/OFL-KaTeX-Fonts.txt. The software's MIT licence does not replace
+  the fonts' terms. See https://github.com/KaTeX/KaTeX/issues/339.
 
 The distributed file inventory, source links, versions and modifications are
 recorded in LICENSES/manifest.json. The website includes copies of this notice,

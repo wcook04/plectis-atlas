@@ -13,9 +13,25 @@
       "licence": "MIT",
       "licence_file": "LICENSES/MIT-KaTeX.txt",
       "use": "Typesets formulas in the browser; the paper builder checks formulas with the same version.",
-      "changes": "Selected unmodified minified distribution files, auto-render extension and WOFF2 fonts. Verified against the npm 0.18.9 distribution.",
+      "changes": "Selected unmodified minified JavaScript, CSS and auto-render extension. Verified against the npm 0.18.9 distribution; the accompanying fonts are listed separately.",
       "files": {
         "site/assets/vendor/katex-0.18.9/contrib/auto-render.min.js": "e5372d199bcdae8b4de71d0f7ceba72a4ba12774a27c60a6f1f77d03b3228ee4",
+        "site/assets/vendor/katex-0.18.9/katex.min.css": "b9ce0e8ce93f0c18c4986fe1f1c3c269d921b56a69e6c97f83a507916b38aab5",
+        "site/assets/vendor/katex-0.18.9/katex.min.js": "155f6c2d673c5912e3b48f45d8830eaad18ae1953915939ceb648ea8b9c3e7e2"
+      }
+    },
+    {
+      "id": "katex-fonts",
+      "name": "KaTeX fonts",
+      "version": "bundled with 0.18.9",
+      "credit": "Design Science, Inc. (2009–2010); Khan Academy (2014–2018)",
+      "url": "https://github.com/KaTeX/KaTeX/issues/339",
+      "source": "https://github.com/KaTeX/KaTeX/tree/71a7bc02435353b4ed2420bb7b904cae6a0231bc",
+      "licence": "OFL-1.1",
+      "licence_file": "LICENSES/OFL-KaTeX-Fonts.txt",
+      "use": "Formula glyphs used by KaTeX.",
+      "changes": "Selected unmodified WOFF2 files from the npm distribution. Original embedded copyright, licence notices and reserved font names are retained.",
+      "files": {
         "site/assets/vendor/katex-0.18.9/fonts/KaTeX_AMS-Regular.woff2": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308",
         "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Caligraphic-Bold.woff2": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c",
         "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Caligraphic-Regular.woff2": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b",
@@ -35,9 +51,7 @@
         "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Size2-Regular.woff2": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd",
         "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Size3-Regular.woff2": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995",
         "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Size4-Regular.woff2": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0",
-        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b",
-        "site/assets/vendor/katex-0.18.9/katex.min.css": "b9ce0e8ce93f0c18c4986fe1f1c3c269d921b56a69e6c97f83a507916b38aab5",
-        "site/assets/vendor/katex-0.18.9/katex.min.js": "155f6c2d673c5912e3b48f45d8830eaad18ae1953915939ceb648ea8b9c3e7e2"
+        "site/assets/vendor/katex-0.18.9/fonts/KaTeX_Typewriter-Regular.woff2": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b"
       }
     },
     {

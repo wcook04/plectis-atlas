@@ -63,6 +63,9 @@ authoring infrastructure; the Atlas does not run it.
 Python and Git build the site; Node runs formula and search checks. Optional
 Playwright/Chromium render share cards. These tools are not bundled in the
 website. KaTeX and the font subsets are bundled and carry their licence copies.
+KaTeX's JavaScript and CSS use MIT; its bundled fonts use OFL-1.1 and retain
+Design Science and Khan Academy's notices. A package's root licence does not
+necessarily cover every file it distributes; check embedded font metadata too.
 Codex and Claude Code have assisted with repository implementation and editing;
 that assistance is not mathematical authorship or an independent review.
 Contribution-specific assistance is recorded on the contribution itself.

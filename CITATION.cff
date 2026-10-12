@@ -71,7 +71,18 @@ references:
     version: "0.18.9"
     repository-code: "https://github.com/KaTeX/KaTeX"
     commit: "71a7bc02435353b4ed2420bb7b904cae6a0231bc"
-    scope: "Bundled formula renderer and build-time formula checks."
+    scope: "Bundled formula-rendering code and build-time formula checks; font terms are recorded separately."
+  - type: software
+    title: "KaTeX fonts"
+    authors:
+      - name: "Design Science, Inc."
+      - name: "Khan Academy"
+    version: "bundled with KaTeX 0.18.9"
+    repository-code: "https://github.com/KaTeX/KaTeX"
+    commit: "71a7bc02435353b4ed2420bb7b904cae6a0231bc"
+    url: "https://github.com/KaTeX/KaTeX/issues/339"
+    license: OFL-1.1
+    scope: "Unmodified WOFF2 formula fonts; original notices and reserved font names retained."
   - type: software
     title: "STIX Two Text and STIX Two Math"
     authors:

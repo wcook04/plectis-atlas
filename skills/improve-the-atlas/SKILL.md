@@ -103,3 +103,6 @@ asset or changed byte needs a source and licence review before its hash is
 updated. Run `python3 scripts/attribution.py` and, after a site build, add
 `--built site/_build` to verify that the notices accompany the assets. The
 checker is a coverage check, not a permission grant or a priority assessment.
+Inspect embedded font copyright and licence metadata as well as repository
+licences. In particular, KaTeX's fonts use OFL-1.1 even though its code uses
+MIT; keep components with different terms in separate inventory records.
