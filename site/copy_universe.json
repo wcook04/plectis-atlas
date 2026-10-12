@@ -14,7 +14,7 @@
   "s2": "{statements_lean} Lean challenge files come with them, linked to {families_with_lean} of the families.",
   "s3": "OpenAI’s Lean catalogue names {statements_lean_main_results} of the {statements_lean} Lean challenge files as main results.",
   "s4": "Inside the release, {internal_citation_edges} ordered pairs of papers are joined by a citation, and the papers cite {external_works_cited} works outside it. OpenAI has withdrawn {manuscripts_withdrawn} papers and replaced {manuscripts_previous_editions} with later editions.",
-  "s5": "Public work credited under {community_people} names is shown where it is used, with {community_findings} findings attached to specific results.",
+  "s5": "The atlas credits public work under {community_people} names where it uses that work, and attaches {community_findings} findings to the results they concern.",
   "disciplines_heading": "Disciplines"
  },
  "numbers": {
@@ -51,7 +51,7 @@
   "links": "{n} citing pairs of papers"
  },
  "evidence": {
-  "no_lean": "The release has no Lean statement for this family; its papers can still be read and checked.",
+  "no_lean": "The release has no Lean statement for this family; its papers can be read and checked here.",
   "lean_one": "One Lean statement.",
   "lean_many": "{n} Lean statements.",
   "reruns_some": "Outside groups report accepted re-runs of {k} of its {n} Lean statements at the release’s pin.",
@@ -91,7 +91,7 @@
   "kind_statement": "Statement"
  },
  "discipline": {
-  "lede": "{counts}. Point at a family to find it on the map; select it to open it.",
+  "lede": "{counts}. Point at a family here to light it on the map; select it to open its papers and Lean statements.",
   "loading": "Loading the families…",
   "failed": "The families could not load here. Each one’s page has everything."
  },
@@ -112,7 +112,7 @@
   "lead": "Lead paper",
   "results_none": "No headline result is recorded for this paper.",
   "lean_list_heading": "Lean statements",
-  "headline_candidate": "Shared words point to a candidate theorem for the catalogue’s headline; nobody has reviewed the choice.",
+  "headline_candidate": "A candidate theorem for the catalogue’s headline was found by the words they share; nobody has reviewed the choice.",
   "headline_unresolved": "No single theorem in the papers has been identified as the one the catalogue describes.",
   "editions_one": "One previous edition is kept on the family page.",
   "editions": "{n} previous editions are kept on the family page.",
@@ -247,7 +247,7 @@
   "checked_erdos": "links families to the Erdős problems they address. A link is not a check.",
   "checked_more_link": "Every source, with what each one reports",
   "help_heading": "How to help",
-  "help_intro": "Each contribution is one precise thing, credited by name on the pages it changes.",
+  "help_intro": "Each contribution covers one result or one page, and is credited by name on the pages it changes.",
   "help_without_heading": "Without an AI account",
   "help_without": "Open a short form on GitHub to explain a result, check a Lean statement against its paper, or report a problem with one page.",
   "help_without_link": "Ways to contribute",
