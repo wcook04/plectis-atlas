@@ -445,6 +445,14 @@ Draw the map when its baseline data is ready; font downloads must not hold up
 navigation. Refresh text measurements when fonts arrive. When a chosen family
 needs both the parts index and its discipline details, request them together.
 Keep shared requests and cached details; do not preload every discipline.
+Board layout must not recursively rebuild its own content. Reserve scrollbar
+space so overflow does not alternate the column count. Resize and pagination
+refresh only the visible excerpts, with bounded fitting work. Verify boards
+near a column breakpoint, including the 14-paper log-abundance family.
+Discipline citation arrows carry a visible direction key. Arrowheads point to
+the cited family, including on the board; the line does not assert a proof
+dependency. Fade unrelated circles and their labels enough to keep citations
+readable, while keeping those circles clickable.
 
 ## Quality floor
 

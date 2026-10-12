@@ -439,6 +439,10 @@ main.u-main { padding: 0; max-width: none; }
 .u-mapbar { position: absolute; left: 14px; right: 14px; top: 10px; display: flex; align-items: center; gap: 8px 14px; pointer-events: none; }
 .u-mapbar > * { pointer-events: auto; }
 .u-cap { margin: 0; max-width: 78ch; font: 400 var(--fs-small)/1.4 var(--sans); color: var(--ink-soft); text-wrap: pretty; }
+.u-edge-guide { display: block; margin-top: 5px; }
+.u-edge-key { display: inline-flex; align-items: baseline; gap: 4px; margin-right: 10px; font-weight: 600; white-space: nowrap; }
+.u-edge-key--out { color: var(--u-cites); }
+.u-edge-key--in { color: var(--u-cited); }
 [data-board] .u-mapbar { display: none; }
 .u-mapkey-btn { flex: none; position: static; min-height: 32px; padding: 5px 12px; border-radius: var(--r-sm); border: 1px solid var(--rule-strong); background: var(--surface); color: var(--ink); font: 500 var(--fs-small)/1.2 var(--sans); cursor: pointer; }
 .u-mapkey-btn[hidden] { display: none; }
@@ -484,6 +488,7 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
    screen, so a 27-inch monitor reads as easily as a laptop. */
 .u-board {
   position: absolute; inset: 0; z-index: 2; overflow: auto; overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   background: var(--page); color: var(--ink-soft);
   font: 400 clamp(15px, calc(0.42vw + 9.5px), 20px)/1.45 var(--sans);
   opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(8px);
@@ -499,8 +504,10 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
 .u-board__wires path { fill: none; stroke-width: 1.5; stroke-linecap: round; }
 .u-board__wires .w-lean { stroke: var(--u-steel); }
 .u-board__wires .w-cand { stroke-dasharray: 5 4; }
-.u-board__wires .w-out { stroke: var(--u-cites); opacity: 0.75; }
-.u-board__wires .w-in { stroke: var(--u-cited); opacity: 0.75; }
+.u-board__wires .w-out { stroke: var(--u-cites); opacity: 0.85; marker-start: url(#u-cite-out); }
+.u-board__wires .w-in { stroke: var(--u-cited); opacity: 0.85; marker-end: url(#u-cite-in); }
+.u-board__wires .w-arrow-out { fill: var(--u-cites); stroke: none; }
+.u-board__wires .w-arrow-in { fill: var(--u-cited); stroke: none; }
 .u-board__wires .is-hot { opacity: 1; stroke-width: 2.2; }
 .u-board__head { margin: 0 0 0.9em; max-width: 72em; }
 .u-board__k { margin: 0; font: 600 0.8125em/1.4 var(--sans); color: var(--muted); }
