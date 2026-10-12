@@ -12,6 +12,7 @@ import re
 import sys
 import tempfile
 from collections import Counter
+from html import unescape
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -67,10 +68,41 @@ def main() -> int:
             check(False, what)
     fails += status_group_counts()
     fails += tied_order()
+    fails += definition_only_statement(tmp)
     for f in fails:
         print("FAIL", f)
     print(f"family page: {len(SPECIMENS)} specimens, {len(fails)} failures")
     return 1 if fails else 0
+
+
+def definition_only_statement(tmp: Path) -> list:
+    """The definition-only challenge must not open blank in any reading view."""
+    stmt = S.ST["ElementaryPositivity"]
+    S.build_statement(stmt)
+    family_page.build(S, S.FAM["169"])
+    fails = []
+    views = [
+        ("statements/ElementaryPositivity.html", "lean--read"),
+        ("cards/ElementaryPositivity.html", "lean--card"),
+        ("families/169.html", "fx-lean__code"),
+    ]
+    for rel, css in views:
+        html = (tmp / rel).read_text(encoding="utf-8")
+        blocks = re.findall(r'<pre class="[^"]*' + css + r'[^"]*"><code>(.*?)</code></pre>', html, re.S)
+        plain = unescape(re.sub(r"<[^>]*>", "", "".join(blocks)))
+        if "def elementaryPositivityWitness" not in plain or "G.PermutationWitness" not in plain:
+            fails.append(f"{rel}: configured definition is missing from the Lean snippet")
+    page = (tmp / views[0][0]).read_text(encoding="utf-8")
+    opening = page.split('id="h-lean-read"', 1)[1].split('<h3', 1)[0]
+    if "This configuration names no theorem" not in opening or "name and type only" not in opening:
+        fails.append("ElementaryPositivity: definition-only qualification missing beside the snippet")
+    family = (tmp / "families/169.html").read_text(encoding="utf-8")
+    if family_page.W("compare.sorry") in family or "by its name and type only" not in family:
+        fails.append("Family 169: definition-only snippet is described as a theorem")
+    card = (tmp / "cards/ElementaryPositivity.html").read_text(encoding="utf-8")
+    if "states the theorem" in card or "checks only the name and type" not in card:
+        fails.append("ElementaryPositivity card: definition-only qualification missing")
+    return fails
 
 
 def compare_buttons(fid: str, html: str) -> list:

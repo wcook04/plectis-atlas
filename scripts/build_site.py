@@ -1524,7 +1524,14 @@ def def_holes(stmt):
 def lean_snippet_html(stmt, lines_html=None, max_lines=None):
     text = stmt["lean"]
     lines_html = lines_html or lean_lines(text)
-    ranges = lean_key_ranges(text, stmt["comparator"]["theorem_names"] or stmt["theorems"][:1])
+    targets = stmt["comparator"]["theorem_names"] or stmt["theorems"][:1]
+    if targets:
+        ranges = lean_key_ranges(text, targets)
+    else:
+        # A definition-only configuration still has a statement to read. Use
+        # its exact indexed declaration rather than leaving every snippet blank.
+        spans, _ = decl_spans(stmt)
+        ranges = sorted({spans[name] for name in stmt["comparator"].get("definition_names", []) if name in spans})
     out = []
     total = 0
     for k, (a, b) in enumerate(ranges):
@@ -2201,6 +2208,8 @@ def receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pin
     hl = stmt["comparator"].get("definition_names") or []
     hole_note = ""
     if hl:
+        if not stmt["comparator"]["theorem_names"]:
+            note = ""
         hole_note = C("statement.card_holes_one", name=hl[0].split(".")[-1]) if len(hl) == 1 else C("statement.card_holes_many", n=len(hl), name=hl[0].split(".")[-1])
         hole_note = f'<p class="rc__note rc__note--hole">{ctext(hole_note)}</p>'
     review, _replay = review_records(stmt["id"])
@@ -2215,7 +2224,7 @@ def receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pin
  </header>
  <div class="rc__cols">
   <section class="rc__paper"><p class="rc__label">{esc(paper_label)}</p><p class="rc__kind">{kind}</p><div class="rc__fit"><div class="rc__body">{paper_body}</div></div>{paper_src}</section>
-  <section class="rc__lean"><p class="rc__label">{esc(C('statement.card_lean'))}</p><div class="rc__fit"><pre class="lean lean--card"><code>{snippet}</code></pre></div><p class="rc__note">{ctext(note)}</p>{hole_note}</section>
+  <section class="rc__lean"><p class="rc__label">{esc(C('statement.card_lean'))}</p><div class="rc__fit"><pre class="lean lean--card"><code>{snippet}</code></pre></div>{('<p class="rc__note">' + ctext(note) + '</p>') if note else ''}{hole_note}</section>
  </div>
  <footer class="rc__foot">
   <p class="rc__status"><span class="rc__fact">{esc(evidence.say('pairing.' + state))}</span><span class="rc__fact"><strong>{esc(reruns)}</strong></span><span class="rc__fact"><strong>{esc(review)}</strong></span></p>
@@ -2694,6 +2703,11 @@ def build_statement(stmt):
     snippet_full = lean_snippet_html(stmt, lines_html)
     defs = definitions_html(stmt, lines_html)
     holes = def_holes(stmt)
+    definition_only = not stmt["comparator"]["theorem_names"] and bool(holes)
+    lean_intro = (LW("panel.intro_holes", names=", ".join(h["short"] for h in holes))
+                  if definition_only else C("statement.claim_lean_intro"))
+    lean_note = (LW("panel.holes_note") if definition_only else
+                 C("statement.sorry_note_axiom") if stmt["declares_axiom"] else C("statement.sorry_note"))
     holes_html = ""
     if holes:
         items = []
@@ -2813,9 +2827,9 @@ def build_statement(stmt):
 {('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}
 <section class="band band--tight claim claim--lean" aria-labelledby="h-lean-read">
  <h2 class="h2" id="h-lean-read">{esc(LW('page.lean_heading'))}</h2>
- <p class="intro">{esc(C('statement.claim_lean_intro'))}</p>
+ <p class="intro">{esc(lean_intro)}</p>
  <pre class="lean lean--snippet lean--read"><code>{snippet_full}</code></pre>
- <p class="leanc__note">{ctext(C('statement.sorry_note_axiom') if stmt['declares_axiom'] else C('statement.sorry_note'))}</p>
+ <p class="leanc__note">{ctext(lean_note)}</p>
  {defs}
  {holes_html}
  {axiom}

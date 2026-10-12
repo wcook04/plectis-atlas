@@ -890,7 +890,7 @@ def lean_card(c: Ctx, l) -> str:
     return (f'<article class="fx-lean" aria-labelledby="lean-{esc(name)}-h">'
             f'<h4 class="fx-lean__head" id="lean-{esc(name)}-h"><a href="{c.root}statements/{esc(name)}.html"><span class="md-math">{esc(curly_tex(l.get("name") or name))}</span></a></h4>'
             f'<p class="fx-lean__file"><code translate="no">{S.lean_breaks(">" + esc(name))[1:]}.lean</code>, {esc(role)}.</p>'
-            f'{code}' + (f'<p class="fx-lean__note">{W("compare.sorry")}</p>' if code and "sorry" in (s or {}).get("lean", "") else "") + f'{more}{holes_html}'
+            f'{code}' + (f'<p class="fx-lean__note">{W("compare.sorry")}</p>' if code and s["comparator"]["theorem_names"] and "sorry" in s["lean"] else "") + f'{more}{holes_html}'
             f'<p class="fx-lean__runs">{esc(runs)} <a href="#reruns-{esc(name)}">{esc(W("compare.runs_link"))}</a></p>'
             + (f'<ul class="fx-lean__terms">{"".join(f"<li>{esc(t)}</li>" for t in terms)}</ul>' if terms else "")
             + f'<p class="fx-lean__note">{esc(sayc("reruns.what_it_checks"))}</p>'
