@@ -1008,7 +1008,12 @@
       } else {
         tt.appendChild(richEl('span', 'sr__name md-math', r.name));
         var fams = r.family_ids.map(function (f) { return (lab.families[f] || {}).n || f; });
-        if (r.kind === 'manuscript' && fams.length) tt.appendChild(richEl('span', 'sr__k md-math', fmt(T('in-family'), { name: fams[0] })));
+        if (r.kind === 'manuscript') {
+          var caption = fams.length ? fmt(T('in-family'), { name: fams[0] }) : '';
+          var edition = (lab.paper_editions || {})[r.id];
+          if (edition) caption = edition + (caption ? ' · ' + caption : '');
+          if (caption) tt.appendChild(richEl('span', 'sr__k md-math', caption));
+        }
         if (r.kind === 'discipline') tt.appendChild(el('span', 'sr__k', fmt(T('discipline-n'), { n: r.family_ids.length })));
       }
       a.appendChild(tt);

@@ -3553,7 +3553,8 @@ def build_search_data():
     """Copy Statement Map's compact search into data/search/ at its logical paths, and
     write labels.json beside it: which index range holds which kind of entry, each
     paper's title and each family's name, discipline and holdings in words, so a result list can
-    show them without loading the reader packets. Every file carries the generation."""
+    show them without loading the reader packets. Ambiguous and non-current paper results
+    also carry their source date and edition status. Every file carries the generation."""
     r = RD()
     dst = OUT / "data" / "search"
     for logical, path in r.browser_files(SEARCH_PACKETS):
@@ -3590,9 +3591,16 @@ def build_search_data():
         return f"{papers}, {lean}"
 
     fams = {ev.id: {"n": tex_plain(ev.name), "d": disc_name.get(ev.id, ""), "e": holdings(ev)} for ev in evidence.all_families(r)}
+    papers = {e["id"]: tex_plain(e["name"]) for e in entries if e["kind"] == "manuscript"}
+    title_counts = Counter(papers.values())
+    editions = {}
+    for pid, title in papers.items():
+        m = MS.get(pid[2:])
+        if m and (title_counts[title] > 1 or m.get("status") != "current"):
+            editions[pid] = ", ".join(filter(None, (date_words(m.get("date")), status_label(m.get("status")))))
     labels = {"schema": "plectis-atlas-search-labels/1", "generation_id": r.generation,
-              "source": "search-index.json and its entry chunks; family holdings from the reader packets",
-              "kinds": runs, "papers": {e["id"]: tex_plain(e["name"]) for e in entries if e["kind"] == "manuscript"},
+              "source": "search-index.json and its entry chunks; family holdings from the reader packets; edition dates and status from the manuscript source index",
+              "kinds": runs, "papers": papers, "paper_editions": editions,
               "families": fams}
     (dst / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
