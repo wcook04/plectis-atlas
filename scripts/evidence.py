@@ -29,6 +29,13 @@ TONES = ("full", "part", "other", "none")
 PAIRINGS = ("candidate-pairing", "producer-cited-association", "producer-declared-binding", "unavailable")
 
 
+def join_names(names) -> str:
+    """Credited names joined for a sentence. Each credited name may contain a comma
+    ("Carlos Toledo, cert-machine"), so groups are separated by semicolons."""
+    names = [n for n in names if n]
+    return WORDS["reruns"]["names_joiner"].join(names)
+
+
 def say(key: str, **kw) -> str:
     """A string from copy_evidence.json by dotted key, formatted with kw."""
     node = WORDS

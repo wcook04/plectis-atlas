@@ -3327,7 +3327,7 @@ def lean_runs_html(rec, root) -> str:
         names.setdefault(x["source"], prose_credit((x.get("credit") or {}).get("name") or x["source"]))
     acc = [names.get(s, s) for s in rec.get("accepted_current_sources") or []]
     lead = (evidence.say("reruns.none") if not acc else evidence.say("reruns.one", names=acc[0]) if len(acc) == 1
-            else evidence.say("reruns.many", n=say(len(acc)), names=", ".join(acc[:-1]) + " " + LW("and") + " " + acc[-1]))
+            else evidence.say("reruns.many", n=say(len(acc)), names=evidence.join_names(acc)))
     groups = []
     for g in rec.get("run_groups") or []:
         rows = [runs[i] for i in g.get("run_ids") or [] if i in runs]
