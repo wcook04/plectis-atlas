@@ -1157,7 +1157,7 @@
       katexIn(boardEl.querySelector('.u-board__head'), null, di);
       Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--f'), function (c) { katexIn(c, null, fams[+c.getAttribute('data-g')].d); });
     }
-    // How many paper columns stand side by side, which page shows, and the pager's words.
+    // Paper and unpaired-Lean columns share the board's pagination.
     function layoutBoard() {
       if (!board.on && !board.pending) return;
       var papersEl = boardEl.querySelector('[data-u-papers]');
@@ -1176,9 +1176,15 @@
       if (pager) {
         pager.hidden = pages < 2;
         var from = board.page * per + 1, to = Math.min(cols.length, (board.page + 1) * per);
-        pager.querySelector('[data-u-page-n]').textContent = T(from === to ? 'board.page_one' : 'board.page', { from: from, to: to, n: cols.length });
-        pager.querySelector('[data-u-page="-1"]').disabled = board.page === 0;
-        pager.querySelector('[data-u-page="1"]').disabled = board.page >= pages - 1;
+        var mixed = cols.some(function (col) { return col.classList.contains('u-col--free'); });
+        pager.querySelector('[data-u-page-n]').textContent = mixed
+          ? T('board.mixed_page', { page: board.page + 1, pages: pages })
+          : T(from === to ? 'board.page_one' : 'board.page', { from: from, to: to, n: cols.length });
+        var prev = pager.querySelector('[data-u-page="-1"]'), next = pager.querySelector('[data-u-page="1"]');
+        prev.setAttribute('aria-label', T(mixed ? 'board.previous_page' : 'board.earlier'));
+        next.setAttribute('aria-label', T(mixed ? 'board.next_page' : 'board.later'));
+        prev.disabled = board.page === 0;
+        next.disabled = board.page >= pages - 1;
       }
       // The statements' length follows the column's width: about four lines of it.
       var rc = papersEl.querySelector('.u-col:not([hidden]) .u-bc--r');
