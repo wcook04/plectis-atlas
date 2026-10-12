@@ -1400,7 +1400,8 @@
       }
       return '';
     }
-    function hideBoardCard() {
+    function hideBoardCard(dismiss) {
+      if (dismiss) board.dismissedKey = board.hoverKey;
       clearTimeout(board.hideT);
       board.hoverVia = '';
       if (board.hoverKey) { board.hoverKey = null; if (board.on) drawWires(); }
@@ -1411,6 +1412,10 @@
       if (!cardEl || !board.on || narrow()) return;
       if (via !== 'focus' && !(hoverMQ && hoverMQ.matches)) return;
       var key = el.getAttribute('data-bk');
+      // Removing a preview can expose its source under a stationary pointer.
+      // Wait for that pointer or keyboard focus to leave before showing it again.
+      if (board.dismissedKey === key) return;
+      board.dismissedKey = null;
       board.hoverVia = via;
       clearTimeout(board.hideT);
       if (board.hoverKey !== key) { board.hoverKey = key; drawWires(); }
@@ -1453,8 +1458,9 @@
       if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
     }
     function selectFromBoard(key) {
-      hideBoardCard();
       if (key !== sel) select(key, { trail: true });
+      hideBoardCard();
+      board.dismissedKey = key;
       // On a phone the detail panel is a separate view, so reveal the record
       // that a paper, theorem or Lean card just selected.
       if (narrow() && obj(key) && obj(key).kind !== 'f') {
@@ -1508,6 +1514,7 @@
       boardEl.addEventListener('pointerout', function (e) {
         var c = e.target.closest && e.target.closest('[data-bk]');
         if (!c || (e.relatedTarget && (c.contains(e.relatedTarget) || (cardEl && cardEl.contains(e.relatedTarget))))) return;
+        if (board.dismissedKey === c.getAttribute('data-bk')) board.dismissedKey = null;
         clearTimeout(board.hideT);
         board.hideT = setTimeout(hideBoardCard, 160);
       });
@@ -1517,7 +1524,10 @@
         try { visible = !!c && c.matches(':focus-visible'); } catch (err) { visible = false; }
         if (visible) showBoardCard(c, 'focus');
       });
-      boardEl.addEventListener('focusout', function () { if (board.hoverVia === 'focus') hideBoardCard(); });
+      boardEl.addEventListener('focusout', function () {
+        board.dismissedKey = null;
+        if (board.hoverVia === 'focus') hideBoardCard();
+      });
       boardEl.addEventListener('scroll', function () { if (cardEl && cardEl.classList.contains('is-board')) hideBoardCard(); }, { passive: true });
       if (cardEl) {
         cardEl.addEventListener('pointerenter', function () { if (cardEl.classList.contains('is-board')) clearTimeout(board.hideT); });
@@ -2395,7 +2405,7 @@
       var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable);
       if (e.key === 'Escape') {
         if (document.querySelector('dialog[open], .nav-toggle[aria-expanded="true"]')) return;
-        if (cardOn && cardEl && cardEl.classList.contains('is-board')) { e.preventDefault(); hideBoardCard(); return; }
+        if (cardOn && cardEl && cardEl.classList.contains('is-board')) { e.preventDefault(); hideBoardCard(true); return; }
         if (mapKeyEl && !mapKeyEl.hidden) { e.preventDefault(); mapKeyPinned = false; showMapKey(false); mapKeyBtn.focus(); return; }
         // The input clears its query before a later Escape steps out of the map selection.
         if (e.target === searchIn && searchIn.value) return;
