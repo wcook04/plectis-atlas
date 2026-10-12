@@ -20,16 +20,16 @@
   "copied": "Link copied"
  },
  "status": {
-  "formal": "Formal status",
-  "readable": "Readable argument",
+  "formal": "Reported Lean re-runs",
+  "readable": "Papers and explanations",
   "formal_none": "The release has no Lean statement for this family; the papers can still be read and checked by hand.",
   "formal_some": "in the release; {runs}.",
   "lean_one": "one Lean statement",
   "lean_many": "{n} Lean statements",
-  "runs_all_one": "an outside group reports accepting a re-run of it at the release’s pin",
-  "runs_all_many": "outside groups report accepting re-runs of all of them at the release’s pin",
-  "runs_some": "outside groups report accepting re-runs of {k} of them at the release’s pin",
-  "runs_none": "no outside group reports an accepted re-run at the release’s pin",
+  "runs_all_one": "an outside group reports accepting a re-run of it at the release’s recorded version",
+  "runs_all_many": "outside groups report accepting re-runs of all of them at the release’s recorded version",
+  "runs_some": "outside groups report accepting re-runs of {k} of them at the release’s recorded version",
+  "runs_none": "no outside group reports an accepted re-run at the release’s recorded version",
   "readable_papers_one": "One paper, {reading}.",
   "readable_papers_many": "{n} papers, {reading}.",
   "reading_all": "each readable here as a page beside its PDF",
@@ -44,18 +44,17 @@
  "toc": {
   "label": "On this page",
   "claim": "The theorem",
-  "compare": "What the Lean states",
-  "checks": "Who has checked it",
+  "compare": "Lean statements",
+  "checks": "Reported checks",
   "left": "What is left to check",
   "papers": "Papers",
   "cites": "Connections",
   "explain": "Explain, check or correct",
-  "said": "What people have said"
+  "said": "What people have said",
+  "claim_unresolved": "Possible matches in the papers"
  },
  "claim": {
-  "heading_unresolved": "The candidate theorems",
-  "diagram": "A diagram is drawn here in the paper.",
-  "diagram_link": "A diagram is drawn here in the paper; <a href=\"{href}\">see it on the reading page</a>.",
+  "heading_unresolved": "Possible matches in the papers",
   "printed": "{kind} {number}",
   "unnumbered": "{kind} (the paper prints no number)",
   "unavailable": "{kind} (number unavailable)",
@@ -64,39 +63,32 @@
   "in_paper_undated": "In {paper}",
   "read_passage": "Read it in the paper",
   "pdf": "PDF",
-  "shared": "The words it shares with the description: {words}.",
   "shared_none": "It shares no words with the description.",
   "alternatives": "Statements that share words with the description",
   "alternatives_other": "Other statements that share words with the description",
-  "alternatives_fold": "{n} other statements share words with the description",
-  "alternatives_fold_one": "One other statement shares words with the description",
   "alt_in": "in {paper}",
-  "alt_shared": "Shares: {words}.",
   "tex_copy": "Copy the TeX",
   "tex_copied": "TeX copied",
-  "score": "{n} shared words",
-  "score_one": "one shared word",
   "no_text": "The statement’s text is on its reading page.",
   "explanations_heading": "Explanations by others",
-  "explanations_intro": "Explanations of this family written elsewhere, by the people named. Each is their own reading of the mathematics."
+  "explanations_intro": "Explanations of this family written elsewhere, by the people named. Each is their own reading of the mathematics.",
+  "unresolved": "No paper theorem has been identified as the catalogue’s intended statement. These passages were found from shared wording.",
+  "state_primary": "Possible match to the catalogue description: of the papers’ main statements, it shares the most wording with it. Not reviewed as the catalogue’s statement.",
+  "state_alt": "Possible match to the catalogue description, found from shared wording; not reviewed as the catalogue’s statement.",
+  "more_one": "One more possible match",
+  "more_many": "{n} more possible matches"
  },
  "compare": {
   "heading": "What the release’s Lean states",
   "intro": "The paper’s theorem beside the Lean statement it is paired with. The words between them say how the two were joined.",
   "supporting_heading": "What the release’s Lean states, and the theorem it is paired with",
-  "index_heading": "The {n} Lean statements in this family",
   "index_intro": "Choose one to see it beside the paper theorem it is paired with.",
   "index_main": "main result",
   "index_support": "supporting statement",
-  "index_paired": "{state} with {label}",
-  "index_in": "in {paper}",
-  "index_runs_none": "no accepted re-run reported",
-  "index_runs_one": "one accepted re-run reported",
-  "index_runs_many": "{n} accepted re-runs reported",
   "paper_side": "The paper states",
   "lean_side": "The Lean",
   "state_head": {
-   "candidate-pairing": "Possible Lean match",
+   "candidate-pairing": "Possible Lean counterpart",
    "producer-cited-association": "The Lean statement whose source cites this theorem",
    "producer-declared-binding": "The Lean statement the release binds to this theorem",
    "unavailable": "The Lean statement"
@@ -121,10 +113,17 @@
   "cited_quote": "The Lean source’s comment reads: {quote}",
   "nolean": "The release has no Lean statement for this family. Its papers can still be read and checked by hand, and anyone can offer a formal statement.",
   "runs_link": "Who re-ran it",
-  "sorry": "The challenge file states the theorem with <code>sorry</code> in place of its proof; the release’s solution file supplies the proof, and that is what a re-run checks."
+  "sorry": "The challenge file states the theorem with <code>sorry</code> in place of its proof; the release’s solution file supplies the proof, and that is what a re-run checks.",
+  "heading_one": "One Lean statement in this family",
+  "heading_many": "{n} Lean statements in this family",
+  "intro_one": "The paper theorem the release’s Lean statement is paired with, beside it, with how the two were joined.",
+  "row_candidate": "Possible Lean counterpart of {label} in {paper}, found from shared wording; not reviewed.",
+  "row_cited": "Its source cites {label} in {paper}; the match is not reviewed.",
+  "row_declared": "The release binds it to {label} in {paper}; the match is not reviewed.",
+  "row_none": "No paper theorem is paired with it."
  },
  "checked": {
-  "heading": "Who has checked it"
+  "heading": "Reported checks"
  },
  "readings": {
   "heading": "The outside readers",
@@ -168,12 +167,12 @@
  "reruns": {
   "heading": "Who re-ran the Lean",
   "intro": "Outside groups report re-running the release’s Lean through Comparator. Each line is their report; the atlas did not re-run anything. A re-run concerns the Lean statement it ran, never the paper theorem beside it.",
-  "line": "{who} reports “{term}”, {pin}.",
-  "line_dated": "{who} reports “{term}” on {date}, {pin}.",
+  "line": "{who} reports “{term}” for {name}, {pin}.",
+  "line_dated": "{who} reports “{term}” for {name} on {date}, {pin}.",
   "account": "Their account",
   "recorded": "Recorded",
   "none": "No outside group reports re-running this Lean statement.",
-  "at_pin": "at the release’s pin",
+  "at_pin": "at the release’s recorded version",
   "other_pin": "at another commit",
   "said": "Their word",
   "receipt": "Receipt",
@@ -259,5 +258,23 @@
   "role": "Role",
   "paired_with": "Paired with",
   "shared": "Shared words"
+ },
+ "why": {
+  "button": "Why this passage is shown",
+  "kind": "Why this passage is shown",
+  "method": "How it was found",
+  "method_text": "Its words were compared with the words of OpenAI’s catalogue description.",
+  "method_lean": "Its words were compared with the words of the Lean statement {name}.",
+  "words": "Words they share",
+  "review": "Review",
+  "review_text": "Nobody has reviewed whether it is the statement the catalogue means.",
+  "review_lean": "Nobody has reviewed whether the two state the same thing.",
+  "reason": "The record’s reason"
+ },
+ "source": {
+  "from": "From {paper}{date}",
+  "open": "Open in the paper",
+  "close": "Close",
+  "label": "The cited passage, from the paper"
  }
 }

@@ -80,4 +80,121 @@
     }, { rootMargin: '0px 0px -65% 0px' });
     for (var q = 0; q < secs.length; q++) io.observe(secs[q]);
   }
+
+  /* ---- A cited passage, read in place ---------------------------------------
+     A number a theorem cites, such as (1.5), links to its place on the paper's
+     reading page. Activating it fetches that page once, takes the cited passage
+     (the whole statement, equation or paragraph, as the reading page marks it on
+     arrival, with the sentence that introduces an equation) and shows it under
+     the theorem, labelled with the paper and its date, typeset with the paper's
+     own macros. Close or Escape removes it and returns focus to the number. If
+     the page or the passage cannot be found, the link is followed instead. */
+  var pages = {};
+  function fetchPage(url) {
+    if (!pages[url]) {
+      pages[url] = fetch(url, { credentials: 'same-origin' }).then(function (r) {
+        if (!r.ok) throw new Error('status ' + r.status);
+        return r.text();
+      }).then(function (t) { return new DOMParser().parseFromString(t, 'text/html'); });
+      pages[url].catch(function () { delete pages[url]; });
+    }
+    return pages[url];
+  }
+  function passage(page, id) {
+    var el = page.getElementById(id);
+    if (!el) return null;
+    var host = el.classList.contains('pr-lbl') ? el.parentElement : el;
+    host = (host && host.closest('.pr-thm, .pr-eq, .pr-float, .pr-runin, .pr-list > li, .pr-bib-item, .pr-fn, .pr-proof, p')) || null;
+    if (!host) return null;
+    var out = [];
+    if (host.classList.contains('pr-eq')) {
+      var lead = host.previousElementSibling;
+      if (lead && lead.tagName === 'P') out.push(lead);
+    }
+    out.push(host);
+    return out;
+  }
+  function typeset(node, macros) {
+    var spans = node.querySelectorAll('span.pr-m');
+    for (var i = 0; i < spans.length; i++) {
+      var tex = spans[i].textContent;
+      if (!window.katex) break;
+      try {
+        window.katex.render(tex, spans[i], { displayMode: spans[i].getAttribute('data-d') === '1', macros: Object.assign({}, macros),
+          throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
+      } catch (e) { spans[i].textContent = tex; spans[i].classList.add('pr-m--fail'); }
+    }
+  }
+  var openSrc = null;
+  function closeSrc(focusBack) {
+    if (!openSrc) return;
+    var s = openSrc;
+    openSrc = null;
+    s.box.parentNode && s.box.parentNode.removeChild(s.box);
+    s.link.setAttribute('aria-expanded', 'false');
+    if (focusBack) { try { s.link.focus({ preventScroll: true }); } catch (e) { s.link.focus(); } }
+  }
+  doc.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('.fx-st__body a.xref, .fx-st__body a[href*="papers/"][href*="#"]');
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+    var card = a.closest('.fx-st');
+    var href = a.getAttribute('href');
+    var hash = href.indexOf('#');
+    if (!card || hash < 0) return;
+    e.preventDefault();
+    if (openSrc && openSrc.link === a) { closeSrc(true); return; }
+    closeSrc(false);
+    var url = new URL(href, location.href);
+    var id = decodeURIComponent(url.hash.slice(1));
+    fetchPage(url.pathname).then(function (page) {
+      var parts = passage(page, id);
+      if (!parts) { location.href = href; return; }
+      var macros = {};
+      var m = page.getElementById('pr-macros');
+      if (m) { try { macros = JSON.parse(m.textContent); } catch (err) { macros = {}; } }
+      var box = doc.createElement('section');
+      box.className = 'fx-src';
+      box.setAttribute('aria-label', (a.textContent || '').trim());
+      var head = doc.createElement('p');
+      head.className = 'fx-src__h';
+      head.tabIndex = -1;
+      var date = card.getAttribute('data-date');
+      head.textContent = (card.getAttribute('data-from') || 'From {paper}{date}')
+        .replace('{paper}', card.getAttribute('data-paper') || '').replace('{date}', date ? ', ' + date : '') + ': ' + (a.textContent || '').trim();
+      var body = doc.createElement('div');
+      body.className = 'fx-src__body';
+      parts.forEach(function (p) { body.appendChild(doc.importNode(p, true)); });
+      var strip = body.querySelectorAll('[id]');
+      for (var i = 0; i < strip.length; i++) strip[i].removeAttribute('id');
+      typeset(body, macros);
+      var foot = doc.createElement('p');
+      foot.className = 'fx-src__foot';
+      var go = doc.createElement('a');
+      go.href = href;
+      go.textContent = card.getAttribute('data-open') || 'Open in the paper';
+      var close = doc.createElement('button');
+      close.type = 'button';
+      close.className = 'btn btn--small';
+      close.textContent = card.getAttribute('data-close') || 'Close';
+      close.addEventListener('click', function () { closeSrc(true); });
+      foot.appendChild(go);
+      foot.appendChild(close);
+      box.appendChild(head);
+      box.appendChild(body);
+      box.appendChild(foot);
+      var anchorBlock = card.querySelector('.fx-st__body');
+      anchorBlock.parentNode.insertBefore(box, anchorBlock.nextSibling);
+      a.setAttribute('aria-expanded', 'true');
+      openSrc = { box: box, link: a };
+      head.focus({ preventScroll: true });
+      var r = box.getBoundingClientRect();
+      if (r.bottom > window.innerHeight) box.scrollIntoView({ block: 'nearest' });
+    }).catch(function () { location.href = href; });
+  });
+  doc.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && openSrc && (openSrc.box.contains(doc.activeElement) || doc.activeElement === openSrc.link)) {
+      e.stopPropagation();
+      closeSrc(true);
+    }
+  }, true);
 })();

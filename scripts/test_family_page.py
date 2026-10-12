@@ -53,7 +53,7 @@ def main() -> int:
             check('id="claim-theorem"' in html, "the candidate theorem is not the centrepiece")
         else:
             check('id="claim-theorem"' not in html, "an unresolved headline shows a single theorem")
-            check(family_page.say("claim.unresolved") in unquote(html).replace("’", "'"), "the unresolved sentence is missing")
+            check(family_page.W("claim.unresolved") in unquote(html), "the unresolved sentence is missing")
         for rc in doc.get("remaining_checks") or []:
             fp = (rc.get("contribution_target") or {}).get("fingerprint")
             if fp:
