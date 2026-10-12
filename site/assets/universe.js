@@ -2317,12 +2317,12 @@
       // The map is the page's first screen: going back up to it shows the header too.
       if (outside) window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
       var fromResults = !!(resultsEl && resultsEl.contains(go));
-      var byKey = e.detail === 0 && root.contains(go) && !fromResults;
+      var byKey = e.detail === 0 && root.contains(go);
       select(key || null, { trail: true });
       // A match opened from the search folds the list of matches away, so what was
       // opened starts at the top of the panel; one button brings the matches back.
       if (fromResults) foldResults(true);
-      // A row opened from the keyboard was redrawn away: focus goes to what replaced it,
+      // A row opened from the keyboard was redrawn or folded away: focus goes to what replaced it,
       // the family's board on a wide screen, else the panel's heading.
       if (byKey) focusArrival();
     });
