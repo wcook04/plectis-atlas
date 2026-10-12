@@ -931,7 +931,18 @@ def other_checks_html(c: Ctx) -> str:
     if unav:
         items = "".join(f'<li><a class="ext" href="{esc(u.get("url") or "")}" rel="noopener">{esc(u.get("name") or u.get("source") or u.get("url"))}</a></li>' for u in unav)
         parts.append(f'<h4 class="fx-h4">{esc(W("checks.unavailable_heading"))}</h4><ul class="fx-plain">{items}</ul>')
-    return f'<h3 class="fx-h3" id="other-checks">{esc(W("checks.heading"))}</h3><p class="fx-intro">{esc(W("checks.intro"))}</p>{"".join(parts)}'
+    return f'<h3 class="fx-h3" id="other-checks">{esc(W("checks.heading"))}</h3><p class="fx-intro">{esc(checks_intro(c, cards))}</p>{"".join(parts)}'
+
+
+def checks_intro(c: Ctx, cards) -> str:
+    """The section's opening sentence, naming only the kinds of check this family's cards carry."""
+    words = W("checks.intro_kind")
+    fields = {card.get("field") for card in cards if card.get("field")}
+    kinds = [words[k] for k in words if k in fields] + sorted(f for f in fields if f not in words)
+    if not kinds:
+        return W("checks.intro_none")
+    named = kinds[0] if len(kinds) == 1 else ", ".join(kinds[:-1]) + " " + c.S.C("family.and") + " " + kinds[-1]
+    return W("checks.intro", kinds=named)
 
 
 def checked_html(c: Ctx) -> str:

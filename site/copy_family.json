@@ -190,7 +190,12 @@
  },
  "checks": {
   "heading": "Checks by another method",
-  "intro": "Outside checks of the papers’ results that use something other than the release’s Lean: HOL Light proof cards and exact computation. Each is the checker’s own report.",
+  "intro": "Outside checks of the papers’ results that use something other than the release’s Lean: {kinds}. Each is the checker’s own report.",
+  "intro_none": "Outside checks of the papers’ results that use something other than the release’s Lean. Each is the checker’s own report.",
+  "intro_kind": {
+   "hol_checks": "HOL Light proof cards",
+   "finite_checks": "exact computation"
+  },
   "line": "{who}, by {kind}: {state}.",
   "term": "Their verdict: “{term}”.",
   "report": "Their report",
