@@ -652,6 +652,8 @@ body.card-only { background: var(--page); margin: 0; }
 .tbl td { padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
 .tbl tr:hover td { background: color-mix(in oklab, var(--sunk) 60%, transparent); }
 .tbl .t-title { font-family: var(--serif); font-size: 0.97rem; min-width: 16em; }
+/* Wrapped catalogue titles remain one target, including the space between lines. */
+.tbl .t-title > a, #stmt-table td > a { display: inline-block; }
 .tbl .t-title a { color: var(--ink); }
 .tbl .t-title a:hover { color: var(--steel-text); }
 .t-id { display: block; font-family: var(--mono); font-size: 0.72rem; color: var(--faint); margin-top: 1px; }
@@ -951,7 +953,6 @@ a.term:hover, a.term:focus-visible { text-decoration-color: currentColor; }
 .tbl--families td { padding: 9px 10px; }
 .tbl--families .t-id { display: table-cell; font-family: var(--sans); font-size: inherit; margin: 0; color: var(--faint); font-variant-numeric: tabular-nums; width: 3.5em; }
 .tbl--families .t-title { min-width: 22em; max-width: 34em; line-height: 1.35; }
-.tbl--families .t-title > a { display: inline; }
 .tbl--families .t-disc { color: var(--ink-soft); min-width: 9em; }
 .tbl--families .t-reader { min-width: 8.5em; }
 .tbl--families .t-action { white-space: nowrap; }
