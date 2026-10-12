@@ -261,8 +261,8 @@
     }
 
     /* ---- Data ------------------------------------------------------------ */
-    function fetchJson(url) {
-      return fetch(url, { credentials: 'same-origin' }).then(function (r) {
+    function fetchJson(url, cache) {
+      return fetch(url, { credentials: 'same-origin', cache: cache || 'default' }).then(function (r) {
         if (!r.ok) throw new Error(url + ': ' + r.status);
         return r.json();
       });
@@ -298,10 +298,10 @@
     }
     // The papers, results and Lean statements inside the families, loaded after the
     // first screen is drawn; a family opens once they are in.
-    var partsReady = false, partsPromise = null;
+    var partsReady = false, partsPromise = null, partsFailed = false;
     function loadParts() {
       if (partsPromise) return partsPromise;
-      partsPromise = fetchJson(root.getAttribute('data-universe-parts')).then(function (pt) {
+      partsPromise = fetchJson(root.getAttribute('data-universe-parts'), partsFailed ? 'reload' : 'default').then(function (pt) {
         if (pt.generation_id !== D.generation_id) throw new Error('parts from another build');
         var finite = function (v) { return typeof v === 'number' && isFinite(v); };
         if (L.results.length !== pt.results.length || L.lean.length !== pt.lean.length || L.papers.length !== pt.papers.length) {
@@ -315,6 +315,10 @@
         D.lean.forEach(function (l, i) { addObj(l.id, 'l', i); });
         partsReady = true;
         draw();
+      }).catch(function (error) {
+        partsFailed = true;
+        partsPromise = null;
+        throw error;
       });
       return partsPromise;
     }
@@ -633,44 +637,75 @@
     // that height: the largest size between 11 and 17 px at which every word fits, with the
     // family's counts beneath when there is room; failing that, cut at a word with an
     // ellipsis (the card and the list carry the whole title).
-    function wrapInCircle(words, font, lead, r, n) {
-      var h = n * lead, lines = [], k = 0;
+    // Existing compound separators are safe line breaks. A single word wider than
+    // the disc is split only as a last resort; its full spelling remains in the sidebar.
+    function labelTokens(text, r) {
+      var tokens = [], font = '500 11px ' + SERIF;
+      var edge = 11 * 1.17 * 0.45, limit = 2 * Math.sqrt(Math.max(0, r * r - edge * edge)) * 0.9 - 6;
+      text.split(/\s+/).filter(Boolean).forEach(function (word, wi) {
+        var bits = word.match(/[^–-]+[–-]?/g) || [word];
+        bits.forEach(function (bit, bi) {
+          var join = wi && !bi ? ' ' : '', chars = Array.from(bit);
+          while (chars.length && textWidth(chars.join(''), font) > limit) {
+            var n = chars.length - 1;
+            while (n > 1 && textWidth(chars.slice(0, n).join('') + '-', font) > limit) n--;
+            tokens.push({ text: chars.splice(0, n).join('') + '-', join: join }); join = '';
+          }
+          if (chars.length) tokens.push({ text: chars.join(''), join: join });
+        });
+      });
+      return tokens;
+    }
+    function wrapInCircle(tokens, font, lead, r, n) {
+      var widths = [], memo = {};
       for (var li = 0; li < n; li++) {
-        var yc = -h / 2 + (li + 0.5) * lead, edge = Math.abs(yc) + lead * 0.45;
+        var edge = Math.abs(-n * lead / 2 + (li + 0.5) * lead) + lead * 0.45;
         if (edge >= r) return null;
-        var maxW = 2 * Math.sqrt(r * r - edge * edge) * 0.9 - 6, line = '';
-        while (k < words.length) {
-          var t = line ? line + ' ' + words[k] : words[k];
-          if (textWidth(t, font) <= maxW) { line = t; k++; } else break;
-        }
-        if (!line) return null;
-        lines.push({ text: line, maxW: maxW });
-        if (k >= words.length) break;
+        widths.push(2 * Math.sqrt(r * r - edge * edge) * 0.9 - 6);
       }
-      return k >= words.length ? lines.map(function (l) { return l.text; }) : { partial: lines, k: k };
+      // Explore line breaks: a long middle word may fit the broad centre of the
+      // circle even when greedily filling the preceding line would strand it.
+      function from(line, at) {
+        var key = line + ':' + at;
+        if (Object.prototype.hasOwnProperty.call(memo, key)) return memo[key];
+        var best = line === n - 1 && textWidth('…', font) <= widths[line] ? { lines: ['…'], k: at } : null, text = '';
+        for (var end = at; end < tokens.length; end++) {
+          text += (end === at ? '' : tokens[end].join) + tokens[end].text;
+          if (textWidth(text, font) > widths[line]) break;
+          if (line === n - 1) {
+            var shown = text + (end + 1 < tokens.length ? '…' : '');
+            if (textWidth(shown, font) <= widths[line]) best = { lines: [shown], k: end + 1 };
+          } else if (end + 1 < tokens.length) {
+            var rest = from(line + 1, end + 1);
+            if (rest && (!best || rest.k > best.k)) best = { lines: [text].concat(rest.lines), k: rest.k };
+          }
+          if (best && best.k === tokens.length) break;
+        }
+        return (memo[key] = best);
+      }
+      return from(0, 0);
     }
     function famLabel(fi, r) {
-      var key = fi + '|' + Math.round(r);
+      var key = fi + '|' + r.toFixed(2);
       if (labelCache[key]) return labelCache[key];
-      var words = D.families[fi].title.split(' ').filter(Boolean), out = null, last = null;
-      for (var size = clamp(r * 0.18, 11, 17); size >= 11 && !out; size -= 0.5) {
+      var tokens = labelTokens(D.families[fi].title, r), out = null, last = null;
+      for (var size = clamp(r * 0.18, 11, 17); size >= 11 && !out; size = Math.max(10.5, size - 0.5)) {
         var font = '500 ' + size.toFixed(1) + 'px ' + SERIF, lead = size * 1.17;
-        for (var n = 1; n * lead < r * 1.7 && !out; n++) {
-          var got = wrapInCircle(words, font, lead, r, n);
-          if (got && got.length) out = { lines: got, font: font, lead: lead, size: size };
-          else if (got && got.partial && (!last || got.k > last.got.k)) last = { got: got, font: font, lead: lead, size: size };
+        for (var n = 1; n <= tokens.length && n * lead < r * 1.7 && !out; n++) {
+          var got = wrapInCircle(tokens, font, lead, r, n);
+          var label = got && { lines: got.lines, font: font, lead: lead, size: size };
+          if (got && got.k === tokens.length) out = label;
+          else if (got && (!last || got.k > last.k)) last = { k: got.k, label: label };
         }
+        // Always test the readable lower bound, including fractional starting sizes.
+        if (!out && size > 11 && size < 11.5) size = 11.5;
       }
-      if (!out && last) {
-        var lines = last.got.partial.map(function (l) { return l.text; }), tail = last.got.partial[lines.length - 1];
-        var lastLine = lines[lines.length - 1];
-        while (lastLine.indexOf(' ') > 0 && textWidth(lastLine + '…', last.font) > tail.maxW) lastLine = lastLine.replace(/\s+\S+$/, '');
-        // A last word too long for its line with the ellipsis moves the ellipsis up a line.
-        if (textWidth(lastLine + '…', last.font) > tail.maxW && lines.length > 1) { lines.pop(); lastLine = lines[lines.length - 1]; }
-        lines[lines.length - 1] = lastLine.replace(/[,;:]$/, '') + '…';
-        out = { lines: lines, font: last.font, lead: last.lead, size: last.size };
+      if (!out && last && last.k) out = last.label;
+      if (!out) {
+        var first = Array.from(D.families[fi].title), fallbackFont = '500 11px ' + SERIF;
+        while (first.length > 1 && textWidth(first.join('') + '…', fallbackFont) > r * 1.7 - 6) first.pop();
+        out = { lines: [first.join('').trim() + '…'], font: fallbackFont, lead: 13, size: 11 };
       }
-      if (!out) out = { lines: [words.slice(0, 2).join(' ') + '…'], font: '500 11px ' + SERIF, lead: 13, size: 11 };
       return (labelCache[key] = out);
     }
     function drawText(lines, x, y, font, color, lead, align, halo) {
@@ -776,6 +811,10 @@
             var cf = '400 ' + clamp(t.size * 0.78, 10.5, 13).toFixed(1) + 'px ' + SANS, cl = t.size * 1.05;
             var cy2 = (t.lines.length * t.lead + cl) / 2, ce = cy2 + 2;
             var showCnt = ce < n.r && textWidth(cntText, cf) <= 2 * Math.sqrt(n.r * n.r - ce * ce) * 0.9 - 6;
+            showCnt = showCnt && t.lines.every(function (line, i) {
+              var edge = Math.abs(-cy2 + (i + 0.5) * t.lead) + t.lead * 0.45;
+              return edge < n.r && textWidth(line, t.font) <= 2 * Math.sqrt(n.r * n.r - edge * edge) * 0.9 - 6;
+            });
             var blockH = t.lines.length * t.lead + (showCnt ? cl : 0);
             var a2 = n.a * words * (matchFam && !searchFolded && !matchFam[fj] ? 0.3 : 1) * (hf >= 0 && !near[fj] ? 0.55 : 1);
             ctx.save(); ctx.globalAlpha = a2;
@@ -804,9 +843,9 @@
       ctx.restore();
     }
     // Family dots take precedence over their enclosing discipline at the release.
-    function hitAt(x, y) {
+    function hitAt(x, y, allowMoving) {
       var S = chart.shown;
-      if (!S || chart.start) return null;
+      if (!S || (chart.start && !allowMoving)) return null;
       if (S.level === 'disc' || S.level === 'release') {
         var closest = null, distance = Infinity;
         for (var fi = 0; fi < fams.length; fi++) {
@@ -1624,15 +1663,25 @@
       if (s.scrollTop >= pendingY - 2) pendingY = null;
     }
     // Select an object: its panel, its plate and, where its level asks, a flight.
+    var selectionRequest = 0;
     function select(key, opts) {
+      var request = ++selectionRequest;
       opts = opts || {};
       if (key && !partsReady && !/^d:/.test(key)) {
         // A family, paper, result or Lean statement opens once the parts are in.
-        loadParts().then(function () { select(key, opts); }, function () {});
+        if (statusEl) { statusEl.textContent = T('status.parts_loading'); statusEl.hidden = false; }
+        loadParts().then(function () {
+          if (request === selectionRequest) select(key, opts);
+        }, function () {
+          if (request === selectionRequest && statusEl) {
+            statusEl.textContent = T('status.parts_failed'); statusEl.hidden = false;
+          }
+        });
         return;
       }
       var o = key ? obj(key) : null;
       if (key && !o) return;
+      if (statusEl) statusEl.hidden = true;
       var prev = sel ? obj(sel) : null;
       var revealSelection = !opts.fromHistory || !pendingBoard;
       var leavingY = savedScrollPos();
@@ -2421,8 +2470,8 @@
     });
     canvas.addEventListener('pointerdown', function (e) { lastPointerType = e.pointerType || ''; });
     canvas.addEventListener('click', function (e) {
-      var p = localXY(e), key = hitAt(p[0], p[1]);
-      if (!key) { if (sel) stepBack(); return; }
+      var p = localXY(e), key = hitAt(p[0], p[1], true);
+      if (!key) { if (sel && !chart.start) stepBack(); return; }
       if (key === sel) return;
       select(key, { trail: true });
     });

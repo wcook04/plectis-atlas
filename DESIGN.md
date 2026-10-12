@@ -393,9 +393,9 @@ is reading, delay the mathematics, or run in a loop.
 
 ## The map sidebar at each selection level
 
-The release starts with disciplines; the colour key remains below the list and
-on the map. A discipline lists families with their paper counts and the
-readers' assessment. A family is an index of its papers and Lean statements,
+On desktop, the release starts with the colour key, visible without scrolling;
+the disciplines follow it. The map key remains available at every depth. A
+discipline lists families with their paper counts and the readers' assessment. A family is an index of its papers and Lean statements,
 with the catalogue claim, attributed readings and citations retained. Choose
 a paper to read its abstract and statement previews, then a result to read the
 whole statement and its recorded Lean links. A Lean selection shows its human
@@ -421,6 +421,12 @@ alignment. Keep the catalogue order and allow enough scroll range for the last
 entry. Pointer movement within the sidebar must not reposition its rows, and
 leaving the map must not reset the reader's place. A preview does not select an
 object, change the address or move keyboard focus.
+
+Family labels wrap at existing compound separators and fit every line inside
+the disc. Try alternative line breaks before truncating; a long second word
+must not leave a title as “The…” or “A…”. Counts use spare room after the name.
+A visible family remains clickable during a map transition. An interrupted
+details request can be retried, and a later selection supersedes a pending one.
 
 ## Quality floor
 

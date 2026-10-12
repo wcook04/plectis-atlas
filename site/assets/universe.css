@@ -306,7 +306,7 @@ main.u-main { padding: 0; max-width: none; }
 .u-tool:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 1px; }
 .u-tool svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
 .u-help { position: absolute; left: 14px; bottom: 10px; margin: 0; max-width: min(560px, calc(100% - 80px)); font: 400 var(--fs-micro)/1.4 var(--sans); color: var(--muted); pointer-events: none; }
-.u-status { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; font: 400 var(--fs-meta)/1.4 var(--sans); color: var(--muted); }
+.u-status { position: absolute; inset: 0; pointer-events: none; display: grid; place-items: center; margin: 0; font: 400 var(--fs-meta)/1.4 var(--sans); color: var(--muted); }
 .u-status[hidden] { display: none; }
 .u-switch { display: none; }
 
