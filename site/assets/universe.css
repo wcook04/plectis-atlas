@@ -466,3 +466,12 @@ main.u-main { padding: 0; max-width: none; }
 .u-nojs { display: none; }
 html:not(.js) .u-nojs { display: block; font: 400 var(--fs-meta)/1.5 var(--sans); color: var(--ink-soft); }
 html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
+
+/* ---- Motion (DESIGN.md "Motion and hover") ---------------------------------- */
+/* The panel's new content rises 6 px into place as a selection changes. Filled
+   backwards only, so nothing keeps a transform once it has arrived. */
+@keyframes u-arrive { from { opacity: 0; transform: translateY(6px); } }
+.u-view.is-arriving, .u-title.is-arriving { animation: u-arrive var(--t-state) var(--ease-out) backwards; }
+@media (prefers-reduced-motion: reduce) {
+  .u-view.is-arriving, .u-title.is-arriving { animation: none; }
+}

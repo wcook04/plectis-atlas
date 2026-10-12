@@ -622,6 +622,15 @@
     var drawPending = false;
     var pin = -1;                     // the other end of the pair the reader shows (a Lean or result index)
     var lastPlan = null;
+    // Motion (DESIGN.md "Motion and hover"). Pointing previews: the families' step back
+    // eases over EMPH_MS and the pointed disc grows a tenth. Selecting commits: once the
+    // camera settles, one ring widens and fades round the chosen object (RING_MS).
+    var EMPH_MS = 150, RING_MS = 700, RING_GROW = 16, HOVER_GROW = 1.1;
+    var emph = { shown: null, grow: null, from: null, gFrom: null, to: null, gTo: null, start: 0 };
+    var ring = null, ringWanted = null;
+    var hoverVia = '';                // what set the hover: 'map', 'touch', 'list' or 'focus'
+    function nowMs() { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); }
+    function easeOut(t) { t = clamp(t, 0, 1); return 1 - (1 - t) * (1 - t) * (1 - t); }
 
     /* ---- Text ------------------------------------------------------------ */
     var widthCache = {};
@@ -978,6 +987,7 @@
         cameraGoal = null; moving = false;
         setView(target);
         viewFitted = !!fitted;
+        settleRing();
         draw();
       };
       cameraGoal = finish;
@@ -1077,7 +1087,10 @@
       requestAnimationFrame(function () { drawPending = false; paint(); });
     }
 
-    function famAlphas(openF, ctxA) {
+    // How far each family steps back for what is pointed at, chosen or searched: the
+    // target the drawing eases toward. The open family's own fade with the camera
+    // (ctxA) is applied apart, so a flight is never slowed by the easing.
+    function famEmphasis(openF) {
       var out = new Array(fams.length), so = sel ? obj(sel) : null;
       var hk = hover ? obj(hover) : null;
       var focusF = openF >= 0 ? openF : (hk && hk.kind === 'f' ? hk.i : -1);
@@ -1085,16 +1098,52 @@
       for (var i = 0; i < fams.length; i++) {
         var a = 1;
         var picked = so && so.kind === 'f' && so.i === focusF;
-        if (focusF >= 0 && openF < 0) a = i === focusF ? 1 : fams[focusF].hop[i] ? 0.95 : picked ? 0.32 : 0.5;
+        if (focusF >= 0 && openF < 0) {
+          a = i === focusF ? 1 : fams[focusF].hop[i] ? 0.95 : picked ? 0.32 : 0.5;
+          // In a chosen discipline, pointing at one of its families never lifts the
+          // families of other disciplines it has no citation with.
+          if (fd >= 0 && fams[i].d !== fd && !fams[focusF].hop[i]) a = Math.min(a, 0.16);
+        }
         else if (fd >= 0) a = fams[i].d === fd ? 1 : 0.16;
         else if (hd >= 0) a = fams[i].d === hd ? 1 : 0.55;
         // Search matches lead while the list of matches is open; once the reader opens one
         // and the list folds, the map draws the selection in its ordinary grammar.
         if (matchFam && !searchFolded) a *= matchFam[i] ? 1 : 0.22;
-        if (openF >= 0 && i !== openF) a *= ctxA;
         out[i] = a;
       }
       return out;
+    }
+    // The pointed family's disc grows a tenth while it is a plain disc (its own map
+    // not yet showing), so its marks never move under the pointer.
+    function famGrowth(openF) {
+      var out = new Array(fams.length), hk = hover ? obj(hover) : null;
+      var hf = hk && hk.kind === 'f' && hk.i !== openF ? hk.i : -1;
+      for (var i = 0; i < fams.length; i++) out[i] = i === hf && markR(i) < 80 ? HOVER_GROW : 1;
+      return out;
+    }
+    // Ease the step back and the growth toward their targets over EMPH_MS (snapped under
+    // reduced motion). Returns whether the easing is still running.
+    function stepEmphasis(tA, tG) {
+      var n = tA.length, i;
+      if (!emph.shown || emph.shown.length !== n || reduceMotion) {
+        emph.shown = tA.slice(); emph.grow = tG.slice(); emph.to = tA; emph.gTo = tG; emph.start = 0;
+        return false;
+      }
+      for (i = 0; i < n; i++) {
+        if (Math.abs(tA[i] - emph.to[i]) > 1e-4 || Math.abs(tG[i] - emph.gTo[i]) > 1e-4) {
+          emph.from = emph.shown.slice(); emph.gFrom = emph.grow.slice();
+          emph.to = tA; emph.gTo = tG; emph.start = nowMs();
+          break;
+        }
+      }
+      if (!emph.start) return false;
+      var u = clamp((nowMs() - emph.start) / EMPH_MS, 0, 1), e = easeOut(u);
+      for (i = 0; i < n; i++) {
+        emph.shown[i] = emph.from[i] + (emph.to[i] - emph.from[i]) * e;
+        emph.grow[i] = emph.gFrom[i] + (emph.gTo[i] - emph.gFrom[i]) * e;
+      }
+      if (u >= 1) emph.start = 0;
+      return u < 1;
     }
 
     function paint() {
@@ -1113,7 +1162,15 @@
       // The rest of the release gives way as a family's own map fills the view.
       var ctxA = openF >= 0 ? 1 - smooth((srOpen - 80) / 110) : 1;
       var openA = openF >= 0 ? smooth((srOpen - 60) / 70) : 0;
-      var alphas = famAlphas(openF, ctxA);
+      // What the drawing shows eases; where the words stand follows the target at once,
+      // so no name moves while the step back runs.
+      var emT = famEmphasis(openF), easing = stepEmphasis(emT, famGrowth(openF));
+      var alphas = new Array(fams.length), placeA = new Array(fams.length);
+      for (var ai = 0; ai < fams.length; ai++) {
+        var cA = openF >= 0 && ai !== openF ? ctxA : 1;
+        alphas[ai] = emph.shown[ai] * cA; placeA[ai] = emT[ai] * cA;
+      }
+      if (easing && !cameraFrame) draw();
       var hk = hover ? obj(hover) : null, so = sel ? obj(sel) : null;
 
       // Sector slices: the focused discipline lies on one flat slice, edged with a hairline.
@@ -1156,11 +1213,15 @@
         if (a < 0.01) continue;
         var f = fams[fi], sx = f.x * k + tx, sy = f.y * k + ty, sr = markR(fi);
         if (sx + sr * 1.4 < -margin || sx - sr * 1.4 > W + margin || sy + sr * 1.4 < -margin || sy - sr * 1.4 > H + margin) continue;
-        paintFamily(fi, sx, sy, sr, a, fi === openF ? openA : 0);
+        paintFamily(fi, sx, sy, sr * emph.grow[fi], a, fi === openF ? openA : 0);
       }
+      paintRing();
 
       // Words, then the lines that must go round them, then the plates.
-      var plan = planLabels(openF, openA, ctxA, alphas);
+      var plan = planLabels(openF, openA, ctxA, placeA);
+      [plan.flat, plan.side, plan.names].forEach(function (list) {
+        list.forEach(function (n) { n.alpha = alphas[n.fi] * ctxA; });
+      });
       if (openF >= 0 && openA > 0.01 && partsReady) paintOpenLines(openF, openA, plan);
       paintLabels(plan);
       paintPlates(plan);
@@ -1341,6 +1402,49 @@
           ctx.lineWidth = 1.6; ctx.strokeStyle = palette.focus; ctx.stroke();
         }
       });
+      ctx.restore();
+    }
+
+    /* ---- The chosen object, once: a ring that widens and fades as it settles */
+    function settleRing() {
+      if (!ringWanted) return;
+      var key = ringWanted;
+      ringWanted = null;
+      if (reduceMotion || !obj(key)) return;
+      ring = { key: key, start: nowMs() };
+      draw();
+    }
+    function paintRing() {
+      if (!ring) return;
+      var o = obj(ring.key), u = (nowMs() - ring.start) / RING_MS;
+      if (!o || ring.key !== sel || u >= 1 || reduceMotion) { ring = null; return; }
+      if (!cameraFrame) draw();
+      var k = view.k, grow = RING_GROW * easeOut(u), fi = famOf(o);
+      ctx.save();
+      ctx.globalAlpha = 0.85 * (1 - u) * (1 - u);
+      ctx.strokeStyle = palette.focus; ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      if (o.kind === 'd') {
+        var s = L.wheel.sectors[o.i];
+        ctx.arc(view.tx, view.ty, (s[3] + 1.2) * k + grow, s[0], s[1]);
+      } else if (o.kind === 'f') {
+        var f = fams[o.i];
+        ctx.arc(f.x * k + view.tx, f.y * k + view.ty, markR(o.i) + 3 + grow, 0, TAU);
+      } else {
+        var f2 = fams[fi], sx = f2.x * k + view.tx, sy = f2.y * k + view.ty, sr = f2.r * k;
+        var dr = dotRadius(sr) * 1.35;
+        if (o.kind === 'p') {
+          var g = L.papers[o.i];
+          ctx.arc(sx + g[0] * sr, sy + g[1] * sr, g[2] * sr + grow, g[3], g[4]);
+        } else if (o.kind === 'r') {
+          var pr = L.results[o.i];
+          ctx.arc(sx + pr[0] * sr, sy + pr[1] * sr, dr + 3 + grow, 0, TAU);
+        } else if (o.kind === 'l') {
+          var pl = L.lean[o.i];
+          diamond(sx + pl[0] * sr, sy + pl[1] * sr, dr * 1.3 + 3.5 + grow * 1.2);
+        }
+      }
+      ctx.stroke();
       ctx.restore();
     }
 
@@ -2314,19 +2418,24 @@
       if (!opts.fromHistory) pendingY = null;
       sel = key || null;
       pin = -1;
-      hover = null;
+      hover = null; hoverVia = '';
       routeCache.key = '';
+      // A selection the reader makes gets its ring once it settles; a step through the
+      // history, a zoom that settles on its own or the first paint gets none.
+      var fly = opts.fly !== false;
+      ring = null;
+      ringWanted = o && opts.trail && !opts.fromHistory && fly ? key : null;
       if (opts.trail) trail.push({ key: key, before: before, prev: prev ? prev.key : null });
-      renderPanel();
+      renderPanel(opts.quiet);
       updateHash(!!opts.trail && !opts.fromHistory, leavingY);
       if (o && liveEl) liveEl.textContent = nameOf(o);
       var widened = setReading(o);
-      var fly = opts.fly !== false;
       if (fly) {
         var needs = widened || !o || o.kind === 'd' || o.kind === 'f' || famOf(o) !== famOf(prev) || !inView(o);
         if (needs) cameraTo(frameFor(o), !o, opts.delay);
         else draw();
       } else draw();
+      if (!cameraFrame) settleRing();
     }
     function inView(o) {
       var p = objPos(o);
@@ -2377,7 +2486,7 @@
       if (trail.length) {
         var last = trail.pop();
         sel = last.prev;
-        hover = null;
+        hover = null; hoverVia = ''; ring = null; ringWanted = null;
         routeCache.key = '';
         renderPanel();
         updateHash();
@@ -2426,9 +2535,26 @@
       var o = sel ? obj(sel) : null, label = o ? T('controls.fit_scope', { name: scopeName(o) }) : T('controls.fit');
       b.setAttribute('aria-label', label); b.setAttribute('title', label);
     }
-    function renderPanel() {
+    // The panel's new content rises 6 px into place when the selection changes: never on
+    // the first paint, and never when the same selection is drawn again as data arrives.
+    var panelKey = null;
+    [titleEl, viewEl].forEach(function (el) {
+      if (el) el.addEventListener('animationend', function (e) { if (e.target === el) el.classList.remove('is-arriving'); });
+    });
+    function arrive(els) {
+      if (reduceMotion) return;
+      els.forEach(function (el) {
+        if (!el) return;
+        el.classList.remove('is-arriving');
+        void el.offsetWidth;
+        el.classList.add('is-arriving');
+      });
+    }
+    function renderPanel(quiet) {
       if (!viewEl) return;
       var o = sel ? obj(sel) : null;
+      var changed = panelKey !== null && panelKey !== (sel || '');
+      panelKey = sel || '';
       updateFit();
       updateMapKey();
       updateLegend(o && o.kind !== 'd' ? famOf(o) : -1);
@@ -2449,6 +2575,7 @@
       if (panelBody) panelBody.scrollTop = 0;
       typeset(viewEl, o);
       restorePending();
+      if (changed && !quiet) arrive([titleEl, viewEl]);
       if (o) {
         var di = discOf(o);
         if (di >= 0 && !shards[di]) {
@@ -2893,7 +3020,7 @@
         if (!moved && dx * dx + dy * dy < 9) return;
         moved = true; viewFitted = false;
         view.tx += dx; view.ty += dy; px0 = e.clientX; py0 = e.clientY;
-        if (cameraFrame) { cancelAnimationFrame(cameraFrame); cameraFrame = 0; moving = false; }
+        if (cameraFrame) { cancelAnimationFrame(cameraFrame); cameraFrame = 0; moving = false; ringWanted = null; }
         draw();
         return;
       }
@@ -2971,7 +3098,7 @@
       settleZoom(p[0], p[1]);
     }, { passive: false });
     function zoomAt(mx, my, factor) {
-      if (cameraFrame) { cancelAnimationFrame(cameraFrame); cameraFrame = 0; moving = false; }
+      if (cameraFrame) { cancelAnimationFrame(cameraFrame); cameraFrame = 0; moving = false; ringWanted = null; }
       var k = clamp(view.k * factor, fitK * 0.6, 900);
       factor = k / view.k;
       viewFitted = false;
@@ -3197,7 +3324,7 @@
           loadParts().then(function () {
             var key = readHash(), o = key ? obj(key) : null;
             if (!o) return;
-            select(key, { fly: false, fromHistory: true });
+            select(key, { fly: false, fromHistory: true, quiet: true });
             setView(frameFor(o)); viewFitted = false; draw();
           }, function () {});
           start = null;
