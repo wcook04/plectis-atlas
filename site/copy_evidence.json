@@ -44,9 +44,9 @@
   "supporting-or-different": "The outside readers find that the release’s Lean states a supporting or different result, so the theorem it is paired with is shown under its own heading."
  },
  "reruns": {
-  "none": "No outside group reports re-running this Lean statement at the release’s pin.",
-  "one": "Re-run and accepted by one outside group at the release’s pin: {names}.",
-  "many": "Re-run and accepted by {n} outside groups at the release’s pin: {names}."
+  "none": "No outside group reports re-running this Lean statement at the release’s recorded version.",
+  "one": "Re-run and accepted by one outside group at the release’s recorded version: {names}.",
+  "many": "Re-run and accepted by {n} outside groups at the release’s recorded version: {names}."
  },
  "other_checks": "Checked by another method: {kinds}.",
  "check_kind": {
