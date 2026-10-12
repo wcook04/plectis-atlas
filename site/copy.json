@@ -823,7 +823,12 @@
  },
  "notfound": {
   "title": "Page not found",
-  "text": "There is no page at this address. The catalogue lists every family."
+  "text": "There is no page at this address.",
+  "families": "The {link} has every family, and the search finds any family, paper, theorem or Lean statement by name.",
+  "families_link": "Families list",
+  "families_button": "Open the Families list",
+  "search_button": "Search the atlas",
+  "map_button": "Go to the map"
  },
  "social": {
   "card_title": "Plectis Atlas",

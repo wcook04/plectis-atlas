@@ -3615,8 +3615,16 @@ def build_about():
 def build_404():
     rel = "404.html"
     base = CFG["base_url"].rstrip("/")
-    body = f'<div class="frame page page--narrow"><header class="phead"><h1 class="phead__title">{esc(C("notfound.title"))}</h1><p class="lede">{esc(C("notfound.text"))}</p><p class="actions"><a class="btn btn--primary" href="{esc(base)}/">{esc(C("nav.atlas"))}</a></p></header></div>'
-    h = page(rel, C("notfound.title"), C("notfound.text"), body, noindex=True)
+    # Where to go instead: the Families list (every family), the search, and the map.
+    families = f'<a href="explain.html">{esc(C("notfound.families_link"))}</a>'
+    text = esc(C("notfound.families", link="\x00")).replace("\x00", families)
+    body = (f'<div class="frame page page--narrow"><header class="phead"><h1 class="phead__title">{esc(C("notfound.title"))}</h1>'
+            f'<p class="lede">{esc(C("notfound.text"))} {text}</p>'
+            f'<p class="actions"><a class="btn btn--primary" href="explain.html">{esc(C("notfound.families_button"))}</a>'
+            f'<a class="btn btn--ghost" href="explain.html" data-open-search>{esc(C("notfound.search_button"))}</a>'
+            f'<a class="btn btn--quiet" href="{esc(base)}/">{esc(C("notfound.map_button"))}</a></p></header></div>')
+    h = page(rel, C("notfound.title"), C("notfound.text") + " " + C("notfound.families", link=C("notfound.families_link")),
+             body, noindex=True)
     # The host serves this page at any depth: local assets and links need the site root.
     path = re.sub(r"https?://[^/]+", "", base)
     h = h.replace('src="assets/', f'src="{path}/assets/').replace('data-root=""', f'data-root="{path}/"')

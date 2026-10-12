@@ -1190,6 +1190,9 @@
     if (input.value) run();
   }
   if (opener) opener.addEventListener('click', openSearch);
+  /* Any other link marked data-open-search (the 404 page's) opens the same dialog; without
+     scripts it is a plain link to the Families list. */
+  Array.prototype.forEach.call(doc.querySelectorAll('[data-open-search]'), function (a) { a.addEventListener('click', openSearch); });
   dlg.addEventListener('close', function () { if (returnTo && returnTo.focus) returnTo.focus(); });
   input.addEventListener('input', function () {
     shown = {};
