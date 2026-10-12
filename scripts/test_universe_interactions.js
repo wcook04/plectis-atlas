@@ -13,10 +13,11 @@ function range(start, end) {
 const hit = range('    function hitAt(', '\n    /* ---- The card:');
 const load = range('    function loadParts()', '    function obj(');
 const select = range('    function select(key, opts)', '    // A paper, theorem or Lean statement');
-const click = range("    canvas.addEventListener('click',", '\n    if (cardEl)');
+const click = range("    canvas.addEventListener('pointerdown',", '\n    if (cardEl)');
 const shard = range('    function loadShard(di)', '    function detail(');
 // Isolate the production admission/retry prefix from board DOM rendering.
 const syncAdmission = range('    function syncBoard()', '      // The neighbours\' titles') + '\n    }';
+const boardVisibility = range('    function showBoard()', '    // The chosen card gets');
 function deferred() {
   let resolve, reject;
   const promise = new Promise((a, b) => { resolve = a; reject = b; });
@@ -30,6 +31,7 @@ function context(extra = {}) {
     Promise, Math, console, partsPromise: null, partsReady: false, partsFailed: false, selectionRequest: 0,
     statusEl: { textContent: '', hidden: true }, T: key => key,
     failedShards: {}, discOf: () => 0,
+    mapPress: null, lastPointerType: '',
     D: { generation_id: 'g', families, papers: [], results: [], lean: [] },
     L: { results: [], lean: [], papers: [] }, fams: families,
     chart: { start: 1, shown: { level: 'disc', nodes: [
@@ -51,21 +53,85 @@ function context(extra = {}) {
 const packet = () => ({ generation_id: 'g', papers: [], results: [], lean: [] });
 async function flush() { for (let i = 0; i < 6; i++) await Promise.resolve(); }
 async function main() {
+  const attributes = new Map(), classes = new Set(['is-on']);
+  const boardState = context({
+    board: { on: true, pending: true, fi: 0, sig: 'old' },
+    boardEl: {
+      setAttribute: (k, v) => attributes.set(k, v), removeAttribute: k => attributes.delete(k),
+      classList: { add: k => classes.add(k), remove: k => classes.delete(k) }
+    },
+    root: { setAttribute() {}, removeAttribute() {} },
+    hideCard() {}, hideBoardCard() {}, layoutBoard() {}, ringBoard() {},
+    restoreBoardPosition() {}, revealBoardSelection() {}
+  });
+  vm.runInContext(boardVisibility, boardState);
+  boardState.hideBoard();
+  assert.equal(attributes.has('inert'), true, 'outgoing board immediately disables interaction');
+  assert.equal(classes.has('is-on'), false);
+  assert.equal(boardState.board.pending, false, 'hide cancels pending display');
+  boardState.showBoard();
+  assert.equal(attributes.has('inert'), true, 'canceled pending board cannot reopen');
+  boardState.board.pending = true;
+  boardState.showBoard();
+  assert.equal(attributes.has('inert'), false, 'fresh visible board regains interaction');
+  assert.equal(classes.has('is-on'), true);
+  boardState.board.on = false; boardState.board.pending = true;
+  boardState.hideBoard();
+  assert.equal(attributes.has('inert'), true, 'even not-yet-visible board becomes inert');
+  assert.equal(boardState.board.pending, false);
   const c = context();
   vm.runInContext(hit, c);
   assert.equal(c.hitAt(20, 20, true), 'f:a', 'click can hit the visible moving family');
-  let handler;
-  c.canvas = { addEventListener: (name, fn) => { handler = fn; } };
+  const handlers = {};
+  c.canvas = { addEventListener: (name, fn) => { handlers[name] = fn; } };
   const selected = [];
   c.select = key => selected.push(key);
   vm.runInContext(click, c);
-  handler({ x: 20, y: 20 });
+  const event = (x, y) => ({ x, y, button: 0, isPrimary: true, pointerType: 'mouse' });
+  const handler = (e) => handlers.click(e);
+  handler(event(20, 20));
   assert.deepEqual(selected, ['f:a'], 'moving-dot click selects its displayed family');
   handler({ x: 200, y: 200 });
   assert.equal(c.backCalls, 0, 'moving empty ground must not accidentally navigate back');
   c.chart.start = 0;
   handler({ x: 200, y: 200 });
   assert.equal(c.backCalls, 1, 'settled empty ground still navigates back');
+
+  c.chart.start = 1;
+  handlers.pointerdown(event(20, 20));
+  c.chart.shown.nodes[0].x = 100;
+  c.chart.shown.nodes[1].x = 20;
+  handler(event(20, 20));
+  assert.equal(selected.at(-1), 'f:a', 'moving press retains the family pressed, not the new family underneath');
+  assert.equal(c.mapPress, null, 'press is consumed');
+  handlers.pointerdown(event(200, 200));
+  c.chart.shown.nodes[1] = { x: 200, y: 200, r: 10, a: 1 };
+  const beforeGround = selected.length;
+  c.chart.start = 0;
+  handler(event(200, 200));
+  assert.equal(selected.length, beforeGround, 'moving ground press does not select a newly arrived target');
+  assert.equal(c.backCalls, 1, 'moving ground press does not back out after motion ends');
+  c.chart.shown.nodes[0] = { x: 20, y: 20, r: 10, a: 1 };
+  handlers.pointerdown(event(20, 20));
+  const beforeDrag = selected.length;
+  handler(event(40, 20));
+  assert.equal(selected.length, beforeDrag, 'drag beyond click tolerance does not navigate');
+  assert.equal(c.backCalls, 1, 'drag to ground does not navigate back');
+  handlers.pointerdown(event(20, 20));
+  assert.equal(typeof handlers.pointercancel, 'function', 'cancel handler registered');
+  handlers.pointercancel(event(20, 20));
+  assert.equal(c.mapPress, null, 'canceled press is not retained');
+  handler(event(200, 200));
+  assert.equal(selected.at(-1), 'f:b', 'next independent click does not reuse canceled family press');
+  handlers.pointerdown(event(20, 20));
+  c.sel = 'f:b';
+  const beforeChangedSelection = selected.length;
+  handler(event(20, 20));
+  assert.equal(selected.length, beforeChangedSelection, 'selection changes invalidate an outstanding press');
+  c.chart.shown.nodes[0].a = 0.01;
+  assert.equal(c.hitAt(20, 20, true), 'f:a', 'faint but painted circle remains clickable');
+  c.chart.shown.nodes[0].a = 0.009;
+  assert.equal(c.hitAt(20, 20, true), null, 'invisible circle is excluded');
 
   let requests = 0;
   const caches = [];

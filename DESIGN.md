@@ -427,6 +427,12 @@ the disc. Try alternative line breaks before truncating; a long second word
 must not leave a title as “The…” or “A…”. Counts use spare room after the name.
 A visible family remains clickable during a map transition. An interrupted
 details request can be retried, and a later selection supersedes a pending one.
+Pressing a moving circle reserves that circle until release; motion must not
+turn the same click into a miss, another family, or Back. Drags and cancelled
+gestures must not reuse a reserved selection. Painted discs share the same
+visibility threshold with hit testing.
+An outgoing board loses mouse and keyboard interaction immediately; its fade
+must never intercept a click intended for the newly selected map.
 Family boards open as soon as their data is available; they do not wait for a
 decorative zoom. Discipline transitions stay brief. Fit labels at the destination
 radius once and scale them during motion, rather than wrapping every animation
