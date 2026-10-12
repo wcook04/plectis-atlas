@@ -96,6 +96,12 @@
 .pr-eq--diagram .pr-ph { flex: 1; }
 .pr-eqno { flex: none; font-family: var(--serif, inherit); }
 .pr-eq .katex-display > .katex { white-space: nowrap; }
+/* Keep a numbered display and its tag in separate slots, including when the
+   equation is wider than the reading column and scrolls sideways. */
+.pr-eq .katex-display:not(.leqno) .katex-html:has(> .katex-tag) { display: flex; align-items: baseline; width: max-content; min-width: 100%; }
+.pr-eq .katex-display:not(.leqno) .katex-html:has(> .katex-tag)::before { content: ""; margin-left: auto; }
+.pr-eq .katex-display:not(.leqno) .katex-html:has(> .katex-tag) > .katex-base { flex: none; }
+.pr-eq .katex-display:not(.leqno) .katex-html > .katex-tag { position: static; flex: none; margin-left: auto; padding-left: 1.5em; }
 .pr-m.pr-m--fail { font-family: var(--mono); font-size: 0.82em; color: var(--brick-text); background: var(--code-bg); border-radius: 3px; padding: 1px 4px; white-space: pre-wrap; }
 .pr-eq .pr-m.pr-m--fail { display: block; padding: 6px 8px; }
 
