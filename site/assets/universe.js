@@ -1612,12 +1612,15 @@
       var fly = opts.fly !== false;
       ring = null;
       ringWanted = o && o.kind === 'd' && opts.trail && !opts.fromHistory && fly ? key : null;
-      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view'), board: leavingBoard });
+      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view'), y: leavingY, board: leavingBoard });
       setReading(o);
       renderPanel(opts.quiet);
       updateHash(!!opts.trail && !opts.fromHistory, leavingY, leavingBoard);
       if (o && liveEl) liveEl.textContent = nameOf(o);
       chartTo(fly);
+      // A fresh phone selection starts at its heading; returning through history
+      // keeps the position saved for the list or details being revisited.
+      if (!opts.fromHistory && narrow()) window.scrollTo({ top: 0, behavior: 'auto' });
     }
     // A theorem or a Lean statement in hand is read: the panel widens to give the
     // mathematics room, and the chart is laid out again in the rest.
@@ -1662,6 +1665,7 @@
       if (trail.length) {
         var last = trail.pop();
         sel = last.prev;
+        pendingY = typeof last.y === 'number' ? last.y : null;
         pendingBoard = last.board || null;
         if (last.view) showView(last.view, true);
         hover = null; hoverVia = ''; ring = null; ringWanted = null; cardDismissed = null;
