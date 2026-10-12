@@ -4813,8 +4813,8 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
 </div>
 <script type="application/json" id="pr-macros">{macros_json}</script>"""
     desc = S.tex_plain(m.get("abstract") or "") or TXT["description"].format(title=title_plain)
-    extra = (f'{PAGE_MARK}\n<link rel="stylesheet" href="{root}assets/paper.css">\n'
-             f'<script defer src="{root}assets/paper.js"></script>')
+    extra = (f'{PAGE_MARK}\n<link rel="stylesheet" href="{root}assets/{S.asset_v("paper.css")}">\n'
+             f'<script defer src="{root}assets/{S.asset_v("paper.js")}"></script>')
     return S.page(rel, title_plain, desc, body, extra_head=extra, page_type="article", main_class="pr-main")
 
 

@@ -1311,6 +1311,20 @@ def generic_og_meta() -> str:
     return og_meta(BASE_URL + GENERIC_OG, C("social.card_alt"))
 
 
+def asset_v(name: str) -> str:
+    """A short digest of a site asset, for its ?v= query: a redeploy that changes the file
+    changes its address, so a cached page never pairs new HTML with an old script."""
+    v = _ASSET_V.get(name)
+    if v is None:
+        path = ASSETS / name
+        v = hashlib.sha256(path.read_bytes()).hexdigest()[:10] if path.exists() else ""
+        _ASSET_V[name] = v
+    return f"{name}?v={v}" if v else name
+
+
+_ASSET_V: dict = {}
+
+
 def head(rel: str, title: str, description: str, *, og_block: str | None = None, noindex=False,
          extra_head: str = "", page_type="website") -> str:
     depth = rel.count("/")
@@ -1348,11 +1362,11 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 <link rel="preload" href="{root}assets/fonts/plectis-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="{root}assets/fonts/plectis-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{root}{KATEX_DIR}/katex.min.css">
-<link rel="stylesheet" href="{root}assets/atlas.css">
+<link rel="stylesheet" href="{root}assets/{asset_v('atlas.css')}">
 <script>(function(){{var d=document.documentElement;d.classList.add('js');try{{var t=localStorage.getItem('atlas-theme');if(t==='dark'||t==='light')d.setAttribute('data-theme',t);}}catch(e){{}}}})();</script>
 <script defer src="{root}{KATEX_DIR}/katex.min.js"></script>
 <script defer src="{root}{KATEX_DIR}/contrib/auto-render.min.js"></script>
-<script defer src="{root}assets/atlas.js"></script>
+<script defer src="{root}assets/{asset_v('atlas.js')}"></script>
 {extra_head}
 </head>"""
 
@@ -2950,7 +2964,7 @@ def build_statement(stmt):
     generic = generic_og_meta()
     own = og_meta(BASE_URL + f"og/{sid}.png", C("statement.og_alt", label=label))
     OG_DONE[sid] = (generic, own)
-    lean_head = f'<link rel="stylesheet" href="{root}assets/lean.css">\n<script defer src="{root}assets/lean.js"></script>'
+    lean_head = f'<link rel="stylesheet" href="{root}assets/{asset_v("lean.css")}">\n<script defer src="{root}assets/{asset_v("lean.js")}"></script>'
     write_page(rel, page(rel, f"{label} (Lean)", desc, body, og_block=generic, page_type="article", extra_head=lean_head))
 
 

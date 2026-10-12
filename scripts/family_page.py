@@ -1614,6 +1614,7 @@ def head_assets(S, root: str) -> str:
     statements do not reflow when it first draws."""
     fonts = "".join(f'<link rel="preload" href="{root}{S.KATEX_DIR}/fonts/KaTeX_{name}.woff2" as="font" type="font/woff2" crossorigin>\n'
                     for name in ("Main-Regular", "Math-Italic"))
-    return (f'{fonts}<link rel="stylesheet" href="{root}assets/inspect.css">\n'
-            f'<link rel="stylesheet" href="{root}assets/family.css">\n'
-            f'<script defer src="{root}assets/inspect.js"></script>\n<script defer src="{root}assets/family.js"></script>')
+    v = S.asset_v
+    return (f'{fonts}<link rel="stylesheet" href="{root}assets/{v("inspect.css")}">\n'
+            f'<link rel="stylesheet" href="{root}assets/{v("family.css")}">\n'
+            f'<script defer src="{root}assets/{v("inspect.js")}"></script>\n<script defer src="{root}assets/{v("family.js")}"></script>')
