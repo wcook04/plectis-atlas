@@ -114,6 +114,10 @@ give space and emphasis to what the current task needs, at each depth.
   map when stepping up. A click during a pending return is retained.
 - An arrow overlay follows its content box, so moving to a narrower panel or
   shorter paper page removes obsolete scrolling space.
+- While a detail packet loads, the board and sidebar each retain one completion
+  subscriber per discipline. Only the current board and latest sidebar visit
+  refresh when it arrives; revisiting a node cannot queue repeated typesetting
+  or layout work.
 
 ## The thread
 
