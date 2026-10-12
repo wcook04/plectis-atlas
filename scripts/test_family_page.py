@@ -69,6 +69,7 @@ def main() -> int:
     fails += status_group_counts()
     fails += tied_order()
     fails += definition_only_statement(tmp)
+    fails += complete_theorem_snippets(tmp)
     for f in fails:
         print("FAIL", f)
     print(f"family page: {len(SPECIMENS)} specimens, {len(fails)} failures")
@@ -102,6 +103,36 @@ def definition_only_statement(tmp: Path) -> list:
     card = (tmp / "cards/ElementaryPositivity.html").read_text(encoding="utf-8")
     if "states the theorem" in card or "checks only the name and type" not in card:
         fails.append("ElementaryPositivity card: definition-only qualification missing")
+    return fails
+
+
+def complete_theorem_snippets(tmp: Path) -> list:
+    """Named arguments and qualified names must not truncate or hide a theorem."""
+    fails = []
+    specimens = {
+        "CartierChartCompactnessSupport": "normalizedWeights a) := by",
+        "CoveringDensity": "theorem CoveringOrder.optimal_order : CoveringOrder.OptimalOrder := by",
+        "MatroidProphet": "theorem one_sample.{u} : OneSampleChallenge.{u} := by",
+        "SiegelZeros": "theorem WeightedTorusJets.dirichletRealZeroBound_proof :",
+        "CKSBondiPenrose": "(1-ε R) * OAI.CKSSourceExterior.cutArea g D ≤ OAI.CKSSourceExterior.cutArea gR D := by",
+    }
+    for sid, ending in specimens.items():
+        plain = unescape(re.sub(r"<[^>]*>", "", S.lean_snippet_html(S.ST[sid])))
+        if ending not in plain:
+            fails.append(f"{sid}: configured theorem excerpt is incomplete")
+    stmt = S.ST["CartierChartCompactnessSupport"]
+    S.build_statement(stmt)
+    family_page.build(S, S.FAM["066"])
+    for rel, css in [
+        ("statements/CartierChartCompactnessSupport.html", "lean--read"),
+        ("cards/CartierChartCompactnessSupport.html", "lean--card"),
+        ("families/066.html", "fx-lean__code"),
+    ]:
+        html = (tmp / rel).read_text(encoding="utf-8")
+        blocks = re.findall(r'<pre class="[^"]*' + css + r'[^"]*"><code>(.*?)</code></pre>', html, re.S)
+        plain = unescape(re.sub(r"<[^>]*>", "", "".join(blocks)))
+        if "normalizedWeights a) := by" not in plain or "sorry" not in plain:
+            fails.append(f"{rel}: compactness statement or proof placeholder is truncated")
     return fails
 
 

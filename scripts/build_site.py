@@ -810,24 +810,27 @@ def lean_lines(text: str) -> list[str]:
 def lean_key_ranges(text: str, theorem_names: list[str]):
     """Line ranges (0-based, inclusive) that state the checked theorem, plus the
     definition its type names when that type is a single defined word."""
+    import lean_render
+
     lines = text.split("\n")
+    # Use the same declaration reader as the full-file view: a named argument
+    # such as (R := R) is not the start of a proof, and theorem names may be
+    # qualified, universe-polymorphic or repeated in different namespaces.
+    source = lean_render.LeanFile(text)
+    declarations = {d.full: d for d in source.decls if d.kind in ("theorem", "lemma")}
     ranges = []
     for full in theorem_names:
-        sh = full.split(".")[-1]
-        pat = re.compile(r"^\s*(?:@\[[^\]]*\]\s*)*(?:(?:private|protected|noncomputable)\s+)*(?:theorem|lemma)\s+" + re.escape(sh) + r"(?=[\s:({\[]|$)")
-        idx = next((k for k, l in enumerate(lines) if pat.match(l)), None)
-        if idx is None:
+        decl = declarations.get(full)
+        if decl is None:
             continue
-        end = idx
-        while end < len(lines) - 1 and ":=" not in lines[end] and end - idx < 40:
-            end += 1
+        idx = decl.line - 1
+        end = source.line[decl.body] - 1 if decl.body is not None else decl.end_line - 1
         nxt = end + 1
         while nxt < len(lines) and not lines[nxt].strip():
             nxt += 1
         if nxt < len(lines) and lines[nxt].strip() in ("sorry", "by sorry", "exact sorry"):
             end = nxt
-        sig = " ".join(lines[idx:end + 1])
-        sig = sig.split(":=")[0]
+        sig = text[source.start[decl.kw_tok]:source.start[decl.body]] if decl.body is not None else " ".join(lines[idx:end + 1])
         depth = 0
         colon = None
         for k, ch in enumerate(sig):
