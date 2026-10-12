@@ -2991,6 +2991,12 @@ def review_queue_html(root):
             f'<p class="muted small">{esc(C("explain.queue_not_verdict"))}</p></section>')
 
 
+def quiet_none(label: str) -> str:
+    """An empty table cell: a dash to the eye and its meaning to a screen reader, so a long
+    list does not repeat the same sentence on every row."""
+    return f'<span class="cell__none cell__dash"><span aria-hidden="true">\u2013</span><span class="vh">{esc(label)}</span></span>'
+
+
 def build_explain():
     """The Families list: all of the release's families as rows, each state said in words
     from the backend's records (scripts/evidence.py): papers, Lean statements, each
@@ -3059,8 +3065,8 @@ def build_explain():
             rerun = sum(1 for l in ev.lean if l.accepted)
             runs_cell = f'{esc(C("explain.runs_of", k=num(rerun), n=num(k)))}'
         else:
-            lean_cell = f'<span class="cell__none">{esc(C("explain.no_lean"))}</span>'
-            runs_cell = f'<span class="cell__none">{esc(C("explain.no_lean_short"))}</span>'
+            lean_cell = quiet_none(C("explain.no_lean_label"))
+            runs_cell = quiet_none(C("explain.no_lean_label"))
             rerun = -1
         # each reader's own term, with a plain gloss under it
         rcells = []
@@ -3069,7 +3075,7 @@ def build_explain():
             rd = next((x for x in ev.readers if x.source == src), None)
             tones[side] = rd.tone if rd else "none"
             if not k:
-                rcells.append(f'<td class="t-reader" data-v=""><span class="cell__none">{esc(C("explain.no_lean_short"))}</span></td>')
+                rcells.append(f'<td class="t-reader" data-v="">{quiet_none(C("explain.no_lean_label"))}</td>')
             elif rd is None or rd.tone == "none" or not rd.term:
                 rcells.append(f'<td class="t-reader" data-v="~"><span class="cell__none">{esc(C("explain.not_read"))}</span></td>')
             else:
@@ -3080,12 +3086,13 @@ def build_explain():
             agree = f'<span class="cell__flag">{esc(C("explain.disagree_flag"))}</span>'
         checks = ", ".join(say_e("check_kind." + c) for c in ev.checks if c in evidence.WORDS["check_kind"])
         checks = cap(checks) if checks else ""
-        checks_cell = esc(checks) if checks else f'<span class="cell__none">{esc(C("explain.checks_none"))}</span>'
+        checks_cell = esc(checks) if checks else quiet_none(C("explain.checks_none"))
         # explanations: what there is to read first (a reviewed explanation for the atlas,
         # explanations by others, reported problems), then the state of the atlas's own
         # explanation, qualified, then the offer to write one
         rev = reviewed_explanations(fid)
-        status = [f'<span class="st st--{st}">{esc(C("explain.status_" + st))}</span>']
+        # A family with no explanation yet says so quietly; the page invites explanations once.
+        status = [quiet_none(C("explain.status_none"))] if st == "none" else [f'<span class="st st--{st}">{esc(C("explain.status_" + st))}</span>']
         if ex:
             status.append(f'<span class="cell__sub">{esc(", ".join(e["name"] for e in ex))}</span>')
         reading = []
@@ -3097,9 +3104,10 @@ def build_explain():
                            f'{esc(cap(C("explain.problems_1") if problems == 1 else C("explain.problems_n", n=say(problems))))}</a>')
         if rev:
             expl = status + reading + [f'<a class="cell__sub" href="{explanation_rel(rev[0], fid)}">{esc(C("explain.read"))}</a>']
+        elif st == "none":
+            expl = reading or status
         else:
-            claim = issue_url("claim", C("issues.claim", id=fid, title=tex_plain(f["title"]) if f else ev.name), family=fid)
-            expl = reading + status + [f'<a class="cell__sub ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>']
+            expl = reading + status
         rows.append(
             f'<tr id="f-{fid}" data-q="{esc((fid + " " + name_plain + " " + dname).lower())}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none") if k else "nolean"}" '
             f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}">'
@@ -3108,7 +3116,7 @@ def build_explain():
             f'<span class="cell__sub t-disc-inline">{esc(dname)}</span>{editions}{agree}</td>'
             f'<td class="t-disc" data-v="{esc(dname)}">{esc(dname)}</td>'
             f'<td class="t-num" data-v="{ev.papers}" data-label="{esc(C("explain.col_papers"))}">{papers}</td>'
-            f'<td class="t-num" data-v="{k}" data-label="{esc(C("explain.col_lean"))}">{lean_cell}</td>'
+            f'<td class="t-num t-lean" data-v="{k}" data-label="{esc(C("explain.col_lean"))}">{lean_cell}</td>'
             + "".join(c.replace('<td class="t-reader"', f'<td class="t-reader" data-label="{esc(C("explain.col_reader", name=short_name[order[i]]))}"', 1)
                       for i, c in enumerate(rcells)) +
             f'<td class="t-num" data-v="{rerun}" data-label="{esc(C("explain.col_runs"))}">{runs_cell}</td>'
@@ -3146,13 +3154,14 @@ def build_explain():
     heads.append(f'<th scope="col">{esc(C("explain.col_checks"))}</th>')
     heads.append(f'<th scope="col">{esc(C("explain.col_status"))}</th>')
     invite_key = "explain.invite_all" if status_counts["none"] == len(evs) else "explain.invite"
-    invite = (f'<p class="muted">{esc(C(invite_key, open=num(status_counts["none"]), families=num(len(evs))))} {esc(C("explain.how"))} '
+    invite = (f'<p class="phead__invite">{esc(C(invite_key, open=num(status_counts["none"]), families=num(len(evs))))} {esc(C("explain.how"))} '
               f'<a class="ext" href="{esc(REPO + "/" + CFG["contributing_path"])}" rel="noopener">{esc(C("contribute.guide_link"))}</a></p>')
     readers_note = C("explain.readers_note", left=prose_name[order[0]], right=prose_name[order[1]] if len(order) > 1 else "")
     body = f"""<div class="frame page page--families">
 <header class="phead phead--compact">
  <h1 class="phead__title">{esc(C('explain.title'))}</h1>
  <p class="phead__lede">{esc(C('explain.lede', families=NUM('families')))}</p>
+ {invite}
 </header>
 <section class="band band--table" aria-labelledby="h-list">
 <h2 class="h2 vh" id="h-list">{esc(C('explain.list_heading'))}</h2>
@@ -3171,7 +3180,6 @@ def build_explain():
  <thead><tr>{''.join(heads)}</tr></thead>
  <tbody>{''.join(rows)}</tbody>
 </table></div>
-{invite}
 </section>
 {review_queue_html("")}
 </div>"""

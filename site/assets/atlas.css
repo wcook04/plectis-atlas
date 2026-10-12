@@ -1024,3 +1024,11 @@ a.cell__sub { min-height: 24px; padding: 2px 0; }
 code.path { overflow-wrap: normal; word-break: normal; }
 .approach__then { margin-top: 18px; }
 @media (max-width: 640px) { .actions .btn--quiet { padding-inline: 0; } }
+
+/* Families list: one invitation to explain for the page, under its lede; a quiet dash in
+   an empty cell (its meaning is read out); on a phone a dash-only state is left out of the
+   card except the Lean count. */
+.phead__invite { margin: 6px 0 0; max-width: 80ch; font-size: var(--fs-small); color: var(--muted); }
+@media (max-width: 760px) {
+  .tbl--families td[data-label]:not(.t-lean):has(> .cell__dash:only-child) { display: none; }
+}
