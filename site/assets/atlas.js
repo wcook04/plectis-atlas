@@ -944,16 +944,16 @@
             out.tokens = searchTokens(bare(q)); out.missing = []; out.truncated = false; out.respelled = bare(q);
             return out;
           }
-          // A Lean statement by its exact name, when the index does not hold it as a word.
-          if (/^[A-Za-z][A-Za-z0-9_']{3,}$/.test(q.trim()) && typeof fetch === 'function') {
-            var name = q.trim();
-            return fetch(root + 'statements/' + encodeURIComponent(name) + '.html', { method: 'HEAD' }).then(function (r) {
-              if (!r.ok) return res;
-              var one = [{ id: 'l:' + name, kind: 'lean', name: name, family_ids: [], url: urlFor('l:' + name, 'lean'), paper: null }];
-              one.counts = { family: 0, lean: 1, manuscript: 0, statement: 0, discipline: 0 };
-              one.tokens = [name]; one.missing = []; one.truncated = false; one.respelled = name;
-              return one;
-            }, function () { return res; });
+          // Resolve a Lean filename against the catalogue, preserving its case in
+          // the URL even when the reader types lowercase. No guessed file request.
+          var wanted = 'l:' + q.trim().toLowerCase();
+          var leanId = Object.keys(lab.lean || {}).find(function (id) { return id.toLowerCase() === wanted; });
+          if (leanId) {
+            var name = leanId.slice(2);
+            var one = [{ id: leanId, kind: 'lean', name: name, family_ids: lab.lean[leanId], url: urlFor(leanId, 'lean'), paper: null }];
+            one.counts = { family: 0, lean: 1, manuscript: 0, statement: 0, discipline: 0 };
+            one.tokens = searchTokens(q); one.missing = []; one.truncated = false; one.respelled = name;
+            return one;
           }
           return res;
         };

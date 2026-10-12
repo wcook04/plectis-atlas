@@ -3570,7 +3570,8 @@ def build_search_data():
     write labels.json beside it: which index range holds which kind of entry, each
     paper's title and each family's name, discipline and holdings in words, so a result list can
     show them without loading the reader packets. Ambiguous and non-current paper results
-    also carry their source date and edition status. Every file carries the generation."""
+    also carry their source date and edition status. Lean filenames retain their canonical
+    case for exact-name lookup without probing filesystem paths. Every file carries the generation."""
     r = RD()
     dst = OUT / "data" / "search"
     for logical, path in r.browser_files(SEARCH_PACKETS):
@@ -3617,7 +3618,8 @@ def build_search_data():
     labels = {"schema": "plectis-atlas-search-labels/1", "generation_id": r.generation,
               "source": "search-index.json and its entry chunks; family holdings from the reader packets; edition dates and status from the manuscript source index",
               "kinds": runs, "papers": papers, "paper_editions": editions,
-              "families": fams}
+              "families": fams,
+              "lean": {e["id"]: e.get("family_ids") or [] for e in entries if e["kind"] == "lean"}}
     (dst / "labels.json").write_text(json.dumps(labels, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 
 
