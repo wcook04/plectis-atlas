@@ -1456,7 +1456,7 @@ def trail(root, items):
             parts.append(f'<a href="{href}">{label}</a>')
         else:
             parts.append(f'<span aria-current="page">{label}</span>')
-    return '<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '">' + '<span class="trail__sep" aria-hidden="true">/</span>'.join(parts) + "</nav>"
+    return '<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '">' + '<span class="trail__sep" aria-hidden="true">\u2060/</span>'.join(parts) + "</nav>"
 
 
 def json_script(id_, obj):
@@ -3425,7 +3425,7 @@ def join_html(doc, pinfo, root) -> str:
     state = pinfo["state"]
     cls = {"candidate-pairing": "join--candidate", "producer-cited-association": "join--cited",
            "producer-declared-binding": "join--cited"}.get(state, "join--none")
-    parts = [f'<p class="join__words">{esc(evidence.say("pairing." + state))}</p>']
+    parts = [] if state in PAIRED_STATES else [f'<p class="join__words">{esc(evidence.say("pairing." + state))}</p>']
     if state == "candidate-pairing":
         alt = next((a for a in pinfo["alternatives"] if a.get("target") == pinfo["target"]), None)
         terms = (alt or {}).get("matched_terms") or []
@@ -3439,6 +3439,8 @@ def join_html(doc, pinfo, root) -> str:
         parts.append(f'<p class="join__how">{esc(LW("pairing.cited_how", declaration=a.get("declaration") or ""))} '
                      f'<a class="ext" href="{esc(url)}" rel="noopener">{esc(LW("pairing.cited_link", line=src.get("start_line")))}</a></p>'
                      f'<pre class="lean lean--quote"><code>{esc(src.get("quote") or "")}</code></pre>')
+    if not parts:
+        return ""
     return f'<div class="join {cls}" role="note" aria-label="{esc(LW("pairing.join_label"))}">{"".join(parts)}</div>'
 
 
@@ -3493,8 +3495,8 @@ def lean_runs_html(rec, root) -> str:
             pin = LW("runs.pin_current") if x.get("pin_state") == "current" else LW("runs.pin_other", pin=str(x.get("pin") or "")[:7])
             when = date_words(x["date"]) if x.get("date") else LW("runs.undated")
             receipt = f' <a class="ext" href="{esc(x["receipt"])}" rel="noopener">{esc(LW("runs.receipt"))}</a>' if x.get("receipt") else ""
-            lis.append(f'<li><p><span class="term">{esc(x.get("source_term") or "")}</span> '
-                       f'<span class="run__state">{esc(run_state_words(x))}</span></p>'
+            lis.append(f'<li><p><span class="run__state">{esc(cap(run_state_words(x)))}</span> '
+                       f'<span class="run__term">{esc(LW("runs.their_term", term=x.get("source_term") or ""))}</span></p>'
                        f'<p>{esc(curly(sv.get("text") or ""))}</p>'
                        f'<p class="small muted">{esc(LW("runs.when", when=when, pin=pin))}{receipt}</p></li>')
         method = (credit.get("method") or "").strip()
@@ -3504,7 +3506,8 @@ def lean_runs_html(rec, root) -> str:
                        if method else "")
         groups.append(f'<div class="run"><h3 class="h3">{who}</h3>{method_html}<ul class="run__list">{"".join(lis)}</ul></div>')
     body = "".join(groups) or f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
-    return f'<p class="lead-sentence">{esc(curly(lead))} {esc(LW("runs.reported"))}</p>{body}'
+    return (f'<p class="lead-sentence">{esc(curly(lead))} {esc(LW("runs.reported"))}</p>'
+            f'<p class="runs__scope">{esc(LW("runs.scope"))}</p>{body}')
 
 
 def family_readings_html(fid, doc, root) -> str:
@@ -3533,8 +3536,8 @@ def family_readings_html(fid, doc, root) -> str:
         defs_html = f'<p class="reading__note">{esc(LW("readings.defs"))} {ctext(defs)}</p>' if defs else ""
         rec = f' <a class="ext small" href="{esc(sv["url"])}" rel="noopener">{esc(LW("readings.record"))}</a>' if sv.get("url") else ""
         items.append(f'<li class="reading"><p class="reading__who">{name}</p>'
-                     f'<p class="reading__term"><span class="term">{esc(rd.get("source_term") or "")}</span> '
-                     f'<span class="reading__gloss">{esc(LW("readings.gloss", gloss=_ev.say("tone." + tone)))}</span></p>'
+                     f'<p class="reading__term"><span class="reading__gloss">{esc(cap(_ev.say("tone." + tone)))}</span> '
+                     f'<span class="run__term">{esc(LW("runs.their_term", term=rd.get("source_term") or ""))}</span></p>'
                      f'<p>{esc(curly(sv.get("text") or ""))}{rec}</p>{note_html}{defs_html}</li>')
     return (f'<p class="lead-sentence">{esc(ev.agreement_sentence())}</p>'
             f'<ul class="readings">{"".join(items)}</ul>')
@@ -3714,7 +3717,7 @@ def build_statement(stmt):
     others = [f for f in (summ.get("family_ids") or [])[1:]]
     if others:
         where += esc(LW("page.also_in", families=", ".join(o[2:] for o in others))) + " "
-    where += f'{esc(C("statement.file_label"))} <a class="ext" href="{esc(stmt["url"])}" rel="noopener"><code>{esc(stmt["file"])}</code></a>.'
+    where += f'{esc(C("statement.file_label"))} <a class="ext" href="{esc(stmt["url"])}" rel="noopener"><code class="path">{esc(stmt["file"]).replace("/", "/<wbr>")}</code></a>.'
     where += f' <a href="{root}index.html#o=l:{quote(sid)}">{esc(C("words.show_on_map"))}</a>'
     reasons = REVIEW_REASONS.get(sid) or []
     reasons_html = (f'<div class="note"><p class="note__h">{esc(C("statement.reasons_heading"))}</p><ul class="rq__why">' + "".join(f'<li class="md-math">{ctext(t)}</li>' for t in reasons) + '</ul></div>') if reasons else ""
@@ -3918,7 +3921,7 @@ def build_explain():
                 rcells.append(f'<td class="t-reader" data-v="~"><span class="cell__none">{esc(C("explain.not_read"))}</span></td>')
             else:
                 rcells.append(f'<td class="t-reader" data-v="{esc(rd.tone)}"><span class="cell__plain">{esc(cap(say_e("tone_short." + rd.tone)))}</span>'
-                              f'<span class="cell__sub">{esc(C("explain.their_term"))} <span class="term">{esc(rd.term)}</span></span></td>')
+                              f'<span class="cell__sub">{esc(C("explain.their_term", term=rd.term))}</span></td>')
         agree = ""
         if k and ev.agreement == "disagree":
             agree = f'<span class="cell__flag">{esc(C("explain.disagree_flag"))}</span>'
@@ -4134,6 +4137,8 @@ def build_numbers():
     placed = {k for ks in grouped.values() for k in ks}
     grouped["other"] = [k for k in keys if k not in placed]
     labels = COPY["numbers"]["labels"]
+    credits = Counter(number_credit(r.number(k)) for k in keys)
+    common_credit = credits.most_common(1)[0][0] if credits else ""
     sections = []
     for g, ks in NUMBER_GROUPS:
         ks = grouped[g]
@@ -4154,10 +4159,10 @@ def build_numbers():
             rows.append(f"""<article class="numrow" id="n-{esc(k)}" data-receipt="{esc(receipt.get('path') or '')}">
  <p class="numrow__v{' numrow__v--unknown' if s.get('value') is None else ''}">{esc(value)}</p>
  <div class="numrow__t">
-  <h3 class="h3">{esc(label)}</h3>
+  <h3 class="h3">{esc(cap(label))}</h3>
   <p class="numrow__unit">{esc(C('numbers.unit', unit=s.get('unit') or ''))} <span class="numrow__state numrow__state--{esc(state)}">{esc(state_words)}</span></p>
   <p class="numrow__rule"><span class="numrow__k">{esc(C('numbers.rule'))}</span> {esc(rule)}</p>
-  <p class="numrow__credit"><span class="numrow__k">{esc(C('numbers.credit'))}</span> {esc(credit)}</p>
+  {f'<p class="numrow__credit"><span class="numrow__k">{esc(C("numbers.credit"))}</span> {esc(credit)}</p>' if credit != common_credit else ''}
   <details class="receipt" data-key="{esc(k)}"><summary>{esc(C('numbers.records'))}</summary>
    <div class="receipt__body"><p class="small muted">{esc(C('numbers.records_nojs'))} <a href="{esc(raw)}">{esc(C('numbers.records_raw'))}</a></p></div>
   </details>
@@ -4194,6 +4199,7 @@ def build_numbers():
  <h1 class="phead__title">{esc(C('numbers.title'))}</h1>
  <p class="lede">{esc(C('numbers.lede'))}</p>
  <p class="phead__facts">{esc(C('numbers.states_note'))}</p>
+ <p class="phead__facts">{esc(C('numbers.credit_common', credit=common_credit))}</p>
  <nav class="numtoc" aria-label="{esc(C('numbers.toc_label'))}"><ul>{toc}</ul></nav>
 </header>
 {''.join(sections)}

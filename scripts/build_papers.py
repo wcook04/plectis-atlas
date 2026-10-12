@@ -76,7 +76,7 @@ sys.setrecursionlimit(20000)
 TXT = {
     "kicker": "Reading view",
     "numbering": "Numbering computed from the TeX source; the PDF is the reference.",
-    "converted": "This page is converted from the paper's TeX source at commit {commit}.",
+    "converted": "This page is converted from the paper’s TeX source at commit {commit}.",
     "figures_one": "One figure is shown as a placeholder; see the PDF for it.",
     "figures_many": "{n} figures are shown as placeholders; see the PDF for them.",
     "partial_h": "This reading view is incomplete",
@@ -110,6 +110,7 @@ TXT = {
     },
     "family_n": "family {n}",
     "headline_note": "Of the papers’ main statements, this one shares the most words with OpenAI’s description of {families}, so the atlas shows it as the candidate for the theorem that description names. Nobody has reviewed the choice.",
+    "lean_proof": "Its Lean proof, checked against the Lean statement only:",
     "lean_runs_n": "re-run and accepted by {n} groups outside OpenAI",
     "lean_runs_1": "re-run and accepted by one group outside OpenAI",
     "lean_runs_0": "not yet re-run outside OpenAI",
@@ -4381,7 +4382,7 @@ def lean_evidence_html(mark: dict) -> str:
     how = TXT["lean_how"][mark["state"]].replace("{lean}", "\x00")
     return (f'<p class="pr-lean pr-lean--{"candidate" if mark["state"] == "candidate-pairing" else "cited"}">'
             f'<span class="pr-lean__k">{esc_t(TXT["lean_k"])}</span> '
-            f'{esc_t(how).replace(chr(0), link)} <span class="pr-lean__ev">{esc_t(S.cap("; ".join(bits)))}.</span></p>')
+            f'{esc_t(how).replace(chr(0), link)}<span class="pr-lean__ev">{esc_t(TXT["lean_proof"])} {esc_t("; ".join(bits))}.</span></p>')
 
 
 def headline_note_html(fids: list) -> str:
@@ -4655,7 +4656,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
     if p.author_html:
         facts.append(f'<span class="pr-authors">{p.author_html}</span>')
     if m.get("date"):
-        facts.append(f'<span>{esc(m["date"])}</span>')
+        facts.append(f'<span>{esc(S.date_words(m["date"]))}</span>')
     actions = [S.pdf_button(m, "btn btn--primary"),
                f'<a class="btn btn--ghost ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" rel="noopener">{esc(TXT["tex_source"])}</a>']
     lede = ""
@@ -4713,7 +4714,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
 <header class="phead pr-head">
  <p class="phead__kicker">{esc(TXT['kicker'])}</p>
  <h1 class="phead__title">{S.ms_title_html(m)}</h1>
- <p class="phead__facts pr-facts">{' <span aria-hidden="true">·</span> '.join(facts)}</p>
+ <p class="phead__facts pr-facts">{', '.join(facts)}</p>
  <p class="actions">{''.join(actions)}</p>
 </header>
 {lede}

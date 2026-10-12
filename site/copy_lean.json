@@ -99,14 +99,14 @@
   "alternatives_none": "The backend records no other statement for it.",
   "read_in_paper": "Read the theorem in the paper",
   "pair_heading": {
-   "candidate-pairing": "Possible paper match: suggested from shared wording; not reviewed",
-   "producer-cited-association": "Paper theorem cited in the Lean source; the match is not reviewed",
-   "producer-declared-binding": "Paper theorem bound to it by the release; the match is not reviewed",
+   "candidate-pairing": "Candidate paper theorem: matched by shared words, not reviewed",
+   "producer-cited-association": "Paper theorem cited in the Lean source, match not reviewed",
+   "producer-declared-binding": "Paper theorem bound to it by the release, match not reviewed",
    "unavailable": "No paper theorem is paired with it"
   },
   "read_runs": "Who has re-run it",
   "report_check": "Report a check (GitHub issue)",
-  "read_candidates": "See the candidate theorems"
+  "read_candidates": "See the statements that share its words"
  },
  "pairing": {
   "ref": "{name} of {title}",
@@ -137,7 +137,9 @@
   "receipt": "Their record",
   "method": "How they ran it, in their words",
   "reported": "Each group below reports its own run; the atlas has not re-run it.",
-  "none_recorded": "No outside group reports a run of this Lean statement."
+  "none_recorded": "No outside group reports a run of this Lean statement.",
+  "scope": "A re-run checks OpenAI’s proof against this Lean statement. It says nothing about whether the Lean statement matches the paper.",
+  "their_term": "Their term: “{term}”."
  },
  "readings": {
   "note": "Their note:",

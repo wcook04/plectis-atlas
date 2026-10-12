@@ -932,7 +932,6 @@ a.cell__sub { color: var(--steel-text); }
 .cell__none { color: var(--muted); }
 .cell__flag { display: block; margin-top: 4px; font-family: var(--sans); font-size: var(--fs-small); font-weight: 600; color: var(--brick-text); }
 .t-disc-inline { display: none; }
-.tbl--families .term { font-size: var(--fs-micro); }
 /* On a phone each family is a block: the name first, then each state with its label. */
 @media (max-width: 760px) {
   .tbl--families thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
@@ -976,7 +975,6 @@ a.cell__sub { color: var(--steel-text); }
 .filters__status .filters__n { margin: 0; }
 .filters__note { flex: 1 1 100%; margin: 0; font-size: var(--fs-small); color: var(--muted); max-width: 80ch; }
 .cell__plain { display: block; color: var(--ink); }
-.cell__sub .term { margin-left: 2px; }
 .tbl--families td.t-num { font-variant-numeric: tabular-nums; }
 @media (max-width: 760px) { .filters__status { grid-column: 1 / -1; } .filters__note { grid-column: 1 / -1; } }
 .tbl--families .cell__none { color: var(--faint); }
@@ -992,3 +990,8 @@ a.cell__sub { color: var(--steel-text); }
 }
 a.cell__sub { min-height: 24px; padding: 2px 0; }
 .stmt__diagram { display: block; margin: 0.4em 0; padding: 6px 10px; border-left: 2px solid var(--rule-strong); font-family: var(--sans); font-size: var(--fs-meta); color: var(--muted); }
+/* Later rules win: below 1500px the discipline moves under the family name. */
+@media (max-width: 1500px) { .tbl--families .t-disc { display: none; } .tbl--families .t-disc-inline { display: block; } }
+code.path { overflow-wrap: normal; word-break: normal; }
+.approach__then { margin-top: 18px; }
+@media (max-width: 640px) { .actions .btn--quiet { padding-inline: 0; } }
