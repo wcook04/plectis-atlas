@@ -21,6 +21,7 @@ const boardVisibility = range('    function showBoard()', '    // The chosen car
 const boardPages = range('    function layoutPages()', '    function showBoard()');
 const boardSync = range('    function refreshBoardNeighbours()', '    function showBoard()');
 const boardPointer = range("    if (boardEl) {\n      boardEl.addEventListener('pointerdown'", "      boardEl.addEventListener('pointerover'") + '    }';
+const detailAgain = range('          var again = function () {', '          loadShard(di).then(again, again);');
 const chartNavigation = range('    function copyLayout(l)', '    function chartAnimating()');
 function deferred() {
   let resolve, reject;
@@ -190,6 +191,77 @@ async function main() {
   doc.activeElement = oldPager;
   boardState2.syncBoard();
   assert.equal(doc.activeElement, replacementPager, 'own-family rebuild restores pager focus');
+
+  // A detail packet replaces the sidebar HTML after focus has already reached
+  // a row. The callback must return focus to the matching new row, including the
+  // second occurrence of a repeated key, without stealing unrelated focus.
+  function detailFocus(oldKeys, activeIndex) {
+    const doc = { body: { id: 'body' }, activeElement: null };
+    let replaced = false, focusCalls = 0;
+    // Give every row an independent focus method so the selected occurrence
+    // can be checked after the callback has swapped the list.
+    const oldRows = oldKeys.map(key => ({ id: '', getAttribute: name => name === 'data-go' ? key : null }));
+    const newRows = oldKeys.map(key => ({
+      id: '', getAttribute: name => name === 'data-go' ? key : null,
+      focus(opts) { assert.equal(opts.preventScroll, true); focusCalls++; doc.activeElement = this; }
+    }));
+    const view = {
+      contains: el => oldRows.includes(el),
+      querySelectorAll: () => replaced ? newRows : oldRows,
+      querySelector: () => null,
+      set innerHTML(html) {
+        replaced = true;
+        if (oldRows.includes(doc.activeElement)) doc.activeElement = doc.body;
+        this.html = html;
+      }
+    };
+    const scroller = { scrollTop: 0, getBoundingClientRect: () => ({ top: 0, bottom: 500 }) };
+    const state = vm.createContext({
+      sel: 'f:104', o: { key: 'f:104' }, document: doc, viewEl: view,
+      scrollPos: () => 40, panelScroller: () => scroller,
+      rerender: () => '<new sidebar>', typeset() {}, restorePending() {}, syncActive() {},
+      showPanelSection() { throw new Error('row focus should not use section reveal'); }
+    });
+    vm.runInContext(detailAgain, state);
+    doc.activeElement = activeIndex == null ? { id: 'outside' } : oldRows[activeIndex];
+    const prior = doc.activeElement;
+    state.again();
+    return { doc, newRows, prior, focusCalls, scroller, view };
+  }
+  const rowFocus = detailFocus(['f:104'], 0);
+  assert.equal(rowFocus.doc.activeElement, rowFocus.newRows[0], 'detail readiness restores focused row');
+  assert.equal(rowFocus.focusCalls, 1);
+  assert.equal(rowFocus.scroller.scrollTop, 40, 'restored focus keeps reading position');
+  const duplicateFocus = detailFocus(['f:104', 'f:104'], 1);
+  assert.equal(duplicateFocus.doc.activeElement, duplicateFocus.newRows[1],
+    'detail readiness restores the second row with the same data-go key');
+  const outsideFocus = detailFocus(['f:104'], null);
+  assert.equal(outsideFocus.doc.activeElement, outsideFocus.prior, 'external focus is not stolen');
+  assert.equal(outsideFocus.focusCalls, 0);
+  const oldHeading = {
+    id: 'u-section-papers',
+    getAttribute: key => key === 'data-u-section' ? 'papers' : null,
+    getBoundingClientRect: () => ({ top: 100, bottom: 120 })
+  };
+  const newHeading = { id: 'u-section-papers' };
+  const sectionDoc = { activeElement: oldHeading };
+  let shownSection = null;
+  const sectionView = {
+    contains: el => el === oldHeading,
+    querySelectorAll: () => [],
+    querySelector: key => key === '#u-section-papers' ? newHeading : null,
+    set innerHTML(html) { this.html = html; sectionDoc.activeElement = null; }
+  };
+  const sectionScroller = { scrollTop: 0, getBoundingClientRect: () => ({ top: 0, bottom: 500 }) };
+  const sectionState = vm.createContext({
+    sel: 'f:104', o: { key: 'f:104' }, document: sectionDoc, viewEl: sectionView,
+    scrollPos: () => 40, panelScroller: () => sectionScroller,
+    rerender: () => '<new sidebar>', typeset() {}, restorePending() {}, syncActive() {},
+    showPanelSection: target => { shownSection = target; }
+  });
+  vm.runInContext(detailAgain, sectionState);
+  sectionState.again();
+  assert.equal(shownSection, newHeading, 'visible section heading retains section-follow behaviour');
   const c = context();
   vm.runInContext(hit, c);
   assert.equal(c.hitAt(20, 20, true), 'f:a', 'click can hit the visible moving family');

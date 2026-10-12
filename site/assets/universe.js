@@ -1980,6 +1980,15 @@
             var top = scrollPos(), active = document.activeElement;
             var focusedId = viewEl.contains(active) && /^u-section-/.test(active.id) ? active.id : null;
             var focusedButton = viewEl.contains(active) ? active.getAttribute('data-u-section') : null;
+            var focusedGo = viewEl.contains(active) ? active.getAttribute('data-go') : null;
+            var goIndex = 0;
+            if (focusedGo) {
+              Array.prototype.some.call(viewEl.querySelectorAll('[data-go]'), function (go) {
+                if (go === active) return true;
+                if (go.getAttribute('data-go') === focusedGo) goIndex++;
+                return false;
+              });
+            }
             var oldRect = focusedId ? active.getBoundingClientRect() : null;
             var bounds = panelScroller().getBoundingClientRect();
             var followSection = oldRect && oldRect.bottom > bounds.top && oldRect.top < bounds.bottom;
@@ -1992,6 +2001,12 @@
             // there, but never take it back from another part of the page.
             var replacement = focusedId ? viewEl.querySelector('#' + focusedId) : focusedButton ?
               viewEl.querySelector('[data-u-section="' + focusedButton + '"]') : null;
+            if (!replacement && focusedGo) {
+              Array.prototype.some.call(viewEl.querySelectorAll('[data-go]'), function (go) {
+                if (go.getAttribute('data-go') !== focusedGo || goIndex-- > 0) return false;
+                replacement = go; return true;
+              });
+            }
             if (replacement) {
               if (followSection) showPanelSection(replacement);
               else replacement.focus({ preventScroll: true });
