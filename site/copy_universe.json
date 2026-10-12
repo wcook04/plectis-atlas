@@ -210,7 +210,9 @@
  },
  "status": {
   "load_failed": "The map could not load. Every family is listed below it.",
-  "loading": "Drawing the map…"
+  "loading": "Drawing the map…",
+  "parts_loading": "Opening the family…",
+  "parts_failed": "The family details could not load. Select a family to try again."
  },
  "ways": {
   "heading": "Where to start",
