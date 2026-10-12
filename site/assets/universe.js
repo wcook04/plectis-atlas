@@ -2736,6 +2736,16 @@
         Promise.resolve(window.AtlasSearch.query(q)).then(function (hits) {
           if (query !== q) return;
           hits = hits || [];
+          // Disciplines, families, papers and Lean statements before the paper
+          // statements that mention the words; within a kind, an entry whose own name
+          // holds every word comes first (the search dialog orders its groups so).
+          var toks = window.AtlasSearch.tokens ? window.AtlasSearch.tokens(q) : [];
+          var order = { discipline: 0, family: 1, manuscript: 2, lean: 3, statement: 4 };
+          hits = hits.map(function (h, i) {
+            var own = toks.length ? window.AtlasSearch.tokens(h.name || '') : [];
+            var named = toks.every(function (t) { return own.indexOf(t) >= 0; });
+            return { h: h, i: i, k: order[h.kind] != null ? order[h.kind] : 5, n: named ? 0 : 1 };
+          }).sort(function (a, b) { return a.k - b.k || a.n - b.n || a.i - b.i; }).map(function (x) { return x.h; });
           matches = {}; matchFam = {}; matchList = [];
           hits.forEach(function (hit) {
             if (obj(hit.id)) { matches[hit.id] = true; matchList.push(hit.id); }
@@ -2744,17 +2754,31 @@
             if (f >= 0) matchFam[f] = true;
           });
           var shown = hits.slice(0, 60);
-          var kindWord = function (k) { return T('search.kind_' + k) !== 'search.kind_' + k ? T('search.kind_' + k) : k; };
+          var kindKey = { manuscript: 'paper' };
+          var kindWord = function (k) { var key = 'search.kind_' + (kindKey[k] || k); return T(key) !== key ? T(key) : k; };
+          // A name is the paper's own text: its TeX dashes become dashes outside $...$,
+          // and its mathematics is typeset below.
+          var words = function (s) {
+            return String(s || '').split(/(\$[^$]*\$)/).map(function (part, j) {
+              return j % 2 ? part : part.replace(/---/g, '—').replace(/--/g, '–');
+            }).join('');
+          };
           var head = hits.length ? (hits.length === 1 ? T('search.count_one') : T('search.count', { n: hits.length })) : T('search.none');
           if (hits.length > shown.length) head += ' ' + T('search.shown', { shown: shown.length });
           resultsEl.hidden = false;
           resultsEl.innerHTML = '<p class="u-note" role="status">' + escapeHtml(head) + '</p><ul class="u-rows">' + shown.map(function (hit) {
-            var inner = '<span class="u-row__k">' + escapeHtml(kindWord(hit.kind)) + '</span><span class="u-row__t">' + escapeHtml(hit.name) + '</span>';
+            // A statement with no title of its own is named by its label in the
+            // index ("thm:main"); the map names it as its paper prints it.
+            var own = obj(hit.id);
+            var name = own && hit.kind === 'statement' && /^[A-Za-z]+:\S*$/.test(hit.name || '') ? nameOf(own) : words(hit.name);
+            var inner = '<span class="u-row__k">' + escapeHtml(kindWord(hit.kind)) + '</span><span class="u-row__t md-math">' + escapeHtml(name) + '</span>';
             var fo = obj((hit.family_ids || [])[0]);
-            if (fo) inner += '<span class="u-row__n">' + escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.families[fo.i].title) + '</span>';
+            if (own && own.kind === 'd') inner += '<span class="u-row__n">' + escapeHtml(discCounts(D.disciplines[own.i])) + '</span>';
+            else if (fo) inner += '<span class="u-row__n">' + escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.families[fo.i].title) + '</span>';
             if (obj(hit.id)) return '<li>' + goBtn(hit.id, inner, 'u-row u-row--hit') + '</li>';
             return '<li><a class="u-row u-row--hit" href="' + escapeHtml(hit.url) + '">' + inner + '</a></li>';
           }).join('') + '</ul>';
+          if (window.atlasRenderMath) window.atlasRenderMath(resultsEl);
           draw();
         }, function () {});
         return;
