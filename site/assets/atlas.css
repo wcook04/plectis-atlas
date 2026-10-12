@@ -917,7 +917,7 @@ a.term:hover, a.term:focus-visible { text-decoration-color: currentColor; }
 /* The count sentence takes its own row under the controls and wraps, so a long list of
    criteria never pushes the page sideways. */
 .filters--families .filters__n { flex: 1 0 100%; min-width: 0; align-self: flex-end; margin: 0 0 6px; color: var(--ink-soft); font-size: var(--fs-meta); }
-.filters__reset { align-self: flex-end; min-height: 32px; }
+.filters__reset { align-self: flex-end; min-height: 32px; flex-shrink: 0; white-space: nowrap; }
 .filters__empty { margin: 16px 0; color: var(--ink-soft); }
 .select { min-height: 34px; padding: 4px 30px 4px 10px; border: 1px solid var(--rule-control); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); font-size: var(--fs-meta); }
 .tbl--families th { position: sticky; top: 0; z-index: 1; background: var(--page); }
@@ -973,8 +973,8 @@ a.cell__sub { color: var(--steel-text); }
 .phead__lede { font-family: var(--serif); font-size: var(--fs-lede); color: var(--ink-soft); margin: 0; max-width: 96ch; }
 .band--table { padding-top: 6px; }
 .page--families .filters--families { padding: 6px 0 6px; }
-.filters__status { display: flex; align-items: baseline; gap: 12px; flex: 1 1 12rem; min-height: 34px; align-self: flex-end; padding-bottom: 6px; }
-.filters__status .filters__n { margin: 0; }
+.filters__status { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; flex: 1 1 12rem; min-height: 34px; align-self: flex-end; padding-bottom: 6px; }
+.filters__status .filters__n { margin: 0; flex: 1 1 auto; }
 .filters__note { flex: 1 1 100%; margin: 0; font-size: var(--fs-small); color: var(--muted); max-width: 80ch; }
 .cell__plain { display: block; color: var(--ink); }
 .tbl--families td.t-num { font-variant-numeric: tabular-nums; }
