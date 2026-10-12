@@ -86,8 +86,12 @@
  "statement_kind": "Statement",
  "page": {
   "kicker": "Lean statement",
-  "in_family": "In family {id}: {name}.",
+  "family_number": "Family {id}.",
   "also_in": "Also listed under {families}.",
+  "source_role": {
+   "challenge": "Challenge file:",
+   "other": "Lean file:"
+  },
   "lean_heading": "The Lean statement",
   "formal_heading": "Formal status: who has re-run it",
   "readings_heading": "What outside readers found about family {id}’s headline",

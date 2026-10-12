@@ -2765,20 +2765,28 @@ def build_statement(stmt):
     replays_html = "".join(f'<li><strong>{esc(c["name"])}</strong>{(": " + esc(c["verdict"])) if c.get("verdict") else ""}{(", " + esc(c["date"])) if c.get("date") else ""} <a class="ext small" href="{esc(REPO + "/blob/main/" + c["path"])}" rel="noopener">{esc(C("statement.record_link"))}</a></li>' for c in replays)
     replay_url = issue_url("replay", C("issues.replay", statement=sid), statement=sid)
     suggest = suggest_url(page_url, label, statement_label=label)
+    # The breadcrumb is the page's ancestry and ends at the family, its parent; the
+    # heading below names the page itself. Without a family it keeps the page's name.
     trail_items = []
     if fam:
         di = DISC_OF[fam["id"]]
         trail_items = [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d:{DISC_SLUG[di]}'), (fam_title_html(fam), f'{root}families/{fam["id"]}.html')]
-    trail_items.append((f'<span class="md-math">{esc(label)}</span>', None))
-    where = ""
+    else:
+        trail_items.append((f'<span class="md-math">{esc(label)}</span>', None))
+    # Under the heading: the source file as one typed link (its role, then its name; the
+    # full path in its title and in the facts list below) and the map as another, each a
+    # whole unit when the line wraps; then the family number and the catalogue's word,
+    # which the breadcrumb's family name does not repeat.
+    role = "challenge" if stmt["file"].startswith("lean/ComparatorChallenges/") else "other"
+    src_link = (f'<a class="ext phead__src" href="{esc(stmt["url"])}" rel="noopener" title="{esc(stmt["file"])}">'
+                f'{esc(LW("page.source_role." + role))} <code>{esc(stmt["file"].rsplit("/", 1)[-1])}</code></a>')
+    map_link = f'<a class="phead__map" href="{root}index.html#o=l:{quote(sid)}">{esc(C("words.show_on_map"))}</a>'
+    meta = []
     if fam:
-        where = (esc(LW("page.in_family", id=fam["id"], name="\x00"))
-                 .replace("\x00", f'<a href="{root}families/{fam["id"]}.html">{fam_title_html(fam)}</a>') + " ")
+        meta.append(LW("page.family_number", id=fam["id"]))
     others = [f for f in (summ.get("family_ids") or [])[1:]]
     if others:
-        where += esc(LW("page.also_in", families=", ".join(o[2:] for o in others))) + " "
-    where += f'{esc(C("statement.file_label"))} <a class="ext" href="{esc(stmt["url"])}" rel="noopener"><code class="path">{esc(stmt["file"]).replace("/", "/<wbr>")}</code></a>.'
-    where += f' <a href="{root}index.html#o=l:{quote(sid)}">{esc(C("words.show_on_map"))}</a>'
+        meta.append(LW("page.also_in", families=", ".join(o[2:] for o in others)))
     reasons = REVIEW_REASONS.get(sid) or []
     reasons_html = (f'<div class="note"><p class="note__h">{esc(C("statement.reasons_heading"))}</p><ul class="rq__why">' + "".join(f'<li class="md-math">{ctext(t)}</li>' for t in reasons) + '</ul></div>') if reasons else ""
     problems = findings_for(sid=sid, kinds={'error-reported', 'correction', 'replay-fail'})
@@ -2820,8 +2828,7 @@ def build_statement(stmt):
  <p class="phead__kicker">{esc(LW('page.kicker'))}</p>
  <h1 class="phead__title md-math">{esc(label)}</h1>
  {subtitle}
- <p class="phead__facts">{where}</p>
- <p class="phead__facts">{esc(main_line)}</p>
+ <p class="phead__where">{src_link}{map_link}<span class="phead__meta">{esc(" ".join(meta + [main_line]))}</span></p>
  {action_group}
 </header>
 {('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}

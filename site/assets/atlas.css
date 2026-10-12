@@ -296,6 +296,14 @@ code.sr__name { font-size: 0.86rem; }
 .phead__kicker code { color: var(--ink-soft); }
 .phead__title { font-family: var(--serif); font-weight: 500; font-size: clamp(1.75rem, 1.2rem + 1.6vw, 2.5rem); line-height: 1.18; letter-spacing: -0.012em; margin-bottom: 12px; }
 .phead__facts { color: var(--muted); font-size: var(--fs-body); }
+/* A Lean page's source line (build_site.build_statement): the file as one typed link and
+   the map as another, each wrapping as a whole unit, then the family number and the
+   catalogue's word in the muted metadata voice. The file's full path is in the link's
+   title and in the facts list lower down. */
+.page--lean .phead__where { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 20px; margin: 0; font-size: var(--fs-meta); line-height: 1.5; }
+.page--lean .phead__where > a { overflow-wrap: normal; }
+.page--lean .phead__src code { overflow-wrap: anywhere; font-size: 0.92em; color: inherit; }
+.page--lean .phead__meta { margin: 0; color: var(--muted); max-width: 72ch; text-wrap: pretty; }
 .lede { font-family: var(--serif); font-size: var(--fs-lede); line-height: 1.55; max-width: 44em; color: var(--ink-soft); }
 .intro { color: var(--muted); max-width: 42em; font-size: var(--fs-body); }
 .band { padding-block: 36px 8px; border-top: 1px solid var(--rule); }
