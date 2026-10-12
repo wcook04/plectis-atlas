@@ -387,6 +387,24 @@ is reading, delay the mathematics, or run in a loop.
   matches behind one button, and the map stops dimming what the search did not
   match, so the opened paper's own results read at full strength.
 
+## The map sidebar at each selection level
+
+The release starts with disciplines; the colour key remains below the list and
+on the map. A discipline lists families with their paper counts and the
+readers' assessment. A family is an index of its papers and Lean statements,
+with the catalogue claim, attributed readings and citations retained. Choose
+a paper to read its abstract and statement previews, then a result to read the
+whole statement and its recorded Lean links. A Lean selection shows its human
+label, challenge snippet, paper preview and attributed re-runs.
+
+Use the source abstract and the existing statement excerpt renderer, with each
+paper's own macros. A preview is labelled and opens the full statement; it is
+not a new summary or a verdict. Keep paper titles and Lean identifiers in the
+selection heading once. Family result counts mean results drawn on this map.
+Section buttons move within the sidebar without changing the selected object,
+map position or URL. The sidebar has one vertical scrollbar, including long
+Lean snippets; source code may still scroll horizontally.
+
 ## Quality floor
 
 Judge every page at four sizes, in both schemes:

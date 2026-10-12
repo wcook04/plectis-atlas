@@ -848,7 +848,7 @@ def build_detail(M, names):
     evidence in words, each result's statement typeset as printed, each Lean statement's
     re-runs and pairing."""
     D = M.data
-    shards = [{"families": {}, "results": {}, "lean": {}, "macros": {}} for _ in D["disciplines"]]
+    shards = [{"families": {}, "results": {}, "papers": {}, "lean": {}, "macros": {}} for _ in D["disciplines"]]
     for fi, f in enumerate(D["families"]):
         ev, doc = M.evs[f["id"]], M.docs[f["id"]]
         sh = shards[f["d"]]
@@ -876,6 +876,7 @@ def build_detail(M, names):
             p = D["papers"][pi]
             slug = p["id"][2:]
             m = S.MS.get(slug) or {}
+            sh["papers"][p["id"]] = {"abstract": S.rich(m.get("abstract") or "")}
             sh["macros"][p["id"]] = (m.get("tex") or {}).get("macros") or {}
             for ri in p["results"]:
                 res = D["results"][ri]
@@ -1086,8 +1087,8 @@ def page_body(M, gen) -> str:
     <p class="u-lede">{number_sentence(M, 's1')} {number_sentence(M, 's2')}</p>
     <p class="u-nojs">{esc(U('page.nojs'))}</p>
     <p class="u-keyjump"><a href="#u-key" data-u-keyjump>{esc(U('key.heading'))}</a></p>
-    <section class="u-keysec" id="u-key">{key_html(M)}</section>
     <section class="u-discsec">{discipline_rows(M)}</section>
+    <section class="u-keysec" id="u-key">{key_html(M)}</section>
     <section class="u-wayssec">{ways_html(M)}</section>
    </div>
   </div>

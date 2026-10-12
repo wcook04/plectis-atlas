@@ -404,7 +404,7 @@ main.u-main { padding: 0; max-width: none; }
 .u-index__fams li { margin: 0 0 4px; }
 .u-index__fams a { display: inline-flex; align-items: baseline; min-height: 24px; padding: 2px 0; font: 400 var(--fs-meta)/1.4 var(--serif); color: var(--steel-text); }
 .u-nowrap { white-space: nowrap; }
-.u-panel .u-lean { font-size: 0.75rem; line-height: 1.5; }
+.u-panel .u-lean { font-size: 0.75rem; line-height: 1.5; max-height: none; overflow-x: auto; }
 
 /* Reading a theorem or a Lean statement: the panel takes about two fifths of the
    workspace so the mathematics keeps its size, and the map refits beside it. */
@@ -625,3 +625,21 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
   .u-view.is-arriving, .u-title.is-arriving { animation: none; }
   .u-card, .u-card.is-on { transition: none; }
 }
+
+/* The selection has one scrolling reading surface. Section links stay reachable
+   without hiding evidence in folds or imposing a second vertical scrollbar. */
+.u-sections { position: sticky; top: -4px; z-index: 2; display: flex; flex-wrap: wrap; gap: 2px 12px; margin: -4px 0 12px; padding: 8px 0; background: var(--page); border-bottom: 1px solid var(--rule); }
+.u-sections button { border: 0; background: none; color: var(--steel-text); padding: 4px 0; min-height: 28px; cursor: pointer; font: 500 var(--fs-small)/1.4 var(--sans); text-decoration: underline; text-underline-offset: 3px; }
+.u-sections button:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+.u-abstract { font: 400 var(--fs-body)/1.6 var(--serif); color: var(--ink); }
+.u-result-previews { margin-left: 0; }
+.u-result-previews > li { padding: 8px 0 14px; border-top: 1px solid var(--rule); }
+.u-excerpt { margin: 2px 8px 6px; font: 400 var(--fs-body)/1.55 var(--serif); }
+.u-excerpt .u-role { margin: 0 0 5px; }
+.u-excerpt__text { overflow-wrap: anywhere; }
+.u-excerpt__text p { margin: 0 0 8px; }
+.u-excerpt__open { margin: 0 8px 8px; }
+.u-excerpt .m-d { overflow-x: auto; }
+.u-papers > li + li { border-top: 1px solid var(--rule); }
+.u-lean-label { font: 500 var(--fs-base)/1.4 var(--serif); }
+@media (max-width: 899px) { .u-sections { position: static; } }

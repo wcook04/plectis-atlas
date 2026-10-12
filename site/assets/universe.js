@@ -1558,10 +1558,10 @@
       setReading(o);
       chartTo(fly);
     }
-    // A theorem or a Lean statement in hand is read: the panel widens to give the
+    // A paper, theorem or Lean statement in hand is read: the panel widens to give the
     // mathematics room, and the chart is laid out again in the rest.
     function setReading(o) {
-      var reading = !!(o && (o.kind === 'r' || o.kind === 'l'));
+      var reading = !!(o && (o.kind === 'p' || o.kind === 'r' || o.kind === 'l'));
       if (root.classList.contains('is-reading') === reading) return false;
       root.classList.toggle('is-reading', reading);
       return resize();
@@ -1699,7 +1699,7 @@
       if (o) {
         var di = discOf(o);
         if (di >= 0 && !shards[di]) {
-          var again = function () { if (sel === (o && o.key)) { viewEl.innerHTML = rerender(o); typeset(viewEl, o); restorePending(); } };
+          var again = function () { if (sel === (o && o.key)) { var top = scrollPos(); viewEl.innerHTML = rerender(o); typeset(viewEl, o); if (panelScroller()) panelScroller().scrollTop = top; restorePending(); } };
           loadShard(di).then(again, again);
         }
       }
@@ -1726,6 +1726,7 @@
     function detail(o) {
       var sh = shards[discOf(o)];
       if (!sh) return null;
+      if (o.kind === 'p') return sh.papers && sh.papers[o.key];
       if (o.kind === 'r') return sh.results[o.key];
       if (o.kind === 'l') return sh.lean[o.key];
       if (o.kind === 'f') return sh.families[o.key];
@@ -1733,19 +1734,18 @@
     }
     function typeset(el, o) {
       if (!window.katex) { if (window.atlasRenderMath) window.atlasRenderMath(el); return; }
-      var macros = {}, k;
-      for (k in GLOBAL_MACROS) macros[k] = GLOBAL_MACROS[k];
       var sh = o ? shards[discOf(o)] : null;
-      if (sh && o.kind === 'r') {
-        var own = sh.macros[D.papers[D.results[o.i].p].id] || {};
+      var spans = el.querySelectorAll('span.m:not([data-done])');
+      for (var i = 0; i < spans.length; i++) {
+        var s = spans[i], tex = s.textContent, macros = {}, k;
+        for (k in GLOBAL_MACROS) macros[k] = GLOBAL_MACROS[k];
+        var scope = s.closest('[data-u-paper]');
+        var paper = scope ? scope.getAttribute('data-u-paper') : o && o.kind === 'r' ? D.papers[D.results[o.i].p].id : null;
+        var own = sh && paper ? sh.macros[paper] || {} : {};
         for (k in own) {
           var v = own[k];
           if (typeof v === 'string' && !/\\(?:newcommand|def|let|ifx|ifmmode|csname|expandafter)/.test(v)) macros[k] = v;
         }
-      }
-      var spans = el.querySelectorAll('span.m:not([data-done])');
-      for (var i = 0; i < spans.length; i++) {
-        var s = spans[i], tex = s.textContent;
         s.setAttribute('data-done', '1');
         try {
           // A short inline formula stays on one line (atlas.js keepShort).
@@ -1776,7 +1776,7 @@
 
     /* A discipline: its families as plain entries a person can read. */
     function statusLine(f) {
-      return T('key.' + f.tone) + (f.lean.length ? '. ' + count('lean', f.lean.length) : '') + '.';
+      return count('papers', f.papers.length) + '. ' + T('key.' + f.tone) + (f.lean.length ? '. ' + count('lean', f.lean.length) : '') + '.';
     }
     function entryHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
@@ -1816,21 +1816,36 @@
           (rd.note ? '<p class="u-readers__note">' + escapeHtml(rd.note) + '</p>' : '') + '</li>';
       }).join('') + '</ul>';
     }
-    function resultRow(ri) {
-      var r = D.results[ri];
-      var label = resultName(r) + (r.lean.length ? '' : '');
-      return '<li>' + goBtn(r.id, '<span class="u-sub__t">' + escapeHtml(label) + '</span>' +
-        (r.lean.length ? '<span class="u-sub__n">' + escapeHtml(r.lean.map(function (li) { return D.lean[li].label; }).join(', ')) + '</span>' : ''), 'u-sub') + '</li>';
+    function sectionNav(parts) {
+      return '<nav class="u-sections" aria-label="' + escapeHtml(T('panel.sections')) + '">' + parts.map(function (part) {
+        return '<button type="button" data-u-section="' + part + '">' + escapeHtml(T('panel.' + part)) + '</button>';
+      }).join('') + '</nav>';
+    }
+    function sectionHeading(key, label) {
+      return '<h2 class="u-h2" id="u-section-' + key + '" tabindex="-1">' + escapeHtml(T(label)) + '</h2>';
+    }
+    function resultRow(ri, preview) {
+      var r = D.results[ri], det = detail(obj(r.id));
+      var h = '<li>' + goBtn(r.id, '<span class="u-sub__t">' + escapeHtml(resultName(r)) + '</span>', 'u-sub');
+      if (preview && det && det.html) {
+        var ex = excerpt(det.html, 480);
+        h += '<div class="u-excerpt" data-u-paper="' + escapeHtml(D.papers[r.p].id) + '"><p class="u-role">' + escapeHtml(T('panel.preview')) + '</p>' +
+          '<div class="u-excerpt__text">' + ex.html + (ex.cut ? '…' : '') + '</div></div>' +
+          goBtn(r.id, escapeHtml(T('panel.open_result')), 'u-inline u-excerpt__open');
+      }
+      return h + '</li>';
     }
     function leanRow(li) {
-      var l = D.lean[li], det = detail(obj(l.id));
-      return '<li>' + goBtn(l.id, '<span class="u-sub__t">' + escapeHtml(l.label) + '</span><code class="u-sub__n">' + escapeHtml(l.name) + '</code>', 'u-sub') +
-        (det ? '<p class="u-sub__w">' + escapeHtml(det.reruns) + '</p>' : '') + '</li>';
+      var l = D.lean[li];
+      return '<li>' + goBtn(l.id, '<span class="u-sub__t">' + escapeHtml(l.label) + '</span><code class="u-sub__n">' + escapeHtml(l.name) + '</code>', 'u-sub') + '</li>';
     }
     function familyHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
       var h = '<p class="u-kicker">' + escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })) + '</p>';
       if (!det) return h + loadingHtml(f.d, 'discipline.loading', 'discipline.failed');
+      h += sectionNav(['papers', 'lean', 'readers', 'connections'].filter(function (part) { return part !== 'lean' || f.lean.length; }));
+      h += para(T('panel.family_counts', { papers: count('papers', f.papers.length), lean: count('lean', f.lean.length) }), 'u-facts');
+      h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(T('key.' + f.tone)) + '</span></p>';
       h += '<figure class="u-cat"><figcaption>' + link(D.catalogue_url, T('family.catalogue')) + ' ' + escapeHtml(T('family.catalogue_says')) + '</figcaption>' +
         '<blockquote class="tex-auto">' + det.desc + '</blockquote>' +
         (det.descMore ? '<p class="u-cat__more">' + link(f.href + '#h-desc', T('family.catalogue_more')) + '</p>' : '') + '</figure>';
@@ -1838,21 +1853,21 @@
       // candidate theorem; it opens that pairing on the family page.
       var co = det.candidate ? obj(det.candidate) : null, cr = co && co.kind === 'r' ? D.results[co.i] : null;
       h += '<p class="u-doors">' + door(f.href, T('family.page_link'), true) + (cr && cr.lean.length ? door(f.href + '#lean-' + D.lean[cr.lean[0]].name, T('family.compare_link')) : '') + '</p>';
-      h += '<h2 class="u-h2">' + escapeHtml(T('family.readers_heading')) + '</h2>';
+      h += sectionHeading('papers', 'family.papers_heading') + '<ol class="u-papers">';
+      f.papers.forEach(function (pi, n) {
+        var p = D.papers[pi];
+        h += '<li>' + goBtn(p.id, '<span class="u-row__t">' + escapeHtml(p.short) + '</span><span class="u-row__n">' +
+          escapeHtml([p.date, T('panel.paper_counts', { results: count('results', p.results.length) }), n === 0 && f.papers.length > 1 ? T('family.lead') : ''].filter(Boolean).join(', ')) + '</span>', 'u-row u-row--paper');
+        // Results are read after choosing their paper; the family remains an index.
+        h += '</li>';
+      });
+      h += '</ol>';
+      if (f.lean.length) h += sectionHeading('lean', 'family.lean_list_heading') + '<ul class="u-subrows u-subrows--lean">' + f.lean.map(leanRow).join('') + '</ul>';
+      h += sectionHeading('readers', 'family.readers_heading');
       h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(det.evidence) + '</span></p>';
       h += readersHtml(det);
       if (f.lean.length) h += para(T('family.readers_scope'));
       h += para(T(det.headline === 'candidate' ? 'family.headline_candidate' : 'family.headline_unresolved'));
-      h += '<h2 class="u-h2">' + escapeHtml(T('family.papers_heading')) + '</h2><ol class="u-papers">';
-      f.papers.forEach(function (pi, n) {
-        var p = D.papers[pi];
-        h += '<li>' + goBtn(p.id, '<span class="u-row__t">' + escapeHtml(p.short) + '</span><span class="u-row__n">' +
-          escapeHtml([p.date, n === 0 && f.papers.length > 1 ? T('family.lead') : ''].filter(Boolean).join(', ')) + '</span>', 'u-row u-row--paper');
-        h += p.results.length ? '<ul class="u-subrows">' + p.results.map(resultRow).join('') + '</ul>' : '';
-        h += '</li>';
-      });
-      h += '</ol>';
-      if (f.lean.length) h += '<h2 class="u-h2">' + escapeHtml(T('family.lean_list_heading')) + '</h2><ul class="u-subrows u-subrows--lean">' + f.lean.map(leanRow).join('') + '</ul>';
       var more = [];
       if (det.checks) more.push(det.checks);
       if (det.editions) more.push(plural(det.editions, 'family.editions_one', 'family.editions'));
@@ -1860,7 +1875,7 @@
       if (det.explained) more.push(plural(det.explained, 'family.explained_one', 'family.explained'));
       if (det.problems) more.push(plural(det.problems, 'family.problems_one', 'family.problems'));
       if (more.length) h += '<div class="u-more">' + more.map(function (t) { return '<p>' + escapeHtml(t) + '</p>'; }).join('') + '<p>' + link(f.href, T('family.page_link')) + '</p></div>';
-      h += '<h2 class="u-h2">' + escapeHtml(T('family.connections_heading')) + '</h2>';
+      h += sectionHeading('connections', 'family.connections_heading');
       if (!f.cites.length && !f.citedBy.length) h += para(T('family.no_connections'));
       [['cites', f.cites, 'is-cites'], ['cited_by', f.citedBy, 'is-cited']].forEach(function (part) {
         if (!part[1].length) return;
@@ -1873,12 +1888,15 @@
       return h;
     }
     function paperHtml(pi) {
-      var p = D.papers[pi], f = D.families[p.f];
-      var h = '<p class="u-kicker">' + escapeHtml(T('paper.kicker', { num: f.num })) + (p.date ? ', ' + escapeHtml(p.date) : '') + '</p>';
-      h += '<p class="u-paper-title">' + escapeHtml(p.title) + '</p>';
+      var p = D.papers[pi], f = D.families[p.f], det = detail(obj(p.id));
+      var h = sectionNav(det && det.abstract ? ['abstract', 'results'] : ['results']);
+      h += '<p class="u-kicker">' + escapeHtml(T('paper.kicker', { num: f.num })) + (p.date ? ', ' + escapeHtml(p.date) : '') + '</p>';
       h += '<p class="u-doors">' + door(p.href, T('paper.read'), true) + door(p.pdf, T('paper.pdf')) + door(f.href, T('family.page_link')) + '</p>';
-      h += '<h2 class="u-h2">' + escapeHtml(T('paper.results_heading')) + '</h2>';
-      h += p.results.length ? '<ul class="u-subrows">' + p.results.map(resultRow).join('') + '</ul>' : para(T('family.results_none'));
+      if (det && det.abstract) h += sectionHeading('abstract', 'paper.abstract_heading') +
+        '<div class="u-abstract tex-auto" data-u-paper="' + escapeHtml(p.id) + '">' + det.abstract + '</div>';
+      if (!det && !shards[f.d]) h += loadingHtml(f.d, 'discipline.loading', 'discipline.failed');
+      h += sectionHeading('results', 'paper.results_heading');
+      h += p.results.length ? '<ul class="u-subrows u-result-previews">' + p.results.map(function (ri) { return resultRow(ri, true); }).join('') + '</ul>' : para(T('family.results_none'));
       return h;
     }
 
@@ -1908,10 +1926,11 @@
     /* A result: the theorem as printed, the Lean paired with it, and the ways on. */
     function resultHtml(ri) {
       var r = D.results[ri], p = D.papers[r.p], f = D.families[r.f], o = obj(r.id), det = detail(o);
-      var h = '<p class="u-context">' + goBtn(p.id, escapeHtml(T('result.in_paper', { paper: p.short })), 'u-inline u-inline--plain') +
+      var h = sectionNav(['statement', 'lean', 'readers']);
+      h += '<p class="u-context">' + goBtn(p.id, escapeHtml(T('result.in_paper', { paper: p.short })), 'u-inline u-inline--plain') +
         (p.date ? ', <span class="u-nowrap">' + escapeHtml(p.date) + '</span>' : '') + '</p>';
       if (det && det.html) {
-        h += '<figure class="u-stmt"><p class="u-stmt__head"><strong>' + escapeHtml(resultName(r)) + '.</strong>' +
+        h += '<figure class="u-stmt" id="u-section-statement" tabindex="-1"><p class="u-stmt__head"><strong>' + escapeHtml(resultName(r)) + '.</strong>' +
           (det.titleHtml ? ' <span class="u-stmt__title">(' + det.titleHtml + ')</span>' : '') + '</p>' +
           '<div class="u-stmt__body">' + det.html + '</div><figcaption class="u-note">' + escapeHtml(det.where) +
           (det.source ? '. ' + link(det.source, T('result.tex_source')) : '') + '</figcaption></figure>';
@@ -1923,7 +1942,7 @@
       var states = r.lean.map(function (li) { return D.lean[li].pairing; });
       var kind = function (st) { return st === 'candidate-pairing' ? 'candidate' : st === 'producer-declared-binding' ? 'declared' : 'cited'; };
       var one = states.length && states.every(function (st) { return kind(st) === kind(states[0]); }) ? kind(states[0]) : null;
-      h += '<h2 class="u-h2">' + escapeHtml(T(r.lean.length ? (one ? 'result.lean_heading_' + one : 'result.lean_heading_mixed') : 'result.lean_heading_none')) + '</h2>';
+      h += '<h2 class="u-h2" id="u-section-lean" tabindex="-1">' + escapeHtml(T(r.lean.length ? (one ? 'result.lean_heading_' + one : 'result.lean_heading_mixed') : 'result.lean_heading_none')) + '</h2>';
       if (one === 'candidate') h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_candidate')) + '</p>';
       if (r.lean.length) {
         var pp = pinnedPair();
@@ -1938,7 +1957,7 @@
       } else h += para(T('result.unpaired'));
       h += para(r.num ? T('result.numbering_note') : r.nn ? T('result.unnumbered') : T('result.number_unavailable'));
       var fd = detail(obj(f.id));
-      h += '<h2 class="u-h2">' + escapeHtml(T('family.readers_heading')) + '</h2>';
+      h += sectionHeading('readers', 'family.readers_heading');
       h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(fd ? fd.evidence : T('key.' + f.tone) + '.') + '</span></p>';
       h += readersHtml(fd);
       if (f.lean.length) h += para(T('family.readers_scope'));
@@ -1949,23 +1968,24 @@
     /* A Lean statement: what it is, who re-ran it, and the theorem it is paired with. */
     function leanHtml(li) {
       var l = D.lean[li], f = D.families[l.f], det = detail(obj(l.id));
-      var h = '<p class="u-kicker">' + escapeHtml(T('lean.kicker', { num: f.num })) + '</p>';
-      h += '<p class="u-lean-label"><code>' + escapeHtml(l.name) + '</code></p>';
+      var h = sectionNav(['statement', 'results', 'checks']);
+      h += '<p class="u-kicker">' + escapeHtml(T('lean.kicker', { num: f.num })) + '</p>';
+      h += '<p class="u-lean-label" id="u-section-statement" tabindex="-1">' + escapeHtml(l.label) + '</p>';
       if (l.main) h += para(T('lean.main'));
       if (det && det.snippet) h += '<pre class="lean lean--snippet u-lean"><code>' + det.snippet + '</code></pre>' + para(T('lean.challenge_note'));
       h += '<p class="u-doors">' + door(l.href, T('lean.page'), true) + (l.results.length ? door(f.href + '#lean-' + l.name, T('result.compare')) : '') + door(f.href, T('lean.family_page')) + '</p>';
       var lk = l.pairing === 'candidate-pairing' ? 'candidate' : l.pairing === 'producer-declared-binding' ? 'declared' : l.pairing === 'unavailable' ? 'none' : 'cited';
-      h += '<h2 class="u-h2">' + escapeHtml(T('lean.paper_heading_' + (l.results.length ? lk : 'none'))) + '</h2>';
+      h += '<h2 class="u-h2" id="u-section-results" tabindex="-1">' + escapeHtml(T('lean.paper_heading_' + (l.results.length ? lk : 'none'))) + '</h2>';
       if (l.results.length && lk === 'candidate') h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_candidate')) + '</p>';
       if (l.results.length) {
         var lp = pinnedPair();
         h += '<ul class="u-subrows">' + l.results.map(function (ri) {
           var shown = !!lp && lp[0] === D.results[ri].id;
-          return resultRow(ri).replace(/<\/li>$/, (l.results.length > 1 ? pairControl(shown, ri) : '') + '</li>');
+          return resultRow(ri, true).replace(/<\/li>$/, (l.results.length > 1 ? pairControl(shown, ri) : '') + '</li>');
         }).join('') + '</ul>';
         if (det) h += whyHtml(l, det);
       } else h += para(T('lean.paired_none'));
-      h += '<h2 class="u-h2">' + escapeHtml(T('lean.reruns_heading')) + '</h2>';
+      h += sectionHeading('checks', 'lean.reruns_heading');
       if (det) {
         h += checksHtml(det);
         if (det.holes.length) h += '<h3 class="u-h3">' + escapeHtml(T('lean.holes_heading')) + '</h3>' + para(T('lean.holes_note')) + '<p>' +
@@ -2228,6 +2248,17 @@
         resultsEl.insertBefore(b, resultsEl.firstChild);
       }
     }
+    root.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-u-section]') : null;
+      if (!b) return;
+      var target = viewEl.querySelector('#u-section-' + b.getAttribute('data-u-section'));
+      if (!target) return;
+      var scroller = panelScroller(), nav = viewEl.querySelector('.u-sections');
+      var offset = narrow() ? 12 : (nav ? nav.offsetHeight : 0) + 12;
+      var top = target.getBoundingClientRect().top - (narrow() ? 0 : scroller.getBoundingClientRect().top) + scroller.scrollTop - offset;
+      scroller.scrollTo({ top: top, behavior: 'auto' });
+      target.focus({ preventScroll: true });
+    });
     // Choosing which recorded pair the map traces: the reader and the map follow, the
     // camera stays where it is.
     root.addEventListener('click', function (e) {
