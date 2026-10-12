@@ -1,6 +1,6 @@
 # Contributing to the Plectis Atlas
 
-Help the next reader understand one piece of the mathematics. A useful contribution can be a correction, an example, a precise question, a source for a step, a statement comparison or an explanation. Choose a part you can read and support. Every family remains open to contributions.
+Help the next reader understand one piece of the mathematics. A useful contribution can be a correction, an example, a precise question, a source for a step, a statement comparison or an explanation. Choose a part you can read and support.
 
 ## Start with one note
 
@@ -12,9 +12,9 @@ On the page you are reading, choose **Suggest a change**, or open an issue with 
 
 Say how you used AI, or write `none`. GitHub supplies your handle; a different public display name is optional. You can do this without installing git, Lean or an AI tool.
 
-For a first visit, spend up to fifteen minutes on one passage. Stop at a precise question if you cannot settle it. This is a suggested time budget for a note; the time needed for a mathematical verdict depends on its scope. Review and publication happen afterwards.
+For a first visit, give one passage about fifteen minutes. If you cannot settle it, stop at a precise question; that is a useful note too.
 
-A maintainer checks the note and either incorporates it, asks a specific question, or explains why it does not help. An incorporated note links to its source issue and credits its contributor beside the changed explanation or reference. Submission history stays visible. Accepted useful work receives durable credit; filing an issue alone does not count as an accepted contribution.
+A maintainer checks the note and either incorporates it, asks a specific question, or explains why it does not help. An incorporated note links to its source issue and credits its contributor beside the changed explanation or reference. Submission history stays visible.
 
 ## Choose a larger task when it fits
 
