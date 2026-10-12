@@ -1829,7 +1829,27 @@
       if (o) {
         var di = discOf(o);
         if (di >= 0 && !shards[di]) {
-          var again = function () { if (sel === (o && o.key)) { var top = scrollPos(); viewEl.innerHTML = rerender(o); typeset(viewEl, o); if (panelScroller()) panelScroller().scrollTop = top; restorePending(); } };
+          var again = function () {
+            if (sel !== o.key) return;
+            var top = scrollPos(), active = document.activeElement;
+            var focusedId = viewEl.contains(active) && /^u-section-/.test(active.id) ? active.id : null;
+            var focusedButton = viewEl.contains(active) ? active.getAttribute('data-u-section') : null;
+            var oldRect = focusedId ? active.getBoundingClientRect() : null;
+            var bounds = panelScroller().getBoundingClientRect();
+            var followSection = oldRect && oldRect.bottom > bounds.top && oldRect.top < bounds.bottom;
+            viewEl.innerHTML = rerender(o);
+            typeset(viewEl, o);
+            if (panelScroller()) panelScroller().scrollTop = top;
+            restorePending();
+            // Loading may replace the section being read. Keep keyboard focus
+            // there, but never take it back from another part of the page.
+            var replacement = focusedId ? viewEl.querySelector('#' + focusedId) : focusedButton ?
+              viewEl.querySelector('[data-u-section="' + focusedButton + '"]') : null;
+            if (replacement) {
+              if (followSection) showPanelSection(replacement);
+              else replacement.focus({ preventScroll: true });
+            }
+          };
           loadShard(di).then(again, again);
         }
       }
@@ -2433,16 +2453,18 @@
         resultsEl.insertBefore(b, resultsEl.firstChild);
       }
     }
-    root.addEventListener('click', function (e) {
-      var b = e.target.closest ? e.target.closest('[data-u-section]') : null;
-      if (!b) return;
-      var target = viewEl.querySelector('#u-section-' + b.getAttribute('data-u-section'));
-      if (!target) return;
+    function showPanelSection(target) {
       var scroller = panelScroller(), nav = viewEl.querySelector('.u-sections');
       var offset = narrow() ? 12 : (nav ? nav.offsetHeight : 0) + 12;
       var top = target.getBoundingClientRect().top - (narrow() ? 0 : scroller.getBoundingClientRect().top) + scroller.scrollTop - offset;
       scroller.scrollTo({ top: top, behavior: 'auto' });
       target.focus({ preventScroll: true });
+    }
+    root.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-u-section]') : null;
+      if (!b) return;
+      var target = viewEl.querySelector('#u-section-' + b.getAttribute('data-u-section'));
+      if (target) showPanelSection(target);
     });
     // Choosing which recorded pair the map traces: the reader and the map follow, the
     // camera stays where it is.
