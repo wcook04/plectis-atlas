@@ -431,8 +431,9 @@ Pressing a moving circle reserves that circle until release; motion must not
 turn the same click into a miss, another family, or Back. Drags and cancelled
 gestures must not reuse a reserved selection. Painted discs share the same
 visibility threshold with hit testing.
-An outgoing board loses mouse and keyboard interaction immediately; its fade
-must never intercept a click intended for the newly selected map.
+An outgoing board loses mouse and keyboard interaction immediately.
+Returning from a family reveals the finished map immediately, with stable
+circle positions and no outgoing board covering it.
 Family boards open as soon as their data is available; they do not wait for a
 decorative zoom. Discipline transitions stay brief. Fit labels at the destination
 radius once and scale them during motion, rather than wrapping every animation

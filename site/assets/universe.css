@@ -487,7 +487,7 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
   background: var(--page); color: var(--ink-soft);
   font: 400 clamp(15px, calc(0.42vw + 9.5px), 20px)/1.45 var(--sans);
   opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(8px);
-  transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s linear var(--t-open);
+  transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s;
 }
 .u-board.is-on { opacity: 1; visibility: visible; pointer-events: auto; transform: none; transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s; }
 .u-board:focus { outline: none; }
