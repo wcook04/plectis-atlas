@@ -89,6 +89,16 @@
     return m;
   }
   var stats = window.__atlasMath = { ok: 0, failed: 0, errors: [] };
+  /* KaTeX lets a line break after a relation or an operator, as TeX does, so a short
+     formula such as "Re s > 11/12" could end a line on its relation. A brace pair makes
+     a short formula one unit; a long one keeps its breaks. 32 TeX characters is about
+     the width of "T_1 + HT_2 + HT_3 = 96H^{2/3}U", which fits a phone's line. */
+  function keepShort(tex) {
+    var t = String(tex == null ? '' : tex);
+    if (t.replace(/\s+/g, '').length > 32 || /\\\\|\\begin|\\tag|&|(^|[^\\])%/.test(t)) return t;
+    return '{' + t + '}';
+  }
+  window.atlasKeepShortMath = keepShort;
   function renderSpans(scope) {
     if (!window.katex) return;
     var spans = (scope || doc).querySelectorAll('span.m:not([data-done])');
@@ -97,7 +107,8 @@
       el.setAttribute('data-done', '1');
       var tex = el.textContent;
       try {
-        window.katex.render(tex, el, { displayMode: el.getAttribute('data-d') === '1', macros: macrosFor(el), throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
+        var display = el.getAttribute('data-d') === '1';
+        window.katex.render(display ? tex : keepShort(tex), el, { displayMode: display, macros: macrosFor(el), throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
         stats.ok++;
       } catch (err) {
         el.textContent = tex;
@@ -113,7 +124,7 @@
     var opts = function (dollars) {
       var d = [{ left: '\\(', right: '\\)', display: false }, { left: '\\[', right: '\\]', display: true }];
       if (dollars) { d.unshift({ left: '$$', right: '$$', display: true }); d.push({ left: '$', right: '$', display: false }); }
-      return { delimiters: d, throwOnError: true, strict: 'ignore', errorCallback: function () { stats.failed++; }, ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'option'] };
+      return { delimiters: d, throwOnError: true, strict: 'ignore', preProcess: keepShort, errorCallback: function () { stats.failed++; }, ignoredTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code', 'option'] };
     };
     var a = (scope || doc).querySelectorAll('.tex-auto:not([data-done])');
     for (var i = 0; i < a.length; i++) { a[i].setAttribute('data-done', '1'); try { window.renderMathInElement(a[i], opts(false)); } catch (e) { stats.failed++; } }

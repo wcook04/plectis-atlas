@@ -24,9 +24,11 @@
 
   function typeset(node) {
     var tex = node.textContent;
+    var display = node.getAttribute('data-d') === '1';
     try {
-      window.katex.render(tex, node, {
-        displayMode: node.getAttribute('data-d') === '1',
+      // A short inline formula stays on one line (atlas.js keepShort).
+      window.katex.render(!display && window.atlasKeepShortMath ? window.atlasKeepShortMath(tex) : tex, node, {
+        displayMode: display,
         macros: Object.assign({}, macros),
         throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000,
         leqno: opts.leqno, fleqn: opts.fleqn

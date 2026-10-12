@@ -2447,7 +2447,10 @@
         var s = spans[i], tex = s.textContent;
         s.setAttribute('data-done', '1');
         try {
-          window.katex.render(tex, s, { displayMode: s.getAttribute('data-d') === '1', macros: macros, throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
+          // A short inline formula stays on one line (atlas.js keepShort).
+          var display = s.getAttribute('data-d') === '1';
+          var src = !display && window.atlasKeepShortMath ? window.atlasKeepShortMath(tex) : tex;
+          window.katex.render(src, s, { displayMode: display, macros: macros, throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
         } catch (err) { s.textContent = tex; s.classList.add('m-fail'); }
       }
       if (window.atlasRenderMath) window.atlasRenderMath(el);

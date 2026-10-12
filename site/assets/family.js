@@ -119,8 +119,10 @@
     for (var i = 0; i < spans.length; i++) {
       var tex = spans[i].textContent;
       if (!window.katex) break;
+      var display = spans[i].getAttribute('data-d') === '1';
       try {
-        window.katex.render(tex, spans[i], { displayMode: spans[i].getAttribute('data-d') === '1', macros: Object.assign({}, macros),
+        // A short inline formula stays on one line (atlas.js keepShort).
+        window.katex.render(!display && window.atlasKeepShortMath ? window.atlasKeepShortMath(tex) : tex, spans[i], { displayMode: display, macros: Object.assign({}, macros),
           throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
       } catch (e) { spans[i].textContent = tex; spans[i].classList.add('pr-m--fail'); }
     }
