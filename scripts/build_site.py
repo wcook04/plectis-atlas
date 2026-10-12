@@ -2767,9 +2767,24 @@ def build_statement(stmt):
     human_name = summ.get("name")
     subtitle = (f'<p class="phead__sub"><code>{esc(sid)}</code></p>' if not human_name or human_name == label
                 else f'<p class="phead__sub"><span class="md-math">{esc(human_name)}</span> <code>{esc(sid)}</code></p>')
+    # The action that opens the paper theorem and the qualification of the pairing it
+    # follows form one group: the button says which theorem it opens (the candidate, the
+    # cited or the declared one), and the line above it says which theorem that is and
+    # that nobody has reviewed the match. Once for the group, before the action.
     reading_href = (root + paper_rec["reading_page"]) if paper_rec and paper_rec.get("reading_page") else None
-    read_primary = (f'<a class="btn btn--primary" href="{esc(reading_href)}">{esc(LW("page.read_in_paper"))}</a>' if reading_href
-                    else f'<a class="btn btn--primary" href="#h-claim">{esc(LW("page.read_candidates"))}</a>')
+    paired = pinfo["state"] in PAIRED_STATES and bool(paper_st)
+    if paired:
+        ref = esc(backend_printed(paper_rec, paper_st)) + " " + esc(LW("pairing.of")) + f' <span class="tex-auto">{ms_title_html(paper_ms)}</span>'
+        pair_line = esc(LW("page.pair_line." + pinfo["state"], ref="\x00")).replace("\x00", ref)
+        read_label = LW("page.read_in_paper." + pinfo["state"]) if reading_href else LW("page.read_below." + pinfo["state"])
+        read_primary = (f'<a class="btn btn--primary" href="{esc(reading_href or "#h-claim")}" aria-describedby="h-pair-line">'
+                        f'{esc(read_label)}</a>')
+    else:
+        pair_line = esc(evidence.say("pairing.unavailable"))
+        read_primary = f'<a class="btn btn--primary" href="#h-claim" aria-describedby="h-pair-line">{esc(LW("page.read_candidates"))}</a>'
+    action_group = (f'<div class="phead__go"><p class="phead__pair" id="h-pair-line">{pair_line}</p>'
+                    f'<p class="actions">{read_primary}<a class="btn btn--ghost" href="#h-runs">{esc(LW("page.read_runs"))}</a>'
+                    f'<a class="btn btn--quiet ext" href="{esc(check_url(sid))}" rel="noopener">{esc(LW("page.report_check"))}</a></p></div>')
     runs_section = lean_runs_html(lrec, root) if lrec else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
     readings_section = ""
     if doc:
@@ -2788,7 +2803,7 @@ def build_statement(stmt):
  {subtitle}
  <p class="phead__facts">{where}</p>
  <p class="phead__facts">{esc(main_line)}</p>
- <p class="actions">{read_primary}<a class="btn btn--ghost" href="#h-runs">{esc(LW('page.read_runs'))}</a><a class="btn btn--quiet ext" href="{esc(check_url(sid))}" rel="noopener">{esc(LW('page.report_check'))}</a></p>
+ {action_group}
 </header>
 {('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}
 <section class="band band--tight claim claim--lean" aria-labelledby="h-lean-read">
@@ -2969,22 +2984,25 @@ def build_explain():
         checks = ", ".join(say_e("check_kind." + c) for c in ev.checks if c in evidence.WORDS["check_kind"])
         checks = cap(checks) if checks else ""
         checks_cell = esc(checks) if checks else f'<span class="cell__none">{esc(C("explain.checks_none"))}</span>'
-        # explanations: the atlas's own records, then explanations by others
+        # explanations: what there is to read first (a reviewed explanation for the atlas,
+        # explanations by others, reported problems), then the state of the atlas's own
+        # explanation, qualified, then the offer to write one
         rev = reviewed_explanations(fid)
-        expl = [f'<span class="st st--{st}">{esc(C("explain.status_" + st))}</span>']
+        status = [f'<span class="st st--{st}">{esc(C("explain.status_" + st))}</span>']
         if ex:
-            expl.append(f'<span class="cell__sub">{esc(", ".join(e["name"] for e in ex))}</span>')
+            status.append(f'<span class="cell__sub">{esc(", ".join(e["name"] for e in ex))}</span>')
+        reading = []
         if others:
-            expl.append(f'<a class="cell__sub" href="families/{fid}.html#h-explain">'
-                        f'{esc(cap(C("explain.others_1") if others == 1 else C("explain.others_n", n=say(others))))}</a>')
+            reading.append(f'<a class="cell__sub" href="families/{fid}.html#h-explain">'
+                           f'{esc(cap(C("explain.others_1") if others == 1 else C("explain.others_n", n=say(others))))}</a>')
         if problems:
-            expl.append(f'<a class="cell__sub cell__warn" href="families/{fid}.html#h-problems">'
-                        f'{esc(cap(C("explain.problems_1") if problems == 1 else C("explain.problems_n", n=say(problems))))}</a>')
+            reading.append(f'<a class="cell__sub cell__warn" href="families/{fid}.html#h-problems">'
+                           f'{esc(cap(C("explain.problems_1") if problems == 1 else C("explain.problems_n", n=say(problems))))}</a>')
         if rev:
-            expl.append(f'<a class="cell__sub" href="{explanation_rel(rev[0], fid)}">{esc(C("explain.read"))}</a>')
+            expl = status + reading + [f'<a class="cell__sub" href="{explanation_rel(rev[0], fid)}">{esc(C("explain.read"))}</a>']
         else:
             claim = issue_url("claim", C("issues.claim", id=fid, title=tex_plain(f["title"]) if f else ev.name), family=fid)
-            expl.append(f'<a class="cell__sub ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>')
+            expl = reading + status + [f'<a class="cell__sub ext" href="{esc(claim)}" rel="noopener">{esc(C("explain.claim"))}</a>']
         rows.append(
             f'<tr id="f-{fid}" data-q="{esc((fid + " " + name_plain + " " + dname).lower())}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none") if k else "nolean"}" '
             f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}">'
