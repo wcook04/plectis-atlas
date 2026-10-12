@@ -1005,7 +1005,7 @@
     function boardFamily() { var o = sel ? obj(sel) : null; return partsReady && o && o.kind !== 'd' ? famOf(o) : -1; }
     function dateValue(s) { var t = s ? Date.parse(s) : NaN; return isFinite(t) ? t : Infinity; }
     // The opening of a statement, concisely: its first sentence (the second too when the
-    // first is short), formulas whole, a long displayed formula as an ellipsis, cut at a
+    // first is short), formulas whole, stopping before a long displayed formula, cut at a
     // word with an ellipsis past the budget (characters; a formula counts half its TeX).
     function excerpt(html, budget) {
       var tpl = document.createElement('template');
@@ -1016,7 +1016,7 @@
           if (c.nodeType === 3) { toks.push({ t: 'text', s: c.nodeValue }); continue; }
           if (c.nodeType !== 1) continue;
           if (c.classList.contains('m')) { toks.push({ t: c.getAttribute('data-d') === '1' ? 'dmath' : 'math', s: c.textContent }); continue; }
-          if (c.classList.contains('li-lab')) { toks.push({ t: 'text', s: c.textContent + ' ' }); continue; }
+          if (c.classList.contains('li-lab')) { toks.push({ t: 'label', s: c.textContent + ' ' }); continue; }
           if (/^(P|DIV|LI|OL|UL|BLOCKQUOTE)$/.test(c.tagName)) { toks.push({ t: 'break' }); walk(c); toks.push({ t: 'break' }); continue; }
           walk(c);
         }
@@ -1034,7 +1034,7 @@
         if (k.t === 'break') { space(); continue; }
         if (k.t === 'math' || k.t === 'dmath') {
           var tex = k.s.trim(), stop = /[.;,:]$/.exec(tex), body = stop ? tex.slice(0, -1).trim() : tex;
-          if (k.t === 'dmath' && body.length > 48) { space(); out += '…'; used += 2; if (stop && stop[0] === '.' && enough()) return { html: out, cut: false }; space(); continue; }
+          if (k.t === 'dmath' && body.length > 48) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
           var w = Math.max(2, body.length * 0.5);
           if (used + w > budget && used > 0) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
           if (k.t === 'dmath') space();
@@ -1051,7 +1051,7 @@
           if (used + piece.length > budget && used > 0) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
           opens(piece);
           out += escapeHtml(piece); used += piece.length;
-          if (ends(piece) && enough()) return { html: out, cut: false };
+          if (k.t !== 'label' && ends(piece) && enough()) return { html: out, cut: false };
         }
       }
       return { html: out.trim(), cut: false };
@@ -1970,13 +1970,38 @@
     function sectionHeading(key, label) {
       return '<h2 class="u-h2" id="u-section-' + key + '" tabindex="-1">' + escapeHtml(T(label)) + '</h2>';
     }
+    // The sidebar has room for source paragraphs, display maths and lists. Keep
+    // those blocks intact and take a prefix only; skipping an equation while
+    // retaining its following qualifier can change what a preview appears to say.
+    function statementPreview(html, budget) {
+      var source = document.createElement('template'), preview = document.createElement('div');
+      source.innerHTML = html || '';
+      var used = 0, cut = false;
+      for (var node = source.content.firstChild; node; node = node.nextSibling) {
+        var size = (node.textContent || '').trim().length;
+        if (used >= budget && size) { cut = true; break; }
+        preview.appendChild(node.cloneNode(true));
+        used += size;
+      }
+      return { html: preview.innerHTML, cut: cut };
+    }
+    function evidenceSection(det) {
+      return det && det.readers && det.readers.length ? 'readers' : 'evidence';
+    }
+    function familyEvidence(det, f, inResult) {
+      var section = evidenceSection(det);
+      var h = sectionHeading(section, section === 'readers' ? (inResult ? 'result.family_readers_heading' : 'family.readers_heading') : 'family.evidence_heading');
+      if (section === 'readers') h += para(T('family.readers_scope'));
+      h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(det ? det.evidence : T('key.' + f.tone) + '.') + '</span></p>';
+      return h + readersHtml(det);
+    }
     function resultRow(ri, preview) {
       var r = D.results[ri], det = detail(obj(r.id));
       var h = '<li>' + goBtn(r.id, '<span class="u-sub__t">' + escapeHtml(resultName(r)) + '</span>', 'u-sub');
       if (preview && det && det.html) {
-        var ex = excerpt(det.html, 480);
+        var ex = statementPreview(det.html, 700);
         h += '<div class="u-excerpt" data-u-paper="' + escapeHtml(D.papers[r.p].id) + '"><p class="u-role">' + escapeHtml(T('panel.preview')) + '</p>' +
-          '<div class="u-excerpt__text">' + ex.html + (ex.cut ? '…' : '') + '</div></div>' +
+          '<div class="u-excerpt__text">' + ex.html + (ex.cut ? '<p class="u-note">' + escapeHtml(T('panel.preview_continues')) + '</p>' : '') + '</div></div>' +
           goBtn(r.id, escapeHtml(T('panel.open_result')), 'u-inline u-excerpt__open');
       }
       return h + '</li>';
@@ -1989,7 +2014,7 @@
       var f = D.families[fi], det = detail(obj(f.id));
       var h = '<p class="u-kicker">' + escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })) + '</p>';
       if (!det) return h + loadingHtml(f.d, 'discipline.loading', 'discipline.failed');
-      h += sectionNav(['papers', 'lean', 'readers', 'connections'].filter(function (part) { return part !== 'lean' || f.lean.length; }));
+      h += sectionNav(['papers', 'lean', evidenceSection(det), 'connections'].filter(function (part) { return part !== 'lean' || f.lean.length; }));
       h += para(T('panel.family_counts', { papers: count('papers', f.papers.length), lean: count('lean', f.lean.length) }), 'u-facts');
       h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(T('key.' + f.tone)) + '</span></p>';
       h += '<figure class="u-cat"><figcaption>' + link(D.catalogue_url, T('family.catalogue')) + ' ' + escapeHtml(T('family.catalogue_says')) + '</figcaption>' +
@@ -2009,10 +2034,7 @@
       });
       h += '</ol>';
       if (f.lean.length) h += sectionHeading('lean', 'family.lean_list_heading') + '<ul class="u-subrows u-subrows--lean">' + f.lean.map(leanRow).join('') + '</ul>';
-      h += sectionHeading('readers', 'family.readers_heading');
-      h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(det.evidence) + '</span></p>';
-      h += readersHtml(det);
-      if (f.lean.length) h += para(T('family.readers_scope'));
+      h += familyEvidence(det, f, false);
       h += para(T(det.headline === 'candidate' ? 'family.headline_candidate' : 'family.headline_unresolved'));
       var more = [];
       if (det.checks) more.push(det.checks);
@@ -2072,7 +2094,8 @@
     /* A result: the theorem as printed, the Lean paired with it, and the ways on. */
     function resultHtml(ri) {
       var r = D.results[ri], p = D.papers[r.p], f = D.families[r.f], o = obj(r.id), det = detail(o);
-      var h = sectionNav(['statement', 'lean', 'readers']);
+      var fd = detail(obj(f.id));
+      var h = sectionNav(['statement', 'lean', evidenceSection(fd)]);
       h += '<p class="u-context">' + goBtn(p.id, escapeHtml(T('result.in_paper', { paper: p.short })), 'u-inline u-inline--plain') +
         (p.date ? ', <span class="u-nowrap">' + escapeHtml(p.date) + '</span>' : '') + '</p>';
       if (det && det.html) {
@@ -2102,11 +2125,7 @@
         }).join('') + '</ul>';
       } else h += para(T('result.unpaired'));
       h += para(r.num ? T('result.numbering_note') : r.nn ? T('result.unnumbered') : T('result.number_unavailable'));
-      var fd = detail(obj(f.id));
-      h += sectionHeading('readers', 'family.readers_heading');
-      h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(fd ? fd.evidence : T('key.' + f.tone) + '.') + '</span></p>';
-      h += readersHtml(fd);
-      if (f.lean.length) h += para(T('family.readers_scope'));
+      h += familyEvidence(fd, f, true);
       h += '<p class="u-note">' + goBtn(f.id, escapeHtml(T('result.whole_family', { name: f.title })), 'u-inline') + '</p>';
       return h;
     }
