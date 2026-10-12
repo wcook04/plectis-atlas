@@ -847,7 +847,9 @@
       if (hoverVia === 'touch' || (hoverVia !== 'focus' && !(hoverMQ && hoverMQ.matches))) return null;
       var S = chart.shown;
       if (o.kind === 'd') return S.level === 'release' && !chart.start ? o : null;
-      if (o.kind === 'f') return S.nodes[o.i] && S.nodes[o.i].a > 0.5 && !chart.start && S.level !== 'fam' ? o : null;
+      // At discipline depth the labelled circles and sidebar provide the preview.
+      // A floating duplicate would cover neighbouring families and intercept clicks.
+      if (o.kind === 'f') return S.nodes[o.i] && S.nodes[o.i].a > 0.5 && !chart.start && S.level === 'release' ? o : null;
       return null;
     }
     function pairKind(st) { return st === 'candidate-pairing' ? 'candidate' : st === 'producer-declared-binding' ? 'declared' : 'cited'; }
