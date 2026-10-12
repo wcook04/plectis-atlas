@@ -859,7 +859,7 @@
         var closest = null, distance = Infinity;
         for (var fi = 0; fi < fams.length; fi++) {
           var q = S.nodes[fi];
-          if (!q || q.a <= 0.5) continue;
+          if (!q || q.a < 0.01) continue;
           var d = Math.hypot(x - q.x, y - q.y);
           if (d <= q.r + 2 && d < distance) { closest = D.families[fi].id; distance = d; }
         }
@@ -1396,6 +1396,7 @@
       if (!board.pending) return;
       board.pending = false;
       board.on = true;
+      boardEl.removeAttribute('inert');
       root.setAttribute('data-board', '');
       boardEl.classList.add('is-on');
       hover = null; hideCard();
@@ -1406,6 +1407,9 @@
     }
     function hideBoard() {
       board.pending = false;
+      // The outgoing board may still be fading, but its old controls must stop
+      // catching clicks or keyboard focus as soon as the map becomes current.
+      boardEl.setAttribute('inert', '');
       if (!board.on) { board.fi = -1; board.sig = ''; return; }
       board.on = false; board.fi = -1; board.sig = '';
       boardEl.classList.remove('is-on');
@@ -2457,7 +2461,7 @@
     }
 
     /* ---- Events --------------------------------------------------------- */
-    var lastPointerType = '';
+    var lastPointerType = '', mapPress = null;
     function localXY(e) { var r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
     canvas.addEventListener('pointermove', function (e) {
       var p = localXY(e), h = hitAt(p[0], p[1]);
@@ -2490,10 +2494,22 @@
       cardPtr = null;
       if (hover && hoverVia !== 'list' && hoverVia !== 'focus') { hover = null; hoverVia = ''; canvas.classList.remove('is-over'); syncActive(); draw(); }
     });
-    canvas.addEventListener('pointerdown', function (e) { lastPointerType = e.pointerType || ''; });
+    canvas.addEventListener('pointerdown', function (e) {
+      lastPointerType = e.pointerType || '';
+      mapPress = null;
+      if (e.button !== 0 || e.isPrimary === false) return;
+      var p = localXY(e);
+      // Keep the object the reader pressed: a moving disc may have left that
+      // position (or another may have arrived there) by the time they release.
+      mapPress = { key: hitAt(p[0], p[1], true), x: p[0], y: p[1], selection: sel, moving: !!chart.start };
+    });
+    canvas.addEventListener('pointercancel', function () { mapPress = null; });
     canvas.addEventListener('click', function (e) {
-      var p = localXY(e), key = hitAt(p[0], p[1], true);
-      if (!key) { if (sel && !chart.start) stepBack(); return; }
+      var p = localXY(e), press = mapPress;
+      mapPress = null;
+      if (press && (press.selection !== sel || Math.hypot(p[0] - press.x, p[1] - press.y) > 8)) return;
+      var key = press && (press.key || press.moving) ? press.key : hitAt(p[0], p[1], true);
+      if (!key) { if (sel && !chart.start && !(press && press.moving)) stepBack(); return; }
       if (key === sel) return;
       select(key, { trail: true });
     });
