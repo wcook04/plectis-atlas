@@ -397,13 +397,19 @@ a paper to read its abstract and statement previews, then a result to read the
 whole statement and its recorded Lean links. A Lean selection shows its human
 label, challenge snippet, paper preview and attributed re-runs.
 
-Use the source abstract and the existing statement excerpt renderer, with each
-paper's own macros. A preview is labelled and opens the full statement; it is
-not a new summary or a verdict. Keep paper titles and Lean identifiers in the
-selection heading once. Family result counts mean results drawn on this map.
+Use the source abstract and each paper's own macros. Sidebar previews keep
+whole paragraphs, displayed formulae and lists in source order. Cut only
+between blocks, mark any continuation and keep the full statement one click
+away; never omit an equation then retain its qualifier. A preview is labelled
+and is not a new summary or a verdict. Reader sections appear only when reader
+records exist; otherwise use an evidence heading. Put the family scope before
+attributed assessments, including when they appear under one selected result.
+Keep paper titles and Lean identifiers in the selection heading once. Family result counts mean results drawn on this map.
 Section buttons move within the sidebar without changing the selected object,
 map position or URL. The sidebar has one vertical scrollbar, including long
-Lean snippets; source code may still scroll horizontally.
+Lean snippets; source code may still scroll horizontally. Compact map cards
+stop before an omitted formula instead of carrying on after it; a numbered
+list marker alone is not a sentence or a useful preview.
 
 ## Quality floor
 
