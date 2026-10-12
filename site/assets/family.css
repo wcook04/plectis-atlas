@@ -16,7 +16,11 @@
 }
 
 /* ---- The head ---------------------------------------------------------- */
-.fx-head > :not(.fx-bar) { max-width: 62rem; }
+.fx { --fx-col: 100%; --fx-rail: 0px; --fx-gap: 0px; }
+@media (min-width: 1240px) { .fx { --fx-col: 52rem; --fx-rail: 232px; --fx-gap: 48px; } }
+@media (min-width: 1700px) { .fx { --fx-col: 68rem; --fx-rail: 260px; --fx-gap: 56px; } }
+.fx-head > :not(.fx-bar) { max-width: var(--fx-col); }
+.fx-head > .fx-bar { max-width: calc(var(--fx-col) + var(--fx-gap) + var(--fx-rail)); }
 .fx-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; margin-bottom: 16px; }
 .fx-bar .trail { margin: 0; }
 .fx-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
@@ -31,18 +35,18 @@
 .fx-fact { max-width: var(--fx-measure); margin: 14px 0 0; font-size: var(--fs-body); color: var(--ink-soft); line-height: 1.55; }
 .fx-fact a:not(.ext) { color: var(--ink-soft); text-decoration-color: var(--rule-control); }
 .fx-nw { white-space: nowrap; }
-.fx-diagram { display: block; margin: 0.6em 0; padding: 8px 12px; border: 1px dashed var(--rule-strong); border-radius: var(--r-sm); font-family: var(--sans); font-size: var(--fs-small); color: var(--muted); }
+.fx-diagram, .fx-st .stmt__diagram { display: block; margin: 0.6em 0; padding: 8px 12px; border: 1px dashed var(--rule-strong); border-radius: var(--r-sm); font-family: var(--sans); font-size: var(--fs-small); color: var(--muted); }
 
 /* ---- Body and side column ------------------------------------------------ */
 .fx-body { margin-top: 8px; }
 .fx-main { min-width: 0; container-type: inline-size; container-name: fxmain; }
-.fx-aside { display: none; }
+.fx-aside .fx-toc { display: none; }
 @media (min-width: 1240px) {
-  .fx-body { display: grid; grid-template-columns: minmax(0, 1fr) 264px; gap: 56px; align-items: start; }
+  .fx-body { display: grid; grid-template-columns: minmax(0, var(--fx-col)) var(--fx-rail); gap: var(--fx-gap); align-items: start; justify-content: start; }
+  .fx-aside .fx-toc { display: block; }
   .fx-aside { display: block; position: sticky; top: 16px; max-height: calc(100vh - 32px); overflow: auto; padding-top: 28px; }
   .fx-aside__in { display: grid; gap: 18px; }
 }
-@media (min-width: 1700px) { .fx-body { grid-template-columns: minmax(0, 1fr) 320px; gap: 72px; } }
 .fx-toc__h { margin: 0 0 6px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
 .fx-toc ol { list-style: none; margin: 0; padding: 0; border-left: 1px solid var(--rule); }
 .fx-toc li a { display: block; padding: 4px 0 4px 12px; margin-left: -1px; border-left: 1px solid transparent; font-size: var(--fs-meta); color: var(--muted); text-decoration: none; line-height: 1.35; }
@@ -67,7 +71,7 @@
 .fx-plain code, .fx-left code, .fx-draft code, .fx-rd code, .fx-join code { font-family: var(--fx-lean-mono); font-size: 0.86em; overflow-wrap: anywhere; }
 
 /* ---- A paper statement, exactly as printed ---------------------------------- */
-.fx-st { margin: 0 0 18px; padding: 18px 22px 12px; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-lg); scroll-margin-top: 12px; max-width: 52rem; }
+.fx-st { margin: 0 0 18px; padding: 18px 22px 12px; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-lg); scroll-margin-top: 12px; }
 .fx-st__head { font-family: var(--serif); font-size: 1.125rem; line-height: 1.35; font-weight: 400; margin: 0 0 2px; }
 .fx-st__kind { font-weight: 700; color: var(--ink); }
 .fx-st__title { font-style: italic; color: var(--ink-soft); }
@@ -85,7 +89,7 @@
 .fx-st__none { margin: 0 0 6px; font-family: var(--serif); font-size: 1.0625rem; color: var(--ink-soft); }
 
 /* The centrepiece: the theorem, set large. */
-.fx-st--big { padding: 24px 36px 18px; max-width: 54rem; border-color: var(--rule-strong); }
+.fx-st--big { padding: 24px 36px 18px; border-color: var(--rule-strong); }
 .fx-st--big .fx-st__head { font-size: 1.5rem; margin-bottom: 4px; }
 .fx-st--big .fx-st__src { font-size: var(--fs-meta); margin-bottom: 18px; }
 .fx-st--big .fx-st__body { font-size: 1.3125rem; line-height: 1.6; }
@@ -96,12 +100,12 @@
   .fx-st--big .fx-st__head { font-size: 1.3rem; }
   .fx-st--big .fx-st__body { font-size: 1.15rem; }
 }
-.fx-cand { max-width: 36rem; margin: 12px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
+.fx-cand { max-width: 80ch; margin: 12px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
 .fx-cand--open { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink-soft); margin: 0 0 14px; max-width: var(--fx-measure); }
 .fx-h2--theorem { margin-bottom: 4px; font-size: 1.5rem; }
 
 /* Two lines kept apart: the formal status and the readable argument. */
-.fx-status { max-width: 52rem; margin: 22px 0 0; display: grid; gap: 0; }
+.fx-status { margin: 22px 0 0; display: grid; gap: 0; }
 .fx-status__row { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 4px 18px; padding: 10px 0; border-top: 1px solid var(--rule); }
 .fx-status__row:last-child { border-bottom: 1px solid var(--rule); }
 .fx-status dt { font-size: var(--fs-meta); font-weight: 600; color: var(--ink-soft); padding-top: 1px; }
@@ -111,19 +115,19 @@
 @media (max-width: 560px) { .fx-status__row { grid-template-columns: 1fr; } }
 
 /* Compact rows of statements (alternatives). */
-.fx-alts { list-style: none; margin: 4px 0 0; padding: 0; max-width: 52rem; }
+.fx-alts { list-style: none; margin: 4px 0 0; padding: 0; }
 .fx-alt { padding: 7px 0; border-top: 1px solid var(--rule); font-size: var(--fs-body); }
 .fx-alt__k { font-family: var(--serif); font-weight: 600; font-size: 1rem; }
 .fx-alt__p { color: var(--ink-soft); }
 .fx-alt__s { color: var(--muted); font-size: var(--fs-small); }
 .fx-alt .ins { font-size: var(--fs-small); color: var(--muted); white-space: nowrap; }
-.fx-others { margin-top: 22px; max-width: 52rem; }
+.fx-others { margin-top: 22px; }
 .fx-others .fx-h3 { margin-top: 0; font-size: 1.0625rem; }
 
 /* ---- The Lean beside the theorem ---------------------------------------------- */
 .fx-idx { margin: 18px 0 26px; }
 .fx-idx .fx-h3 { margin-top: 0; }
-.fx-idx__list { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
+.fx-idx__list { list-style: none; margin: 0; padding: 0; }
 .fx-idx__list li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; padding: 6px 0; border-top: 1px solid var(--rule); }
 .fx-idx__a { display: inline-flex; align-items: center; min-height: 24px; color: var(--ink-soft); text-decoration: none; }
 .fx-idx__t { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink); }
@@ -162,16 +166,17 @@
 .fx-lean__head a:hover { text-decoration: underline; }
 .fx-lean__file { margin: 0 0 10px; font-size: var(--fs-small); color: var(--muted); }
 .fx-lean__file code { font-family: var(--fx-lean-mono); color: var(--steel-text); overflow-wrap: anywhere; }
-.fx-lean__code { font-family: var(--fx-lean-mono); margin: 0 0 8px; max-height: 26rem; overflow: auto; }
+.fx-lean__code { font-family: var(--fx-lean-mono); margin: 0 0 8px; }
 .fx-lean__code code { font-family: inherit; }
 .fx-lean__code .x { color: var(--muted); font-weight: 600; }
 .fx-lean__more, .fx-lean__note, .fx-lean__runs, .fx-lean__go { margin: 6px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
 .fx-lean__more code, .fx-lean__note code { font-family: var(--fx-lean-mono); }
+.fx-lean__terms { list-style: none; margin: 4px 0 0; padding: 0; font-size: var(--fs-small); color: var(--ink-soft); line-height: 1.5; }
 .fx-forms { list-style: none; padding: 0; margin: 0; }
 .fx-forms li { margin: 12px 0; }
 
 /* ---- Who has checked it --------------------------------------------------------- */
-.fx-rds { display: grid; gap: 0 32px; max-width: 64rem; }
+.fx-rds { display: grid; gap: 0 32px; }
 @container fxmain (min-width: 760px) { .fx-rds { grid-template-columns: 1fr 1fr; } }
 .fx-rd { padding: 12px 0 8px; border-top: 1px solid var(--rule); min-width: 0; }
 .fx-rd__v { margin: 0 0 8px; font-family: var(--serif); font-size: 1.0625rem; line-height: 1.5; color: var(--ink); }
@@ -180,14 +185,14 @@
 .fx-rd__k { font-weight: 600; color: var(--ink-soft); }
 .fx-rd__def, .fx-rd__method { margin: 0 0 6px; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
 .fx-rd__links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 6px 0 0; font-size: var(--fs-small); }
-.fx-draft { list-style: none; margin: 18px 0 0; padding: 0; max-width: 46rem; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
+.fx-draft { list-style: none; margin: 18px 0 0; padding: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
 .fx-draft li { margin: 4px 0; }
 .fx-draft__k { font-weight: 600; }
 .fx-producer { margin-top: 18px; max-width: var(--fx-measure); }
 .fx-producer__h { margin: 0 0 4px; font-size: var(--fs-meta); font-weight: 600; }
 .fx-producer__q { margin: 0; padding-left: 14px; border-left: 2px solid var(--rule-strong); font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); }
 
-.fx-rg { margin: 14px 0 0; max-width: 60rem; scroll-margin-top: 12px; }
+.fx-rg { margin: 14px 0 0; scroll-margin-top: 12px; }
 .fx-rg__h { margin: 0 0 4px; }
 .fx-rg__h code { font-family: var(--fx-lean-mono); font-size: 0.875rem; color: var(--steel-text); overflow-wrap: anywhere; }
 .fx-runs { list-style: none; margin: 0; padding: 0; }
@@ -197,25 +202,23 @@
 .fx-run__det { color: var(--muted); }
 .fx-run .ins, .fx-rd .ins, .fx-card .ins { font-size: var(--fs-small); color: var(--muted); }
 
-.fx-cards { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
+.fx-cards { list-style: none; margin: 0; padding: 0; }
 .fx-card { padding: 10px 0; border-top: 1px solid var(--rule); }
 .fx-card__s { margin: 0 0 4px; font-size: var(--fs-body); line-height: 1.5; color: var(--ink); }
 .fx-card__w { margin: 0 0 4px; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
 .fx-card__l { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; margin: 4px 0 0; font-size: var(--fs-small); }
 
-.fx-finds { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
+.fx-finds { list-style: none; margin: 0; padding: 0; }
 .fx-find { padding: 9px 0; border-top: 1px solid var(--rule); }
 .fx-find__what { margin: 0; font-size: var(--fs-body); line-height: 1.55; color: var(--ink); max-width: 64ch; }
 .fx-find__who { margin: 3px 0 0; font-size: var(--fs-small); color: var(--muted); }
 #problems + .fx-intro + .fx-finds .fx-find { border-top-color: color-mix(in oklab, var(--brick) 35%, var(--rule)); }
 
 /* Rows of prose keep a reading measure, whatever the column's width. */
-.fx-run, .fx-find__what, .fx-find__who, .fx-left__i, .fx-card__s, .fx-card__w, .fx-alt, .fx-idx__list li, .fx-plain li, .fx-draft__list li, .fx-rd__note { max-width: 46rem; }
-.fx-run__more, .fx-left__names { max-width: 52rem; }
 
 /* ---- What is left to check --------------------------------------------------------- */
 .fx-left__g .fx-h3 { font-size: 1.0625rem; margin-top: 24px; }
-.fx-left { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
+.fx-left { list-style: none; margin: 0; padding: 0; }
 .fx-left__i { padding: 7px 0; border-top: 1px solid var(--rule); font-size: var(--fs-body); line-height: 1.5; color: var(--ink-soft); }
 .fx-left__t { font-weight: 600; color: var(--ink); }
 .fx-left__r { overflow-wrap: break-word; }
@@ -237,7 +240,7 @@
 .fx-checks a { margin-right: 4px; }
 .fx-forms-wrap { margin-top: 28px; }
 .fam-numstate { font-weight: 400; font-style: italic; color: var(--muted); font-size: 0.92em; }
-.fx-pps { list-style: none; margin: 0; padding: 0; max-width: 60rem; }
+.fx-pps { list-style: none; margin: 0; padding: 0; }
 .fx-pp { padding: 8px 0; border-top: 1px solid var(--rule); font-family: var(--serif); font-size: 1.0625rem; scroll-margin-top: 12px; }
 .fx-pp a:first-child { color: var(--ink); }
 .fx-pp__m { font-family: var(--sans); font-size: var(--fs-small); color: var(--muted); }
@@ -269,3 +272,35 @@
   }
 }
 @keyframes fx-typeset { to { visibility: visible; } }
+
+/* ---- One reading measure ----------------------------------------------------------
+   Cards, lists and rules share the column's right edge; the prose inside them keeps a
+   reading measure near 60 to 80 characters, and displayed equations take their own
+   width. Nothing scrolls inside the column, and nothing is clamped. */
+.fx-main :is(p, li) { max-width: 72ch; }
+.fx-st__body p, .fx-st__body li { max-width: 72ch; }
+.fx-st__foot p, .fx-cmp__grid p { max-width: none; }
+.fx-cmp__grid .fx-st__body p { max-width: 72ch; }
+
+/* The state of a possible match, and the quiet way to how it was found. */
+.fx-why { font-size: var(--fs-small); color: var(--muted); margin-left: 4px; white-space: nowrap; }
+
+/* The Lean statements, one row each. */
+.fx-idx__list li { display: block; padding: 8px 0; }
+.fx-idx__id { font-size: var(--fs-small); color: var(--muted); }
+.fx-idx__id code { font-family: var(--fx-lean-mono); color: var(--steel-text); overflow-wrap: anywhere; }
+.fx-idx__m { display: block; font-size: var(--fs-small); color: var(--ink-soft); line-height: 1.5; }
+
+/* A cited passage, read in place under the theorem (family.js). */
+.fx-src { margin: 14px 0 4px; padding: 10px 0 8px 16px; border-left: 2px solid var(--rule-control); }
+.fx-src__h { margin: 0 0 6px; font-size: var(--fs-small); font-weight: 600; color: var(--ink-soft); }
+.fx-src__h:focus { outline: none; }
+.fx-src__h:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+.fx-src__body { font-family: var(--serif); font-size: 1rem; line-height: 1.6; color: var(--ink); }
+.fx-src__body p { margin: 0 0 0.5em; max-width: 64ch; }
+.fx-src__body .pr-eq { margin: 0.5em 0; overflow-x: auto; overflow-y: hidden; }
+.fx-src__body .pr-thm-h { font-weight: 700; }
+.fx-src__body .pr-thm-note { font-weight: 400; font-style: italic; }
+.fx-src__body .pr-m--fail { font-family: var(--mono); font-size: 0.85em; }
+.fx-src__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 6px 0 0; font-size: var(--fs-small); }
+.fx-st__body a.xref[aria-expanded="true"] { text-decoration-style: solid; }

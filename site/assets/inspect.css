@@ -51,7 +51,7 @@
 .ins-rail--float { position: fixed; z-index: 70; right: 16px; bottom: 16px; width: min(400px, calc(100vw - 32px)); max-height: 70vh;
   box-shadow: 0 2px 4px rgba(25, 21, 32, 0.08), 0 14px 32px -12px rgba(25, 21, 32, 0.32); }
 .ins-rail--float .ins-rail__body { max-height: calc(70vh - 60px); }
-@media (max-width: 1099px) {
+@media (max-width: 1239px) {
   .ins-rail { position: fixed; z-index: 70; left: 0; right: 0; bottom: 0; width: auto; max-height: 72vh; border-radius: var(--r-lg, 10px) var(--r-lg, 10px) 0 0;
     border-width: 1px 0 0; padding: 10px 16px calc(16px + env(safe-area-inset-bottom, 0px));
     box-shadow: 0 -2px 4px rgba(25, 21, 32, 0.06), 0 -14px 32px -12px rgba(25, 21, 32, 0.3); }
