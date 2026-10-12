@@ -1113,7 +1113,10 @@ def adopted_list_html(adopted):
 
 
 def cover_label(cls):
-    return COPY["statement"]["coverage_classes"].get(cls, cls.replace("-", " ")) if cls else C("statement.coverage_unclassified")
+    """An AI draft's scope class (scope_draft.value.class, as the backend normalises it) in the
+    words every page uses for it (site/copy_evidence.json, draft_class). The draft judges a
+    statement against a theorem of its paper, which is never named as the headline."""
+    return evidence.WORDS["draft_class"].get(cls, cls.replace("_", " ").replace("-", " ")) if cls else C("statement.coverage_unclassified")
 
 
 
@@ -2593,10 +2596,9 @@ def scope_draft_html(fid, doc, rec) -> str:
                 f'{esc(C("statement.coverage_source"))}</a></footer>') if note_url else ""
         parts.append(f'<p class="scope__src">{esc(C("statement.note_heading"))}</p>'
                      f'<blockquote class="quote md-math"><p>“{esc(val["quote"])}”</p>{foot}</blockquote>')
-    cls = val.get("source_class")
+    cls = val.get("class")
     if cls:
-        label = cover_label(cls)
-        parts.append(f'<p class="scope__draft">{esc(C("statement.draft_line", cls=label[0].lower() + label[1:]))}</p>')
+        parts.append(f'<p class="scope__draft">{esc(C("statement.draft_line", cls=cover_label(cls)))}</p>')
     return '<div class="scope">' + "".join(parts) + "</div>"
 
 

@@ -1497,7 +1497,7 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         if holes:
             reasons.append((90 + len(holes), "definition-holes", f"{len(holes)} definition hole{'s' if len(holes) != 1 else ''}: Comparator compares {'these' if len(holes) != 1 else 'it'} by name and type only, so a reader checks what each solution body means."))
         if row and row["class"] == "unclear":
-            reasons.append((85, "unclear-scope", "The draft scope reading could not tell from OpenAI's note how much of the paper's headline result this file states."))
+            reasons.append((85, "unclear-scope", "The AI draft scope reading could not tell from OpenAI's note how much of a paper's theorem this file states."))
         if row and row.get("needs_specialist"):
             reasons.append((80, "needs-specialist", "The draft scope reading depends on mathematics a specialist should settle."))
         twins = sorted({x for t in cfg.get("theorem_names") or [] for x in targets[(cfg.get("solution_module"), t)]} - {c["id"]})
@@ -1513,9 +1513,9 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         if "disagree" in agree:
             reasons.append((75, "readers-disagree", "Two independent readers, MathVet and cert-machine, disagree on whether this family's challenges state its headline; a specialist reading would settle it."))
         if "agree-less" in agree and row and row["class"] == "headline":
-            reasons.append((72, "draft-more-generous", "Both independent readers find this family's challenges state less than its headline, while the atlas's draft reading marks this file as stating a paper's headline theorem; check which part of the headline it covers."))
+            reasons.append((72, "draft-more-generous", "Both independent readers find this family's challenges state less than its headline, while the atlas's AI draft classes this file as stating a paper's theorem as the paper does; check which part of the headline it covers."))
         if row and row["class"] != "headline" and any(f in no_full for f in c["families"]):
-            reasons.append((5, "family-without-full-headline", "No Lean statement in its family states the paper's full headline theorem."))
+            reasons.append((5, "family-without-full-headline", "The AI draft finds no Lean statement in its family that states a paper's theorem as the paper does."))
         queue.append({"statement": c["id"], "families": c["families"], "priority": sum(p for p, _, _ in reasons),
                       "reasons": [{"kind": k, "text": t} for _, k, t in sorted(reasons, key=lambda r: -r[0])]})
     queue.sort(key=lambda r: (-r["priority"], r["statement"]))
@@ -1526,9 +1526,9 @@ def build(upstream: Path, out: Path, quiet: bool = False):
         "first": [r["statement"] for r in queue[:25]],
         "rule": ("Points per reason, highest first: a configuration with no theorem target 100; definition holes 90 plus one per hole; "
                  "unclear draft scope 85; a draft scope reading needing a specialist 80; independent readers disagreeing on the family 75; "
-                 "both independent readers finding less than the headline where the atlas's draft says headline 72; a target theorem shared with another file 70; "
+                 "both independent readers finding less than the headline where the atlas's AI draft says the file states a paper's theorem as the paper does 72; a target theorem shared with another file 70; "
                  "an axiom in the challenge 60; no local vocabulary but OpenAI imports 50; 100 or more local declarations 20 plus one per hundred "
-                 "(capped); a family with no full-headline statement 5. Ties go alphabetically. The order allocates reading; it is no verdict."),
+                 "(capped); a family in which the AI draft finds no statement of a paper's theorem as the paper does 5. Ties go alphabetically. The order allocates reading; it is no verdict."),
     }
     summary["lean_distinct_target_theorems"] = len(targets)
 

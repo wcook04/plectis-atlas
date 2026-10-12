@@ -778,7 +778,7 @@ def readings_html(c: Ctx) -> str:
         val = sd.get("value") or {}
         if sd.get("state") != "ai-draft" or not val:
             continue
-        cls = W("readings.draft_classes").get(val.get("class"), val.get("class") or "")
+        cls = evidence.WORDS["draft_class"].get(val.get("class"), val.get("class") or "")
         drafts.append(f'<li><span class="fx-draft__k">{esc(W("readings.draft_label"))}</span> <code translate="no">{esc(l["id"][2:])}</code>: {esc(cls)}. '
                       f'<span class="md-math">{code_spans(val.get("note") or "")}</span></li>')
     draft_html = ""

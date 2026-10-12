@@ -77,5 +77,14 @@
   "different-scope-descriptions:disagree": "The two outside readers disagree on how much of the headline the Lean states.",
   "unavailable:unknown": "No outside reader has compared a Lean statement with this family’s headline."
  },
- "no_lean": "The release has no Lean statement for this family. The papers can still be read and checked."
+ "no_lean": "The release has no Lean statement for this family. The papers can still be read and checked.",
+ "_draft_class_note": "An AI agent's unreviewed draft class for one Lean statement (scope_draft.value.class), in the same words on the family page, the Lean statement's page and the numbers page. The draft judges each statement against a theorem of one of its papers, which need not be the theorem the statement is paired with or the theorem the catalogue describes, so no class is worded as the headline.",
+ "draft_class": {
+  "as_stated": "states a paper’s theorem as the paper does",
+  "part": "states part of a paper’s theorem",
+  "weaker": "states a weaker form of a paper’s theorem",
+  "consequence": "states a consequence of a paper’s theorem",
+  "supporting": "states a supporting result",
+  "unclear": "unclear"
+ }
 }

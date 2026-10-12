@@ -930,7 +930,7 @@
    "Cotype",
    "EntropyPhotonNumber"
   ],
-  "rule": "Points per reason, highest first: a configuration with no theorem target 100; definition holes 90 plus one per hole; unclear draft scope 85; a draft scope reading needing a specialist 80; independent readers disagreeing on the family 75; both independent readers finding less than the headline where the atlas's draft says headline 72; a target theorem shared with another file 70; an axiom in the challenge 60; no local vocabulary but OpenAI imports 50; 100 or more local declarations 20 plus one per hundred (capped); a family with no full-headline statement 5. Ties go alphabetically. The order allocates reading; it is no verdict."
+  "rule": "Points per reason, highest first: a configuration with no theorem target 100; definition holes 90 plus one per hole; unclear draft scope 85; a draft scope reading needing a specialist 80; independent readers disagreeing on the family 75; both independent readers finding less than the headline where the atlas's AI draft says the file states a paper's theorem as the paper does 72; a target theorem shared with another file 70; an axiom in the challenge 60; no local vocabulary but OpenAI imports 50; 100 or more local declarations 20 plus one per hundred (capped); a family in which the AI draft finds no statement of a paper's theorem as the paper does 5. Ties go alphabetically. The order allocates reading; it is no verdict."
  },
  "lean_distinct_target_theorems": 536,
  "metric_receipts": [

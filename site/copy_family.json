@@ -152,14 +152,6 @@
   "draft_label": "Unreviewed AI draft.",
   "draft_heading": "An AI agent’s draft classifications, which nobody has reviewed",
   "draft_fold": "{n} AI draft classifications, which nobody has reviewed",
-  "draft_classes": {
-   "as_stated": "states the theorem as the paper does",
-   "part": "states part of the theorem",
-   "weaker": "states a weaker statement",
-   "consequence": "states a consequence",
-   "supporting": "states a supporting step",
-   "unclear": "unclear"
-  },
   "producer": "OpenAI’s own note on what its Lean covers",
   "producer_more": "Read the rest of OpenAI’s note",
   "nolean": "With no Lean statement in the release, there is nothing for an outside reader to compare with the headline."
