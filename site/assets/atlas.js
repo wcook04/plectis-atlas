@@ -180,7 +180,7 @@
     var p = container && container.querySelector('[data-shown-template]');
     if (p) p.textContent = p.getAttribute('data-shown-template').replace('{n}', n.toLocaleString('en-GB'));
   }
-  function sortTable(table, idx, numeric, dir) {
+  function sortTable(table, idx, numeric, dir, remember) {
     var body = table.tBodies[0];
     table.querySelectorAll('th').forEach(function (h) { h.setAttribute('aria-sort', 'none'); });
     var btn = table.querySelector('button.sort[data-sort="' + idx + '"]');
@@ -192,6 +192,16 @@
       return dir === 'ascending' ? c : -c;
     });
     rows.forEach(function (r) { body.appendChild(r); });
+    doc.querySelectorAll('select[data-sort-table]').forEach(function (sel) {
+      if (sel.getAttribute('data-sort-table') !== table.id) return;
+      var value = idx + ':' + (numeric ? 'n' : 's') + ':' + dir;
+      if (Array.prototype.some.call(sel.options, function (opt) { return opt.value === value; })) sel.value = value;
+    });
+    if (remember !== false && window.history && history.replaceState) {
+      var params = new URLSearchParams(location.search);
+      params.set('sort', idx + ':' + dir);
+      history.replaceState(history.state, '', location.pathname + '?' + params.toString() + location.hash);
+    }
   }
   Array.prototype.forEach.call(doc.querySelectorAll('.tbl--sortable'), function (table) {
     table.querySelectorAll('button.sort').forEach(function (btn) {
@@ -203,6 +213,11 @@
         sortTable(table, +btn.getAttribute('data-sort'), numeric, dir);
       });
     });
+    // Reconstruct the chosen order when Back reloads the list instead of restoring
+    // its DOM from the browser's page cache. Only accept an existing sort column.
+    var saved = /^(\d+):(ascending|descending)$/.exec(new URLSearchParams(location.search).get('sort') || '');
+    var savedButton = saved && table.querySelector('button.sort[data-sort="' + saved[1] + '"]');
+    if (savedButton) sortTable(table, +saved[1], savedButton.getAttribute('data-type') === 'n', saved[2], false);
   });
   /* On a phone the column heads are hidden: a menu sorts the list instead
      (value "column:n|s:ascending|descending"). */
@@ -313,8 +328,8 @@
       if (empty) empty.hidden = n > 0;
       if (reset) reset.hidden = !KEYS.some(function (k) { return state[k]; });
       if (push !== false && window.history && history.replaceState) {
-        var u = new URLSearchParams();
-        KEYS.forEach(function (k) { if (state[k]) u.set(k, state[k]); });
+        var u = new URLSearchParams(location.search);
+        KEYS.forEach(function (k) { if (state[k]) u.set(k, state[k]); else u.delete(k); });
         history.replaceState(null, '', location.pathname + (u.toString() ? '?' + u.toString() : '') + location.hash);
       }
     }
