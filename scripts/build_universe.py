@@ -532,6 +532,19 @@ def family_map(model, fi, centre_of):
         g = hi if fi == lo else lo
         out_w, in_w = (a, b) if fi == lo else (b, a)
         ends[g] = {"g": g, "way": (1 if out_w else 0) | (2 if in_w else 0), "papers": f["papers"][:1]}
+    # Which of this family's papers carry each citation (the board draws its lines to
+    # them): papers citing that family's papers, and papers its papers cite.
+    own = {model["papers"][p]["id"]: k for k, p in enumerate(f["papers"])}
+    for g, e in ends.items():
+        theirs = {model["papers"][p]["id"] for p in model["families"][g]["papers"]}
+        out_p, in_p = set(), set()
+        for edge in paper_citations():
+            src, dst = "p:" + edge["source"], "p:" + (edge.get("target_latest") or edge["target"])
+            if src in own and dst in theirs:
+                out_p.add(own[src])
+            if dst in own and src in theirs:
+                in_p.add(own[dst])
+        e["out"], e["in"] = sorted(out_p), sorted(in_p)
     fibres = []
     if ends:
         gs = sorted(ends)
@@ -542,7 +555,7 @@ def family_map(model, fi, centre_of):
         ang = spread(pref, 0.42, rounds=600)
         for g, a in zip(gs, ang):
             e = ends[g]
-            fibres.append([r4(a), g, e["way"], [f["papers"].index(p) for p in e["papers"]]])
+            fibres.append([r4(a), g, e["way"], e["out"], e["in"]])
     return {"rings": rings, "res": res_xy, "lean": lean_xy, "leanR": rl if has_lean else 0, "fibres": fibres}
 
 
@@ -599,6 +612,26 @@ def pack_sector(items, a0, a1, r_in, gap):
         placed.append((rho * math.cos(th), rho * math.sin(th), r))
         out[key] = (rho, th)
     return out
+
+
+def asset_version() -> str:
+    """A short hash of the map's own script and stylesheet, so a browser fetches them anew
+    whenever either changes (the data files carry the build's generation the same way)."""
+    h = hashlib.sha256()
+    for name in OWN_ASSETS:
+        h.update((SITE / "assets" / name).read_bytes())
+    return h.hexdigest()[:12]
+
+
+_PAPER_CITATIONS = None
+
+
+def paper_citations():
+    """The citations between two papers of the release (data/graph.json)."""
+    global _PAPER_CITATIONS
+    if _PAPER_CITATIONS is None:
+        _PAPER_CITATIONS = json.loads((ROOT / "data" / "graph.json").read_text(encoding="utf-8"))
+    return _PAPER_CITATIONS
 
 
 def build_layout(model):
@@ -1041,6 +1074,7 @@ def page_body(M, gen) -> str:
   <div class="u-panel__head">
    <nav class="u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail hidden></nav>
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
+   <p class="u-ground" data-u-ground>{esc(U('page.independent'))}</p>
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
     <input id="u-search-in" class="u-search__in" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(U('search.placeholder'))}" data-u-search>
@@ -1062,6 +1096,7 @@ def page_body(M, gen) -> str:
   <canvas class="u-canvas" role="img" aria-label="{esc(canvas_label)}" tabindex="0" data-u-canvas></canvas>
   <div class="u-visually-hidden" aria-live="polite" data-u-live></div>
   <div class="u-maplegend" data-u-legend hidden></div>
+  <div class="u-board" data-u-board role="region" aria-label="{esc(U('board.label'))}"></div>
   <button type="button" class="u-mapkey-btn" data-u-mapkey aria-expanded="false" aria-controls="u-mapkey">{esc(U('mapkey.button'))}</button>
   <div class="u-mapkey" id="u-mapkey" data-u-mapkey-panel hidden></div>
   <div class="u-tools">
@@ -1184,11 +1219,11 @@ def main():
         shutil.copy(ASSETS / name, OUT / "assets" / name)
     v = gen[7:19]
     extra = ('<link rel="stylesheet" href="assets/lean.css">\n'
-             '<link rel="stylesheet" href="assets/universe.css">\n'
+             f'<link rel="stylesheet" href="assets/universe.css?v={asset_version()}">\n'
              f'<link rel="preload" href="data/universe-data.json?v={v}" as="fetch" crossorigin>\n'
              f'<link rel="preload" href="data/universe-layout.json?v={v}" as="fetch" crossorigin>\n'
              '<meta name="format-detection" content="telephone=no">\n'
-             '<script defer src="assets/universe.js"></script>')
+             f'<script defer src="assets/universe.js?v={asset_version()}"></script>')
     body = page_body(M, gen)
     html_text = S.page("index.html", U("page.title"), U("page.description"), body, current="map",
                        extra_head=extra, main_class="u-main")

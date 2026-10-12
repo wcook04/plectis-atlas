@@ -601,6 +601,9 @@
     var toolsEl = root.querySelector('.u-tools');
     var legendEl = root.querySelector('[data-u-legend]');
     var restViewHtml = viewEl ? viewEl.innerHTML : '';
+    // The phone layout: the list and the map take turns under the switch.
+    var narrowMQ = window.matchMedia ? window.matchMedia('(max-width: 899px)') : null;
+    function narrow() { return !!(narrowMQ && narrowMQ.matches); }
 
     var reduceQuery = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
     var reduceMotion = !!(reduceQuery && reduceQuery.matches);
@@ -992,6 +995,7 @@
         viewFitted = !!fitted;
         settleRing();
         draw();
+        if (board.pending) showBoard();
       };
       cameraGoal = finish;
       if (reduceMotion || !window.requestAnimationFrame || !W) { finish(); return; }
@@ -1173,7 +1177,8 @@
       var srOpen = openF >= 0 ? detailR(openF) : 0;
       // The rest of the release gives way as a family's own map fills the view.
       var ctxA = openF >= 0 ? 1 - smooth((srOpen - 80) / 110) : 1;
-      var openA = openF >= 0 ? smooth((srOpen - 60) / 70) : 0;
+      // A family's own contents are read on the board (syncBoard), never drawn small here.
+      var openA = 0;
       // What the drawing shows eases; where the words stand follows the target at once,
       // so no name moves while the step back runs.
       var emT = famEmphasis(openF), easing = stepEmphasis(emT, famGrowth(openF));
@@ -1239,7 +1244,7 @@
       paintLabels(plan);
       paintPlates(plan);
       lastPlan = plan;
-      placeCard(cardFor, plan.boxes);
+      if (!board.on) placeCard(cardFor, plan.boxes);
       if (window.__universeDebug) window.__universeDebug.plan = plan;
     }
 
@@ -1349,7 +1354,7 @@
       // Seen whole, a family is one clean disc in its one colour. Its own map (papers,
       // results, Lean statements) comes up only as it is opened or grows large on
       // screen, and the disc steps back to a pale wash so that map can be read.
-      var inner = Math.max(open, smooth((sr - 90) / 70));
+      var inner = 0;
       ctx.save();
       ctx.beginPath();
       ctx.arc(sx, sy, sr, 0, TAU);
@@ -2159,6 +2164,529 @@
       if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
     }
 
+    /* ---- The family board ---------------------------------------------------
+       Inside a family the drawing gives way to a board of cards: the families whose
+       papers cite it on the left, its papers in columns (each result named as its paper
+       prints it, with the opening of its statement typeset, and the Lean statements
+       paired with it joined beneath), and the families its papers cite on the right.
+       Every name is on its card. Hover explains (the card beside it), click selects
+       (the panel shows the record), double-click or Enter opens, Escape steps back.
+       Lines are the board's only drawing: a result to the Lean statements paired with
+       it (dashed for a candidate pairing), and a neighbouring family to the papers that
+       carry the citation (brick where this family cites, grey where it is cited). */
+    var boardEl = root.querySelector('[data-u-board]');
+    var board = { fi: -1, sig: '', page: 0, per: 1, cols: 0, on: false, pending: false, budget: 170, hideT: 0, ringKey: null };
+    var SIDE_MAX = 8;
+    function boardFamily() { var o = sel ? obj(sel) : null; return partsReady && o && o.kind !== 'd' ? famOf(o) : -1; }
+    function dateValue(s) { var t = s ? Date.parse(s) : NaN; return isFinite(t) ? t : Infinity; }
+    // The opening of a statement, concisely: its first sentence (the second too when the
+    // first is short), formulas whole, a long displayed formula as an ellipsis, cut at a
+    // word with an ellipsis past the budget (characters; a formula counts half its TeX).
+    function excerpt(html, budget) {
+      var tpl = document.createElement('template');
+      tpl.innerHTML = html || '';
+      var toks = [];
+      var walk = function (node) {
+        for (var c = node.firstChild; c; c = c.nextSibling) {
+          if (c.nodeType === 3) { toks.push({ t: 'text', s: c.nodeValue }); continue; }
+          if (c.nodeType !== 1) continue;
+          if (c.classList.contains('m')) { toks.push({ t: c.getAttribute('data-d') === '1' ? 'dmath' : 'math', s: c.textContent }); continue; }
+          if (c.classList.contains('li-lab')) { toks.push({ t: 'text', s: c.textContent + ' ' }); continue; }
+          if (/^(P|DIV|LI|OL|UL|BLOCKQUOTE)$/.test(c.tagName)) { toks.push({ t: 'break' }); walk(c); toks.push({ t: 'break' }); continue; }
+          walk(c);
+        }
+      };
+      walk(tpl.content);
+      var out = '', used = 0, setup = null;
+      var space = function () { if (out && !/\s$/.test(out)) { out += ' '; used += 1; } };
+      // A sentence that only fixes notation ("Let X be ...") does not say what is proved:
+      // the excerpt runs on into the next one.
+      var enough = function () { var s0 = setup; setup = null; return used >= 70 && !s0; };
+      var opens = function (word) { if (setup === null) setup = /^(Let|Suppose|Assume|Fix|Write|Denote|Consider|Given|For|Throughout|Set|Define)$/.test(word.replace(/[^A-Za-z]/g, '')); };
+      var ends = function (word) { return /[.!?]["”’)]?$/.test(word) && !/^(e\.g|i\.e|cf|resp|viz|al|etc|Thm|Prop|Lem|Cor|Def|Sec|Eq|Fig|No)\.$/.test(word); };
+      for (var i = 0; i < toks.length; i++) {
+        var k = toks[i];
+        if (k.t === 'break') { space(); continue; }
+        if (k.t === 'math' || k.t === 'dmath') {
+          var tex = k.s.trim(), stop = /[.;,:]$/.exec(tex), body = stop ? tex.slice(0, -1).trim() : tex;
+          if (k.t === 'dmath' && body.length > 48) { space(); out += '…'; used += 2; if (stop && stop[0] === '.' && enough()) return { html: out, cut: false }; space(); continue; }
+          var w = Math.max(2, body.length * 0.5);
+          if (used + w > budget && used > 0) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
+          if (k.t === 'dmath') space();
+          out += '<span class="m">' + escapeHtml(body) + '</span>' + (stop ? stop[0] : '');
+          used += w;
+          if (stop && stop[0] === '.' && enough()) return { html: out, cut: false };
+          continue;
+        }
+        var parts = k.s.split(/(\s+)/);
+        for (var j = 0; j < parts.length; j++) {
+          var piece = parts[j];
+          if (!piece) continue;
+          if (/^\s+$/.test(piece)) { space(); continue; }
+          if (used + piece.length > budget && used > 0) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
+          opens(piece);
+          out += escapeHtml(piece); used += piece.length;
+          if (ends(piece) && enough()) return { html: out, cut: false };
+        }
+      }
+      return { html: out.trim(), cut: false };
+    }
+    // KaTeX for the formulas in el, with the paper's own macros where it has them.
+    function katexIn(el, paperId, di) {
+      if (!window.katex) { if (window.atlasRenderMath) window.atlasRenderMath(el); return; }
+      var spans = el.querySelectorAll('span.m:not([data-done])');
+      if (!spans.length) { if (window.atlasRenderMath) window.atlasRenderMath(el); return; }
+      var macros = {}, k, sh = shards[di];
+      for (k in GLOBAL_MACROS) macros[k] = GLOBAL_MACROS[k];
+      var own = sh && sh.macros && paperId ? sh.macros[paperId] || {} : {};
+      for (k in own) if (typeof own[k] === 'string' && !/\\(?:newcommand|def|let|ifx|ifmmode|csname|expandafter)/.test(own[k])) macros[k] = own[k];
+      for (var i = 0; i < spans.length; i++) {
+        var s = spans[i], tex = s.textContent;
+        s.setAttribute('data-done', '1');
+        try {
+          var src = window.atlasKeepShortMath ? window.atlasKeepShortMath(tex) : tex;
+          window.katex.render(src, s, { displayMode: false, macros: Object.assign({}, macros), throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
+        } catch (err) { s.textContent = tex; s.classList.add('m-fail'); }
+      }
+      if (window.atlasRenderMath) window.atlasRenderMath(el);
+    }
+    function bcOpen(cls, key, extra) {
+      return '<div class="u-bc ' + cls + '" role="button" tabindex="0" data-bk="' + escapeHtml(key) + '"' + (extra || '') + '>';
+    }
+    function boardResult(ri, sh) {
+      var r = D.results[ri], det = sh && sh.results ? sh.results[r.id] : null, p = D.papers[r.p];
+      var h = bcOpen('u-bc--r', r.id, ' data-paper="' + escapeHtml(p.id) + '"');
+      // In its paper's column a result needs only the number the paper prints.
+      h += '<p class="u-bc__lab">' + escapeHtml(r.num || resultName(r)) + (det && det.titleHtml ? ' <span class="u-bc__ttl tex-auto">(' + det.titleHtml + ')</span>' : '') + '</p>';
+      if (!sh) h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T('board.loading')) + '</p>';
+      else if (det && det.html) {
+        var ex = excerpt(det.html, board.budget);
+        h += '<div class="u-bc__x">' + ex.html + (ex.cut ? '…' : '') + '</div>';
+      } else h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T('board.no_statement')) + ' ' + link(r.href || p.href, T('result.read')) + '</p>';
+      return h + '</div>';
+    }
+    function boardLean(li, sh, free) {
+      var l = D.lean[li], det = sh && sh.lean ? sh.lean[l.id] : null, kind = pairKind(l.pairing);
+      var cand = !free && kind === 'candidate';
+      var h = bcOpen('u-bc--l' + (cand ? ' is-cand' : ''), l.id);
+      h += '<p class="u-bc__lt">' + escapeHtml(l.label || l.name) + '</p>';
+      if (l.label && l.label !== l.name) h += '<p class="u-bc__id"><code>' + escapeHtml(l.name) + '</code></p>';
+      h += '<p class="u-bc__ln u-bc__ln--q">' + escapeHtml(free ? T('board.unpaired') : T('board.pair_' + kind)) + '</p>';
+      if (det) h += '<p class="u-bc__ln">' + escapeHtml(det.reruns || T('lean.reruns_none')) + '</p>';
+      return h + '</div>';
+    }
+    function boardPaper(pi) {
+      var p = D.papers[pi];
+      var h = bcOpen('u-bc--p', p.id);
+      h += '<p class="u-bc__pt">' + escapeHtml(p.short) + '</p>';
+      if (p.date) h += '<p class="u-bc__d">' + escapeHtml(p.date) + '</p>';
+      var acts = link(p.href, T('paper.read')) + link(p.pdf, T('paper.pdf'));
+      if (acts) h += '<p class="u-bc__acts">' + acts + '</p>';
+      return h + '</div>';
+    }
+    function boardNeighbour(g, n, way) {
+      var f = D.families[g], sh = shards[fams[g].d], det = sh && sh.families ? sh.families[f.id] : null;
+      var h = bcOpen('u-bc--f', f.id, ' data-g="' + g + '" data-way="' + way + '"');
+      h += '<p class="u-bc__k">' + escapeHtml(T('family.short', { num: f.num })) + '</p>';
+      h += '<p class="u-bc__ft tex-auto">' + (det && det.titleHtml ? det.titleHtml : escapeHtml(f.title)) + '</p>';
+      h += '<p class="u-bc__ln">' + escapeHtml(D.disciplines[fams[g].d].name) + '</p>';
+      h += '<p class="u-bc__ln">' + escapeHtml(n === 1 ? T('board.citations_one') : T('board.citations', { n: n })) + '</p>';
+      return h + '</div>';
+    }
+    function boardSide(way, list) {
+      var h = '<section class="u-board__side u-board__side--' + way + '"><h3>' + escapeHtml(T(way === 'in' ? 'board.cited_by' : 'board.cites')) + '</h3>';
+      if (!list.length) return h + '<p class="u-board__none">' + escapeHtml(T(way === 'in' ? 'board.none_in' : 'board.none_out')) + '</p></section>';
+      var sorted = list.slice().sort(function (a, b) { return b[1] - a[1] || a[0] - b[0]; });
+      sorted.slice(0, SIDE_MAX).forEach(function (c) { h += boardNeighbour(c[0], c[1], way); });
+      var more = sorted.length - SIDE_MAX;
+      if (more > 0) h += '<p class="u-board__more">' + escapeHtml(more === 1 ? T('board.more_one') : T('board.more', { n: more })) + '</p>';
+      return h + '</section>';
+    }
+    function boardHtml(fi) {
+      var f = D.families[fi], d = D.disciplines[fams[fi].d], sh = shards[fams[fi].d] || null;
+      var fdet = sh && sh.families ? sh.families[f.id] : null;
+      var h = '<div class="u-board__in" data-u-board-in><svg class="u-board__wires" data-u-wires aria-hidden="true"></svg>';
+      h += '<div class="u-board__head"><p class="u-board__k">' + escapeHtml(T('family.kicker', { num: f.num, discipline: d.name })) + '</p>';
+      h += '<h2 class="u-board__t tex-auto">' + (fdet && fdet.titleHtml ? fdet.titleHtml : escapeHtml(f.title)) + '</h2>';
+      if (!f.lean.length) h += '<p class="u-board__r">' + escapeHtml(T('evidence.no_lean')) + '</p>';
+      else if (fdet && (fdet.readers || []).length) {
+        // Each reader in their own words, then whether they agree (the backend's sentence).
+        var said = fdet.readers.map(function (rd) { return rd.name + ' ' + rd.words; }).join('; ') + '.';
+        h += '<p class="u-board__r"><b>' + escapeHtml(T('board.readers')) + '</b> ' + escapeHtml(said + (fdet.agree ? ' ' + fdet.agree : '')) + '</p>';
+      } else if (fdet && fdet.agree) h += '<p class="u-board__r"><b>' + escapeHtml(T('board.readers')) + '</b> ' + escapeHtml(fdet.agree) + '</p>';
+      h += '</div><div class="u-board__cols">' + boardSide('in', f.citedBy) + '<div class="u-board__main"><div class="u-board__bar">' +
+        '<span class="u-pager" data-u-pager hidden>' +
+        '<button type="button" data-u-page="-1" aria-label="' + escapeHtml(T('board.earlier')) + '"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>' +
+        '<span data-u-page-n></span>' +
+        '<button type="button" data-u-page="1" aria-label="' + escapeHtml(T('board.later')) + '"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button></span></div>' +
+        '<div class="u-board__papers" data-u-papers>';
+      var papers = f.papers.slice().sort(function (a, b) { return dateValue(D.papers[a].date) - dateValue(D.papers[b].date) || a - b; });
+      var anyCand = false;
+      papers.forEach(function (pi) {
+        h += '<section class="u-col" data-pi="' + pi + '">' + boardPaper(pi) + '<ol>';
+        D.papers[pi].results.forEach(function (ri) {
+          var r = D.results[ri];
+          h += '<li>' + boardResult(ri, sh);
+          if (r.lean.length) {
+            h += '<div class="u-leans">' + r.lean.map(function (li) { if (pairKind(D.lean[li].pairing) === 'candidate') anyCand = true; return boardLean(li, sh, false); }).join('') + '</div>';
+          }
+          h += '</li>';
+        });
+        h += '</ol></section>';
+      });
+      var free = f.lean.filter(function (li) { return !D.lean[li].results.length; });
+      if (free.length) {
+        h += '<section class="u-col u-col--free"><h3 class="u-board__colh">' + escapeHtml(T('board.unpaired_heading')) + '</h3><div class="u-leans u-leans--free">' +
+          free.map(function (li) { return boardLean(li, sh, true); }).join('') + '</div></section>';
+      }
+      h += '</div>' + (anyCand ? '<p class="u-board__foot">' + escapeHtml(T('board.dashed')) + '</p>' : '') + '</div>';
+      h += boardSide('out', f.cites) + '</div></div>';
+      return h;
+    }
+    // Typeset every card: each result with its own paper's macros.
+    function typesetBoard(fi) {
+      var di = fams[fi].d;
+      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--r'), function (c) { katexIn(c, c.getAttribute('data-paper'), di); });
+      katexIn(boardEl.querySelector('.u-board__head'), null, di);
+      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--f'), function (c) { katexIn(c, null, fams[+c.getAttribute('data-g')].d); });
+    }
+    // How many paper columns stand side by side, which page shows, and the pager's words.
+    function layoutBoard() {
+      if (!board.on && !board.pending) return;
+      var papersEl = boardEl.querySelector('[data-u-papers]');
+      if (!papersEl) return;
+      var cols = Array.prototype.slice.call(papersEl.children);
+      var fpx = parseFloat(getComputedStyle(boardEl).fontSize) || 16;
+      var per = narrow() ? cols.length : Math.max(1, Math.floor((papersEl.clientWidth + 1.25 * fpx) / (14 * fpx + 1.25 * fpx)));
+      per = Math.min(per, Math.max(1, cols.length));
+      board.per = per; board.cols = cols.length;
+      var pages = Math.max(1, Math.ceil(cols.length / per));
+      board.page = clamp(board.page, 0, pages - 1);
+      papersEl.style.gridTemplateColumns = narrow() ? '' : 'repeat(' + per + ', minmax(0, 1fr))';
+      papersEl.style.gridAutoFlow = 'row';
+      cols.forEach(function (c, i) { c.hidden = i < board.page * per || i >= (board.page + 1) * per; });
+      var pager = boardEl.querySelector('[data-u-pager]');
+      if (pager) {
+        pager.hidden = pages < 2;
+        var from = board.page * per + 1, to = Math.min(cols.length, (board.page + 1) * per);
+        pager.querySelector('[data-u-page-n]').textContent = T('board.page', { from: from, to: to, n: cols.length });
+        pager.querySelector('[data-u-page="-1"]').disabled = board.page === 0;
+        pager.querySelector('[data-u-page="1"]').disabled = board.page >= pages - 1;
+      }
+      // The statements' length follows the column's width: about four lines of it.
+      var rc = papersEl.querySelector('.u-col:not([hidden]) .u-bc--r');
+      if (rc && rc.clientWidth > 0) {
+        var cpl = (rc.clientWidth - 1.5 * fpx) / (fpx * 0.48);
+        var want = clamp(Math.round(cpl * 4 / 10) * 10, 90, 420);
+        if (Math.abs(want - board.budget) >= 20) { board.budget = want; board.sig = ''; syncBoard(); return; }
+      }
+      fitExcerpts();
+      drawWires();
+    }
+    // An excerpt that would run past its card's four or five lines (a formula wider or
+    // taller than the estimate) is cut shorter, so no statement is ever clipped mid-line.
+    function fitExcerpts() {
+      var di = fams[board.fi] ? fams[board.fi].d : -1, sh = shards[di];
+      if (!sh || !sh.results) return;
+      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-col:not([hidden]) .u-bc--r .u-bc__x:not(.u-bc__x--none)'), function (x) {
+        var c = x.closest('.u-bc'), det = sh.results[c.getAttribute('data-bk')];
+        if (!det || !det.html || !x.clientWidth) return;
+        var b = board.budget, n = 0, most = 7.6 * (parseFloat(getComputedStyle(x).fontSize) || 16);
+        while ((x.offsetHeight > most || x.scrollWidth > x.clientWidth + 1) && n < 6) {
+          b = Math.round(b * 0.8); n++;
+          var ex = excerpt(det.html, b);
+          x.innerHTML = ex.html + (ex.cut ? '…' : '');
+          katexIn(x, c.getAttribute('data-paper'), di);
+        }
+      });
+    }
+    function drawWires() {
+      var inEl = boardEl && boardEl.querySelector('[data-u-board-in]'), svg = inEl && inEl.querySelector('[data-u-wires]');
+      if (!svg || !board.on) return;
+      var base = inEl.getBoundingClientRect();
+      var R = function (el) { var b = el.getBoundingClientRect(); return { x0: b.left - base.left, x1: b.right - base.left, y0: b.top - base.top, y1: b.bottom - base.top }; };
+      var nf = function (v) { return Math.round(v * 10) / 10; };
+      var fpx = parseFloat(getComputedStyle(boardEl).fontSize) || 16;
+      var hot = function (keys) { return keys.some(function (k) { return k && (k === sel || k === board.hoverKey); }); };
+      var paths = [];
+      Array.prototype.forEach.call(inEl.querySelectorAll('.u-col:not([hidden]) li'), function (li) {
+        var rc = li.querySelector(':scope > .u-bc--r');
+        if (!rc) return;
+        var a = R(rc), x = a.x0 + 0.7 * fpx;
+        Array.prototype.forEach.call(li.querySelectorAll('.u-leans > .u-bc--l'), function (lc) {
+          var b = R(lc), y = (b.y0 + Math.min(b.y1, b.y0 + 2.2 * fpx)) / 2, r = Math.min(6, (b.x0 - x) / 2);
+          var keys = [rc.getAttribute('data-bk'), lc.getAttribute('data-bk')];
+          paths.push('<path class="w-lean' + (lc.classList.contains('is-cand') ? ' w-cand' : '') + (hot(keys) ? ' is-hot' : '') + '" d="M' + nf(x) + ' ' + nf(a.y1) +
+            'V' + nf(y - r) + 'Q' + nf(x) + ' ' + nf(y) + ' ' + nf(x + r) + ' ' + nf(y) + 'H' + nf(b.x0) + '"/>');
+        });
+      });
+      // A neighbouring family's citation runs along one band above the paper columns and
+      // drops into each paper that carries it; the band bundles them.
+      var papersEl = inEl.querySelector('[data-u-papers]');
+      if (papersEl && !narrow()) {
+        var pr = R(papersEl), band = pr.y0 + 0.75 * fpx, fb = L.fibres[board.fi] || [], f = D.families[board.fi];
+        Array.prototype.forEach.call(inEl.querySelectorAll('.u-bc--f'), function (sc) {
+          var g = +sc.getAttribute('data-g'), way = sc.getAttribute('data-way');
+          var row = null;
+          fb.forEach(function (x) { if (x[1] === g) row = x; });
+          var local = row ? (way === 'out' ? row[3] : row[4]) || [] : [];
+          if (!local.length) local = [0];
+          var s = R(sc), sy = (s.y0 + s.y1) / 2, left = way === 'in';
+          local.forEach(function (k) {
+            var pi = f.papers[k], col = pi === undefined ? null : papersEl.querySelector('.u-col[data-pi="' + pi + '"]:not([hidden])');
+            if (!col) return;
+            var pc = R(col.querySelector('.u-bc--p')), dx = 0.75 * fpx;
+            var sx = left ? s.x1 : s.x0, px = left ? pc.x0 + 1.1 * fpx : pc.x1 - 1.1 * fpx, sg = left ? 1 : -1, r = 6;
+            var keys = [sc.getAttribute('data-bk'), D.papers[pi].id];
+            paths.push('<path class="' + (left ? 'w-in' : 'w-out') + (hot(keys) ? ' is-hot' : '') + '" d="M' + nf(sx) + ' ' + nf(sy) +
+              'C' + nf(sx + sg * dx) + ' ' + nf(sy) + ' ' + nf(sx + sg * dx) + ' ' + nf(band) + ' ' + nf(sx + sg * 2 * dx) + ' ' + nf(band) +
+              'H' + nf(px - sg * r) + 'Q' + nf(px) + ' ' + nf(band) + ' ' + nf(px) + ' ' + nf(band + r) + 'V' + nf(pc.y0) + '"/>');
+          });
+        });
+      }
+      svg.setAttribute('width', inEl.scrollWidth); svg.setAttribute('height', inEl.scrollHeight);
+      svg.innerHTML = paths.join('');
+    }
+    function markBoard() {
+      if (!boardEl) return;
+      var pp = pinnedPair();
+      Array.prototype.forEach.call(boardEl.querySelectorAll('[data-bk]'), function (c) {
+        var k = c.getAttribute('data-bk');
+        c.classList.toggle('is-sel', k === sel);
+        c.classList.toggle('is-pair', !!pp && k !== sel && (pp[0] === k || pp[1] === k));
+        c.setAttribute('aria-pressed', k === sel ? 'true' : 'false');
+      });
+    }
+    // The page that shows the selection.
+    function pageToSelection() {
+      var c = sel && boardEl.querySelector('.u-col [data-bk="' + (window.CSS && CSS.escape ? CSS.escape(sel) : sel) + '"]');
+      if (!c || !board.per) return;
+      var col = c.closest('.u-col'), cols = Array.prototype.slice.call(col.parentNode.children);
+      board.page = Math.floor(cols.indexOf(col) / board.per);
+    }
+    function syncBoard() {
+      if (!boardEl || !D) return;
+      var fi = boardFamily();
+      if (fi < 0) { hideBoard(); return; }
+      var f = D.families[fi], di = fams[fi].d;
+      if (!shards[di]) loadShard(di).then(syncBoard, syncBoard);
+      // The neighbours' titles are typeset from their own disciplines' records.
+      var near = f.cites.concat(f.citedBy).map(function (c) { return fams[c[0]].d; });
+      var ready = near.filter(function (d2) { return shards[d2]; }).length;
+      near.forEach(function (d2) { if (!shards[d2] && !failedShards[d2]) loadShard(d2).then(syncBoard, function () {}); });
+      var sig = fi + '|' + (shards[di] ? 1 : 0) + '|' + ready + '|' + board.budget;
+      var fresh = board.fi !== fi;
+      if (sig !== board.sig) {
+        var keepScroll = board.fi === fi ? boardEl.scrollTop : 0;
+        if (fresh) board.page = 0;
+        board.fi = fi; board.sig = sig;
+        boardEl.innerHTML = boardHtml(fi);
+        typesetBoard(fi);
+        boardEl.scrollTop = keepScroll;
+        hideBoardCard();
+      }
+      markBoard();
+      if (!board.on) {
+        board.pending = true;
+        // From the discipline, the camera flies into the family's disc first and the
+        // board fades in over it once the camera settles (cameraTo calls showBoard).
+        requestAnimationFrame(function () { if (board.pending && !cameraFrame) showBoard(); });
+      }
+      if (fresh || !board.on) { layoutPages(); }
+      else { pageToSelection(); layoutBoard(); }
+      if (ringWanted || ring) board.ringKey = sel;
+      ringBoard();
+    }
+    function layoutPages() { var keep = board.on; board.on = true; layoutBoard(); pageToSelection(); layoutBoard(); board.on = keep; }
+    function showBoard() {
+      if (!board.pending) return;
+      board.pending = false;
+      board.on = true;
+      root.setAttribute('data-board', '');
+      boardEl.classList.add('is-on');
+      hover = null; hideCard();
+      layoutBoard();
+      ringBoard();
+    }
+    function hideBoard() {
+      board.pending = false;
+      if (!board.on) { board.fi = -1; board.sig = ''; return; }
+      board.on = false; board.fi = -1; board.sig = '';
+      boardEl.classList.remove('is-on');
+      root.removeAttribute('data-board');
+      hideBoardCard();
+    }
+    // The chosen card gets the selection's one ring, once, when it settles.
+    function ringBoard() {
+      if (!board.on || !board.ringKey || reduceMotion) { board.ringKey = board.on ? null : board.ringKey; return; }
+      var key = board.ringKey;
+      board.ringKey = null;
+      Array.prototype.forEach.call(boardEl.querySelectorAll('[data-bk]'), function (c) {
+        if (c.getAttribute('data-bk') !== key) return;
+        c.classList.remove('is-ring'); void c.offsetWidth; c.classList.add('is-ring');
+      });
+    }
+    /* The board's hover card: beside the card pointed at or focused, in the stage, never
+       over that card or the selected one, and over as few other cards as it can. It can
+       itself be pointed at, and Escape dismisses it. */
+    function boardCardHtml(key) {
+      var o = obj(key);
+      if (!o) return '';
+      var di = discOf(o), sh = shards[di], h = '';
+      var line = function (cls, html) { h += '<p class="u-card__' + cls + '">' + html + '</p>'; };
+      if (o.kind === 'r') {
+        var det = sh && sh.results ? sh.results[key] : null;
+        h = cardHtml(o);
+        if (det && det.html) {
+          var ex = excerpt(det.html, 520);
+          h = h.replace(/(<p class="u-card__e)/, '<div class="u-card__x" data-paper="' + escapeHtml(D.papers[D.results[o.i].p].id) + '">' + ex.html + (ex.cut ? '…' : '') + '</div>$1');
+        }
+        return h;
+      }
+      if (o.kind === 'l') {
+        var ld = sh && sh.lean ? sh.lean[key] : null, fdet = sh && sh.families ? sh.families[D.families[D.lean[o.i].f].id] : null;
+        h = cardHtml(o);
+        if (D.lean[o.i].main) line('n', escapeHtml(T('lean.main')));
+        if (ld && ld.pairing && D.lean[o.i].results.length) line('n', escapeHtml(ld.pairing));
+        if (fdet && fdet.readers && fdet.readers.length) {
+          line('n', '<b>' + escapeHtml(T('board.readers')) + '</b> ' + fdet.readers.map(function (rd) { return escapeHtml(rd.name + ' ' + rd.words + '.'); }).join(' '));
+        }
+        return h;
+      }
+      if (o.kind === 'f') {
+        var f = D.families[o.i], fd = sh && sh.families ? sh.families[key] : null;
+        line('t tex-auto', fd && fd.titleHtml ? fd.titleHtml : escapeHtml(f.title));
+        line('k', escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })));
+        if (fd && fd.first) line('n', escapeHtml(T('family.catalogue') + ' ' + T('family.catalogue_says')));
+        if (fd && fd.first) h += '<div class="u-card__x tex-auto">' + fd.first + '</div>';
+        line('e', dot(f.tone) + '<span>' + escapeHtml(T('key.' + f.tone)) + '</span>');
+        return h;
+      }
+      if (o.kind === 'p') {
+        var p = D.papers[o.i];
+        line('t', escapeHtml(p.title));
+        line('k', escapeHtml(T('paper.kicker', { num: D.families[p.f].num }) + (p.date ? ', ' + p.date : '')));
+        line('n', escapeHtml(count('results', p.results.length)));
+        return h;
+      }
+      return '';
+    }
+    function hideBoardCard() {
+      clearTimeout(board.hideT);
+      if (board.hoverKey) { board.hoverKey = null; if (board.on) drawWires(); }
+      if (cardEl) cardEl.classList.remove('is-board');
+      hideCard();
+    }
+    function showBoardCard(el, via) {
+      if (!cardEl || !board.on || narrow()) return;
+      if (via !== 'focus' && !(hoverMQ && hoverMQ.matches)) return;
+      var key = el.getAttribute('data-bk');
+      clearTimeout(board.hideT);
+      if (board.hoverKey !== key) { board.hoverKey = key; drawWires(); }
+      cardEl.classList.add('is-board');
+      var ck = 'b:' + key + (shards[discOf(obj(key))] ? '+' : '');
+      if (ck !== cardKey) {
+        cardEl.innerHTML = boardCardHtml(key);
+        var px = cardEl.querySelector('[data-paper]');
+        katexIn(cardEl, px ? px.getAttribute('data-paper') : null, discOf(obj(key)));
+        cardKey = ck;
+      }
+      var w = cardEl.offsetWidth, h = cardEl.offsetHeight, sr = stage.getBoundingClientRect();
+      var rel = function (n) { var b = n.getBoundingClientRect(); return { x0: b.left - sr.left, x1: b.right - sr.left, y0: b.top - sr.top, y1: b.bottom - sr.top }; };
+      var me = rel(el), others = [], keep = [me];
+      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc'), function (c) {
+        if (c === el || c.closest('[hidden]')) return;
+        var b = rel(c);
+        if (b.y1 < 0 || b.y0 > sr.height) return;
+        if (c.classList.contains('is-sel')) keep.push(b); else others.push(b);
+      });
+      // The eight places beside the card first; failing those, any place in the stage
+      // (a 24 px lattice), nearest first, that keeps off the card and the selection.
+      var g = 10, spots = [[me.x1 + g, me.y0], [me.x0 - g - w, me.y0], [me.x0, me.y1 + g], [me.x0, me.y0 - g - h],
+                           [me.x1 + g, me.y1 - h], [me.x0 - g - w, me.y1 - h], [me.x1 - w, me.y1 + g], [me.x1 - w, me.y0 - g - h]];
+      var X1 = Math.max(8, sr.width - w - 8), Y1 = Math.max(8, sr.height - h - 8);
+      var best = null, bestScore = Infinity;
+      var tryAt = function (sp, i) {
+        var x0 = clamp(sp[0], 8, X1), y0 = clamp(sp[1], 8, Y1);
+        var b = { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h };
+        var gapX = Math.max(0, me.x0 - b.x1, b.x0 - me.x1), gapY = Math.max(0, me.y0 - b.y1, b.y0 - me.y1);
+        var score = (sp[2] ? 40 : i * 2) + Math.hypot(gapX, gapY) * 0.8;
+        // Over the card itself or the selection only where nothing else is free, and then
+        // over as little of them as it can.
+        keep.forEach(function (q) { var ov = overlap(b, q); if (ov > 0) score += 1e5 + ov * 20; });
+        others.forEach(function (q) { var ov = overlap(b, q); if (ov > 0) score += 400 + ov * 0.02; });
+        if (score < bestScore) { bestScore = score; best = b; }
+      };
+      spots.forEach(tryAt);
+      if (bestScore >= 400) for (var gx = 8; gx <= X1; gx += 24) for (var gy = 8; gy <= Y1; gy += 24) tryAt([gx, gy, 1], 0);
+      cardBox = best;
+      cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
+      if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
+    }
+    if (boardEl) {
+      boardEl.addEventListener('click', function (e) {
+        var pg = e.target.closest('[data-u-page]');
+        if (pg) { board.page += +pg.getAttribute('data-u-page'); hideBoardCard(); layoutBoard(); return; }
+        if (e.target.closest('a')) return;
+        var c = e.target.closest('[data-bk]');
+        if (!c || e.detail > 1) return;
+        var key = c.getAttribute('data-bk');
+        if (key !== sel) select(key, { trail: true });
+      });
+      boardEl.addEventListener('dblclick', function (e) {
+        if (e.target.closest('a')) return;
+        var c = e.target.closest('[data-bk]');
+        if (c) openFromBoard(c.getAttribute('data-bk'));
+      });
+      boardEl.addEventListener('keydown', function (e) {
+        var c = e.target && e.target.getAttribute && e.target.getAttribute('data-bk') ? e.target : null;
+        if (!c) return;
+        var key = c.getAttribute('data-bk');
+        if (e.key === 'Enter') { e.preventDefault(); openFromBoard(key); }
+        else if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); if (key !== sel) select(key, { trail: true }); }
+      });
+      boardEl.addEventListener('pointerover', function (e) {
+        var c = e.target.closest && e.target.closest('[data-bk]');
+        if (c && e.pointerType !== 'touch') showBoardCard(c, 'pointer');
+      });
+      boardEl.addEventListener('pointerout', function (e) {
+        var c = e.target.closest && e.target.closest('[data-bk]');
+        if (!c || (e.relatedTarget && (c.contains(e.relatedTarget) || (cardEl && cardEl.contains(e.relatedTarget))))) return;
+        clearTimeout(board.hideT);
+        board.hideT = setTimeout(hideBoardCard, 160);
+      });
+      boardEl.addEventListener('focusin', function (e) {
+        var c = e.target && e.target.getAttribute && e.target.getAttribute('data-bk') ? e.target : null;
+        var visible = false;
+        try { visible = !!c && c.matches(':focus-visible'); } catch (err) { visible = false; }
+        if (visible) showBoardCard(c, 'focus');
+      });
+      boardEl.addEventListener('focusout', function () { if (cardEl && cardEl.classList.contains('is-board')) hideBoardCard(); });
+      boardEl.addEventListener('scroll', function () { if (cardEl && cardEl.classList.contains('is-board')) hideBoardCard(); }, { passive: true });
+      if (cardEl) {
+        cardEl.addEventListener('pointerenter', function () { if (cardEl.classList.contains('is-board')) clearTimeout(board.hideT); });
+        cardEl.addEventListener('pointerleave', function (e) {
+          if (!cardEl.classList.contains('is-board')) return;
+          var back = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-bk]');
+          if (back && back.getAttribute('data-bk') === board.hoverKey) return;
+          board.hideT = setTimeout(hideBoardCard, 160);
+        });
+        cardEl.addEventListener('click', function () {
+          if (!cardEl.classList.contains('is-board') || !board.hoverKey) return;
+          var key = board.hoverKey;
+          hideBoardCard();
+          if (key !== sel) select(key, { trail: true });
+        });
+      }
+      if (window.ResizeObserver) new ResizeObserver(function () { if (board.on) layoutBoard(); }).observe(boardEl);
+    }
+    function openFromBoard(key) {
+      var o = obj(key);
+      if (!o) return;
+      if (o.kind === 'f') { if (key !== sel) select(key, { trail: true }); return; }
+      openPage(o);
+    }
+
     /* ---- The open family's lines: threads to Lean, fibres to other families */
     var routeCache = { key: '', routes: null };
     function paintOpenLines(fi, openA, plan) {
@@ -2632,6 +3160,8 @@
     }
     function updateLegend(fi) {
       if (!legendEl) return;
+      // The family's board explains itself in words; its old key stays closed.
+      fi = -1;
       if (fi < 0) { if (!legendEl.hidden) { legendEl.hidden = true; chrome = chromeBoxes(); } return; }
       var f = D.families[fi], rows = [];
       var row = function (k, text, tone) { rows.push('<li>' + swatch(k, tone || f.tone) + '<span>' + escapeHtml(text) + '</span></li>'); };
@@ -2734,6 +3264,7 @@
       else if (o.kind === 'p') html = paperHtml(o.i);
       else if (o.kind === 'r') html = resultHtml(o.i);
       else if (o.kind === 'l') html = leanHtml(o.i);
+      syncBoard();
       if (titleEl) titleEl.textContent = o ? nameOf(o) : T('page.title');
       if (titleEl) titleEl.className = 'u-title' + (o && o.kind === 'l' ? ' u-title--code' : '') + (o ? ' u-title--deep' : '');
       viewEl.innerHTML = html;
@@ -3074,6 +3605,7 @@
     var matchList = [];
     var searchFolded = false;   // the reader opened a match and folded the list away
     function runSearch() {
+      // Pass the typed query to the site's search; only the map's matching is lower case.
       var raw = (searchIn.value || '').trim();
       var q = raw.toLowerCase();
       query = q;
@@ -3089,17 +3621,18 @@
       // hits light their families here and list beside the map. The map's own rows
       // stand in until it is.
       if (window.AtlasSearch && typeof window.AtlasSearch.query === 'function') {
-        // Keep case for the exact Lean filename fallback; search normalises tokens.
         return Promise.resolve(window.AtlasSearch.query(raw)).then(function (hits) {
           if (query !== q) return;
           hits = hits || [];
           // Disciplines, families, papers and Lean statements before the paper
           // statements that mention the words; within a kind, an entry whose own name
           // holds every word comes first (the search dialog orders its groups so).
-          var toks = window.AtlasSearch.tokens ? window.AtlasSearch.tokens(q) : [];
+          // Accents folded on both sides, so "erdos" ranks the Erdős families as "Erdős" does.
+          var fold = function (list) { return list.map(function (t) { return String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }); };
+          var toks = window.AtlasSearch.tokens ? fold(window.AtlasSearch.tokens(q)) : [];
           var order = { discipline: 0, family: 1, manuscript: 2, lean: 3, statement: 4 };
           hits = hits.map(function (h, i) {
-            var own = toks.length ? window.AtlasSearch.tokens(h.name || '') : [];
+            var own = toks.length ? fold(window.AtlasSearch.tokens(h.name || '')) : [];
             var named = toks.every(function (t) { return own.indexOf(t) >= 0; });
             return { h: h, i: i, k: order[h.kind] != null ? order[h.kind] : 5, n: named ? 0 : 1 };
           }).sort(function (a, b) { return a.k - b.k || a.n - b.n || a.i - b.i; }).map(function (x) { return x.h; });
@@ -3314,11 +3847,22 @@
       // The map is the page's first screen: going back up to it shows the header too.
       if (outside) window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
       var fromResults = !!(resultsEl && resultsEl.contains(go));
+      var byKey = e.detail === 0 && root.contains(go) && !fromResults;
       select(key || null, { trail: true });
       // A match opened from the search folds the list of matches away, so what was
       // opened starts at the top of the panel; one button brings the matches back.
       if (fromResults) foldResults(true);
+      // A row opened from the keyboard was redrawn away: focus goes to what replaced it,
+      // the family's board on a wide screen, else the panel's heading.
+      if (byKey) focusArrival();
     });
+    function focusArrival() {
+      var target = board.on || board.pending ? (narrow() ? null : boardEl) : null;
+      if (!target) target = titleEl;
+      if (!target) return;
+      if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+      try { target.focus({ preventScroll: narrow() }); } catch (err) { target.focus(); }
+    }
     function foldResults(fold) {
       if (!resultsEl || resultsEl.hidden) return;
       resultsEl.classList.toggle('is-folded', fold);
@@ -3347,6 +3891,7 @@
       if (o) { viewEl.innerHTML = rerender(o); typeset(viewEl, o); }
       if (panelBody) panelBody.scrollTop = top;
       routeCache.key = '';
+      if (board.on) { markBoard(); drawWires(); }
       draw();
     });
     // A row under the pointer in the panel lights its place on the map.
@@ -3419,6 +3964,7 @@
       var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable);
       if (e.key === 'Escape') {
         if (document.querySelector('dialog[open], .nav-toggle[aria-expanded="true"]')) return;
+        if (cardOn && cardEl && cardEl.classList.contains('is-board')) { e.preventDefault(); hideBoardCard(); return; }
         if (mapKeyEl && !mapKeyEl.hidden) { e.preventDefault(); mapKeyPinned = false; showMapKey(false); mapKeyBtn.focus(); return; }
         // The input clears its query before a later Escape steps out of the map selection.
         if (e.target === searchIn && searchIn.value) return;
