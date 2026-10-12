@@ -1459,6 +1459,11 @@ def page(rel, title, description, body, *, current=None, og_block=None, noindex=
     return f'{h}\n{header(rel, current)}\n<main id="main" class="{main_class}" tabindex="-1">\n{body}\n</main>\n{footer(rel)}'
 
 
+# A breadcrumb's separator goes with the step after it: a line may break before "/" and
+# never after it, so a phone never shows a "/" alone on a line.
+TRAIL_SEP = ' <span class="trail__sep" aria-hidden="true">/</span>\u2060'
+
+
 def trail(root, items):
     parts = [f'<a href="{root}index.html">{esc(C("nav.trail_home"))}</a>']
     for label, href in items:
@@ -1466,7 +1471,7 @@ def trail(root, items):
             parts.append(f'<a href="{href}">{label}</a>')
         else:
             parts.append(f'<span aria-current="page">{label}</span>')
-    return '<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '">' + '<span class="trail__sep" aria-hidden="true">\u2060/</span>'.join(parts) + "</nav>"
+    return '<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '">' + TRAIL_SEP.join(parts) + "</nav>"
 
 
 def json_script(id_, obj):

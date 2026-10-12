@@ -593,8 +593,8 @@ def head_html(c: Ctx) -> str:
     di = S.DISC_OF[c.num]
     disc = S.DISCIPLINES[di]["name"]
     trail = (f'<nav class="trail fx-trail" aria-label="{esc(S.C("nav.breadcrumb"))}"><a href="{root}index.html">{esc(W("trail.map"))}</a>'
-             f'<span class="trail__sep" aria-hidden="true">/</span><a href="{root}index.html#o=d%3A{S.DISC_SLUG[di]}">{esc(disc)}</a>'
-             f'<span class="trail__sep" aria-hidden="true">/</span><span aria-current="page">{esc(W("trail.family", num=c.num))}</span></nav>')
+             f'{S.TRAIL_SEP}<a href="{root}index.html#o=d%3A{S.DISC_SLUG[di]}">{esc(disc)}</a>'
+             f'{S.TRAIL_SEP}<span aria-current="page">{esc(W("trail.family", num=c.num))}</span></nav>')
     tools = (f'<p class="fx-tools"><a class="btn btn--small" href="{root}index.html#o=f%3A{c.num}">{esc(W("actions.plate"))}</a>'
              f'<button class="btn btn--small" type="button" data-copy-text="{esc(c.page_url)}" data-copied="{esc(W("actions.copied"))}">{esc(W("actions.copy"))}</button></p>')
     title_plain = S.tex_plain(f["title"])
