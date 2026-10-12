@@ -732,18 +732,29 @@ def theorem_html(c: Ctx) -> str:
             parts.append(f'<div class="fx-others" id="claim-more"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
         parts.append(status_html(c))
     else:
-        parts.append(f'<h2 class="fx-h2 fx-h2--theorem" id="claim-h">{esc(W("claim.heading_unresolved"))}</h2>'
-                     f'<p class="fx-cand fx-cand--open">{esc(W("claim.unresolved"))}</p>')
+        # No pairing is decided: the page still leads with mathematics. The statements the
+        # papers print come first, each with its own one-line state; how they were chosen
+        # follows them as information, with the open task it names.
+        parts.append(f'<h2 class="fx-h2 fx-h2--theorem" id="claim-h">{esc(W("claim.heading_unresolved"))}</h2>')
+        n_tied = len(tie_order(c, alts)[:3]) if alts else 0
+        note = W("claim.unresolved_none") if not alts else W("claim.unresolved_one") if n_tied == 1 else W("claim.unresolved")
+        if any(x.get("kind") == "claim-identification" for x in c.doc.get("remaining_checks") or []):
+            note_html = esc(note) + " " + esc(W("claim.unresolved_left", link="\x00")).replace(
+                "\x00", f'<a href="#left">{esc(W("left.heading"))}</a>')
+        else:
+            note_html = esc(note)
         if alts:
             tied = tie_order(c, alts)[:3]
             rest = [a for a in alts if a not in tied]
-            parts.append(claim_index(c, tied, rest))
             for i, a in enumerate(tied):
                 parts.append(c.stmt_card(a["statement_id"], aid=f"claim-alt-{i + 1}", level=3, big=len(tied) == 1,
                                          state=state(a["statement_id"], False), note=unpaired(a["statement_id"]),
                                          actions=compare_action(c, a["statement_id"])))
+            parts.append(f'<p class="fx-cand fx-cand--note">{note_html}</p>')
             if rest:
                 parts.append(f'<div class="fx-others" id="claim-more"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
+        else:
+            parts.append(f'<p class="fx-cand fx-cand--open">{note_html}</p>')
         parts.append(status_html(c))
     lab = "claim-theorem-h" if (claim.get("state") == "candidate" and cand in c.stmts) else "claim-h"
     return (f'<section class="fx-sec fx-sec--theorem" id="claim" aria-labelledby="{lab}">'
@@ -762,26 +773,6 @@ def tie_order(c: Ctx, alts) -> list:
         sid = a["statement_id"]
         return (paired_lean(c, sid) is None, c.stmts[sid].get("manuscript_id") != lead, i)
     return [a for _, a in sorted(enumerate(tied), key=key)]
-
-
-def claim_index(c: Ctx, tied: list, rest: list) -> str:
-    """When the headline is unresolved, one line before the cards names every possible
-    match shown in full (its printed number and paper, linked to its card) and how many
-    more are listed after them, so a reader sees what there is before the long cards."""
-    if len(tied) < 2 and not rest:
-        return ""
-    items = []
-    for i, a in enumerate(tied):
-        sid = a["statement_id"]
-        slug = (c.stmts[sid].get("manuscript_id") or "")[2:]
-        where = esc(W("claim.alt_in", paper="\x00")).replace("\x00", c.short_title_html(slug))
-        items.append(f'<a class="fx-st__altk" href="#claim-alt-{i + 1}">{esc(c.label(sid))}</a> {where}')
-    line = esc(W("claim.index_shown", items="\x00")).replace("\x00", join_and(c.S, items))
-    if rest:
-        listed = f'<a href="#claim-more">{esc(W("claim.listed_after_them" if len(tied) > 1 else "claim.listed_after_it"))}</a>'
-        more = W("claim.index_rest_one", listed="\x01") if len(rest) == 1 else W("claim.index_rest_many", n=cap(c.S.say(len(rest))), listed="\x01")
-        line += " " + esc(more).replace("\x01", listed)
-    return f'<p class="fx-cand-idx">{line}</p>'
 
 
 ALT_INLINE = 2   # up to this many other possible matches are named, with their records, in the card itself
