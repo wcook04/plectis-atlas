@@ -767,7 +767,7 @@ body.social { margin: 0; width: 1200px; height: 675px; overflow: hidden; backgro
 
 /* Community: everyone else's work, credited */
 .ceffs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr)); gap: 1rem 1.5rem; }
-.ceff { border-top: 1px solid var(--rule); padding-top: .75rem; }
+.ceff { border-top: 1px solid var(--rule); padding-top: .75rem; overflow-wrap: anywhere; }
 .ceff .h3 { margin: 0 0 .25rem; }
 .ceff p { margin: .25rem 0; }
 .cfinds { list-style: none; padding: 0; margin: .5rem 0 0; }

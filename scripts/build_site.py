@@ -3333,7 +3333,7 @@ def build_sources():
         ingested.append(f"""<article class="ceff" id="src-{esc(src['id'])}">
  <h3 class="h3"><a class="ext" href="{esc(src.get('url') or '')}" rel="noopener">{esc(src.get('name') or src['id'])}</a></h3>
  <p class="muted small">{esc(authors)}, {esc(C('sources.snapshot', date=src.get('snapshot') or ''))}, {esc(C('sources.licence', licence=src.get('licence') or 'n/a'))}</p>
- <p>{esc(src.get('method') or '')}</p>
+ <p>{esc(short(src.get('method') or '', 400))}</p>
  <ul class="small">{flist}</ul>
  {adopted_list_html(src.get('adopted'))}
 </article>""")
