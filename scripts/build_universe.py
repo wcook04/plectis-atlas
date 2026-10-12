@@ -738,7 +738,7 @@ def reruns_sentence(accepted, names) -> str:
     acc = [names.get(s, s) for s in accepted]
     if not acc:
         return E.say("reruns.none")
-    return E.say("reruns.one", names=acc[0]) if len(acc) == 1 else E.say("reruns.many", n=len(acc), names=join_words(acc))
+    return E.say("reruns.one", names=acc[0]) if len(acc) == 1 else E.say("reruns.many", n=len(acc), names=E.join_names(acc))
 
 
 def evidence_words(M, ev, names) -> str:
@@ -849,6 +849,12 @@ def build_detail(M, names):
                 det["date"] = p["date"]
                 sh["results"][res["id"]] = det
         lean_doc = {l["id"]: l for l in doc.get("lean") or []}
+        # The words a candidate pairing was found by, as the backend records them.
+        shared = {}
+        for p in doc.get("pairing_selections") or []:
+            alt = next((a for a in p.get("alternatives") or [] if a.get("target") == p.get("target")), None)
+            if p.get("source") and alt:
+                shared[p["source"]] = list(alt.get("matched_terms") or [])
         for li in f["lean"]:
             L = D["lean"][li]
             l = lean_doc.get(L["id"]) or {}
@@ -858,6 +864,7 @@ def build_detail(M, names):
                 c = run.get("credit") or {}
                 runs.append({"who": c.get("name") or run.get("source"), "state": run.get("state"),
                              "term": run.get("source_term"), "date": run.get("date"),
+                             "current": run.get("pin_state") == "current",
                              "url": run.get("receipt") or c.get("url")})
             holes = l.get("definition_holes") or []
             sh["lean"][L["id"]] = {
@@ -866,6 +873,7 @@ def build_detail(M, names):
                 "reruns": reruns_sentence(L["acc"], names),
                 "holes": [h.get("name", h) if isinstance(h, dict) else str(h) for h in holes],
                 "pairing": E.say("pairing." + L["pairing"]),
+                "terms": shared.get(L["id"], []),
             }
     return shards
 
@@ -1011,7 +1019,11 @@ def checked_band() -> str:
 
 def page_body(M, gen) -> str:
     data_v = gen[7:19]
-    copy_json = json.dumps(COPY_U, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    copy = json.loads(json.dumps(COPY_U))
+    # Two of the reader's sentences are the shared evidence vocabulary's own.
+    copy["lean"]["what_it_checks"] = E.say("reruns.what_it_checks")
+    copy["lean"]["source_term"] = E.WORDS["reruns"]["source_term"]
+    copy_json = json.dumps(copy, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     D = M.data
     canvas_label = U("controls.canvas_label", families=len(D["families"]), disciplines=len(D["disciplines"]))
     return f"""<div class="u-explorer" data-universe data-view="list"
@@ -1045,6 +1057,8 @@ def page_body(M, gen) -> str:
   <canvas class="u-canvas" role="img" aria-label="{esc(canvas_label)}" tabindex="0" data-u-canvas></canvas>
   <div class="u-visually-hidden" aria-live="polite" data-u-live></div>
   <div class="u-maplegend" data-u-legend hidden></div>
+  <button type="button" class="u-mapkey-btn" data-u-mapkey aria-expanded="false" aria-controls="u-mapkey">{esc(U('mapkey.button'))}</button>
+  <div class="u-mapkey" id="u-mapkey" data-u-mapkey-panel hidden></div>
   <div class="u-tools">
    <button type="button" class="u-tool" data-u-zoom="in" aria-label="{esc(U('controls.zoom_in'))}" title="{esc(U('controls.zoom_in'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button>
    <button type="button" class="u-tool" data-u-zoom="out" aria-label="{esc(U('controls.zoom_out'))}" title="{esc(U('controls.zoom_out'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/></svg></button>
