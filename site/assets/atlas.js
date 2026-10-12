@@ -965,7 +965,7 @@
   var status = dlg.querySelector('.search__status');
   var T = function (k) { return dlg.getAttribute('data-' + k) || ''; };
   var fmt = function (s, o) { return s.replace(/\{(\w+)\}/g, function (m, k) { return o[k] != null ? o[k] : m; }); };
-  var SHOW = 6, shown = {}, last = null, seq = 0, sel = -1, timer = 0;
+  var SHOW = 6, shown = {}, last = null, seq = 0, sel = -1, timer = 0, renderedQuery = null;
 
   function el(tag, cls, text) {
     var e = doc.createElement(tag);
@@ -1064,20 +1064,24 @@
   }
   function run() {
     var q = input.value, my = ++seq;
+    renderedQuery = null;
     var toks = searchTokens(q);
     dlg.setAttribute('aria-busy', 'true');
     var want = Math.max(400, shown.statement || 0);
-    Promise.all([query(q, { statements: want }), labels()]).then(function (r) {
-      if (my !== seq) return;
+    return Promise.all([query(q, { statements: want }), labels()]).then(function (r) {
+      if (my !== seq || input.value !== q) return false;
       last = r[0];
       dlg.removeAttribute('aria-busy');
       render(r[0], r[1], r[0].respelled ? searchTokens(r[0].respelled) : toks);
+      renderedQuery = q;
+      return true;
     }).catch(function () {
-      if (my !== seq) return;
+      if (my !== seq || input.value !== q) return false;
       dlg.removeAttribute('aria-busy');
       list.innerHTML = '';
       dlg.setAttribute('data-state', 'failed');
       status.textContent = T('failed');
+      return false;
     });
   }
   function options() { return list.querySelectorAll('[role="option"]'); }
@@ -1085,7 +1089,7 @@
     var items = options();
     if (!items.length) return;
     if (sel >= 0 && items[sel]) items[sel].removeAttribute('aria-selected');
-    sel = d === 'home' ? 0 : d === 'end' ? items.length - 1 : (sel + d + items.length) % items.length;
+    sel = d === 'home' ? 0 : d === 'end' ? items.length - 1 : sel < 0 ? (d > 0 ? 0 : items.length - 1) : (sel + d + items.length) % items.length;
     items[sel].setAttribute('aria-selected', 'true');
     items[sel].scrollIntoView({ block: 'nearest' });
     input.setAttribute('aria-activedescendant', items[sel].id);
@@ -1123,13 +1127,22 @@
     timer = setTimeout(run, 120);
   });
   dlg.addEventListener('keydown', function (ev) {
-    if (ev.key === 'ArrowDown') { ev.preventDefault(); moveSel(1); }
+    if (ev.key === 'Escape') { ev.preventDefault(); ev.stopPropagation(); dlg.close(); }
+    else if (ev.key === 'ArrowDown') { ev.preventDefault(); moveSel(1); }
     else if (ev.key === 'ArrowUp') { ev.preventDefault(); moveSel(-1); }
     else if ((ev.key === 'Home' || ev.key === 'End') && ev.ctrlKey) { ev.preventDefault(); moveSel(ev.key === 'Home' ? 'home' : 'end'); }
     else if (ev.key === 'Enter' && ev.target === input) {
-      var items = options();
       ev.preventDefault();
-      choose(items[sel >= 0 ? sel : 0]);
+      clearTimeout(timer);
+      var q = input.value;
+      var openChosen = function () {
+        var items = options();
+        choose(items[sel >= 0 ? sel : 0]);
+      };
+      if (renderedQuery === q) openChosen();
+      else run().then(function (ready) {
+        if (ready && dlg.hasAttribute('open') && input.value === q) openChosen();
+      });
     }
   });
   list.addEventListener('click', function (ev) {
