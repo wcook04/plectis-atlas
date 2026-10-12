@@ -622,6 +622,15 @@
     var drawPending = false;
     var pin = -1;                     // the other end of the pair the reader shows (a Lean or result index)
     var lastPlan = null;
+    // Motion (DESIGN.md "Motion and hover"). Pointing previews: the families' step back
+    // eases over EMPH_MS and the pointed disc grows a tenth. Selecting commits: once the
+    // camera settles, one ring widens and fades round the chosen object (RING_MS).
+    var EMPH_MS = 150, RING_MS = 700, RING_GROW = 16, HOVER_GROW = 1.1;
+    var emph = { shown: null, grow: null, from: null, gFrom: null, to: null, gTo: null, start: 0 };
+    var ring = null, ringWanted = null;
+    var hoverVia = '';                // what set the hover: 'map', 'touch', 'list' or 'focus'
+    function nowMs() { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); }
+    function easeOut(t) { t = clamp(t, 0, 1); return 1 - (1 - t) * (1 - t) * (1 - t); }
 
     /* ---- Text ------------------------------------------------------------ */
     var widthCache = {};
@@ -684,6 +693,9 @@
         steel: get('--u-steel', '#97c1df'), brick: get('--u-brick', '#e18a79'), paired: get('--u-paired', '#7ea6c6'),
         plate: get('--u-plate', '#272132'), plateRule: get('--u-plate-rule', '#484251'), focus: get('--u-focus', '#f2e6d4')
       };
+      // A paper's ring or arc inside an open family: the line that says which results it
+      // holds, so it keeps 3:1 against the ground in both schemes.
+      p.paper = get('--u-paper', p.struct);
       var groundRGB = parseColor(p.ground) || [0, 0, 0, 1];
       // One meaning for colour: what the two outside readers find the release's
       // Lean states for a family's headline (the key in the panel says each in words).
@@ -978,6 +990,7 @@
         cameraGoal = null; moving = false;
         setView(target);
         viewFitted = !!fitted;
+        settleRing();
         draw();
       };
       cameraGoal = finish;
@@ -1086,7 +1099,10 @@
       requestAnimationFrame(function () { drawPending = false; paint(); });
     }
 
-    function famAlphas(openF, ctxA) {
+    // How far each family steps back for what is pointed at, chosen or searched: the
+    // target the drawing eases toward. The open family's own fade with the camera
+    // (ctxA) is applied apart, so a flight is never slowed by the easing.
+    function famEmphasis(openF) {
       var out = new Array(fams.length), so = sel ? obj(sel) : null;
       var hk = hover ? obj(hover) : null;
       var focusF = openF >= 0 ? openF : (hk && hk.kind === 'f' ? hk.i : -1);
@@ -1094,16 +1110,52 @@
       for (var i = 0; i < fams.length; i++) {
         var a = 1;
         var picked = so && so.kind === 'f' && so.i === focusF;
-        if (focusF >= 0 && openF < 0) a = i === focusF ? 1 : fams[focusF].hop[i] ? 0.95 : picked ? 0.32 : 0.5;
+        if (focusF >= 0 && openF < 0) {
+          a = i === focusF ? 1 : fams[focusF].hop[i] ? 0.95 : picked ? 0.32 : 0.5;
+          // In a chosen discipline, pointing at one of its families never lifts the
+          // families of other disciplines it has no citation with.
+          if (fd >= 0 && fams[i].d !== fd && !fams[focusF].hop[i]) a = Math.min(a, 0.16);
+        }
         else if (fd >= 0) a = fams[i].d === fd ? 1 : 0.16;
         else if (hd >= 0) a = fams[i].d === hd ? 1 : 0.55;
         // Search matches lead while the list of matches is open; once the reader opens one
         // and the list folds, the map draws the selection in its ordinary grammar.
         if (matchFam && !searchFolded) a *= matchFam[i] ? 1 : 0.22;
-        if (openF >= 0 && i !== openF) a *= ctxA;
         out[i] = a;
       }
       return out;
+    }
+    // The pointed family's disc grows a tenth while it is a plain disc (its own map
+    // not yet showing), so its marks never move under the pointer.
+    function famGrowth(openF) {
+      var out = new Array(fams.length), hk = hover ? obj(hover) : null;
+      var hf = hk && hk.kind === 'f' && hk.i !== openF ? hk.i : -1;
+      for (var i = 0; i < fams.length; i++) out[i] = i === hf && markR(i) < 80 ? HOVER_GROW : 1;
+      return out;
+    }
+    // Ease the step back and the growth toward their targets over EMPH_MS (snapped under
+    // reduced motion). Returns whether the easing is still running.
+    function stepEmphasis(tA, tG) {
+      var n = tA.length, i;
+      if (!emph.shown || emph.shown.length !== n || reduceMotion) {
+        emph.shown = tA.slice(); emph.grow = tG.slice(); emph.to = tA; emph.gTo = tG; emph.start = 0;
+        return false;
+      }
+      for (i = 0; i < n; i++) {
+        if (Math.abs(tA[i] - emph.to[i]) > 1e-4 || Math.abs(tG[i] - emph.gTo[i]) > 1e-4) {
+          emph.from = emph.shown.slice(); emph.gFrom = emph.grow.slice();
+          emph.to = tA; emph.gTo = tG; emph.start = nowMs();
+          break;
+        }
+      }
+      if (!emph.start) return false;
+      var u = clamp((nowMs() - emph.start) / EMPH_MS, 0, 1), e = easeOut(u);
+      for (i = 0; i < n; i++) {
+        emph.shown[i] = emph.from[i] + (emph.to[i] - emph.from[i]) * e;
+        emph.grow[i] = emph.gFrom[i] + (emph.gTo[i] - emph.gFrom[i]) * e;
+      }
+      if (u >= 1) emph.start = 0;
+      return u < 1;
     }
 
     function paint() {
@@ -1122,8 +1174,17 @@
       // The rest of the release gives way as a family's own map fills the view.
       var ctxA = openF >= 0 ? 1 - smooth((srOpen - 80) / 110) : 1;
       var openA = openF >= 0 ? smooth((srOpen - 60) / 70) : 0;
-      var alphas = famAlphas(openF, ctxA);
+      // What the drawing shows eases; where the words stand follows the target at once,
+      // so no name moves while the step back runs.
+      var emT = famEmphasis(openF), easing = stepEmphasis(emT, famGrowth(openF));
+      var alphas = new Array(fams.length), placeA = new Array(fams.length);
+      for (var ai = 0; ai < fams.length; ai++) {
+        var cA = openF >= 0 && ai !== openF ? ctxA : 1;
+        alphas[ai] = emph.shown[ai] * cA; placeA[ai] = emT[ai] * cA;
+      }
+      if (easing && !cameraFrame) draw();
       var hk = hover ? obj(hover) : null, so = sel ? obj(sel) : null;
+      cardFor = cardObject();
 
       // Sector slices: the focused discipline lies on one flat slice, edged with a hairline.
       var fd = focusDisc(), hd = hk && hk.kind === 'd' ? hk.i : (hk ? discOf(hk) : -1);
@@ -1165,19 +1226,26 @@
         if (a < 0.01) continue;
         var f = fams[fi], sx = f.x * k + tx, sy = f.y * k + ty, sr = markR(fi);
         if (sx + sr * 1.4 < -margin || sx - sr * 1.4 > W + margin || sy + sr * 1.4 < -margin || sy - sr * 1.4 > H + margin) continue;
-        paintFamily(fi, sx, sy, sr, a, fi === openF ? openA : 0);
+        paintFamily(fi, sx, sy, sr * emph.grow[fi], a, fi === openF ? openA : 0);
       }
+      paintRing();
 
       // Words, then the lines that must go round them, then the plates.
-      var plan = planLabels(openF, openA, ctxA, alphas);
+      var plan = planLabels(openF, openA, ctxA, placeA);
+      [plan.flat, plan.side, plan.names].forEach(function (list) {
+        list.forEach(function (n) { n.alpha = alphas[n.fi] * ctxA; });
+      });
       if (openF >= 0 && openA > 0.01 && partsReady) paintOpenLines(openF, openA, plan);
       paintLabels(plan);
       paintPlates(plan);
       lastPlan = plan;
+      placeCard(cardFor, plan.boxes);
       if (window.__universeDebug) window.__universeDebug.plan = plan;
     }
 
+    var citeSamples = [];
     function paintFibres(alphas, openF, ctxA, hk) {
+      citeSamples = [];
       var c = fibreSet(view.k);
       var k = view.k;
       var focusF = openF >= 0 ? openF : (hk && hk.kind === 'f' ? hk.i : (sel && obj(sel) && obj(sel).kind === 'f' ? obj(sel).i : -1));
@@ -1211,6 +1279,11 @@
             ctx.strokeStyle = ink; ctx.fillStyle = ink;
             ctx.lineWidth = 1 + 0.7 * Math.log(1 + w);
             ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(mx, my, x1, y1); ctx.stroke();
+            // Where it runs, so a family name it crosses can be lifted off it.
+            for (var cs = 1, cn = Math.max(8, Math.ceil(len / 5)); cs < cn; cs++) {
+              var ct = cs / cn, cu = 1 - ct;
+              citeSamples.push([cu * cu * x0 + 2 * cu * ct * mx + ct * ct * x1, cu * cu * y0 + 2 * cu * ct * my + ct * ct * y1]);
+            }
             var ex = x1 - mx, ey = y1 - my, el = Math.hypot(ex, ey) || 1;
             ex /= el; ey /= el;
             var hs = 6 + ctx.lineWidth;
@@ -1298,7 +1371,7 @@
       fd.papers.forEach(function (pi) {
         var g = L.papers[pi];
         var hot = (hk && hk.kind === 'p' && hk.i === pi) || (so && so.kind === 'p' && so.i === pi);
-        ctx.strokeStyle = hot ? palette.ink : palette.struct;
+        ctx.strokeStyle = hot ? palette.ink : palette.paper;
         ctx.lineWidth = hot ? 2 : (sr > 60 ? 1.1 : 0.8);
         ctx.beginPath();
         ctx.arc(sx + g[0] * sr, sy + g[1] * sr, g[2] * sr, g[3], g[4]);
@@ -1343,6 +1416,49 @@
           ctx.lineWidth = 1.6; ctx.strokeStyle = palette.focus; ctx.stroke();
         }
       });
+      ctx.restore();
+    }
+
+    /* ---- The chosen object, once: a ring that widens and fades as it settles */
+    function settleRing() {
+      if (!ringWanted) return;
+      var key = ringWanted;
+      ringWanted = null;
+      if (reduceMotion || !obj(key)) return;
+      ring = { key: key, start: nowMs() };
+      draw();
+    }
+    function paintRing() {
+      if (!ring) return;
+      var o = obj(ring.key), u = (nowMs() - ring.start) / RING_MS;
+      if (!o || ring.key !== sel || u >= 1 || reduceMotion) { ring = null; return; }
+      if (!cameraFrame) draw();
+      var k = view.k, grow = RING_GROW * easeOut(u), fi = famOf(o);
+      ctx.save();
+      ctx.globalAlpha = 0.85 * (1 - u) * (1 - u);
+      ctx.strokeStyle = palette.focus; ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      if (o.kind === 'd') {
+        var s = L.wheel.sectors[o.i];
+        ctx.arc(view.tx, view.ty, (s[3] + 1.2) * k + grow, s[0], s[1]);
+      } else if (o.kind === 'f') {
+        var f = fams[o.i];
+        ctx.arc(f.x * k + view.tx, f.y * k + view.ty, markR(o.i) + 3 + grow, 0, TAU);
+      } else {
+        var f2 = fams[fi], sx = f2.x * k + view.tx, sy = f2.y * k + view.ty, sr = f2.r * k;
+        var dr = dotRadius(sr) * 1.35;
+        if (o.kind === 'p') {
+          var g = L.papers[o.i];
+          ctx.arc(sx + g[0] * sr, sy + g[1] * sr, g[2] * sr + grow, g[3], g[4]);
+        } else if (o.kind === 'r') {
+          var pr = L.results[o.i];
+          ctx.arc(sx + pr[0] * sr, sy + pr[1] * sr, dr + 3 + grow, 0, TAU);
+        } else if (o.kind === 'l') {
+          var pl = L.lean[o.i];
+          diamond(sx + pl[0] * sr, sy + pl[1] * sr, dr * 1.3 + 3.5 + grow * 1.2);
+        }
+      }
+      ctx.stroke();
       ctx.restore();
     }
 
@@ -1405,7 +1521,9 @@
       // statement has no plate, since the panel beside the map names it.
       var plateFor = [];
       if (so && so.kind === 'f' && openA < 0.5) plateFor.push(so);
-      if (hk && (!so || hk.key !== so.key) && (hk.kind !== 'd' || compactLabels)) plateFor.push(hk);
+      // Where the pointer can hover, the card beside the map names what is pointed at
+      // instead (placeCard); a touch screen keeps the plate.
+      if (hk && !cardFor && (!so || hk.key !== so.key) && (hk.kind !== 'd' || compactLabels)) plateFor.push(hk);
       plateFor.forEach(function (o) {
         var p = namePlate(o, marks.concat(taken));
         if (p) plan.plates.push(p);
@@ -1892,6 +2010,154 @@
       return { key: o.key, box: best, t: t, pad: pad, leader: leader };
     }
 
+    /* ---- The card: what the pointer names, in words, beside it on the map ---------
+       On a screen that hovers, pointing at a family, paper, result or Lean statement
+       (or at its row in the list, or focusing that row) shows a small card beside the
+       object: its name, where it belongs, its counts and its state, each in words. It
+       sits inside the stage, never over the object or under the pointer, and fades in
+       over --t-hover. A touch screen gets none: tapping selects. */
+    var hoverMQ = window.matchMedia ? window.matchMedia('(hover: hover) and (pointer: fine)') : null;
+    var cardEl = null, cardFor = null, cardKey = '', cardW = 0, cardH = 0, cardOn = false, cardSpot = -1, cardPtr = null, cardBox = null;
+    if (stage) {
+      cardEl = document.createElement('div');
+      cardEl.className = 'u-card';
+      cardEl.setAttribute('aria-hidden', 'true');
+      stage.appendChild(cardEl);
+    }
+    function cardObject() {
+      if (!cardEl || !hover || !D) return null;
+      var o = obj(hover);
+      if (!o || hover === sel) return null;
+      if (hoverVia === 'touch' || (hoverVia !== 'focus' && !(hoverMQ && hoverMQ.matches))) return null;
+      if (o.kind === 'd') return compactLabels ? o : null;
+      if (o.kind === 'f') return o.i === openFamily() ? null : o;
+      return partsReady ? o : null;
+    }
+    function pairKind(st) { return st === 'candidate-pairing' ? 'candidate' : st === 'producer-declared-binding' ? 'declared' : 'cited'; }
+    function resultCardName(ri) {
+      var r = D.results[ri];
+      return r.lab ? r.lab : T('card.result_in', { name: resultName(r), paper: D.papers[r.p].short });
+    }
+    function cardJoin(kind) {
+      return '<span class="u-join u-join--' + (kind === 'candidate' ? 'candidate' : 'cited') + '" aria-hidden="true"></span>';
+    }
+    function cardHtml(o) {
+      var det = detail(o), h = '';
+      var line = function (cls, html) { h += '<p class="u-card__' + cls + '">' + html + '</p>'; };
+      if (o.kind === 'f') {
+        var f = D.families[o.i];
+        line('t tex-auto', det && det.titleHtml ? det.titleHtml : escapeHtml(f.title));
+        line('k', escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })));
+        var n = [count('papers', f.papers.length)];
+        if (f.lean.length) n.push(count('lean', f.lean.length));
+        line('n', escapeHtml(n.length > 1 ? T('card.counts', { papers: n[0], lean: n[1] }) : n[0]));
+        line('e', dot(f.tone) + '<span>' + escapeHtml(T('key.' + f.tone)) + '</span>');
+      } else if (o.kind === 'd') {
+        line('t', escapeHtml(D.disciplines[o.i].name));
+        line('n', escapeHtml(discCounts(D.disciplines[o.i])));
+      } else if (o.kind === 'p') {
+        var p = D.papers[o.i];
+        line('t', escapeHtml(p.short));
+        line('k', escapeHtml(T('paper.kicker', { num: D.families[p.f].num }) + (p.date ? ', ' + p.date : '')));
+        line('n', escapeHtml(count('results', p.results.length)));
+      } else if (o.kind === 'r') {
+        var r = D.results[o.i], rp = D.papers[r.p];
+        line('t', escapeHtml(resultName(r)) + (det && det.titleHtml ? ' <span class="u-card__sub tex-auto">(' + det.titleHtml + ')</span>' : ''));
+        line('k', escapeHtml(T('result.in_paper', { paper: rp.short }) + (rp.date ? ', ' + rp.date : '')));
+        if (!r.lean.length) line('e', escapeHtml(T('card.result_none')));
+        else {
+          var kinds = r.lean.map(function (li) { return pairKind(D.lean[li].pairing); });
+          var names = r.lean.map(function (li) { return D.lean[li].label; }).join(', ');
+          var one = kinds.every(function (k) { return k === kinds[0]; }) ? kinds[0] : null;
+          var key = !one ? 'card.result_mixed' : one === 'candidate' ? (kinds.length > 1 ? 'card.result_candidate_many' : 'card.result_candidate') : 'card.result_' + one;
+          line('e', cardJoin(one || 'cited') + '<span>' + escapeHtml(T(key, { name: names })) + '</span>');
+        }
+      } else if (o.kind === 'l') {
+        var l = D.lean[o.i];
+        line('t u-card__t--lean', escapeHtml(l.label) + (l.label !== l.name ? '<code>' + escapeHtml(l.name) + '</code>' : ''));
+        line('k', escapeHtml(T('lean.kicker', { num: D.families[l.f].num })));
+        if (!l.results.length) line('e', escapeHtml(T('lean.paired_none')));
+        else {
+          var lk = pairKind(l.pairing);
+          line('e', cardJoin(lk) + '<span>' + escapeHtml(T('card.lean_' + lk, { name: l.results.map(resultCardName).join('; ') })) + '</span>');
+        }
+      }
+      return h;
+    }
+    // The boxes of the words that name this object on the drawing.
+    function ownWords(o, plan) {
+      var out = [];
+      if (!plan) return out;
+      if (o.kind === 'f') {
+        plan.flat.concat(plan.side).forEach(function (n) { if (n.fi === o.i) out.push(n.box); });
+        plan.names.forEach(function (n) { if (n.fi === o.i) out.push.apply(out, n.samples); });
+      } else {
+        var field = { p: 'pi', r: 'ri', l: 'li' }[o.kind];
+        plan.open.forEach(function (it) { if (field && it[field] === o.i && it.box) out.push(it.box); });
+      }
+      return out;
+    }
+    function hideCard() {
+      if (!cardOn) return;
+      cardEl.classList.remove('is-on');
+      cardOn = false; cardSpot = -1; cardBox = null;
+    }
+    // Beside the object, in the least crowded of eight places, kept inside the stage,
+    // off the map's own controls, off the object and out from under the pointer, and
+    // off the words on the drawing where it can be.
+    function placeCard(o, words) {
+      if (!cardEl) return;
+      if (!o) { hideCard(); return; }
+      var m = markOf(o);
+      if (o.kind === 'f') m.r *= emph.grow ? Math.max(1, emph.grow[o.i]) : 1;
+      if (m.x < 0 || m.x > W || m.y < 0 || m.y > H) { hideCard(); return; }
+      var key = o.key + (detail(o) ? '+' : '');
+      if (key !== cardKey) {
+        cardEl.innerHTML = cardHtml(o);
+        if (window.atlasRenderMath) window.atlasRenderMath(cardEl);
+        cardKey = key; cardSpot = -1;
+        cardW = cardEl.offsetWidth; cardH = cardEl.offsetHeight;
+      }
+      var w = cardW, h = cardH, gap = m.r + 12, d = gap * 0.72;
+      var spots = [[m.x + gap, m.y - h / 2], [m.x - gap - w, m.y - h / 2],
+                   [m.x + d, m.y + d], [m.x + d, m.y - d - h], [m.x - d - w, m.y + d], [m.x - d - w, m.y - d - h],
+                   [m.x - w / 2, m.y + gap], [m.x - w / 2, m.y - gap - h]];
+      var own = ownWords(o, lastPlan);
+      // First choice where the object's name stands beside it: the card hangs just under
+      // (or over) that name, aligned with it, so the name stays readable and the card
+      // reads as its continuation.
+      if (own.length === 1) {
+        var nb = own[0];
+        spots.unshift([nb.x0 - 12, nb.y1 + 6], [nb.x1 + 12 - w, nb.y1 + 6], [nb.x0 - 12, nb.y0 - 6 - h], [nb.x1 + 12 - w, nb.y0 - 6 - h]);
+      }
+      var ptrBox = cardPtr ? { x0: cardPtr[0] - 8, x1: cardPtr[0] + 20, y0: cardPtr[1] - 8, y1: cardPtr[1] + 26 } : null;
+      var best = null, bestScore = Infinity, bestI = -1;
+      spots.forEach(function (sp, i) {
+        var x0 = clamp(sp[0], 8, Math.max(8, W - w - 8)), y0 = clamp(sp[1], 8, Math.max(8, H - h - 8));
+        var b = { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h };
+        var score = i * 3 + (Math.abs(x0 - sp[0]) + Math.abs(y0 - sp[1])) * 0.5 - (i === cardSpot ? 12 : 0);
+        chrome.forEach(function (q) { score += overlap(b, q) * 2; });
+        // Near the object first; a neighbour's name it covers counts against it lightly,
+        // since the card lasts only while the pointer stays.
+        (words || []).forEach(function (q) { if (own.indexOf(q) < 0) score += overlap(b, q) * 0.25; });
+        // The object's own name may lie wholly under the card, which names it again,
+        // but never half under it.
+        own.forEach(function (q) {
+          var ov = overlap(b, q), area = (q.x1 - q.x0) * (q.y1 - q.y0);
+          if (ov > 0 && ov < area * 0.98) score += area * 3 + 200;
+        });
+        var nx = clamp(m.x, b.x0, b.x1), ny = clamp(m.y, b.y0, b.y1);
+        var md = Math.hypot(nx - m.x, ny - m.y);
+        if (md < m.r + 3) score += 1e6;
+        else score += (md - m.r) * 3;
+        if (ptrBox && overlap(b, ptrBox) > 0) score += 1e6;
+        if (score < bestScore) { bestScore = score; best = b; bestI = i; }
+      });
+      cardSpot = bestI; cardBox = best;
+      cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
+      if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
+    }
+
     /* ---- The open family's lines: threads to Lean, fibres to other families */
     var routeCache = { key: '', routes: null };
     function paintOpenLines(fi, openA, plan) {
@@ -2088,6 +2354,25 @@
       ctx.lineJoin = 'round'; ctx.strokeStyle = halo || palette.ground; ctx.lineWidth = 3.5;
       lines.forEach(function (l, i) { ctx.strokeText(l, x, y + lead / 2 + i * lead); ctx.fillText(l, x, y + lead / 2 + i * lead); });
     }
+    // A family name that a citation line crosses stands on a soft patch of the ground,
+    // so the stroke stops short of its letters. Only names a line actually crosses get one.
+    function liftOffLines(b) {
+      if (!citeSamples.length) return;
+      var hit = false;
+      for (var i = 0; i < citeSamples.length && !hit; i++) {
+        var p = citeSamples[i];
+        hit = p[0] > b.x0 - 2 && p[0] < b.x1 + 2 && p[1] > b.y0 - 1 && p[1] < b.y1 + 1;
+      }
+      if (!hit) return;
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = palette.ground; ctx.shadowColor = palette.ground; ctx.shadowBlur = 5;
+      ctx.beginPath();
+      var x = b.x0 - 3, y = b.y0 - 1, w = b.x1 - b.x0 + 6, h = b.y1 - b.y0 + 2;
+      if (ctx.roundRect) ctx.roundRect(x, y, w, h, 4); else ctx.rect(x, y, w, h);
+      ctx.fill();
+      ctx.restore();
+    }
     function discLeader(q) {
       var lx = q.side > 0 ? q.x0 : q.x1, ly = q.y0 + 8;
       if (Math.abs(lx - q.ax) <= 14 && Math.abs(ly - q.ay) <= 6) return null;
@@ -2116,6 +2401,7 @@
         var hot = hk && famOf(hk) === n.fi;
         ctx.strokeStyle = hot ? palette.focus : palette.structFaint; ctx.lineWidth = hot ? 1.2 : 0.8;
         ctx.beginPath(); n.lead.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); }); ctx.stroke();
+        liftOffLines(n.box);
         drawLines(n.t.lines, n.align === 'right' ? n.box.x1 : n.box.x0, n.box.y0, SIDE_FONT, hot ? palette.focus : palette.ink, SIDE_LEAD, n.align);
       });
       // Family names set level beside their discs.
@@ -2127,6 +2413,7 @@
           ctx.strokeStyle = hot ? palette.focus : palette.struct; ctx.lineWidth = hot ? 1.2 : 0.9;
           ctx.beginPath(); ctx.moveTo(n.lead[0][0], n.lead[0][1]); ctx.lineTo(n.lead[1][0], n.lead[1][1]); ctx.stroke();
         }
+        liftOffLines(n.box);
         drawLines(n.t.lines, x, n.box.y0, FLAT_FONT, hot ? palette.focus : palette.ink, FLAT_LEAD, n.align);
       });
       // Family names along their radius.
@@ -2295,19 +2582,24 @@
       if (!opts.fromHistory) pendingY = null;
       sel = key || null;
       pin = -1;
-      hover = null;
+      hover = null; hoverVia = '';
       routeCache.key = '';
+      // A selection the reader makes gets its ring once it settles; a step through the
+      // history, a zoom that settles on its own or the first paint gets none.
+      var fly = opts.fly !== false;
+      ring = null;
+      ringWanted = o && opts.trail && !opts.fromHistory && fly ? key : null;
       if (opts.trail) trail.push({ key: key, before: before, prev: prev ? prev.key : null });
-      renderPanel();
+      renderPanel(opts.quiet);
       updateHash(!!opts.trail && !opts.fromHistory, leavingY);
       if (o && liveEl) liveEl.textContent = nameOf(o);
       var widened = setReading(o);
-      var fly = opts.fly !== false;
       if (fly) {
         var needs = widened || !o || o.kind === 'd' || o.kind === 'f' || famOf(o) !== famOf(prev) || !inView(o);
         if (needs) cameraTo(frameFor(o), !o, opts.delay);
         else draw();
       } else draw();
+      if (!cameraFrame) settleRing();
     }
     function inView(o) {
       var p = objPos(o);
@@ -2358,7 +2650,7 @@
       if (trail.length) {
         var last = trail.pop();
         sel = last.prev;
-        hover = null;
+        hover = null; hoverVia = ''; ring = null; ringWanted = null;
         routeCache.key = '';
         renderPanel();
         updateHash();
@@ -2407,9 +2699,26 @@
       var o = sel ? obj(sel) : null, label = o ? T('controls.fit_scope', { name: scopeName(o) }) : T('controls.fit');
       b.setAttribute('aria-label', label); b.setAttribute('title', label);
     }
-    function renderPanel() {
+    // The panel's new content rises 6 px into place when the selection changes: never on
+    // the first paint, and never when the same selection is drawn again as data arrives.
+    var panelKey = null;
+    [titleEl, viewEl].forEach(function (el) {
+      if (el) el.addEventListener('animationend', function (e) { if (e.target === el) el.classList.remove('is-arriving'); });
+    });
+    function arrive(els) {
+      if (reduceMotion) return;
+      els.forEach(function (el) {
+        if (!el) return;
+        el.classList.remove('is-arriving');
+        void el.offsetWidth;
+        el.classList.add('is-arriving');
+      });
+    }
+    function renderPanel(quiet) {
       if (!viewEl) return;
       var o = sel ? obj(sel) : null;
+      var changed = panelKey !== null && panelKey !== (sel || '');
+      panelKey = sel || '';
       updateFit();
       updateMapKey();
       updateLegend(o && o.kind !== 'd' ? famOf(o) : -1);
@@ -2430,6 +2739,7 @@
       if (panelBody) panelBody.scrollTop = 0;
       typeset(viewEl, o);
       restorePending();
+      if (changed && !quiet) arrive([titleEl, viewEl]);
       if (o) {
         var di = discOf(o);
         if (di >= 0 && !shards[di]) {
@@ -2875,20 +3185,26 @@
         if (!moved && dx * dx + dy * dy < 9) return;
         moved = true; viewFitted = false;
         view.tx += dx; view.ty += dy; px0 = e.clientX; py0 = e.clientY;
-        if (cameraFrame) { cancelAnimationFrame(cameraFrame); cameraFrame = 0; moving = false; }
+        if (cameraFrame) { cancelAnimationFrame(cameraFrame); cameraFrame = 0; moving = false; ringWanted = null; }
         draw();
         return;
       }
       var p = localXY(e), h = hitAt(p[0], p[1]);
+      cardPtr = p;
       if (h !== hover) {
         hover = h;
+        hoverVia = e.pointerType === 'touch' ? 'touch' : 'map';
         canvas.classList.toggle('is-over', !!h);
         syncActive();
         draw();
+      } else if (cardOn && cardBox && p[0] >= cardBox.x0 - 8 && p[0] <= cardBox.x1 + 20 && p[1] >= cardBox.y0 - 8 && p[1] <= cardBox.y1 + 26) {
+        // The pointer moved on toward the card: it steps aside.
+        placeCard(cardFor, lastPlan ? lastPlan.boxes : null);
       }
     });
     canvas.addEventListener('pointerleave', function () {
-      if (hover) { hover = null; canvas.classList.remove('is-over'); syncActive(); draw(); }
+      cardPtr = null;
+      if (hover) { hover = null; hoverVia = ''; canvas.classList.remove('is-over'); syncActive(); draw(); }
     });
     canvas.addEventListener('pointerdown', function (e) {
       pointers[e.pointerId] = [e.clientX, e.clientY];
@@ -2953,7 +3269,7 @@
       settleZoom(p[0], p[1]);
     }, { passive: false });
     function zoomAt(mx, my, factor) {
-      if (cameraFrame) { cancelAnimationFrame(cameraFrame); cameraFrame = 0; moving = false; }
+      if (cameraFrame) { cancelAnimationFrame(cameraFrame); cameraFrame = 0; moving = false; ringWanted = null; }
       var k = clamp(view.k * factor, fitK * 0.6, 900);
       factor = k / view.k;
       viewFitted = false;
@@ -3034,11 +3350,25 @@
     root.addEventListener('pointerover', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
       var key = go ? go.getAttribute('data-go') : null;
-      if (go && panelBody && panelBody.contains(go) && key && key !== hover) { hover = key; draw(); }
+      if (go && panelBody && panelBody.contains(go) && key && key !== hover) {
+        hover = key; hoverVia = e.pointerType === 'touch' ? 'touch' : 'list'; cardPtr = null; draw();
+      }
     });
     root.addEventListener('pointerout', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
-      if (go && panelBody && panelBody.contains(go) && hover === go.getAttribute('data-go')) { hover = null; draw(); }
+      if (go && panelBody && panelBody.contains(go) && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
+    });
+    // A row reached by the keyboard lights its place on the map and names it there too.
+    root.addEventListener('focusin', function (e) {
+      var go = e.target.closest ? e.target.closest('[data-go]') : null;
+      var key = go ? go.getAttribute('data-go') : null;
+      var visible = false;
+      try { visible = go && go.matches(':focus-visible'); } catch (err) { visible = false; }
+      if (go && visible && panelBody && panelBody.contains(go) && key && obj(key)) { hover = key; hoverVia = 'focus'; cardPtr = null; draw(); }
+    });
+    root.addEventListener('focusout', function (e) {
+      var go = e.target.closest ? e.target.closest('[data-go]') : null;
+      if (go && hoverVia === 'focus' && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
     });
     root.querySelectorAll('[data-u-zoom]').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -3185,7 +3515,7 @@
           loadParts().then(function () {
             var key = readHash(), o = key ? obj(key) : null;
             if (!o) return;
-            select(key, { fly: false, fromHistory: true });
+            select(key, { fly: false, fromHistory: true, quiet: true });
             setView(frameFor(o)); viewFitted = false; draw();
           }, function () {});
           start = null;
@@ -3209,6 +3539,12 @@
           state: function () { return { sel: sel, view: viewNow(), fitK: fitK, W: W, H: H, trail: trail.length }; },
           plan: function () { return lastPlan; },
           hover: function (key) { hover = key; paint(); },
+          // What the motion is doing now, for checks: the ring's age, whether the step
+          // back is still easing, and what the card says.
+          motion: function () {
+            return { ring: ring ? { key: ring.key, age: nowMs() - ring.start } : null, ringWanted: ringWanted,
+                     easing: !!emph.start, card: cardOn ? cardEl.innerText : null, cardBox: cardOn ? cardBox : null };
+          },
           paint: paint,
           fitted: function () { return viewFitted; }
         };

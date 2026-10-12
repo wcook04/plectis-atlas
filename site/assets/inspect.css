@@ -69,3 +69,17 @@
   :root:not([data-theme="light"]) .ins-pop, :root:not([data-theme="light"]) .ins-rail--float { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 10px 26px -10px rgba(0, 0, 0, 0.6); }
 }
 :root[data-theme="dark"] .ins-pop, :root[data-theme="dark"] .ins-rail--float { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 10px 26px -10px rgba(0, 0, 0, 0.6); }
+
+/* Motion (DESIGN.md "Motion and hover"). As the rail stops being hidden it slides 8px
+   in from its side and fades over --t-open; as a sheet (a narrow screen, or the floating
+   panel) it rises instead; the preview fades in over --t-hover. Filled backwards only,
+   so nothing keeps a transform once it has arrived; the global reduced-motion rule and
+   the one below make each instant. */
+@keyframes ins-rail-in { from { opacity: 0; transform: translateX(8px); } }
+@keyframes ins-sheet-in { from { opacity: 0; transform: translateY(16px); } }
+@keyframes ins-fade-in { from { opacity: 0; } }
+.ins-rail:not([hidden]) { animation: ins-rail-in var(--t-open) var(--ease-out) backwards; }
+.ins-rail--float:not([hidden]) { animation-name: ins-sheet-in; }
+@media (max-width: 1239px) { .ins-rail:not([hidden]) { animation-name: ins-sheet-in; } }
+.ins-pop:not([hidden]) { animation: ins-fade-in var(--t-hover) var(--ease-out) backwards; }
+@media (prefers-reduced-motion: reduce) { .ins-rail:not([hidden]), .ins-pop:not([hidden]) { animation: none; } }
