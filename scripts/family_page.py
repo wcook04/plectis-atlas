@@ -1078,7 +1078,7 @@ def readings_html(c: Ctx) -> str:
         version = (credit.get("pin") or "")[:7]
         c.tpls[tid] = record(W("inspect.kind_reading"), esc(rd.name),
                              [(W("readings.term"), f"“{esc(rd.term or '')}”"), (W("readings.definition"), code_spans(sv.get("text") or "")),
-                              (W("readings.method"), code_spans(credit.get("method") or "")),
+                              (W("readings.method"), code_spans(S.short(credit.get("method") or "", 400))),
                               (W("inspect.version"), f'<code translate="no">{esc(version)}</code>' if version else ""),
                               (W("inspect.licence"), esc(credit.get("license") or ""))],
                              [(W("readings.record"), sv.get("url")), (W("readings.method"), credit.get("url"))])
