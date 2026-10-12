@@ -684,6 +684,9 @@
         steel: get('--u-steel', '#97c1df'), brick: get('--u-brick', '#e18a79'), paired: get('--u-paired', '#7ea6c6'),
         plate: get('--u-plate', '#272132'), plateRule: get('--u-plate-rule', '#484251'), focus: get('--u-focus', '#f2e6d4')
       };
+      // A paper's ring or arc inside an open family: the line that says which results it
+      // holds, so it keeps 3:1 against the ground in both schemes.
+      p.paper = get('--u-paper', p.struct);
       var groundRGB = parseColor(p.ground) || [0, 0, 0, 1];
       // One meaning for colour: what the two outside readers find the release's
       // Lean states for a family's headline (the key in the panel says each in words).
@@ -1286,7 +1289,7 @@
       fd.papers.forEach(function (pi) {
         var g = L.papers[pi];
         var hot = (hk && hk.kind === 'p' && hk.i === pi) || (so && so.kind === 'p' && so.i === pi);
-        ctx.strokeStyle = hot ? palette.ink : palette.struct;
+        ctx.strokeStyle = hot ? palette.ink : palette.paper;
         ctx.lineWidth = hot ? 2 : (sr > 60 ? 1.1 : 0.8);
         ctx.beginPath();
         ctx.arc(sx + g[0] * sr, sy + g[1] * sr, g[2] * sr, g[3], g[4]);

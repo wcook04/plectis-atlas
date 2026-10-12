@@ -16,6 +16,9 @@
   --u-faint: #6d6473;
   --u-struct: #9c9083;
   --u-struct-soft: #c9bba7;
+  /* A paper's ring inside an open family, which tells which results it holds:
+     3.8:1 against the ground (struct alone is 2.8:1 in this scheme). */
+  --u-paper: #85786a;
   --u-cloud: rgba(25, 21, 32, 0.045);
   --u-slice: rgba(25, 21, 32, 0.05);
   --u-fibre: rgba(25, 21, 32, 0.36);
@@ -47,6 +50,7 @@
     --u-faint: #a6a2b1;
     --u-struct: #7c7585;
     --u-struct-soft: #4d4757;
+    --u-paper: #7c7585;
     --u-cloud: rgba(242, 230, 212, 0.05);
     --u-slice: rgba(242, 230, 212, 0.055);
     --u-fibre: rgba(242, 230, 212, 0.40);
@@ -73,6 +77,7 @@
   --u-faint: #a6a2b1;
   --u-struct: #7c7585;
   --u-struct-soft: #4d4757;
+  --u-paper: #7c7585;
   --u-cloud: rgba(242, 230, 212, 0.05);
   --u-slice: rgba(242, 230, 212, 0.055);
   --u-fibre: rgba(242, 230, 212, 0.40);
@@ -418,7 +423,7 @@ main.u-main { padding: 0; max-width: none; }
 .u-lg-dot--all { fill: var(--u-t-all); } .u-lg-dot--part { fill: var(--u-t-part); } .u-lg-dot--other { fill: var(--u-t-other); } .u-lg-dot--split { fill: var(--u-t-split); }
 .u-lg-dot--none, .u-lg-dot--unread { fill: var(--u-struct); }
 .u-lg-dia { fill: var(--u-ground); stroke: var(--u-steel); stroke-width: 1.6; }
-.u-lg-ring { fill: none; stroke: var(--u-struct); stroke-width: 1.2; }
+.u-lg-ring { fill: none; stroke: var(--u-paper); stroke-width: 1.2; }
 .u-lg-line { fill: none; stroke: var(--u-steel); stroke-width: 1.4; }
 .u-lg-line--cand { stroke-dasharray: 3 3; }
 .u-lg-cite { fill: none; stroke-width: 1.6; }
