@@ -984,6 +984,18 @@
        carry the citation (brick where this family cites, grey where it is cited). */
     var boardEl = root.querySelector('[data-u-board]');
     var board = { fi: -1, sig: '', page: 0, per: 1, cols: 0, on: false, pending: false, budget: 170, hideT: 0, ringKey: null };
+    var pendingBoard = null;
+    function boardPosition() {
+      return board.fi < 0 || !boardEl ? null : { family: D.families[board.fi].id, column: board.page * board.per, y: boardEl.scrollTop };
+    }
+    function restoreBoardPosition() {
+      if (!pendingBoard || !board.on || board.fi < 0 || pendingBoard.family !== D.families[board.fi].id) return;
+      var position = pendingBoard;
+      board.page = Math.floor((position.column || 0) / Math.max(1, board.per));
+      layoutBoard();
+      boardEl.scrollTop = position.y || 0;
+      if (pendingBoard === position && shards[fams[board.fi].d]) pendingBoard = null;
+    }
     var SIDE_MAX = 8;
     function boardFamily() { var o = sel ? obj(sel) : null; return partsReady && o && o.kind !== 'd' ? famOf(o) : -1; }
     function dateValue(s) { var t = s ? Date.parse(s) : NaN; return isFinite(t) ? t : Infinity; }
@@ -1167,6 +1179,8 @@
       var fpx = parseFloat(getComputedStyle(boardEl).fontSize) || 16;
       var per = narrow() ? cols.length : Math.max(1, Math.floor((papersEl.clientWidth + 1.25 * fpx) / (14 * fpx + 1.25 * fpx)));
       per = Math.min(per, Math.max(1, cols.length));
+      // Keep the first visible column when the reading panel changes the width.
+      if (per !== board.per) board.page = Math.floor(board.page * board.per / per);
       board.per = per; board.cols = cols.length;
       var pages = Math.max(1, Math.ceil(cols.length / per));
       board.page = clamp(board.page, 0, pages - 1);
@@ -1306,10 +1320,10 @@
         // board fades in over it once it settles (stepChart calls showBoard).
         requestAnimationFrame(function () { if (board.pending && !chartAnimating()) showBoard(); });
       }
-      if (fresh || !board.on) { layoutPages(); }
-      else { pageToSelection(); layoutBoard(); }
+      layoutPages();
       if (ringWanted || ring) board.ringKey = sel;
       ringBoard();
+      restoreBoardPosition();
     }
     function layoutPages() { var keep = board.on; board.on = true; layoutBoard(); pageToSelection(); layoutBoard(); board.on = keep; }
     function showBoard() {
@@ -1321,6 +1335,7 @@
       hover = null; hideCard();
       layoutBoard();
       ringBoard();
+      restoreBoardPosition();
     }
     function hideBoard() {
       board.pending = false;
@@ -1538,7 +1553,7 @@
     // The selection lives in the address. A selection the reader makes is a new entry
     // in the history, so Back and Forward walk the same steps; one that follows from
     // the drawing (a zoom settling) or from the history itself replaces it.
-    function updateHash(push, leavingY) {
+    function updateHash(push, leavingY, leavingBoard) {
       if (!window.history || !window.history.replaceState) return;
       var base = window.location.pathname + window.location.search;
       var url = sel ? base + '#o=' + encodeURIComponent(sel) : base;
@@ -1547,9 +1562,9 @@
       if (push && window.history.pushState) {
         // The entry being left keeps how far down the list the reader was, so Back
         // returns them to the same row.
-        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0, v: view, sf: searchFolded }, ''); } catch (e) { /* the address still works */ }
-        window.history.pushState({ o: sel, v: view, sf: searchFolded }, '', url);
-      } else window.history.replaceState({ o: sel, v: view, sf: searchFolded }, '', url);
+        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0, v: view, sf: searchFolded, b: leavingBoard }, ''); } catch (e) { /* the address still works */ }
+        window.history.pushState({ o: sel, v: view, sf: searchFolded, b: boardPosition() }, '', url);
+      } else window.history.replaceState({ o: sel, v: view, sf: searchFolded, b: boardPosition() }, '', url);
     }
     // The list scrolls inside the panel on a wide screen and with the page on a narrow one.
     function panelScroller() {
@@ -1577,7 +1592,8 @@
       if (key && !o) return;
       var prev = sel ? obj(sel) : null;
       var leavingY = scrollPos();
-      if (!opts.fromHistory) pendingY = null;
+      var leavingBoard = boardPosition();
+      if (!opts.fromHistory) { pendingY = null; pendingBoard = null; }
       sel = key || null;
       pin = -1;
       hover = null; hoverVia = ''; cardDismissed = null;
@@ -1586,11 +1602,11 @@
       var fly = opts.fly !== false;
       ring = null;
       ringWanted = o && o.kind === 'd' && opts.trail && !opts.fromHistory && fly ? key : null;
-      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view') });
-      renderPanel(opts.quiet);
-      updateHash(!!opts.trail && !opts.fromHistory, leavingY);
-      if (o && liveEl) liveEl.textContent = nameOf(o);
+      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view'), board: leavingBoard });
       setReading(o);
+      renderPanel(opts.quiet);
+      updateHash(!!opts.trail && !opts.fromHistory, leavingY, leavingBoard);
+      if (o && liveEl) liveEl.textContent = nameOf(o);
       chartTo(fly);
     }
     // A theorem or a Lean statement in hand is read: the panel widens to give the
@@ -1636,11 +1652,12 @@
       if (trail.length) {
         var last = trail.pop();
         sel = last.prev;
+        pendingBoard = last.board || null;
         if (last.view) showView(last.view, true);
         hover = null; hoverVia = ''; ring = null; ringWanted = null; cardDismissed = null;
+        setReading(sel ? obj(sel) : null);
         renderPanel();
         updateHash();
-        setReading(sel ? obj(sel) : null);
         chartTo(true);
         return;
       }
@@ -2399,16 +2416,18 @@
     window.addEventListener('popstate', function (e) {
       var key = readHash();
       var y = e.state && typeof e.state.y === 'number' ? e.state.y : null;
+      pendingBoard = e.state && e.state.b || null;
       if (e.state && (e.state.v === 'map' || e.state.v === 'list')) showView(e.state.v, true);
       if (key !== sel) { trail = []; pendingY = y; select(key, { fromHistory: true }); }
       else if (y != null) { pendingY = y; }
       restoreSearch(e.state);
       restorePending();
+      restoreBoardPosition();
     });
     // Leaving for a paper or a family page, the address's entry keeps the list's place,
     // so coming back finds it.
     window.addEventListener('pagehide', function () {
-      try { window.history.replaceState({ o: sel, y: scrollPos(), v: root.getAttribute('data-view'), sf: searchFolded }, ''); } catch (e) { /* nothing to keep */ }
+      try { window.history.replaceState({ o: sel, y: scrollPos(), v: root.getAttribute('data-view'), sf: searchFolded, b: boardPosition() }, ''); } catch (e) { /* nothing to keep */ }
     });
     function readHash() {
       var hash = window.location.hash || '';
@@ -2467,6 +2486,7 @@
         var start = readHash();
         // Back from a paper or a family page: the entry remembers the list's place.
         var kept = window.history && window.history.state;
+        pendingBoard = kept && kept.b || null;
         if (kept && typeof kept.y === 'number') pendingY = kept.y;
         if (kept && (kept.v === 'map' || kept.v === 'list')) showView(kept.v, true);
         if (start && !/^d:/.test(start)) {
