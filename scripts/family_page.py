@@ -896,9 +896,12 @@ def lean_card(c: Ctx, l) -> str:
             f'<p class="fx-lean__go"><a href="{c.root}statements/{esc(name)}.html">{esc(W("compare.lean_open"))}</a></p></article>')
 
 
-def comparison_one(c: Ctx, l, *, first: bool) -> str:
+def comparison_one(c: Ctx, l, *, first: bool, rest: bool = False) -> str:
     """One Lean statement beside the paper theorem it is paired with. The words at the
-    join say how the two were joined and that nobody has reviewed the match."""
+    join say how the two were joined and that nobody has reviewed the match. With several
+    Lean statements, every one but the first is marked fx-cmp--rest at build time, which
+    hides it only when scripts run (family.css), so the first paint shows one comparison
+    and nothing is hidden after it."""
     lid = l["id"]
     name = lid[2:]
     rec = c.pairs[lid]
@@ -922,7 +925,7 @@ def comparison_one(c: Ctx, l, *, first: bool) -> str:
                  f'<p class="fx-cmp__qual">{esc(W("compare.state_qual." + state))}</p>')
     join = f'<p class="fx-join fx-join--{esc(state)}">{words}</p>' if words else ""
     aliases = ('<span class="fx-alias" id="bench-lean"></span>' + (f'<span class="fx-alias" id="thread-{esc(c.num)}"></span>' if rec["target"] else "")) if first else ""
-    return (f'<section class="fx-cmp" id="lean-{esc(name)}" data-cmp aria-labelledby="lean-{esc(name)}-ch">{aliases}'
+    return (f'<section class="fx-cmp{" fx-cmp--rest" if rest else ""}" id="lean-{esc(name)}" data-cmp aria-labelledby="lean-{esc(name)}-ch">{aliases}'
             f'<h3 class="fx-cmp__h" id="lean-{esc(name)}-ch"><code translate="no">{esc(name)}</code></h3>'
             f'<div class="fx-cmp__grid fx-cmp__grid--{esc(state)}">'
             f'<div class="fx-cmp__paper"><p class="fx-cmp__side">{esc(W("compare.paper_side"))}</p>{paper}</div>'
@@ -995,10 +998,23 @@ def comparison_html(c: Ctx) -> str:
     if supporting:
         intro += " " + sayc("scope_context.supporting-or-different")
     idx = lean_index(c) if n > 1 else ""
-    cmps = "".join(comparison_one(c, l, first=(i == 0)) for i, l in enumerate(c.leans))
+    cmps = "".join(comparison_one(c, l, first=(i == 0), rest=(i > 0)) for i, l in enumerate(c.leans))
     return (f'<section class="fx-sec" id="compare" aria-labelledby="compare-h" data-cmp-host>{alias}'
             f'<h2 class="fx-h2" id="compare-h">{esc(heading)}</h2><p class="fx-intro">{esc(intro)}</p>'
-            f'{idx}<div class="fx-cmps">{cmps}</div>{formulations_html(c)}</section>')
+            f'{idx}<div class="fx-cmps">{cmps}</div>{CMP_HASH_SCRIPT if n > 1 else ""}{formulations_html(c)}</section>')
+
+
+# Before the first paint, a link to one comparison (families/003.html#lean-SiegelZeros, or
+# any anchor inside it) shows that comparison instead of the first, and marks its entry in
+# the index; family.js then takes over. Run inline, right after the comparisons, so the
+# page never paints four comparisons and then hides three.
+CMP_HASH_SCRIPT = ("<script>(function(){var d=document,h=decodeURIComponent(location.hash.slice(1));if(!h)return;"
+                   "var e=d.getElementById(h),p=e&&e.closest&&e.closest('[data-cmp]');"
+                   "if(!p||!p.classList.contains('fx-cmp--rest'))return;"
+                   "var a=d.querySelectorAll('[data-cmp]'),t=d.querySelectorAll('[data-cmp-tab]'),i;"
+                   "for(i=0;i<a.length;i++)a[i].classList.toggle('fx-cmp--rest',a[i]!==p);"
+                   "for(i=0;i<t.length;i++){if(t[i].getAttribute('data-cmp-tab')===p.id)t[i].setAttribute('aria-current','true');"
+                   "else t[i].removeAttribute('aria-current');}})();</script>")
 
 
 def formulations_html(c: Ctx) -> str:

@@ -56,6 +56,9 @@
 /* ---- Sections ------------------------------------------------------------ */
 .fx-sec { margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--rule); scroll-margin-top: 12px; }
 .fx-sec--theorem { margin-top: 26px; padding-top: 0; border-top: 0; }
+/* The theorem section ends on the status lines' bottom rule, which is also the next
+   section's rule: no second rule and no empty band between them. */
+.fx-sec--theorem + .fx-sec { margin-top: 0; border-top: 0; }
 .fx-sec--quiet .fx-h2 { font-size: 1.375rem; color: var(--ink-soft); }
 .fx-h2 { font-family: var(--serif); font-weight: 500; font-size: 1.75rem; line-height: 1.25; letter-spacing: -0.008em; margin: 0 0 10px; text-wrap: balance; }
 .fx-h3 { font-family: var(--serif); font-weight: 600; font-size: 1.1875rem; line-height: 1.3; margin: 36px 0 8px; scroll-margin-top: 12px; }
@@ -175,6 +178,10 @@
 
 .fx-cmp { margin-top: 26px; scroll-margin-top: 12px; }
 .fx-cmp:first-child { margin-top: 8px; }
+/* With scripts on, one comparison stands at a time: the build hides the others before
+   the first paint (family_page.comparison_one); without scripts every one is shown. */
+:root.js .fx-cmp--rest { display: none; }
+:root.js .fx-cmp + .fx-cmp { margin-top: 8px; }
 .fx-cmp__h { margin: 0 0 10px; font-family: var(--sans); font-size: var(--fs-base); font-weight: 600; color: var(--ink-soft); }
 .fx-cmp__h code { font-family: var(--fx-lean-mono); font-size: 0.95em; color: var(--ink); overflow-wrap: anywhere; }
 .fx-cmp__side { margin: 0 0 6px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
@@ -381,3 +388,28 @@
 .fx-src__body .pr-m--fail { font-family: var(--mono); font-size: 0.85em; }
 .fx-src__foot { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 6px 0 0; font-size: var(--fs-small); }
 .fx-st__body a.xref[aria-expanded="true"] { text-decoration-style: solid; }
+
+/* ---- Pointing and choosing (DESIGN.md, "Motion and hover") ---------------------------
+   A card or a record row answers pointing with a darker border or a faint ground, over
+   the hover time; nothing lifts or moves the text. The chosen Lean statement's mark moves
+   to the entry chosen and the comparisons swap in place over the state time (family.js);
+   the contents mark the section being read the same way. All of it is instant when the
+   reader asks for reduced motion. */
+.fx-st { transition: border-color var(--t-hover, 120ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); }
+.fx-card, .fx-alt, .fx-find, .fx-draft__i, .fx-rt tbody tr, .fx-idx__i, .fx-left__i {
+  transition: background-color var(--t-hover, 120ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); }
+@media (hover: hover) and (pointer: fine) {
+  .fx-st:hover { border-color: var(--rule-control); }
+  .fx-card:hover, .fx-alt:hover, .fx-find:hover, .fx-draft__i:hover, .fx-rt tbody tr:hover, .fx-idx__i:hover, .fx-left__i:hover {
+    background-color: color-mix(in oklab, var(--sunk) 55%, transparent); }
+}
+.fx-toc li a { transition: color var(--t-state, 180ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), border-color var(--t-state, 180ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); }
+/* One mark for the chosen Lean statement, moved by family.js; the per-entry bar stands in
+   until then, and whenever scripts are off. */
+.fx-idx { position: relative; }
+.fx-idx__mark { position: absolute; left: -13px; top: 0; width: 3px; border-radius: 2px; background: var(--steel-text); pointer-events: none;
+  transition: transform var(--t-state, 180ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), height var(--t-state, 180ms) var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)); }
+.fx-idx--marked .fx-idx__i::before { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .fx-st, .fx-card, .fx-alt, .fx-find, .fx-draft__i, .fx-rt tbody tr, .fx-idx__i, .fx-left__i, .fx-toc li a, .fx-idx__mark { transition: none; }
+}

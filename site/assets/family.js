@@ -2,8 +2,11 @@
 
    With several Lean statements, the index above the comparisons chooses which one
    stands beside its paper theorem; the others are hidden, and each keeps its own
-   address (#lean-<name>), so a link to one opens it. Without this script every
-   comparison is shown in turn and the index links jump to them.
+   address (#lean-<name>), so a link to one opens it. The build marks every comparison
+   but the first (fx-cmp--rest, hidden by family.css when scripts run) and an inline
+   script after them swaps in the one a link names before the first paint; this script
+   then takes over with the hidden attribute. Without scripts every comparison is
+   shown in turn and the index links jump to them.
 
    The contents in the side column marks the section being read. Nothing moves on
    its own: both answer the reader's choice or scrolling. */
@@ -16,25 +19,56 @@
   var tabs = host ? host.querySelectorAll('[data-cmp-tab]') : [];
   if (tabs.length > 1) {
     var panels = host.querySelectorAll('[data-cmp]');
+    var reduce = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : { matches: false };
+    var stateMs = parseFloat(getComputedStyle(doc.documentElement).getPropertyValue('--t-state')) || 180;
+    /* One mark for the chosen entry, moved to it over the state time (family.css). */
+    var nav = host.querySelector('.fx-idx');
+    var idxMark = null, current = null;
+    if (nav) {
+      idxMark = doc.createElement('span');
+      idxMark.className = 'fx-idx__mark';
+      idxMark.setAttribute('aria-hidden', 'true');
+      nav.appendChild(idxMark);
+      nav.classList.add('fx-idx--marked');
+    }
+    var placeMark = function (instant) {
+      if (!idxMark || !current) return;
+      var li = null;
+      for (var j = 0; j < tabs.length; j++) if (tabs[j].getAttribute('data-cmp-tab') === current) li = tabs[j].closest('li');
+      if (!li) return;
+      if (instant) idxMark.style.transition = 'none';
+      idxMark.style.height = Math.max(0, li.offsetHeight - 29) + 'px';
+      idxMark.style.transform = 'translateY(' + (li.offsetTop + 14) + 'px)';
+      if (instant) { void idxMark.offsetHeight; idxMark.style.transition = ''; }
+    };
     var show = function (id, focus) {
       var found = false;
-      for (var i = 0; i < panels.length; i++) {
-        var on = panels[i].id === id;
-        panels[i].hidden = !on;
-        if (on) found = true;
-      }
+      for (var n = 0; n < panels.length; n++) if (panels[n].id === id) found = true;
       if (!found) return false;
+      var changed = current !== null && current !== id;
+      for (var i = 0; i < panels.length; i++) {
+        panels[i].hidden = panels[i].id !== id;
+        panels[i].classList.remove('fx-cmp--rest');
+      }
       for (var j = 0; j < tabs.length; j++) {
         if (tabs[j].getAttribute('data-cmp-tab') === id) tabs[j].setAttribute('aria-current', 'true');
         else tabs[j].removeAttribute('aria-current');
       }
+      current = id;
+      placeMark(!changed);
+      var p = doc.getElementById(id);
+      /* The chosen comparison swaps in place; on a reader's choice it fades in over the
+         state time, never on scroll, and at once under reduced motion. */
+      if (changed && p && p.animate && !reduce.matches) {
+        p.animate([{ opacity: 0 }, { opacity: 1 }], { duration: stateMs, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+      }
       if (focus) {
-        var p = doc.getElementById(id);
         var h = p && p.querySelector('h3');
         if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
       }
       return true;
     };
+    if (idxMark && 'ResizeObserver' in window) new ResizeObserver(function () { placeMark(true); }).observe(nav);
     var fromHash = function () {
       var id = decodeURIComponent(location.hash.replace(/^#/, ''));
       if (!id) return false;
