@@ -1172,6 +1172,7 @@
       }
       if (easing && !cameraFrame) draw();
       var hk = hover ? obj(hover) : null, so = sel ? obj(sel) : null;
+      cardFor = cardObject();
 
       // Sector slices: the focused discipline lies on one flat slice, edged with a hairline.
       var fd = focusDisc(), hd = hk && hk.kind === 'd' ? hk.i : (hk ? discOf(hk) : -1);
@@ -1226,6 +1227,7 @@
       paintLabels(plan);
       paintPlates(plan);
       lastPlan = plan;
+      placeCard(cardFor, plan.boxes);
       if (window.__universeDebug) window.__universeDebug.plan = plan;
     }
 
@@ -1507,7 +1509,9 @@
       // statement has no plate, since the panel beside the map names it.
       var plateFor = [];
       if (so && so.kind === 'f' && openA < 0.5) plateFor.push(so);
-      if (hk && (!so || hk.key !== so.key) && (hk.kind !== 'd' || compactLabels)) plateFor.push(hk);
+      // Where the pointer can hover, the card beside the map names what is pointed at
+      // instead (placeCard); a touch screen keeps the plate.
+      if (hk && !cardFor && (!so || hk.key !== so.key) && (hk.kind !== 'd' || compactLabels)) plateFor.push(hk);
       plateFor.forEach(function (o) {
         var p = namePlate(o, marks.concat(taken));
         if (p) plan.plates.push(p);
@@ -1992,6 +1996,154 @@
       var dx = px - m.x, dy = py - m.y, len = Math.hypot(dx, dy) || 1;
       var leader = len > m.r + 3 ? [m.x + dx / len * (m.r + 1), m.y + dy / len * (m.r + 1), px, py] : null;
       return { key: o.key, box: best, t: t, pad: pad, leader: leader };
+    }
+
+    /* ---- The card: what the pointer names, in words, beside it on the map ---------
+       On a screen that hovers, pointing at a family, paper, result or Lean statement
+       (or at its row in the list, or focusing that row) shows a small card beside the
+       object: its name, where it belongs, its counts and its state, each in words. It
+       sits inside the stage, never over the object or under the pointer, and fades in
+       over --t-hover. A touch screen gets none: tapping selects. */
+    var hoverMQ = window.matchMedia ? window.matchMedia('(hover: hover) and (pointer: fine)') : null;
+    var cardEl = null, cardFor = null, cardKey = '', cardW = 0, cardH = 0, cardOn = false, cardSpot = -1, cardPtr = null, cardBox = null;
+    if (stage) {
+      cardEl = document.createElement('div');
+      cardEl.className = 'u-card';
+      cardEl.setAttribute('aria-hidden', 'true');
+      stage.appendChild(cardEl);
+    }
+    function cardObject() {
+      if (!cardEl || !hover || !D) return null;
+      var o = obj(hover);
+      if (!o || hover === sel) return null;
+      if (hoverVia === 'touch' || (hoverVia !== 'focus' && !(hoverMQ && hoverMQ.matches))) return null;
+      if (o.kind === 'd') return compactLabels ? o : null;
+      if (o.kind === 'f') return o.i === openFamily() ? null : o;
+      return partsReady ? o : null;
+    }
+    function pairKind(st) { return st === 'candidate-pairing' ? 'candidate' : st === 'producer-declared-binding' ? 'declared' : 'cited'; }
+    function resultCardName(ri) {
+      var r = D.results[ri];
+      return r.lab ? r.lab : T('card.result_in', { name: resultName(r), paper: D.papers[r.p].short });
+    }
+    function cardJoin(kind) {
+      return '<span class="u-join u-join--' + (kind === 'candidate' ? 'candidate' : 'cited') + '" aria-hidden="true"></span>';
+    }
+    function cardHtml(o) {
+      var det = detail(o), h = '';
+      var line = function (cls, html) { h += '<p class="u-card__' + cls + '">' + html + '</p>'; };
+      if (o.kind === 'f') {
+        var f = D.families[o.i];
+        line('t tex-auto', det && det.titleHtml ? det.titleHtml : escapeHtml(f.title));
+        line('k', escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })));
+        var n = [count('papers', f.papers.length)];
+        if (f.lean.length) n.push(count('lean', f.lean.length));
+        line('n', escapeHtml(n.length > 1 ? T('card.counts', { papers: n[0], lean: n[1] }) : n[0]));
+        line('e', dot(f.tone) + '<span>' + escapeHtml(T('key.' + f.tone)) + '</span>');
+      } else if (o.kind === 'd') {
+        line('t', escapeHtml(D.disciplines[o.i].name));
+        line('n', escapeHtml(discCounts(D.disciplines[o.i])));
+      } else if (o.kind === 'p') {
+        var p = D.papers[o.i];
+        line('t', escapeHtml(p.short));
+        line('k', escapeHtml(T('paper.kicker', { num: D.families[p.f].num }) + (p.date ? ', ' + p.date : '')));
+        line('n', escapeHtml(count('results', p.results.length)));
+      } else if (o.kind === 'r') {
+        var r = D.results[o.i], rp = D.papers[r.p];
+        line('t', escapeHtml(resultName(r)) + (det && det.titleHtml ? ' <span class="u-card__sub tex-auto">(' + det.titleHtml + ')</span>' : ''));
+        line('k', escapeHtml(T('result.in_paper', { paper: rp.short }) + (rp.date ? ', ' + rp.date : '')));
+        if (!r.lean.length) line('e', escapeHtml(T('card.result_none')));
+        else {
+          var kinds = r.lean.map(function (li) { return pairKind(D.lean[li].pairing); });
+          var names = r.lean.map(function (li) { return D.lean[li].label; }).join(', ');
+          var one = kinds.every(function (k) { return k === kinds[0]; }) ? kinds[0] : null;
+          var key = !one ? 'card.result_mixed' : one === 'candidate' ? (kinds.length > 1 ? 'card.result_candidate_many' : 'card.result_candidate') : 'card.result_' + one;
+          line('e', cardJoin(one || 'cited') + '<span>' + escapeHtml(T(key, { name: names })) + '</span>');
+        }
+      } else if (o.kind === 'l') {
+        var l = D.lean[o.i];
+        line('t u-card__t--lean', escapeHtml(l.label) + (l.label !== l.name ? '<code>' + escapeHtml(l.name) + '</code>' : ''));
+        line('k', escapeHtml(T('lean.kicker', { num: D.families[l.f].num })));
+        if (!l.results.length) line('e', escapeHtml(T('lean.paired_none')));
+        else {
+          var lk = pairKind(l.pairing);
+          line('e', cardJoin(lk) + '<span>' + escapeHtml(T('card.lean_' + lk, { name: l.results.map(resultCardName).join('; ') })) + '</span>');
+        }
+      }
+      return h;
+    }
+    // The boxes of the words that name this object on the drawing.
+    function ownWords(o, plan) {
+      var out = [];
+      if (!plan) return out;
+      if (o.kind === 'f') {
+        plan.flat.concat(plan.side).forEach(function (n) { if (n.fi === o.i) out.push(n.box); });
+        plan.names.forEach(function (n) { if (n.fi === o.i) out.push.apply(out, n.samples); });
+      } else {
+        var field = { p: 'pi', r: 'ri', l: 'li' }[o.kind];
+        plan.open.forEach(function (it) { if (field && it[field] === o.i && it.box) out.push(it.box); });
+      }
+      return out;
+    }
+    function hideCard() {
+      if (!cardOn) return;
+      cardEl.classList.remove('is-on');
+      cardOn = false; cardSpot = -1; cardBox = null;
+    }
+    // Beside the object, in the least crowded of eight places, kept inside the stage,
+    // off the map's own controls, off the object and out from under the pointer, and
+    // off the words on the drawing where it can be.
+    function placeCard(o, words) {
+      if (!cardEl) return;
+      if (!o) { hideCard(); return; }
+      var m = markOf(o);
+      if (o.kind === 'f') m.r *= emph.grow ? Math.max(1, emph.grow[o.i]) : 1;
+      if (m.x < 0 || m.x > W || m.y < 0 || m.y > H) { hideCard(); return; }
+      var key = o.key + (detail(o) ? '+' : '');
+      if (key !== cardKey) {
+        cardEl.innerHTML = cardHtml(o);
+        if (window.atlasRenderMath) window.atlasRenderMath(cardEl);
+        cardKey = key; cardSpot = -1;
+        cardW = cardEl.offsetWidth; cardH = cardEl.offsetHeight;
+      }
+      var w = cardW, h = cardH, gap = m.r + 12, d = gap * 0.72;
+      var spots = [[m.x + gap, m.y - h / 2], [m.x - gap - w, m.y - h / 2],
+                   [m.x + d, m.y + d], [m.x + d, m.y - d - h], [m.x - d - w, m.y + d], [m.x - d - w, m.y - d - h],
+                   [m.x - w / 2, m.y + gap], [m.x - w / 2, m.y - gap - h]];
+      var own = ownWords(o, lastPlan);
+      // First choice where the object's name stands beside it: the card hangs just under
+      // (or over) that name, aligned with it, so the name stays readable and the card
+      // reads as its continuation.
+      if (own.length === 1) {
+        var nb = own[0];
+        spots.unshift([nb.x0 - 12, nb.y1 + 6], [nb.x1 + 12 - w, nb.y1 + 6], [nb.x0 - 12, nb.y0 - 6 - h], [nb.x1 + 12 - w, nb.y0 - 6 - h]);
+      }
+      var ptrBox = cardPtr ? { x0: cardPtr[0] - 8, x1: cardPtr[0] + 20, y0: cardPtr[1] - 8, y1: cardPtr[1] + 26 } : null;
+      var best = null, bestScore = Infinity, bestI = -1;
+      spots.forEach(function (sp, i) {
+        var x0 = clamp(sp[0], 8, Math.max(8, W - w - 8)), y0 = clamp(sp[1], 8, Math.max(8, H - h - 8));
+        var b = { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h };
+        var score = i * 3 + (Math.abs(x0 - sp[0]) + Math.abs(y0 - sp[1])) * 0.5 - (i === cardSpot ? 12 : 0);
+        chrome.forEach(function (q) { score += overlap(b, q) * 2; });
+        // Near the object first; a neighbour's name it covers counts against it lightly,
+        // since the card lasts only while the pointer stays.
+        (words || []).forEach(function (q) { if (own.indexOf(q) < 0) score += overlap(b, q) * 0.25; });
+        // The object's own name may lie wholly under the card, which names it again,
+        // but never half under it.
+        own.forEach(function (q) {
+          var ov = overlap(b, q), area = (q.x1 - q.x0) * (q.y1 - q.y0);
+          if (ov > 0 && ov < area * 0.98) score += area * 3 + 200;
+        });
+        var nx = clamp(m.x, b.x0, b.x1), ny = clamp(m.y, b.y0, b.y1);
+        var md = Math.hypot(nx - m.x, ny - m.y);
+        if (md < m.r + 3) score += 1e6;
+        else score += (md - m.r) * 3;
+        if (ptrBox && overlap(b, ptrBox) > 0) score += 1e6;
+        if (score < bestScore) { bestScore = score; best = b; bestI = i; }
+      });
+      cardSpot = bestI; cardBox = best;
+      cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
+      if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
     }
 
     /* ---- The open family's lines: threads to Lean, fibres to other families */
@@ -3025,15 +3177,21 @@
         return;
       }
       var p = localXY(e), h = hitAt(p[0], p[1]);
+      cardPtr = p;
       if (h !== hover) {
         hover = h;
+        hoverVia = e.pointerType === 'touch' ? 'touch' : 'map';
         canvas.classList.toggle('is-over', !!h);
         syncActive();
         draw();
+      } else if (cardOn && cardBox && p[0] >= cardBox.x0 - 8 && p[0] <= cardBox.x1 + 20 && p[1] >= cardBox.y0 - 8 && p[1] <= cardBox.y1 + 26) {
+        // The pointer moved on toward the card: it steps aside.
+        placeCard(cardFor, lastPlan ? lastPlan.boxes : null);
       }
     });
     canvas.addEventListener('pointerleave', function () {
-      if (hover) { hover = null; canvas.classList.remove('is-over'); syncActive(); draw(); }
+      cardPtr = null;
+      if (hover) { hover = null; hoverVia = ''; canvas.classList.remove('is-over'); syncActive(); draw(); }
     });
     canvas.addEventListener('pointerdown', function (e) {
       pointers[e.pointerId] = [e.clientX, e.clientY];
@@ -3179,11 +3337,25 @@
     root.addEventListener('pointerover', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
       var key = go ? go.getAttribute('data-go') : null;
-      if (go && panelBody && panelBody.contains(go) && key && key !== hover) { hover = key; draw(); }
+      if (go && panelBody && panelBody.contains(go) && key && key !== hover) {
+        hover = key; hoverVia = e.pointerType === 'touch' ? 'touch' : 'list'; cardPtr = null; draw();
+      }
     });
     root.addEventListener('pointerout', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
-      if (go && panelBody && panelBody.contains(go) && hover === go.getAttribute('data-go')) { hover = null; draw(); }
+      if (go && panelBody && panelBody.contains(go) && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
+    });
+    // A row reached by the keyboard lights its place on the map and names it there too.
+    root.addEventListener('focusin', function (e) {
+      var go = e.target.closest ? e.target.closest('[data-go]') : null;
+      var key = go ? go.getAttribute('data-go') : null;
+      var visible = false;
+      try { visible = go && go.matches(':focus-visible'); } catch (err) { visible = false; }
+      if (go && visible && panelBody && panelBody.contains(go) && key && obj(key)) { hover = key; hoverVia = 'focus'; cardPtr = null; draw(); }
+    });
+    root.addEventListener('focusout', function (e) {
+      var go = e.target.closest ? e.target.closest('[data-go]') : null;
+      if (go && hoverVia === 'focus' && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
     });
     root.querySelectorAll('[data-u-zoom]').forEach(function (b) {
       b.addEventListener('click', function () {
@@ -3348,6 +3520,12 @@
           state: function () { return { sel: sel, view: viewNow(), fitK: fitK, W: W, H: H, trail: trail.length }; },
           plan: function () { return lastPlan; },
           hover: function (key) { hover = key; paint(); },
+          // What the motion is doing now, for checks: the ring's age, whether the step
+          // back is still easing, and what the card says.
+          motion: function () {
+            return { ring: ring ? { key: ring.key, age: nowMs() - ring.start } : null, ringWanted: ringWanted,
+                     easing: !!emph.start, card: cardOn ? cardEl.innerText : null, cardBox: cardOn ? cardBox : null };
+          },
           paint: paint,
           fitted: function () { return viewFitted; }
         };

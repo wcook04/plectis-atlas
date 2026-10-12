@@ -183,6 +183,20 @@
   "show_pair": "Show this pair on the map",
   "shown_pair": "Shown on the map"
  },
+ "card": {
+  "_note": "The card beside what the pointer names on the map (DESIGN.md, Motion and hover). The family, paper, result and Lean lines reuse family.kicker, paper.kicker, result.in_paper, lean.kicker and the colour key.",
+  "counts": "{papers}, {lean}",
+  "result_candidate": "Possible Lean match: {name}. Suggested from shared wording; correspondence not reviewed.",
+  "result_candidate_many": "Possible Lean matches: {name}. Suggested from shared wording; correspondence not reviewed.",
+  "result_cited": "Paired with {name}: the Lean source cites this theorem. Nobody has reviewed the match.",
+  "result_declared": "Paired with {name}: the release binds them. Nobody has reviewed the match.",
+  "result_mixed": "Linked to {name}, by different routes. Nobody has reviewed the matches.",
+  "result_none": "No Lean statement in the release is paired with it.",
+  "lean_candidate": "Possible paper match: {name}. Suggested from shared wording; correspondence not reviewed.",
+  "lean_cited": "Paired with {name}: its source cites that theorem. Nobody has reviewed the match.",
+  "lean_declared": "Paired with {name}: the release binds them. Nobody has reviewed the match.",
+  "result_in": "{name} in “{paper}”"
+ },
  "plate": {
   "lean_ring": "Lean statements",
   "family_short": "Family {num}",
