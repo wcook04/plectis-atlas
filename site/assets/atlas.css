@@ -726,6 +726,13 @@ th[aria-sort="ascending"], th[aria-sort="descending"] { color: var(--ink); }
   :root.js .brand { font-size: 1.125rem; }
   :root.js .top__tools { gap: 8px; }
 }
+/* At 320 to 380 px the header's row ran 9 px past the screen: the menu button keeps its
+   icon and its name for screen readers, and drops the visible word. */
+@media (max-width: 380px) {
+  :root.js .nav-toggle { padding: 0 9px; }
+  :root.js .nav-toggle span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  :root.js .top__in { gap: 8px; }
+}
 .filters__reset[hidden] { display: none; }
 @media (max-width: 1500px) { .tbl--families .t-disc { display: none; } .t-disc-inline { display: block; } }
 @media (max-width: 760px) {
