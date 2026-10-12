@@ -1685,6 +1685,11 @@
       opts = opts || {};
       if (key && !partsReady && !/^d:/.test(key)) {
         // A family, paper, result or Lean statement opens once the parts are in.
+        var family = obj(key);
+        if (family && family.kind === 'f') {
+          var earlyDi = discOf(family);
+          if (!shards[earlyDi] && !failedShards[earlyDi]) loadShard(earlyDi).catch(function () {});
+        }
         if (statusEl) { statusEl.textContent = T('status.parts_loading'); statusEl.hidden = false; }
         loadParts().then(function () {
           if (request === selectionRequest) select(key, opts);
@@ -2765,13 +2770,11 @@
         validate(both[0], both[1]);
         ingest(both[0], both[1]);
         readFonts();
-        var ready = Promise.resolve();
         if (document.fonts && document.fonts.load) {
-          ready = Promise.all(['400 13px ', '600 13px ', 'italic 400 12px '].map(function (w) {
+          Promise.all(['400 13px ', '600 13px ', 'italic 400 12px '].map(function (w) {
             return Promise.all([document.fonts.load(w + SERIF), document.fonts.load(w + SANS)]);
-          })).then(function () { return document.fonts.ready; });
+          })).catch(function () {});
         }
-        return Promise.race([ready, new Promise(function (r) { setTimeout(r, 1500); })]);
       })
       .then(function () {
         widthCache = {};
@@ -2785,6 +2788,11 @@
         if (kept && typeof kept.y === 'number') pendingY = kept.y;
         if (kept && (kept.v === 'map' || kept.v === 'list')) showView(kept.v, true);
         if (start && !/^d:/.test(start)) {
+          var initialFamily = obj(start);
+          if (initialFamily && initialFamily.kind === 'f') {
+            var initialDi = discOf(initialFamily);
+            if (!shards[initialDi] && !failedShards[initialDi]) loadShard(initialDi).catch(function () {});
+          }
           loadParts().then(function () {
             var key = readHash(), o = key ? obj(key) : null;
             if (!o) return;

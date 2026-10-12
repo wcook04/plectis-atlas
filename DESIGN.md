@@ -441,6 +441,10 @@ frame. Retain only the current fit per family and discard old viewport caches.
 A failed or stale detail packet stops loading and reports the failure. Redrawing
 must never restart a rejected request; another selection can retry with fresh
 bytes. Regression checks cover both network failure and a stale generation.
+Draw the map when its baseline data is ready; font downloads must not hold up
+navigation. Refresh text measurements when fonts arrive. When a chosen family
+needs both the parts index and its discipline details, request them together.
+Keep shared requests and cached details; do not preload every discipline.
 
 ## Quality floor
 

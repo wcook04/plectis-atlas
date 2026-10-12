@@ -32,6 +32,7 @@ function context(extra = {}) {
     Promise, Math, console, partsPromise: null, partsReady: false, partsFailed: false, selectionRequest: 0,
     statusEl: { textContent: '', hidden: true }, T: key => key,
     failedShards: {}, discOf: () => 0,
+    shards: {}, loadShard: () => Promise.resolve({}),
     mapPress: null, lastPointerType: '',
     D: { generation_id: 'g', families, papers: [], results: [], lean: [] },
     L: { results: [], lean: [], papers: [] }, fams: families,
