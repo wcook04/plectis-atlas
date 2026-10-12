@@ -828,10 +828,7 @@
  "social": {
   "card_title": "Plectis Atlas",
   "card_line": "{families} families, {manuscripts} manuscripts, {lean} Comparator challenge files, mapped from openai/math at {commit_short}.",
-  "card_alt": "A map of OpenAI’s mathematics release: families of papers grouped by discipline, coloured by whether a Comparator statement accompanies them."
- },
- "issues": {
-  "claim": "Explain result {id}: {title}",
+  "card_alt": "Plectis Atlas: OpenAI’s mathematics release, read and checked. The release’s papers, families and disciplines, and for each family the claim, the theorem in the paper, what its Lean states and who has checked it.",
   "credit": "Credit for result {id}: {title}",
   "check": "Check {statement}",
   "replay": "Replay {statement}",

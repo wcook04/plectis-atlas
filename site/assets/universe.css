@@ -7,7 +7,9 @@
    Colour belongs to evidence: steel for Lean, brick for the other machine
    checks; structure stays in low-chroma greys. */
 
-[data-universe] {
+/* The tokens also reach the list of every family under the map, whose rows carry
+   the same state dots. */
+[data-universe], .u-band--index {
   --u-ground: #f8f0e2;
   --u-ink: #191520;
   --u-muted: #544d5d;
@@ -38,7 +40,7 @@
   --u-panel-w: clamp(340px, 26vw, 430px);
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) [data-universe] {
+  :root:not([data-theme="light"]) [data-universe], :root:not([data-theme="light"]) .u-band--index {
     --u-ground: #1c1526;
     --u-ink: #f2e6d4;
     --u-muted: #bcb8c6;
@@ -64,7 +66,7 @@
     --u-t-unread: #8a8396;
   }
 }
-:root[data-theme="dark"] [data-universe] {
+:root[data-theme="dark"] [data-universe], :root[data-theme="dark"] .u-band--index {
   --u-ground: #1c1526;
   --u-ink: #f2e6d4;
   --u-muted: #bcb8c6;
@@ -366,6 +368,8 @@ main.u-main { padding: 0; max-width: none; }
 .u-cat__more { margin: 6px 0 0 14px; font: 400 var(--fs-small)/1.4 var(--sans); }
 .u-btn { display: inline-flex; align-items: center; min-height: 32px; padding: 5px 12px; border-radius: var(--r-sm); border: 1px solid var(--rule-control); background: var(--surface); color: var(--ink); font: 500 var(--fs-meta)/1.25 var(--sans); text-decoration: none; }
 .u-btn--primary { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
+/* The site-wide a:hover colour must not reach a primary button: its label stays legible. */
+.u-btn--primary:hover, .u-btn--primary:focus-visible { color: var(--on-ink); }
 .u-btn:hover { border-color: var(--ink); }
 .u-btn:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
 .u-doors { gap: 8px; margin: 12px 0 6px; }
@@ -444,3 +448,16 @@ main.u-main { padding: 0; max-width: none; }
 .u-shown { margin: 0 0 4px 8px; font: 600 var(--fs-micro)/1.4 var(--sans); color: var(--steel-text); }
 .u-pairbtn { margin: 0 0 4px 8px; min-height: 26px; padding: 3px 10px; border-radius: var(--r-sm); border: 1px solid var(--rule-control); background: var(--surface); color: var(--ink); font: 500 var(--fs-micro)/1.2 var(--sans); cursor: pointer; }
 .u-pairbtn:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+
+/* Search matches folded away after one is opened; one button brings them back. */
+.u-results.is-folded > :not(.u-unfold) { display: none; }
+.u-unfold { display: none; }
+.u-results.is-folded .u-unfold { display: inline-flex; align-items: center; min-height: 28px; margin: 2px 0 8px; padding: 0; border: 0; background: none;
+  font: 400 var(--fs-meta)/1.4 var(--sans); color: var(--steel-text); text-decoration: underline; text-underline-offset: 0.18em; cursor: pointer; }
+.u-unfold:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+
+/* With JavaScript off the map cannot draw: its stage and the List/Map switch stand
+   down, and one line points to the list of every family below. */
+.u-nojs { display: none; }
+html:not(.js) .u-nojs { display: block; font: 400 var(--fs-meta)/1.5 var(--sans); color: var(--ink-soft); }
+html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }

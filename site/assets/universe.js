@@ -2239,13 +2239,31 @@
     // The selection lives in the address. A selection the reader makes is a new entry
     // in the history, so Back and Forward walk the same steps; one that follows from
     // the drawing (a zoom settling) or from the history itself replaces it.
-    function updateHash(push) {
+    function updateHash(push, leavingY) {
       if (!window.history || !window.history.replaceState) return;
       var base = window.location.pathname + window.location.search;
       var url = sel ? base + '#o=' + encodeURIComponent(sel) : base;
       if (url === window.location.pathname + window.location.search + window.location.hash) return;
-      if (push && window.history.pushState) window.history.pushState({ o: sel }, '', url);
-      else window.history.replaceState({ o: sel }, '', url);
+      if (push && window.history.pushState) {
+        // The entry being left keeps how far down the list the reader was, so Back
+        // returns them to the same row.
+        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0 }, ''); } catch (e) { /* the address still works */ }
+        window.history.pushState({ o: sel }, '', url);
+      } else window.history.replaceState({ o: sel }, '', url);
+    }
+    // The list scrolls inside the panel on a wide screen and with the page on a narrow one.
+    function panelScroller() {
+      var narrow = window.matchMedia && window.matchMedia('(max-width: 899px)').matches;
+      return narrow ? (document.scrollingElement || document.documentElement) : panelBody;
+    }
+    function scrollPos() { var s = panelScroller(); return s ? s.scrollTop : 0; }
+    // A position to restore once the panel holds enough to scroll that far.
+    var pendingY = null;
+    function restorePending() {
+      var s = panelScroller();
+      if (pendingY == null || !s) return;
+      s.scrollTop = pendingY;
+      if (s.scrollTop >= pendingY - 2) pendingY = null;
     }
     // Select an object: its panel, its plate and, where its level asks, a flight.
     function select(key, opts) {
@@ -2259,13 +2277,15 @@
       if (key && !o) return;
       var before = viewNow();
       var prev = sel ? obj(sel) : null;
+      var leavingY = scrollPos();
+      if (!opts.fromHistory) pendingY = null;
       sel = key || null;
       pin = -1;
       hover = null;
       routeCache.key = '';
       if (opts.trail) trail.push({ key: key, before: before, prev: prev ? prev.key : null });
       renderPanel();
-      updateHash(!!opts.trail && !opts.fromHistory);
+      updateHash(!!opts.trail && !opts.fromHistory, leavingY);
       if (o && liveEl) liveEl.textContent = nameOf(o);
       var widened = setReading(o);
       var fly = opts.fly !== false;
@@ -2395,10 +2415,11 @@
       viewEl.innerHTML = html;
       if (panelBody) panelBody.scrollTop = 0;
       typeset(viewEl, o);
+      restorePending();
       if (o) {
         var di = discOf(o);
         if (di >= 0 && !shards[di]) {
-          var again = function () { if (sel === (o && o.key)) { viewEl.innerHTML = rerender(o); typeset(viewEl, o); } };
+          var again = function () { if (sel === (o && o.key)) { viewEl.innerHTML = rerender(o); typeset(viewEl, o); restorePending(); } };
           loadShard(di).then(again, again);
         }
       }
@@ -2726,6 +2747,7 @@
     function runSearch() {
       var q = (searchIn.value || '').trim().toLowerCase();
       query = q;
+      if (resultsEl) resultsEl.classList.remove('is-folded');
       if (!q) {
         matches = null; matchFam = null; matchList = [];
         resultsEl.hidden = true; resultsEl.innerHTML = '';
@@ -2947,8 +2969,26 @@
       if (key && (outside || go.classList.contains('u-way')) && narrow) showView('map');
       // The map is the page's first screen: going back up to it shows the header too.
       if (outside) window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+      var fromResults = !!(resultsEl && resultsEl.contains(go));
       select(key || null, { trail: true });
+      // A match opened from the search folds the list of matches away, so what was
+      // opened starts at the top of the panel; one button brings the matches back.
+      if (fromResults) foldResults(true);
     });
+    function foldResults(fold) {
+      if (!resultsEl || resultsEl.hidden) return;
+      resultsEl.classList.toggle('is-folded', fold);
+      var b = resultsEl.querySelector('[data-u-unfold]');
+      if (fold && !b) {
+        b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'u-unfold';
+        b.setAttribute('data-u-unfold', '');
+        b.textContent = T('search.show_again');
+        b.addEventListener('click', function () { foldResults(false); });
+        resultsEl.insertBefore(b, resultsEl.firstChild);
+      }
+    }
     // Choosing which recorded pair the map traces: the reader and the map follow, the
     // camera stays where it is.
     root.addEventListener('click', function (e) {
@@ -3037,9 +3077,17 @@
       var key = readHash();
       if (key !== sel) select(key, { fromHistory: true });
     });
-    window.addEventListener('popstate', function () {
+    window.addEventListener('popstate', function (e) {
       var key = readHash();
-      if (key !== sel) { trail = []; select(key, { fromHistory: true }); }
+      var y = e.state && typeof e.state.y === 'number' ? e.state.y : null;
+      if (key !== sel) { trail = []; pendingY = y; select(key, { fromHistory: true }); }
+      else if (y != null) { pendingY = y; }
+      restorePending();
+    });
+    // Leaving for a paper or a family page, the address's entry keeps the list's place,
+    // so coming back finds it.
+    window.addEventListener('pagehide', function () {
+      try { window.history.replaceState({ o: sel, y: scrollPos() }, ''); } catch (e) { /* nothing to keep */ }
     });
     function readHash() {
       var hash = window.location.hash || '';
@@ -3097,11 +3145,14 @@
         resize();
         computeFit();
         var start = readHash();
+        // Back from a paper or a family page: the entry remembers the list's place.
+        var kept = window.history && window.history.state;
+        if (kept && typeof kept.y === 'number') pendingY = kept.y;
         if (start && !/^d:/.test(start)) {
           loadParts().then(function () {
             var key = readHash(), o = key ? obj(key) : null;
             if (!o) return;
-            select(key, { fly: false });
+            select(key, { fly: false, fromHistory: true });
             setView(frameFor(o)); viewFitted = false; draw();
           }, function () {});
           start = null;

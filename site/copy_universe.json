@@ -5,7 +5,8 @@
   "description": "Every family of OpenAI’s mathematics release on one map, with a list beside it: what each family claims, what its Lean states, who has checked it, and where to read it.",
   "redirect_title": "The map has moved",
   "redirect_text": "The map of the release is now the front page.",
-  "redirect_link": "Open the map"
+  "redirect_link": "Open the map",
+  "nojs": "The map needs JavaScript. The list below names every family, with a link to each."
  },
  "release": {
   "s1": "OpenAI published {manuscripts_current} current papers in {families} families of related results, across {disciplines} disciplines.",
@@ -78,6 +79,7 @@
   "none": "Nothing in the release matches.",
   "count_one": "1 match. Enter opens it.",
   "count": "{n} matches. Enter opens the first.",
+  "show_again": "Show the matches again",
   "shown": "Showing the first {shown}.",
   "kind_family": "Family",
   "kind_paper": "Paper",
@@ -243,7 +245,7 @@
   "heading": "On this family’s map",
   "paper": "A paper, by its short title and date",
   "result": "A result, by the number its paper prints",
-  "lean": "A Lean statement, by name",
+  "lean": "A Lean statement, named where there is room; point at one to see its name",
   "candidate": "Candidate pairing: shared wording, not reviewed",
   "cited": "Pairing cited in the Lean source or declared by the release",
   "cites": "Its papers cite another family",

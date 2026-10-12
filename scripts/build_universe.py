@@ -1047,6 +1047,7 @@ def page_body(M, gen) -> str:
    <div class="u-results" data-u-results hidden></div>
    <div class="u-view" data-u-view>
     <p class="u-lede">{number_sentence(M, 's1')} {number_sentence(M, 's2')}</p>
+    <p class="u-nojs">{esc(U('page.nojs'))}</p>
     <p class="u-keyjump"><a href="#u-key" data-u-keyjump>{esc(U('key.heading'))}</a></p>
     <section class="u-keysec" id="u-key">{key_html(M)}</section>
     <section class="u-discsec">{discipline_rows(M)}</section>
