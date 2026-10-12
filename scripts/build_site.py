@@ -297,6 +297,9 @@ LIST_ENVS = {"enumerate", "itemize", "description"}
 FORMAT = {"emph": "em", "textit": "em", "textsl": "em", "textbf": "strong", "texttt": "code", "underline": "u"}
 PLAIN_CMD = {"textup", "textnormal", "textrm", "text", "mbox", "hbox", "textmd", "textsf", "fbox", "makebox", "textsc"}
 SKIP_ARG = {"label", "index", "vspace", "hspace", "phantom", "nocite", "addcontentsline", "hypertarget", "enlargethispage"}
+# A macro body made only of words: letters, spaces, hyphens and dashes, apostrophes,
+# full stops and commas (Kerr--Newman, i.e., et al.). Such a macro is text.
+TEXT_MACRO = re.compile(r"^[A-Za-z][A-Za-z \-'.,’]*$")
 SKIP_NOARG = {"noindent", "medskip", "smallskip", "bigskip", "centering", "normalfont", "nobreak", "allowbreak", "relax",
               "protect", "hfill", "null", "linebreak", "newpage", "clearpage", "leavevmode", "unskip", "ignorespaces",
               "break", "upshape", "itshape", "rmfamily", "mdseries", "displaystyle", "small", "footnotesize", "normalsize",
@@ -675,6 +678,15 @@ class TexConv:
                     j += 1
             return j
         key = "\\" + bare
+        body = self.macros.get(key)
+        if body is not None and TEXT_MACRO.match(body) and not re.search(r"#\d", body) \
+                and re.search(r"[\s.\-]|[A-Za-z]{4}", body):
+            # A paper's own macro that stands for words (\newcommand{\KN}{Kerr--Newman},
+            # \newcommand{\ie}{i.e.}) is text, not mathematics: typeset it as the paper
+            # prints it, with TeX's text dashes, and let a following control space stand.
+            words = body.replace("---", "\N{EM DASH}").replace("--", "\N{EN DASH}")
+            out.append(esc(words))
+            return j
         if key in self.macros or bare in GREEK or bare in PLAIN_SYM:
             arity = 0
             if key in self.macros:
