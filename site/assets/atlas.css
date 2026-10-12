@@ -293,7 +293,7 @@ code.sr__name { font-size: 0.86rem; }
 .h3 { font-family: var(--serif); font-weight: 600; font-size: 1.125rem; line-height: 1.3; margin-bottom: 8px; }
 .cols2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px 48px; }
 @media (max-width: 860px) { .cols2 { grid-template-columns: minmax(0, 1fr); } }
-.prose, .prose-page p { font-family: var(--serif); font-size: 1.0625rem; max-width: 40em; }
+.prose, .prose-page p { font-family: var(--serif); font-size: 1.0625rem; max-width: 37em; }
 
 .quote { margin: 0; padding: 4px 0 4px 18px; border-left: 2px solid var(--rule-strong); font-family: var(--serif); font-size: 1.0625rem; line-height: 1.6; color: var(--ink-soft); max-width: 38em; }
 .quote--lead { font-size: 1.125rem; max-width: 36em; }
@@ -909,7 +909,7 @@ a.term:hover, a.term:focus-visible { text-decoration-color: currentColor; }
 /* ---- The Families list (explain.html) ------------------------------------ */
 /* Every family as a row, each state in words; filters combine and live in the URL. */
 .filters--families { align-items: flex-end; gap: 10px 14px; padding: 12px 0 8px; margin: 0; }
-.filters--families[hidden] { display: none; }
+:root:not(.js) .filters--families { display: none; }  /* shown before first paint when scripts run, so nothing shifts */
 .filters--families .filters__h { display: block; margin: 0 0 4px; }
 .filters--families .select { width: 12.5rem; max-width: 100%; }
 .filters__g--q { flex: 0 1 12rem; }
@@ -974,7 +974,7 @@ a.cell__sub { color: var(--steel-text); }
 .page--families .filters--families { padding: 6px 0 6px; }
 .filters__status { display: flex; align-items: baseline; gap: 12px; flex: 1 1 12rem; min-height: 34px; align-self: flex-end; padding-bottom: 6px; }
 .filters__status .filters__n { margin: 0; }
-.filters__note { flex: 1 1 100%; margin: 0; font-size: var(--fs-small); color: var(--muted); max-width: 110ch; }
+.filters__note { flex: 1 1 100%; margin: 0; font-size: var(--fs-small); color: var(--muted); max-width: 80ch; }
 .cell__plain { display: block; color: var(--ink); }
 .cell__sub .term { margin-left: 2px; }
 .tbl--families td.t-num { font-variant-numeric: tabular-nums; }
@@ -990,3 +990,5 @@ a.cell__sub { color: var(--steel-text); }
   .filters--families.is-open .filters__panel { display: contents; }
   .filters--families:not(.is-open) .filters__note { display: none; }
 }
+a.cell__sub { min-height: 24px; padding: 2px 0; }
+.stmt__diagram { display: block; margin: 0.4em 0; padding: 6px 10px; border-left: 2px solid var(--rule-strong); font-family: var(--sans); font-size: var(--fs-meta); color: var(--muted); }

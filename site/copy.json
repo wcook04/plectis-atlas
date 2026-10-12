@@ -90,6 +90,8 @@
   "open_statement": "Open the Lean statement",
   "section": "Section {n}",
   "appendix": "Appendix",
+  "diagram": "A diagram here is drawn in the paper.",
+  "diagram_link": "A diagram here is drawn in the paper: <a href=\"{href}\">see it at the passage</a>.",
   "tex_failed": "Shown as TeX source: the renderer could not typeset it."
  },
  "home": {
@@ -812,9 +814,9 @@
   "not": "The atlas records source material, review reports and replay receipts. It does not provide peer review or endorse the release’s results. Each page states which checks are recorded.",
   "interests_heading": "Interests",
   "interests": "",
-  "disclosed_heading": "What the release's README says about how it was made",
+  "disclosed_heading": "What the release’s README says about how it was made",
   "disclosed_intro": "OpenAI’s README records the following about how the release was produced:",
-  "disclosed_traces": "Abridged reasoning summaries for {n} results, linked from those results' pages here.",
+  "disclosed_traces": "Abridged reasoning summaries for {n} results, linked from those results’ pages here.",
   "related_heading": "Related efforts",
   "related_intro": "Other places where people are examining AI-generated mathematics."
  },

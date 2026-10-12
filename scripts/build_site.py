@@ -233,10 +233,21 @@ def rich(s: str, base_dir: str = "", root: str = "", link_results: bool = False)
             out.append(m.group(0))
         pos = m.end()
     out.append(_esc_keep_entities(s[pos:]))
-    res = "".join(out)
+    res = text_dashes("".join(out))
     if link_results:
         res = re.sub(r"\b(results?) (\d{3})\b", lambda m: (f'{m.group(1)} <a href="{root}families/{m.group(2)}.html">{m.group(2)}</a>' if m.group(2) in FAM else m.group(0)), res)
     return res
+
+
+_MATH_SPAN = re.compile(r"(<[^>]*>|\\\(.*?\\\)|\\\[.*?\\\]|\$\$.*?\$\$|(?<!\\)\$.*?(?<!\\)\$)", re.S)
+
+
+def text_dashes(h: str) -> str:
+    """TeX's text-mode ligatures outside maths: --- an em dash, -- an en dash, as the
+    release's TeX means them (Kerr--Newman is Kerr–Newman). Maths is left for KaTeX,
+    where -- is two minus signs."""
+    parts = _MATH_SPAN.split(h)
+    return "".join(p if i % 2 else p.replace("---", "\u2014").replace("--", "\u2013") for i, p in enumerate(parts))
 
 
 def _esc_keep_entities(t: str) -> str:
@@ -657,6 +668,11 @@ class TexConv:
             return j
         if bare in SYMBOL:
             out.append(SYMBOL[bare])
+            if bare.isalpha():
+                # TeX ends a control word at the first non-letter and drops the spaces after it:
+                # R\o rdam is Rørdam, and \ldots and is "…and".
+                while j < n and s[j] in " \t":
+                    j += 1
             return j
         key = "\\" + bare
         if key in self.macros or bare in GREEK or bare in PLAIN_SYM:
@@ -1469,8 +1485,26 @@ def pdf_button(m, cls="btn btn--ghost"):
 # --------------------------------------------------------- statements in TeX
 
 
+# A drawing in a statement's TeX (TikZ, xy, picture) is not typeset in the browser; the
+# statement says where it is instead. scripts/family_page.py can import these.
+DIAGRAM = re.compile(r"\\begin\{(tikzpicture|tikzcd|xy|picture)\}.*?\\end\{\1\}", re.S)
+_DIAGRAM_MARK = "ZZATLASDIAGRAMZZ"
+
+
+def statement_blocks(conv: TexConv, text: str, href: str | None = None) -> str:
+    """A statement's TeX as HTML, with each diagram replaced by one line that says the
+    diagram is drawn in the paper (linked to the passage when there is a reading page)."""
+    body = conv.blocks(DIAGRAM.sub(f" {_DIAGRAM_MARK} ", text or ""))
+    if _DIAGRAM_MARK not in body:
+        return body
+    note = (C("words.diagram_link", href=esc(href)) if href else esc(C("words.diagram")))
+    body = re.sub(r'<div class="m-d">\s*<span class="m"[^>]*>\s*' + _DIAGRAM_MARK + r'\s*</span>\s*</div>|<span class="m"[^>]*>\s*'
+                  + _DIAGRAM_MARK + r'\s*</span>', _DIAGRAM_MARK, body)
+    return re.sub(r"(?:<p>)?\s*" + _DIAGRAM_MARK + r"\s*(?:</p>)?", f'<span class="stmt__diagram">{note}</span>', body)
+
+
 def render_paper_statement(m, st, root, conv: TexConv, anchor_prefix="st"):
-    body = conv.blocks(st["text"])
+    body = statement_blocks(conv, st["text"], paper_statement_href(m["id"], st, root))
     title = f' <span class="stmt__title">({conv.text(st["title"], inline=True)})</span>' if st.get("title") else ""
     src_url = f'{BASE_BLOB}preprints/{m["id"]}/{st["file"]}#L{st["line"]}'
     loc_sec = C("words.appendix") if st.get("appendix") else C("words.section", n=st["section"])
@@ -3105,7 +3139,7 @@ def receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pin
     state = pinfo["state"]
     if paper_st:
         kind = esc(paper_st["display"]) + (f' <span class="rc__sttitle">({conv.text(paper_st["title"], inline=True)})</span>' if paper_st.get("title") else "")
-        paper_body = conv.blocks(paper_st["text"])
+        paper_body = statement_blocks(conv, paper_st["text"])
         loc = C("statement.card_locator", label=paper_st["label"], file=paper_st["file"], line=paper_st["line"]) if paper_st.get("label") else C("statement.card_locator_nolabel", file=paper_st["file"], line=paper_st["line"])
         paper_src = f'<p class="rc__src"><span class="tex-auto">{rich(paper_ms["title"])}</span></p><p class="rc__loc">{esc(loc)}</p>'
         paper_label = cap(evidence.say("pairing_short." + state))
@@ -3461,16 +3495,16 @@ def lean_runs_html(rec, root) -> str:
             receipt = f' <a class="ext" href="{esc(x["receipt"])}" rel="noopener">{esc(LW("runs.receipt"))}</a>' if x.get("receipt") else ""
             lis.append(f'<li><p><span class="term">{esc(x.get("source_term") or "")}</span> '
                        f'<span class="run__state">{esc(run_state_words(x))}</span></p>'
-                       f'<p>{esc(sv.get("text") or "")}</p>'
+                       f'<p>{esc(curly(sv.get("text") or ""))}</p>'
                        f'<p class="small muted">{esc(LW("runs.when", when=when, pin=pin))}{receipt}</p></li>')
         method = (credit.get("method") or "").strip()
         if method and method[-1] not in ".!?)":
             method += "…"   # the source record stops mid-sentence; say so rather than end abruptly
-        method_html = (f'<details class="run__method"><summary>{esc(LW("runs.method"))}</summary><p class="small">{esc(method)}</p></details>'
+        method_html = (f'<details class="run__method"><summary>{esc(LW("runs.method"))}</summary><p class="small">{esc(curly(method))}</p></details>'
                        if method else "")
         groups.append(f'<div class="run"><h3 class="h3">{who}</h3>{method_html}<ul class="run__list">{"".join(lis)}</ul></div>')
     body = "".join(groups) or f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
-    return f'<p class="lead-sentence">{esc(lead)} {esc(LW("runs.reported"))}</p>{body}'
+    return f'<p class="lead-sentence">{esc(curly(lead))} {esc(LW("runs.reported"))}</p>{body}'
 
 
 def family_readings_html(fid, doc, root) -> str:
@@ -3501,7 +3535,7 @@ def family_readings_html(fid, doc, root) -> str:
         items.append(f'<li class="reading"><p class="reading__who">{name}</p>'
                      f'<p class="reading__term"><span class="term">{esc(rd.get("source_term") or "")}</span> '
                      f'<span class="reading__gloss">{esc(LW("readings.gloss", gloss=_ev.say("tone." + tone)))}</span></p>'
-                     f'<p>{esc(sv.get("text") or "")}{rec}</p>{note_html}{defs_html}</li>')
+                     f'<p>{esc(curly(sv.get("text") or ""))}{rec}</p>{note_html}{defs_html}</li>')
     return (f'<p class="lead-sentence">{esc(ev.agreement_sentence())}</p>'
             f'<ul class="readings">{"".join(items)}</ul>')
 
@@ -3963,7 +3997,7 @@ def build_explain():
 </header>
 <section class="band band--table" aria-labelledby="h-list">
 <h2 class="h2 vh" id="h-list">{esc(C('explain.list_heading'))}</h2>
-<div class="filters filters--families" data-filter-families="families-table" hidden>
+<div class="filters filters--families" data-filter-families="families-table">
  <button type="button" class="btn btn--ghost filters__toggle" aria-expanded="false" aria-controls="families-filters">{esc(C('explain.filter_toggle'))}</button>
  <div class="filters__panel" id="families-filters">{''.join(selects)}</div>
  <div class="filters__status">

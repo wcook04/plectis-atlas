@@ -276,7 +276,7 @@
           var opt = el.options[el.selectedIndex];
           var txt = opt ? opt.textContent.replace(/\s*\([\d,]+\)$/, '') : state[k];
           var lab = wrap.querySelector('label[for="' + el.id + '"]');
-          parts.push((k === 'l' || k === 'r') && lab ? lab.textContent + ': ' + txt.toLowerCase() : txt);
+          parts.push((k === 'l' || k === 'r') && lab ? lab.textContent + ': ' + txt.toLowerCase() : k === 'c' ? txt.charAt(0).toLowerCase() + txt.slice(1) : txt);
         } else {
           parts.push('\u201c' + state[k] + '\u201d');
         }
