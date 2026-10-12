@@ -1168,7 +1168,9 @@
       if (window.__universeDebug) window.__universeDebug.plan = plan;
     }
 
+    var citeSamples = [];
     function paintFibres(alphas, openF, ctxA, hk) {
+      citeSamples = [];
       var c = fibreSet(view.k);
       var k = view.k;
       var focusF = openF >= 0 ? openF : (hk && hk.kind === 'f' ? hk.i : (sel && obj(sel) && obj(sel).kind === 'f' ? obj(sel).i : -1));
@@ -1202,6 +1204,11 @@
             ctx.strokeStyle = ink; ctx.fillStyle = ink;
             ctx.lineWidth = 1 + 0.7 * Math.log(1 + w);
             ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(mx, my, x1, y1); ctx.stroke();
+            // Where it runs, so a family name it crosses can be lifted off it.
+            for (var cs = 1, cn = Math.max(8, Math.ceil(len / 5)); cs < cn; cs++) {
+              var ct = cs / cn, cu = 1 - ct;
+              citeSamples.push([cu * cu * x0 + 2 * cu * ct * mx + ct * ct * x1, cu * cu * y0 + 2 * cu * ct * my + ct * ct * y1]);
+            }
             var ex = x1 - mx, ey = y1 - my, el = Math.hypot(ex, ey) || 1;
             ex /= el; ey /= el;
             var hs = 6 + ctx.lineWidth;
@@ -2079,6 +2086,25 @@
       ctx.lineJoin = 'round'; ctx.strokeStyle = halo || palette.ground; ctx.lineWidth = 3.5;
       lines.forEach(function (l, i) { ctx.strokeText(l, x, y + lead / 2 + i * lead); ctx.fillText(l, x, y + lead / 2 + i * lead); });
     }
+    // A family name that a citation line crosses stands on a soft patch of the ground,
+    // so the stroke stops short of its letters. Only names a line actually crosses get one.
+    function liftOffLines(b) {
+      if (!citeSamples.length) return;
+      var hit = false;
+      for (var i = 0; i < citeSamples.length && !hit; i++) {
+        var p = citeSamples[i];
+        hit = p[0] > b.x0 - 2 && p[0] < b.x1 + 2 && p[1] > b.y0 - 1 && p[1] < b.y1 + 1;
+      }
+      if (!hit) return;
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = palette.ground; ctx.shadowColor = palette.ground; ctx.shadowBlur = 5;
+      ctx.beginPath();
+      var x = b.x0 - 3, y = b.y0 - 1, w = b.x1 - b.x0 + 6, h = b.y1 - b.y0 + 2;
+      if (ctx.roundRect) ctx.roundRect(x, y, w, h, 4); else ctx.rect(x, y, w, h);
+      ctx.fill();
+      ctx.restore();
+    }
     function discLeader(q) {
       var lx = q.side > 0 ? q.x0 : q.x1, ly = q.y0 + 8;
       if (Math.abs(lx - q.ax) <= 14 && Math.abs(ly - q.ay) <= 6) return null;
@@ -2107,6 +2133,7 @@
         var hot = hk && famOf(hk) === n.fi;
         ctx.strokeStyle = hot ? palette.focus : palette.structFaint; ctx.lineWidth = hot ? 1.2 : 0.8;
         ctx.beginPath(); n.lead.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); }); ctx.stroke();
+        liftOffLines(n.box);
         drawLines(n.t.lines, n.align === 'right' ? n.box.x1 : n.box.x0, n.box.y0, SIDE_FONT, hot ? palette.focus : palette.ink, SIDE_LEAD, n.align);
       });
       // Family names set level beside their discs.
@@ -2118,6 +2145,7 @@
           ctx.strokeStyle = hot ? palette.focus : palette.struct; ctx.lineWidth = hot ? 1.2 : 0.9;
           ctx.beginPath(); ctx.moveTo(n.lead[0][0], n.lead[0][1]); ctx.lineTo(n.lead[1][0], n.lead[1][1]); ctx.stroke();
         }
+        liftOffLines(n.box);
         drawLines(n.t.lines, x, n.box.y0, FLAT_FONT, hot ? palette.focus : palette.ink, FLAT_LEAD, n.align);
       });
       // Family names along their radius.
