@@ -1438,11 +1438,22 @@
     }
     if (boardEl) {
       boardEl.addEventListener('click', function (e) {
+        if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         var pg = e.target.closest('[data-u-page]');
         if (pg) { board.page += +pg.getAttribute('data-u-page'); hideBoardCard(); layoutBoard(); return; }
         if (e.target.closest('a')) return;
         var c = e.target.closest('[data-bk]');
-        if (!c || e.detail > 1) return;
+        if (e.detail > 1) return;
+        if (!c) {
+          // Empty board space backs out just like empty space between map discs.
+          // Restrict this to layout containers so selecting words or using controls
+          // cannot accidentally navigate away.
+          if (e.target.matches('.u-board, .u-board__in, .u-board__cols, .u-board__main, .u-board__papers, .u-board__side, .u-col, .u-leans')) {
+            hideBoardCard();
+            if (sel) stepBack();
+          }
+          return;
+        }
         var key = c.getAttribute('data-bk');
         if (key !== sel) select(key, { trail: true });
       });
