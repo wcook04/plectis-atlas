@@ -3013,7 +3013,7 @@
       } else h += para(T('lean.paired_none'));
       h += '<h2 class="u-h2">' + escapeHtml(T('lean.reruns_heading')) + '</h2>';
       if (det) {
-        h += checksHtml(det) + para(T('lean.runs_scope'));
+        h += checksHtml(det);
         if (det.holes.length) h += '<h3 class="u-h3">' + escapeHtml(T('lean.holes_heading')) + '</h3>' + para(T('lean.holes_note')) + '<p>' +
           det.holes.map(function (n) { return '<code>' + escapeHtml(n) + '</code>'; }).join(', ') + '</p>';
       } else h += loadingHtml(discOf(obj(l.id)), 'result.loading', 'result.load_failed');
@@ -3074,7 +3074,8 @@
     var matchList = [];
     var searchFolded = false;   // the reader opened a match and folded the list away
     function runSearch() {
-      var q = (searchIn.value || '').trim().toLowerCase();
+      var raw = (searchIn.value || '').trim();
+      var q = raw.toLowerCase();
       query = q;
       if (resultsEl) resultsEl.classList.remove('is-folded');
       searchFolded = false;
@@ -3088,7 +3089,8 @@
       // hits light their families here and list beside the map. The map's own rows
       // stand in until it is.
       if (window.AtlasSearch && typeof window.AtlasSearch.query === 'function') {
-        return Promise.resolve(window.AtlasSearch.query(q)).then(function (hits) {
+        // Keep case for the exact Lean filename fallback; search normalises tokens.
+        return Promise.resolve(window.AtlasSearch.query(raw)).then(function (hits) {
           if (query !== q) return;
           hits = hits || [];
           // Disciplines, families, papers and Lean statements before the paper
@@ -3398,10 +3400,12 @@
           e.preventDefault();
           clearTimeout(t);
           var q = (searchIn.value || '').trim().toLowerCase();
-          Promise.resolve(runSearch()).then(function (found) {
-            if (found && found.length && query === q && (searchIn.value || '').trim().toLowerCase() === q) {
-              select(found[0], { trail: true });
-              foldResults(true);
+          Promise.resolve(runSearch()).then(function () {
+            if (query === q && (searchIn.value || '').trim().toLowerCase() === q) {
+              // Open the first visible result, including links with no map object.
+              // Its normal click handler also selects and folds mapped results.
+              var first = resultsEl.querySelector('.u-row--hit');
+              if (first) first.click();
             }
           });
         } else if (e.key === 'Escape' && searchIn.value) {
