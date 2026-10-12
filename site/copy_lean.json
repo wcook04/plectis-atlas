@@ -46,7 +46,7 @@
    "many": "It also names {n} declarations from the OpenAI modules the file imports, listed below."
   },
   "imported_heading": "From the OpenAI modules the file imports",
-  "imported_intro": "The statement rests on these as well. They live in OpenAI’s library at the pinned commit, so read them there.",
+  "imported_intro": "The statement depends on these as well. They are in OpenAI’s library at the pinned commit, so read them there.",
   "summary_direct": {
    "one": "{n} of them is named in the statement itself.",
    "many": "{n} of them are named in the statement itself."
