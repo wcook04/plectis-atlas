@@ -853,6 +853,8 @@
     var chrome = [];
     function resize() {
       var rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return false; // List view hides the canvas.
+      var hadSize = W > 1 && H > 1;
       var w = Math.max(1, Math.round(rect.width)), h = Math.max(1, Math.round(rect.height));
       var d = window.devicePixelRatio || 1;
       if (w === W && h === H && d === dpr) return false;
@@ -863,6 +865,7 @@
       if (!D) return true;
       computeFit();
       if (viewFitted) setView(fitView());
+      else if (!hadSize) setView(frameFor(sel ? obj(sel) : null));
       else { view.tx = W / 2 - cx * view.k; view.ty = H / 2 - cy * view.k; }
       return true;
     }
@@ -1017,7 +1020,7 @@
     }
     function familyFrame(fi) {
       var f = fams[fi], hasF = (L.fibres[fi] || []).length > 0;
-      var mx = hasF ? 205 : 70, my = hasF ? 46 : 40;
+      var mx = Math.min(hasF ? 205 : 70, W / 4), my = hasF ? 46 : 40;
       var ext = hasF ? 1.3 : 1.08;
       var k = Math.min((W - 2 * mx) / (2 * ext * f.r), (H - 2 * my) / (2 * ext * f.r));
       k = clamp(k, fitK * 1.5, 600);
@@ -1039,6 +1042,15 @@
       return o && o.kind === 'd' ? o.i : -1;
     }
     function screenR(fi) { return fams[fi].r * view.k; }
+    function detailR(fi) {
+      var r = screenR(fi);
+      if (window.matchMedia && window.matchMedia('(max-width: 899px)').matches) {
+        // A fitted phone frame reaches the same detail fade as the 190px desktop radius.
+        var fitted = fams[fi].r * familyFrame(fi).k;
+        if (fitted > 0) r *= Math.max(1, 190 / fitted);
+      }
+      return r;
+    }
     // Camera, marks and words are scaled apart. Inside a chosen discipline the discs are
     // drawn at about three fifths of their room, so names and citation routes have space;
     // the relative sizes stay as they are.
@@ -1106,7 +1118,7 @@
       hitTargets = [];
       var k = view.k, tx = view.tx, ty = view.ty;
       var openF = openFamily();
-      var srOpen = openF >= 0 ? screenR(openF) : 0;
+      var srOpen = openF >= 0 ? detailR(openF) : 0;
       // The rest of the release gives way as a family's own map fills the view.
       var ctxA = openF >= 0 ? 1 - smooth((srOpen - 80) / 110) : 1;
       var openA = openF >= 0 ? smooth((srOpen - 60) / 70) : 0;
@@ -2219,7 +2231,7 @@
         var fm = fams[fi], d2 = Math.hypot(fm.x * k + view.tx - x, fm.y * k + view.ty - y), rr2 = markR(fi) + 3;
         if (d2 <= rr2 && d2 / rr2 < bestD) { bestD = d2 / rr2; bestF = fi; }
       }
-      if (bestF >= 0 && (openF < 0 || bestF === openF || 1 - smooth((screenR(openF) - 80) / 110) > 0.3)) return D.families[bestF].id;
+      if (bestF >= 0 && (openF < 0 || bestF === openF || 1 - smooth((detailR(openF) - 80) / 110) > 0.3)) return D.families[bestF].id;
       // A sector of the wheel.
       var wx = (x - view.tx) / k, wy = (y - view.ty) / k, wr = Math.hypot(wx, wy), wa = Math.atan2(wy, wx);
       if (openF < 0 && wr >= L.wheel.rIn * 0.95) {
