@@ -575,8 +575,11 @@
       chrome = chromeBoxes();
       var to = tg.level === 'release' ? releaseLayout() : tg.level === 'disc' ? discLayout(tg.di) : famLayout(tg.fi);
       var same = chart.level === tg.level && chart.di === tg.di && chart.fi === tg.fi;
+      var leavingFamily = chart.level === 'fam';
       chart.level = tg.level; chart.di = tg.di; chart.fi = tg.fi;
-      if (!chart.shown || !animate || reduceMotion || same || tg.level === 'fam') {
+      // The family canvas was covered by its board. Reveal the finished map on
+      // return, rather than moving hidden circles under the reader's next click.
+      if (!chart.shown || !animate || reduceMotion || same || leavingFamily || tg.level === 'fam') {
         chart.shown = copyLayout(to); chart.to = to; chart.start = 0;
         draw();
         if (board.pending) showBoard();

@@ -18,6 +18,7 @@ const shard = range('    function loadShard(di)', '    function detail(');
 // Isolate the production admission/retry prefix from board DOM rendering.
 const syncAdmission = range('    function syncBoard()', '      // The neighbours\' titles') + '\n    }';
 const boardVisibility = range('    function showBoard()', '    // The chosen card gets');
+const chartNavigation = range('    function copyLayout(l)', '    function chartAnimating()');
 function deferred() {
   let resolve, reject;
   const promise = new Promise((a, b) => { resolve = a; reject = b; });
@@ -53,6 +54,28 @@ function context(extra = {}) {
 const packet = () => ({ generation_id: 'g', papers: [], results: [], lean: [] });
 async function flush() { for (let i = 0; i < 6; i++) await Promise.resolve(); }
 async function main() {
+  for (const [from, to, moving] of [
+    ['fam', 'disc', false], ['fam', 'release', false],
+    ['release', 'disc', true], ['disc', 'fam', false]
+  ]) {
+    const layout = level => ({ level, nodes: [{ x: level === 'fam' ? 50 : 100, y: 20, r: 10, a: 1 }], regions: [] });
+    const target = { level: to, di: to === 'disc' ? 0 : -1, fi: to === 'fam' ? 0 : -1 };
+    const nav = context({
+      W: 200, H: 100, stage: null, chrome: [], CHART_MS: 280, nowMs: () => 100,
+      chart: { level: from, di: -1, fi: -1, start: 0, shown: layout(from) },
+      chartTarget: () => target, chromeBoxes: () => [],
+      releaseLayout: () => layout('release'), discLayout: () => layout('disc'), famLayout: () => layout('fam'),
+      board: { pending: false }, showBoard() {}
+    });
+    vm.runInContext(chartNavigation, nav);
+    nav.chartTo(true);
+    assert.equal(!!nav.chart.start, moving, `${from} to ${to}: intended animation policy`);
+    assert.equal(nav.chart.to.level, to);
+    if (!moving) {
+      assert.equal(nav.chart.shown.level, to, 'snap publishes target hit geometry immediately');
+      assert.notEqual(nav.chart.shown.nodes, nav.chart.to.nodes, 'shown geometry is copied');
+    }
+  }
   const attributes = new Map(), classes = new Set(['is-on']);
   const boardState = context({
     board: { on: true, pending: true, fi: 0, sig: 'old' },
