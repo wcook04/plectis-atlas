@@ -102,6 +102,9 @@ TXT = {
     "fig_tikz": "Figure drawn in TikZ; see the PDF",
     "fig_image": "Figure image; see the PDF",
     "fig_other": "Figure not reproduced here; see the PDF",
+    "fig_pdf": "Pages included from {file}, which this view cannot show; see the PDF",
+    "f_pdf": ("1 PDF file is set into the paper as whole pages, which this view cannot show: {names}.",
+              "{n} PDF files are set into the paper as whole pages, which this view cannot show: {names}."),
     "atlas_note": "Atlas note, not part of the paper",
     "lean_k": "Lean.",
     "lean_how": {
@@ -124,6 +127,7 @@ TXT = {
     "permalink": "Link to this passage",
     "fn_label": "Note {n}",
     "description": "Reading view of {title}, converted from its TeX source.",
+    "title_dated": "{title} ({date})",
 }
 
 
@@ -283,8 +287,26 @@ def clean_url(u: str) -> str:
     return u
 
 
+# Hosts that serve the same address over https: a bibliography's http:// link to one of
+# them is followed as https (the printed text stays as the paper prints it).
+HTTPS_HOSTS = {
+    "hdl.handle.net", "doi.org", "dx.doi.org", "arxiv.org", "www.arxiv.org", "export.arxiv.org", "www.ams.org",
+    "ams.org", "mathscinet.ams.org", "zbmath.org", "www.zbmath.org", "eudml.org", "www.numdam.org", "numdam.org",
+    "projecteuclid.org", "www.jstor.org", "jstor.org", "link.springer.com", "onlinelibrary.wiley.com",
+    "www.sciencedirect.com", "oeis.org", "www.oeis.org", "en.wikipedia.org", "github.com", "mathoverflow.net",
+    "math.stackexchange.com", "msp.org", "www.cambridge.org", "academic.oup.com", "epubs.siam.org", "dl.acm.org",
+    "ieeexplore.ieee.org", "www.worldscientific.com", "citeseerx.ist.psu.edu", "www.emis.de", "emis.de",
+    "annals.math.princeton.edu", "www.ems-ph.org", "ems.press", "www.semanticscholar.org", "inspirehep.net",
+    "repository.kulib.kyoto-u.ac.jp", "www.kurims.kyoto-u.ac.jp", "www.mathnet.ru", "mathnet.ru", "www.lmfdb.org",
+    "lmfdb.org", "www.math.ias.edu", "www.ihes.fr", "www.numdam.org",
+}
+
+
 def safe_href(u: str) -> str | None:
     u = clean_url(u)
+    m = re.match(r"(?i)^http://([^/:?#]+)", u)
+    if m and m.group(1).lower() in HTTPS_HOSTS:
+        u = "https://" + u[len("http://"):]
     if u.lower().startswith(SAFE_SCHEMES):
         return u
     if re.match(r"^(www\.)", u):
@@ -505,13 +527,14 @@ DEF_RE = re.compile(
     r"DeclarePairedDelimiterXPP|DeclarePairedDelimiterX|DeclarePairedDelimiter|newenvironment|renewenvironment|"
     r"newtheorem|theoremstyle|numberwithin|counterwithin|counterwithout|newcounter|crefname|Crefname|crefalias|"
     r"NewCommandCopy|RenewCommandCopy|DeclareCommandCopy|LetLtxMacro|"
-    r"def|gdef|edef|xdef|let|expandafter|newtheoremstyle|setcounter|bibliographystyle|appendix|"
+    r"def|gdef|edef|xdef|let|expandafter|newtheoremstyle|setcounter|bibliographystyle|appendix|@namedef|"
     r"begin\s*\{document\})(?![A-Za-z@])")
 COPY_CMDS = {"NewCommandCopy", "RenewCommandCopy", "DeclareCommandCopy", "LetLtxMacro"}
 DEF_CMDS = {"newcommand", "renewcommand", "providecommand", "DeclareRobustCommand", "DeclareMathOperator",
             "DeclarePairedDelimiter", "DeclarePairedDelimiterX", "DeclarePairedDelimiterXPP", "newenvironment",
             "renewenvironment", "newtheorem", "theoremstyle", "numberwithin", "counterwithin", "counterwithout",
             "newcounter", "crefname", "Crefname", "crefalias", "def", "gdef", "edef", "xdef", "let", "newtheoremstyle",
+            "@namedef",
             *COPY_CMDS}
 
 
@@ -585,6 +608,7 @@ def parse_def_params(params: str):
 # ------------------------------------------------------------ text-mode tables
 
 TEXT_SYMBOLS = {
+    "tablename": "Table", "figurename": "Figure",
     "S": "§", "P": "¶", "dag": "†", "ddag": "‡", "copyright": "©", "textcopyright": "©", "textregistered": "®",
     "texttrademark": "™", "pounds": "£", "textsterling": "£", "euro": "€", "texteuro": "€", "textdollar": "$",
     "textbackslash": "\\", "textasciitilde": "~", "textasciicircum": "^", "textbar": "|", "textless": "&lt;",
@@ -614,7 +638,7 @@ CONTROL_SYMBOLS = {
 }
 ACCENTS = {"'": "\u0301", "`": "\u0300", "^": "\u0302", '"': "\u0308", "~": "\u0303", "=": "\u0304",
            ".": "\u0307", "u": "\u0306", "v": "\u030c", "H": "\u030b", "c": "\u0327", "k": "\u0328",
-           "r": "\u030a", "d": "\u0323", "b": "\u0331", "t": "\u0361"}
+           "r": "\u030a", "d": "\u0323", "b": "\u0331", "t": "\u0361", "textcommabelow": "\u0326"}
 SPACING_ACCENT = {"'": "´", "`": "`", "^": "^", '"': "¨", "~": "~", "=": "¯", ".": "˙"}
 FONT_ARG = {"emph": ("<em>", "</em>"), "textit": ("<i>", "</i>"), "textsl": ("<i>", "</i>"),
             "textbf": ("<b>", "</b>"), "textsc": ('<span class="pr-sc">', "</span>"),
@@ -687,11 +711,21 @@ DIMEN_PRIMITIVES = {
     "labelwidth", "fboxsep", "fboxrule", "arrayrulewidth", "doublerulesep", "extrarowheight", "footnotesep",
     "medmuskip", "thinmuskip", "thickmuskip", "lineskiplimits", "delimitershortfall", "nulldelimiterspace",
     "scriptspace", "hangindent", "hangafter", "spaceskip", "xspaceskip", "baselinestretch", "vbadness",
+    # hyphenation and page-builder parameters (\lefthyphenmin=2): nothing on a web page
+    "lefthyphenmin", "righthyphenmin", "uchyph", "defaulthyphenchar", "pagegoal", "pagetotal", "pagedepth",
+    "pagestretch", "pageshrink", "maxdepth", "topskip", "splittopskip", "vsize", "hsize", "textheight",
 }
+# \dimen0=\pagegoal, \count255=3: a register assignment, which prints nothing.
+REGISTER_PRIMITIVES = {"dimen", "count", "skip", "muskip", "toks"}
+# \advance\dimen0 by -\pagetotal: register arithmetic, which prints nothing.
+ARITH_PRIMITIVES = {"advance", "multiply", "divide"}
 DIMEN_RE = re.compile(
     r"\s*=?\s*(?:[-+]?\s*(?:\d+(?:\.\d*)?|\.\d+)?\s*(?:\\[A-Za-z@]+|(?:pt|em|ex|cm|mm|in|bp|pc|dd|cc|sp|mu|fil+|true\s*pt)?))"
     r"(?:\s*(?:plus|minus)\s*[-+]?\s*(?:\d+(?:\.\d*)?|\.\d+)?\s*(?:pt|em|ex|cm|mm|in|bp|pc|dd|cc|sp|mu|fil+|\\[A-Za-z@]+)?)*")
 
+REGISTER_RE = re.compile(r"\s*(?:\d+|@+[A-Za-z]*)?" + DIMEN_RE.pattern)
+ARITH_RE = re.compile(r"\s*\\(?:(?:dimen|count|skip|muskip)\s*(?:\d+|@+[A-Za-z]*)?|[A-Za-z@]+)\s*(?:by(?![A-Za-z]))?"
+                      + DIMEN_RE.pattern)
 LEVELS = {"part": 0, "chapter": 0, "section": 1, "subsection": 2, "subsubsection": 3, "paragraph": 4,
           "subparagraph": 5}
 REF_CMDS = {"ref", "eqref", "cref", "Cref", "autoref", "Autoref", "labelcref", "crefrange", "Crefrange",
@@ -864,6 +898,7 @@ class Paper:
         self.class_opts: set = set()
         self.secnumdepth = 3
         self.untranslated: dict[str, str] = {}
+        self.included_pdfs: list[str] = []
         # conversion state
         self.ctxs: list[dict] = []
         self.cur = None
@@ -1224,6 +1259,12 @@ class Paper:
             target, k = read_cs_name(s, k, end)
             if name and target and apply and name != target:
                 self.let_macro(name, target)
+            return k
+        if cmd == "@namedef":
+            name, k = read_arg(s, j, end)
+            body, k = read_arg(s, k, end)
+            if apply and name and "#" not in name:
+                self.macros[name.strip()] = Macro(name.strip(), 0, None, body, None, "csname")
             return k
         if cmd == "expandafter":
             m2 = re.compile(r"\s*\\(?:global\s*\\)?(def|gdef|edef|xdef|newcommand|renewcommand)\s*"
@@ -1780,6 +1821,12 @@ class Paper:
         if name in DIMEN_PRIMITIVES:
             m2 = DIMEN_RE.match(s, j, end)
             return m2.end() if m2 else j
+        if name in REGISTER_PRIMITIVES:
+            m2 = REGISTER_RE.match(s, j, end)
+            return m2.end() if m2 else j
+        if name in ARITH_PRIMITIVES:
+            m2 = ARITH_RE.match(s, j, end)
+            return m2.end() if m2 else j
         if name.startswith("the") and (name[3:] in self.counters or name[3:] in self.fmt):
             out.append(esc_t(self.the(name[3:])))
             return skip_space_after_word(s, j, end)
@@ -2105,7 +2152,8 @@ class Paper:
         elif name in ("iffalse",):
             cond = False
             k = j
-        elif name == "ifdim" and re.match(r"\s*(?:\\dimexpr\s*)?\\page(?:goal|total)(?![A-Za-z@])", s[j:min(end, j + 80)]):
+        elif name == "ifdim" and re.match(r"\s*(?:\\dimexpr\s*)?\\(?:page(?:goal|total)(?![A-Za-z@])|dimen\s*(?:\d+|@))",
+                                          s[j:min(end, j + 80)]):
             # \ifdim\dimexpr\pagegoal-\pagetotal...\newpage\fi tests the position on the printed
             # page; on a web page there is none, and the whole conditional shows nothing.
             _, _, after = self.split_conditional(s[:end], j)
@@ -2214,6 +2262,29 @@ class Paper:
             self.figures["listing"] += 1
         out.append(block(h))
         return k
+
+    def h_includepdf(self, name, s, start, j, end, out, origin):
+        """\\includepdf[...]{file.pdf} sets whole pages of a PDF into the paper. They are its
+        content, so the page names the file and stays incomplete rather than reading as a
+        faithful copy."""
+        _, k = read_opt(s, j, end)
+        arg, k = read_arg(s, k, end)
+        f = (arg or "").strip()
+        self.included_pdfs.append(f)
+        text = TXT["fig_pdf"].format(file=f)
+        out.append(block(f'<div class="pr-ph pr-ph--pdf" role="img" aria-label="{esc_a(text)}">{esc_t(text)}</div>'))
+        return k
+
+    def h_nameuse(self, name, s, start, j, end, out, origin):
+        """\\@nameuse{name}: the macro \\name, defined by \\@namedef."""
+        arg, k = read_arg(s, j, end)
+        cs = (arg or "").strip()
+        mac = self.macros.get(cs)
+        if mac is None:
+            if cs in HANDLERS or cs in TEXT_SYMBOLS:
+                return self.dispatch(cs, s, start, k, end, out, origin)
+            return k
+        return self.expand_user(mac, s, start, k, end, out, origin)
 
     def h_includegraphics(self, name, s, start, j, end, out, origin):
         star, k = read_star(s, j, end)
@@ -4281,6 +4352,8 @@ _h("item", Paper.h_item_stray)
 _h("qed", Paper.h_qed)
 _h("tikz", Paper.h_tikz_inline)
 _h("includegraphics", Paper.h_includegraphics)
+_h("includepdf", Paper.h_includepdf)
+_h("@nameuse", Paper.h_nameuse)
 _h("input include subfile", Paper.h_input_left)
 _h("appendix", Paper.h_appendix)
 _h("bibliography", Paper.h_bibliography)
@@ -4511,6 +4584,7 @@ def build_one_paper(m: dict, upstream: str, check: bool, out_dir: str) -> dict:
                    "untranslated_examples": dict(list(p.untranslated.items())[:8]),
                    "built_ins_kept": sorted(getattr(p, "dropped_wrappers", []))},
         "figures": {"placeholders": sum(p.figures.values()), **{k: v for k, v in sorted(p.figures.items())}},
+        **({"pdf_pages": {"files": list(p.included_pdfs)}} if p.included_pdfs else {}),
         "statements": {"total": len(p.m.get("statements") or []), "missing_anchor": missing_anchors[:20],
                        "missing": len(missing_anchors)},
         "labels": {"defined": len(p.labels), "duplicates": sorted(set(p.dup_labels))[:10]},
@@ -4532,6 +4606,8 @@ def build_one_paper(m: dict, upstream: str, check: bool, out_dir: str) -> dict:
         reasons.append("unknown environments")
     if unknown_cmds:
         reasons.append("untranslated commands")
+    if p.included_pdfs:
+        reasons.append("pages included from PDF")
     if missing_anchors:
         reasons.append("statement anchors missing")
     row["reasons"] = reasons
@@ -4637,6 +4713,9 @@ def banner_items(row) -> list[str]:
     if row["commands"]["unknown"]:
         names = ", ".join("\\" + k for k in list(row["commands"]["names"])[:6])
         out.append(plural("f_cmds", row["commands"]["unknown"], names=names))
+    pdfs = (row.get("pdf_pages") or {}).get("files") or []
+    if pdfs:
+        out.append(plural("f_pdf", len(pdfs), names=", ".join(pdfs)))
     if row["statements"]["missing"]:
         out.append(plural("f_anchors", row["statements"]["missing"]))
     return out
@@ -4735,9 +4814,13 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
 </div>
 <script type="application/json" id="pr-macros">{macros_json}</script>"""
     desc = S.tex_plain(m.get("abstract") or "") or TXT["description"].format(title=title_plain)
-    extra = (f'{PAGE_MARK}\n<link rel="stylesheet" href="{root}assets/paper.css">\n'
-             f'<script defer src="{root}assets/paper.js"></script>')
-    return S.page(rel, title_plain, desc, body, extra_head=extra, page_type="article", main_class="pr-main")
+    extra = (f'{PAGE_MARK}\n<link rel="stylesheet" href="{root}assets/{S.asset_v("paper.css")}">\n'
+             f'<script defer src="{root}assets/{S.asset_v("paper.js")}"></script>')
+    # Two current papers can share a title: each tab then carries its date.
+    page_title = title_plain
+    if sum(1 for x in S.MS.values() if x.get("status") == "current" and S.tex_plain(x["title"]) == title_plain) > 1:
+        page_title = TXT["title_dated"].format(title=title_plain, date=S.date_words(m.get("date")) or m["id"])
+    return S.page(rel, page_title, desc, body, extra_head=extra, page_type="article", main_class="pr-main")
 
 
 # ------------------------------------------------------------ main

@@ -275,6 +275,7 @@ def rich(s: str, base_dir: str = "", root: str = "", link_results: bool = False)
     links at the pinned commit, keep TeX delimiters for the client renderer."""
     if not s:
         return ""
+    s = curly_prose(s)
     out = []
     pos = 0
     for m in re.finditer(r"\[([^\]]+)\]\(([^)\s]+)\)|" + ALLOWED_TAGS.pattern, s):
@@ -1311,15 +1312,30 @@ def generic_og_meta() -> str:
     return og_meta(BASE_URL + GENERIC_OG, C("social.card_alt"))
 
 
+def asset_v(name: str) -> str:
+    """A short digest of a site asset, for its ?v= query: a redeploy that changes the file
+    changes its address, so a cached page never pairs new HTML with an old script."""
+    v = _ASSET_V.get(name)
+    if v is None:
+        path = ASSETS / name
+        v = hashlib.sha256(path.read_bytes()).hexdigest()[:10] if path.exists() else ""
+        _ASSET_V[name] = v
+    return f"{name}?v={v}" if v else name
+
+
+_ASSET_V: dict = {}
+
+
 def head(rel: str, title: str, description: str, *, og_block: str | None = None, noindex=False,
-         extra_head: str = "", page_type="website") -> str:
+         extra_head: str = "", page_type="website", canonical_rel: str | None = None) -> str:
     depth = rel.count("/")
     root = "../" * depth
     # Titles and descriptions are plain text: a formula in one is written in Unicode
     # (CAT(0), L₁), never as TeX, in the tab, the search result and a pasted link's preview.
     title = tex_plain(title)
     description = tex_plain(description)
-    canonical = BASE_URL + ("" if rel == "index.html" else rel)
+    crel = canonical_rel or rel
+    canonical = BASE_URL + ("" if crel == "index.html" else crel)
     full_title = title if title == C("site.name") else f"{title} | {C('site.name')}"
     og = og_block or generic_og_meta()
     desc = esc(short(description, 300))
@@ -1345,14 +1361,15 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 <meta name="twitter:title" content="{esc(title)}">
 <meta name="twitter:description" content="{desc}">
 <link rel="icon" href="{root}assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{root}assets/apple-touch-icon.png">
 <link rel="preload" href="{root}assets/fonts/plectis-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="{root}assets/fonts/plectis-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{root}{KATEX_DIR}/katex.min.css">
-<link rel="stylesheet" href="{root}assets/atlas.css">
+<link rel="stylesheet" href="{root}assets/{asset_v('atlas.css')}">
 <script>(function(){{var d=document.documentElement;d.classList.add('js');try{{var t=localStorage.getItem('atlas-theme');if(t==='dark'||t==='light')d.setAttribute('data-theme',t);}}catch(e){{}}}})();</script>
 <script defer src="{root}{KATEX_DIR}/katex.min.js"></script>
 <script defer src="{root}{KATEX_DIR}/contrib/auto-render.min.js"></script>
-<script defer src="{root}assets/atlas.js"></script>
+<script defer src="{root}assets/{asset_v('atlas.js')}"></script>
 {extra_head}
 </head>"""
 
@@ -1437,9 +1454,15 @@ def write_page(rel: str, html_text: str, index=True):
 
 
 def page(rel, title, description, body, *, current=None, og_block=None, noindex=False, extra_head="",
-         page_type="website", main_class=""):
-    h = head(rel, title, description, og_block=og_block, noindex=noindex, extra_head=extra_head, page_type=page_type)
+         page_type="website", main_class="", canonical_rel=None):
+    h = head(rel, title, description, og_block=og_block, noindex=noindex, extra_head=extra_head, page_type=page_type,
+             canonical_rel=canonical_rel)
     return f'{h}\n{header(rel, current)}\n<main id="main" class="{main_class}" tabindex="-1">\n{body}\n</main>\n{footer(rel)}'
+
+
+# A breadcrumb's separator goes with the step after it: a line may break before "/" and
+# never after it, so a phone never shows a "/" alone on a line.
+TRAIL_SEP = ' <span class="trail__sep" aria-hidden="true">/</span>\u2060'
 
 
 def trail(root, items):
@@ -1449,7 +1472,7 @@ def trail(root, items):
             parts.append(f'<a href="{href}">{label}</a>')
         else:
             parts.append(f'<span aria-current="page">{label}</span>')
-    return '<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '">' + '<span class="trail__sep" aria-hidden="true">\u2060/</span>'.join(parts) + "</nav>"
+    return '<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '">' + TRAIL_SEP.join(parts) + "</nav>"
 
 
 def json_script(id_, obj):
@@ -2014,7 +2037,7 @@ def date_words(s) -> str:
 def curly(s) -> str:
     """Typographic apostrophes in recorded prose (a word's ' becomes ’); code spans keep theirs."""
     parts = re.split(r"(`[^`]*`)", s or "")
-    return "".join(p if p.startswith("`") else re.sub(r"(?<=[A-Za-z0-9])'(?=[A-Za-z])", "\u2019", p) for p in parts)
+    return "".join(p if p.startswith("`") else _APOS.sub("\u2019", p) for p in parts)
 
 
 def say(n: int) -> str:
@@ -2229,7 +2252,19 @@ def build_paper(m):
 </div>
 {macros_script([slug])}"""
     desc = tex_plain(m.get("abstract") or m["title"])
-    write_page(rel, page(rel, title_plain, desc, body, page_type="article"), index=(m["status"] == "current"))
+    # An earlier edition or a withdrawn paper shares its title with the current edition:
+    # its tab names its status and date, and search engines are pointed at the current one.
+    page_title, canonical_rel = title_plain, None
+    if m["status"] != "current":
+        st_word = status_label(m["status"]).lower()
+        dated = date_words(m.get("date"))
+        page_title = (C("paper.title_status", title=title_plain, status=st_word, date=dated) if dated
+                      else C("paper.title_status_undated", title=title_plain, status=st_word))
+        cur = MS.get(m.get("superseded_by") or "")
+        if m["status"] == "previous-edition" and cur and cur.get("status") == "current":
+            canonical_rel = f"papers/{cur['id']}.html"
+    write_page(rel, page(rel, page_title, desc, body, page_type="article", canonical_rel=canonical_rel),
+               index=(m["status"] == "current"))
 
 
 def record_items(items):
@@ -2735,7 +2770,7 @@ def build_statement(stmt):
     root = "../"
     page_url = BASE_URL + rel
     fam = FAM.get(stmt["families"][0]) if stmt.get("families") else None
-    label = (stmt.get("labels") or [sid])[0]
+    label = curly_prose((stmt.get("labels") or [sid])[0])
     lines_html = lean_lines(stmt["lean"])
     # The backend's record for this Lean statement: its family packet, its pairing,
     # its re-runs and the draft scope reading.
@@ -2950,7 +2985,7 @@ def build_statement(stmt):
     generic = generic_og_meta()
     own = og_meta(BASE_URL + f"og/{sid}.png", C("statement.og_alt", label=label))
     OG_DONE[sid] = (generic, own)
-    lean_head = f'<link rel="stylesheet" href="{root}assets/lean.css">\n<script defer src="{root}assets/lean.js"></script>'
+    lean_head = f'<link rel="stylesheet" href="{root}assets/{asset_v("lean.css")}">\n<script defer src="{root}assets/{asset_v("lean.js")}"></script>'
     write_page(rel, page(rel, f"{label} (Lean)", desc, body, og_block=generic, page_type="article", extra_head=lean_head))
 
 
@@ -3205,7 +3240,7 @@ def build_statements_table():
         fid = s["families"][0] if s.get("families") else None
         f = FAM.get(fid)
         di = DISC_OF.get(fid)
-        label = (s.get("labels") or [s["id"]])[0]
+        label = curly_prose((s.get("labels") or [s["id"]])[0])
         nm = len(s["non_mathlib_imports"])
         nh = len(s["comparator"].get("definition_names") or [])
         rows.append(f'<tr data-q="{esc((label + " " + s["id"] + " " + (tex_plain(f["title"]) if f else "") + " " + (DISCIPLINES[di]["name"] if di is not None else "")).lower())}">'
@@ -3615,8 +3650,16 @@ def build_about():
 def build_404():
     rel = "404.html"
     base = CFG["base_url"].rstrip("/")
-    body = f'<div class="frame page page--narrow"><header class="phead"><h1 class="phead__title">{esc(C("notfound.title"))}</h1><p class="lede">{esc(C("notfound.text"))}</p><p class="actions"><a class="btn btn--primary" href="{esc(base)}/">{esc(C("nav.atlas"))}</a></p></header></div>'
-    h = page(rel, C("notfound.title"), C("notfound.text"), body, noindex=True)
+    # Where to go instead: the Families list (every family), the search, and the map.
+    families = f'<a href="explain.html">{esc(C("notfound.families_link"))}</a>'
+    text = esc(C("notfound.families", link="\x00")).replace("\x00", families)
+    body = (f'<div class="frame page page--narrow"><header class="phead"><h1 class="phead__title">{esc(C("notfound.title"))}</h1>'
+            f'<p class="lede">{esc(C("notfound.text"))} {text}</p>'
+            f'<p class="actions"><a class="btn btn--primary" href="explain.html">{esc(C("notfound.families_button"))}</a>'
+            f'<a class="btn btn--ghost" href="explain.html" data-open-search>{esc(C("notfound.search_button"))}</a>'
+            f'<a class="btn btn--quiet" href="{esc(base)}/">{esc(C("notfound.map_button"))}</a></p></header></div>')
+    h = page(rel, C("notfound.title"), C("notfound.text") + " " + C("notfound.families", link=C("notfound.families_link")),
+             body, noindex=True)
     # The host serves this page at any depth: local assets and links need the site root.
     path = re.sub(r"https?://[^/]+", "", base)
     h = h.replace('src="assets/', f'src="{path}/assets/').replace('data-root=""', f'data-root="{path}/"')

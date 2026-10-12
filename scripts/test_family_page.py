@@ -54,7 +54,13 @@ def main() -> int:
             check('id="claim-theorem"' in html, "the candidate theorem is not the centrepiece")
         else:
             check('id="claim-theorem"' not in html, "an unresolved headline shows a single theorem")
-            check(family_page.W("claim.unresolved") in unquote(html), "the unresolved sentence is missing")
+            notes = [family_page.W(k) for k in ("claim.unresolved", "claim.unresolved_one", "claim.unresolved_none")]
+            page_text = unquote(html)
+            said = next((n for n in notes if n in page_text), None)
+            check(said is not None, "the unresolved sentence is missing")
+            # The page leads with what the papers state; how those statements were chosen follows them.
+            if said and 'id="claim-alt-1"' in html:
+                check(page_text.index('id="claim-alt-1"') < page_text.index(said), "the unresolved note comes before the statements")
         for rc in doc.get("remaining_checks") or []:
             fp = (rc.get("contribution_target") or {}).get("fingerprint")
             if fp:

@@ -286,11 +286,11 @@ code.sr__name { font-size: 0.86rem; }
 /* ---- Page skeleton ---------------------------------------------------- */
 .page { padding-block: 28px 64px; }
 .page--narrow { width: min(820px, calc(100% - 48px)); }
-.trail { display: flex; flex-wrap: wrap; gap: 6px; font-size: var(--fs-meta); color: var(--muted); margin-bottom: 18px; }
+.trail { display: block; font-size: var(--fs-meta); line-height: 1.55; color: var(--muted); margin-bottom: 18px; }
 .trail a { color: var(--muted); }
 .trail a:hover { color: var(--ink); }
 .trail [aria-current] { color: var(--ink-soft); }
-.trail__sep { color: var(--faint); }
+.trail__sep { color: var(--faint); margin-inline-end: 0.45em; }
 .phead { margin-bottom: 24px; max-width: 64rem; }
 .phead__kicker { font-size: var(--fs-meta); color: var(--muted); margin: 0 0 6px; }
 .phead__kicker code { color: var(--ink-soft); }

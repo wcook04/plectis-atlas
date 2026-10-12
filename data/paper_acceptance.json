@@ -22,8 +22,8 @@
  },
  "summary": {
   "papers": 719,
-  "accepted": 683,
-  "partial": 36,
+  "accepted": 688,
+  "partial": 31,
   "unavailable": 0,
   "formulas": {
    "total": 1269365,
@@ -36,8 +36,8 @@
   "reasons": {
    "formula failures": 15,
    "unresolved references": 9,
-   "untranslated commands": 6,
-   "unresolved citations": 6
+   "unresolved citations": 6,
+   "pages included from PDF": 1
   }
  },
  "papers": [
@@ -4885,7 +4885,7 @@
    "pdf_url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/A-latest-anchor-induction-with-spectrally-compact-masks-for-worst-case-trace-reconstruction-October-5-2026/paper.pdf",
    "main_tex": "build/main.tex",
    "reasons": [
-    "untranslated commands"
+    "pages included from PDF"
    ],
    "formulas": {
     "total": 0,
@@ -4914,13 +4914,9 @@
     "examples": {}
    },
    "commands": {
-    "unknown": 2,
-    "names": {
-     "includepdf": 2
-    },
-    "examples": {
-     "\\includepdf": "build/main.tex:7"
-    }
+    "unknown": 0,
+    "names": {},
+    "examples": {}
    },
    "macros": {
     "defined": 0,
@@ -4932,6 +4928,12 @@
    },
    "figures": {
     "placeholders": 0
+   },
+   "pdf_pages": {
+    "files": [
+     "summary.pdf",
+     "part-1.pdf"
+    ]
    },
    "statements": {
     "total": 0,
@@ -12176,13 +12178,11 @@
   },
   {
    "id": "Bounded-klt-complements-for-Fano-contractions-September-25-2026",
-   "status": "partial",
+   "status": "accepted",
    "page": "papers/Bounded-klt-complements-for-Fano-contractions-September-25-2026.html",
    "pdf_url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Bounded-klt-complements-for-Fano-contractions-September-25-2026/Bounded-klt-complements-for-Fano-contractions-September-25-2026.pdf",
    "main_tex": "build/main.tex",
-   "reasons": [
-    "untranslated commands"
-   ],
+   "reasons": [],
    "formulas": {
     "total": 4133,
     "distinct": 2078,
@@ -12210,21 +12210,9 @@
     "examples": {}
    },
    "commands": {
-    "unknown": 7,
-    "names": {
-     "dimen": 3,
-     "pagegoal": 1,
-     "advance": 1,
-     "pagetotal": 1,
-     "ifdim": 1
-    },
-    "examples": {
-     "\\dimen": "build/sections/cheap-collapse.tex:33",
-     "\\pagegoal": "build/sections/cheap-collapse.tex:33",
-     "\\advance": "build/sections/cheap-collapse.tex:34",
-     "\\pagetotal": "build/sections/cheap-collapse.tex:34",
-     "\\ifdim": "build/sections/cheap-collapse.tex:35"
-    }
+    "unknown": 0,
+    "names": {},
+    "examples": {}
    },
    "macros": {
     "defined": 29,
@@ -12916,13 +12904,11 @@
   },
   {
    "id": "Catalans-constant-is-irrational-September-24-2026",
-   "status": "partial",
+   "status": "accepted",
    "page": "papers/Catalans-constant-is-irrational-September-24-2026.html",
    "pdf_url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Catalans-constant-is-irrational-September-24-2026/paper.pdf",
    "main_tex": "build/main.tex",
-   "reasons": [
-    "untranslated commands"
-   ],
+   "reasons": [],
    "formulas": {
     "total": 1665,
     "distinct": 1166,
@@ -12950,13 +12936,9 @@
     "examples": {}
    },
    "commands": {
-    "unknown": 1,
-    "names": {
-     "tablename": 1
-    },
-    "examples": {
-     "\\tablename": "build/sections/certificate.tex:331"
-    }
+    "unknown": 0,
+    "names": {},
+    "examples": {}
    },
    "macros": {
     "defined": 0,
@@ -26715,13 +26697,11 @@
   },
   {
    "id": "Nonuniqueness-for-Bounded-Measurable-Scalar-Conductivities-in-Three-Dimensions-September-23-2026",
-   "status": "partial",
+   "status": "accepted",
    "page": "papers/Nonuniqueness-for-Bounded-Measurable-Scalar-Conductivities-in-Three-Dimensions-September-23-2026.html",
    "pdf_url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Nonuniqueness-for-Bounded-Measurable-Scalar-Conductivities-in-Three-Dimensions-September-23-2026/paper.pdf",
    "main_tex": "build/paper.tex",
-   "reasons": [
-    "untranslated commands"
-   ],
+   "reasons": [],
    "formulas": {
     "total": 1192,
     "distinct": 806,
@@ -26749,13 +26729,9 @@
     "examples": {}
    },
    "commands": {
-    "unknown": 3,
-    "names": {
-     "textcommabelow": 3
-    },
-    "examples": {
-     "\\textcommabelow": "build/paper.tex:239"
-    }
+    "unknown": 0,
+    "names": {},
+    "examples": {}
    },
    "macros": {
     "defined": 15,
@@ -31197,13 +31173,11 @@
   },
   {
    "id": "Random-coordinate-frames-and-partial-permutation-laws-September-26-2026",
-   "status": "partial",
+   "status": "accepted",
    "page": "papers/Random-coordinate-frames-and-partial-permutation-laws-September-26-2026.html",
    "pdf_url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Random-coordinate-frames-and-partial-permutation-laws-September-26-2026/main.pdf",
    "main_tex": "build/main.tex",
-   "reasons": [
-    "untranslated commands"
-   ],
+   "reasons": [],
    "formulas": {
     "total": 2894,
     "distinct": 1701,
@@ -31231,18 +31205,14 @@
     "examples": {}
    },
    "commands": {
-    "unknown": 35,
-    "names": {
-     "@nameuse": 35
-    },
-    "examples": {
-     "\\@nameuse": "build/sections/07c-transfer-applications.tex:73"
-    }
+    "unknown": 0,
+    "names": {},
+    "examples": {}
    },
    "macros": {
-    "defined": 13,
+    "defined": 33,
     "to_katex": 12,
-    "expanded_by_script": 1,
+    "expanded_by_script": 21,
     "untranslated": 0,
     "untranslated_examples": {},
     "built_ins_kept": []
@@ -48020,13 +47990,11 @@
   },
   {
    "id": "the-additive-indecomposability-of-the-primes-September-24-2026",
-   "status": "partial",
+   "status": "accepted",
    "page": "papers/the-additive-indecomposability-of-the-primes-September-24-2026.html",
    "pdf_url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/the-additive-indecomposability-of-the-primes-September-24-2026/paper.pdf",
    "main_tex": "build/paper.tex",
-   "reasons": [
-    "untranslated commands"
-   ],
+   "reasons": [],
    "formulas": {
     "total": 2989,
     "distinct": 1988,
@@ -48054,15 +48022,9 @@
     "examples": {}
    },
    "commands": {
-    "unknown": 2,
-    "names": {
-     "lefthyphenmin": 1,
-     "righthyphenmin": 1
-    },
-    "examples": {
-     "\\lefthyphenmin": "build/paper.tex:51",
-     "\\righthyphenmin": "build/paper.tex:52"
-    }
+    "unknown": 0,
+    "names": {},
+    "examples": {}
    },
    "macros": {
     "defined": 19,
