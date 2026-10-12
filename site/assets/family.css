@@ -419,6 +419,10 @@
   .fx-st, .fx-card, .fx-alt, .fx-find, .fx-draft__i, .fx-rt tbody tr, .fx-idx__i, .fx-left__i, .fx-toc li a, .fx-idx__mark { transition: none; }
 }
 
+/* A note under a Lean statement keeps a reading measure (about 75 characters) however
+   wide the column is. */
+.fx-lean__note { max-width: 75ch; }
+
 /* An unresolved headline: after the statements the papers print, one line of information
    on how they were chosen and where the open task is listed. */
 .fx-cand--note { margin: 2px 0 18px; max-width: 75ch; }
