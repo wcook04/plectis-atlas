@@ -801,6 +801,19 @@ def _bytes(n) -> str:
     return f"{n / 2**30:.1f} GiB" if n else ""
 
 
+def run_fields(ru) -> str:
+    """The toolchain, kernels, axioms used, time and memory a re-run report gives as fields
+    of their own, as one sentence, or "" when it gives none. A field the report leaves
+    empty is left out rather than called unrecorded: its account may still name it."""
+    vals = {"toolchain": ru.get("toolchain") or "",
+            "kernels": ", ".join(ru["kernels"]) if ru.get("kernels") else "",
+            "axioms": ", ".join(ru["used_axioms"]) if ru.get("used_axioms") else "",
+            "time": f'{ru["wall_seconds"]} s' if ru.get("wall_seconds") else "",
+            "memory": _bytes(ru.get("peak_memory_bytes"))}
+    parts = [W("reruns.field." + k, v=v) for k, v in vals.items() if v]
+    return cap("; ".join(parts)) + "." if parts else ""
+
+
 def reruns_html(c: Ctx) -> str:
     S = c.S
     others = (c.cfind.get("replay-pass") or []) + (c.cfind.get("replay-fail") or [])
@@ -822,12 +835,10 @@ def reruns_html(c: Ctx) -> str:
                 who = credit.get("name") or ru.get("source")
                 when = S.date_words(ru.get("date"))
                 pin = W("reruns.at_pin") if ru.get("pin_state") == "current" else W("reruns.other_pin")
-                nr = W("reruns.not_recorded")
-                det = {"toolchain": ru.get("toolchain") or nr, "kernels": ", ".join(ru["kernels"]) if ru.get("kernels") else nr,
-                       "axioms": ", ".join(ru["used_axioms"]) if ru.get("used_axioms") else nr,
-                       "time": f'{ru["wall_seconds"]} s' if ru.get("wall_seconds") else nr,
-                       "memory": _bytes(ru.get("peak_memory_bytes")) or nr}
-                recorded = any(v != nr for v in det.values())
+                # Only the fields the report gives as fields of their own are listed; a missing
+                # field is never called unrecorded, since the report's account may name it.
+                det = run_fields(ru)
+                recorded = bool(det)
                 any_detail = any_detail or recorded
                 tid = "ins-run-" + slug_id(rid[4:])
                 c.tpls[tid] = record(W("inspect.kind_run"), f'{esc(who)}, <code translate="no">{esc(name)}</code>',
@@ -835,12 +846,12 @@ def reruns_html(c: Ctx) -> str:
                                       (W("reruns.account"), esc(S.curly(sv.get("text") or ""))),
                                       (W("inspect.date"), esc(when or W("reruns.undated"))), (W("inspect.version"), esc(pin)),
                                       (W("readings.method"), code_spans(first_sentence(credit.get("method") or ""))),
-                                      (W("reruns.recorded"), esc(W("reruns.details", **det)))],
+                                      (W("reruns.recorded"), esc(det))],
                                      [(W("reruns.receipt"), ru.get("receipt"))])
                 sentence = W("reruns.line_dated" if when else "reruns.line", who=who, term=ru.get("source_term") or "", date=when, pin=pin, name=name)
                 items.append(f'<li class="fx-run"><span class="fx-run__s">{esc(sentence)}</span>'
                              f'<span class="fx-run__more"><span class="fx-run__acc">{esc(S.curly(sv.get("text") or ""))}</span> '
-                             + (f'<span class="fx-run__det">{esc(W("reruns.details", **det))}</span> ' if recorded else "")
+                             + (f'<span class="fx-run__det">{esc(det)}</span> ' if recorded else "")
                              + f'<a class="ext" href="{esc(ru.get("receipt") or "")}" rel="noopener" aria-label="{esc(W("reruns.receipt_label", who=who, name=name))}">{esc(W("reruns.receipt"))}</a> '
                              f'{ins_button(tid, esc(W("readings.details")))}</span></li>')
         body = f'<ul class="fx-runs">{"".join(items)}</ul>' if items else f'<p class="fx-muted">{esc(W("reruns.none"))}</p>'

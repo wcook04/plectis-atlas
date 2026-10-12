@@ -170,9 +170,14 @@
   "receipt": "Receipt",
   "receipt_label": "Receipt for {who}’s re-run of {name}",
   "undated": "not recorded",
-  "details": "Toolchain {toolchain}; kernels {kernels}; axioms used {axioms}; time {time}; memory {memory}.",
-  "not_recorded": "not recorded",
-  "details_none": "None of these reports records the toolchain, kernels, axioms used, time or memory.",
+  "field": {
+   "toolchain": "toolchain {v}",
+   "kernels": "kernels {v}",
+   "axioms": "axioms used {v}",
+   "time": "time {v}",
+   "memory": "memory {v}"
+  },
+  "details_none": "None of these reports gives the toolchain, kernels, axioms used, time or memory as a separate field; where a report names any of them, it does so in its own words below.",
   "more": "Re-runs of the other {n} Lean statements",
   "others_heading": "Re-runs reported by others",
   "others_intro": "Reports of re-runs from other people, as they describe them."
