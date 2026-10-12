@@ -73,7 +73,7 @@
  },
  "comparison": {
   "agree:agree": "The two outside readers agree.",
-  "different-scope-descriptions:agree": "The two outside readers agree on how much of the headline the Lean states, and describe it in different terms.",
+  "different-scope-descriptions:agree": "No outside reader finds that the Lean states or implies all of the headline, and they describe what it does state in different terms.",
   "different-scope-descriptions:disagree": "The two outside readers disagree on how much of the headline the Lean states.",
   "unavailable:unknown": "No outside reader has compared a Lean statement with this family’s headline."
  },
