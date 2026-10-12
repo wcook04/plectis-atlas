@@ -44,6 +44,7 @@ jobs:
         run: |
           node scripts/test_universe_labels.js
           node scripts/test_universe_interactions.js
+          node scripts/test_universe_performance.js
       - name: The data parsers read their fixtures correctly
         run: python3 scripts/test_build_data.py
       - name: The paper reader converts its fixtures correctly

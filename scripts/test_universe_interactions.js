@@ -14,6 +14,9 @@ const hit = range('    function hitAt(', '\n    /* ---- The card:');
 const load = range('    function loadParts()', '    function obj(');
 const select = range('    function select(key, opts)', '    // A paper, theorem or Lean statement');
 const click = range("    canvas.addEventListener('click',", '\n    if (cardEl)');
+const shard = range('    function loadShard(di)', '    function detail(');
+// Isolate the production admission/retry prefix from board DOM rendering.
+const syncAdmission = range('    function syncBoard()', '      // The neighbours\' titles') + '\n    }';
 function deferred() {
   let resolve, reject;
   const promise = new Promise((a, b) => { resolve = a; reject = b; });
@@ -26,6 +29,7 @@ function context(extra = {}) {
   const c = vm.createContext({
     Promise, Math, console, partsPromise: null, partsReady: false, partsFailed: false, selectionRequest: 0,
     statusEl: { textContent: '', hidden: true }, T: key => key,
+    failedShards: {}, discOf: () => 0,
     D: { generation_id: 'g', families, papers: [], results: [], lean: [] },
     L: { results: [], lean: [], papers: [] }, fams: families,
     chart: { start: 1, shown: { level: 'disc', nodes: [
@@ -113,6 +117,39 @@ async function main() {
     await flush();
     assert.equal(race.sel, latest, `latest selection wins over deferred family: ${latest}`);
     assert.ok(!race.trail.some(t => t.key === 'f:a'), 'superseded selection leaves no trail entry');
+  }
+  for (const failure of ['network', 'generation']) {
+    let detailRequests = 0;
+    const detailCaches = [];
+    const detailState = context({
+      partsReady: true, shards: {}, shardLoading: {}, failedShards: {},
+      boardEl: {}, boardFamily: () => 0, hideBoard() {}, discOf: () => 0,
+      fetchJson: (url, cache) => {
+        detailCaches.push(cache);
+        detailRequests++;
+        // Bound a broken recursive retry so this regression cannot itself hang Node.
+        if (detailRequests > 5) return new Promise(() => {});
+        if (detailRequests === 1) return failure === 'network' ?
+          Promise.reject(new Error('offline detail')) : Promise.resolve({ generation_id: 'old' });
+        return Promise.resolve({ generation_id: 'g' });
+      }
+    });
+    detailState.fams[0].d = 0;
+    vm.runInContext(shard + syncAdmission + select, detailState);
+    await assert.rejects(detailState.loadShard(0));
+    assert.equal(detailState.failedShards[0], true, `${failure} is classified as failed detail`);
+    assert.equal(detailState.shardLoading[0], null, 'rejected detail promise is released');
+    detailState.syncBoard();
+    detailState.syncBoard();
+    detailState.syncBoard();
+    await flush();
+    assert.equal(detailRequests, 1, 'board redraw does not automatically retry failed detail');
+    detailState.renderPanel = () => detailState.syncBoard();
+    detailState.select('f:a', { trail: true });
+    await flush();
+    assert.equal(detailRequests, 2, 'explicit selection admits exactly one detail retry');
+    assert.deepEqual(detailCaches, ['default', 'reload'], 'failed detail retry bypasses browser cache');
+    assert.equal(detailState.shards[0].generation_id, 'g');
   }
   console.log('universe interactions: moving hits, ground clicks, parts retry and latest-selection races pass');
 }

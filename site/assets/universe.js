@@ -368,7 +368,7 @@
        changes, each disc moves from where it was to where it goes (CHART_MS). */
     var chart = { shown: null, from: null, to: null, start: 0, ms: 0, level: '', di: -1, fi: -1 };
     var layoutCache = {}, labelCache = {};
-    var CHART_MS = 640;
+    var CHART_MS = 280;
     var capEl = root.querySelector('[data-u-cap]'), barEl = root.querySelector('[data-u-bar]');
     function chromeBoxes() {
       var out = [], sr = canvas.getBoundingClientRect();
@@ -396,6 +396,9 @@
       var d = Math.min(2, window.devicePixelRatio || 1);
       if (w === W && h === H && d === dpr) return false;
       W = w; H = h; dpr = d;
+      // Old viewport layouts and measurements have no further use. In particular,
+      // repeated resizing must not retain thousands of obsolete label variants.
+      layoutCache = {}; labelCache = {}; widthCache = {};
       canvas.width = Math.round(w * d); canvas.height = Math.round(h * d);
       chrome = chromeBoxes();
       if (D) chartTo(false);
@@ -573,7 +576,7 @@
       var to = tg.level === 'release' ? releaseLayout() : tg.level === 'disc' ? discLayout(tg.di) : famLayout(tg.fi);
       var same = chart.level === tg.level && chart.di === tg.di && chart.fi === tg.fi;
       chart.level = tg.level; chart.di = tg.di; chart.fi = tg.fi;
-      if (!chart.shown || !animate || reduceMotion || same) {
+      if (!chart.shown || !animate || reduceMotion || same || tg.level === 'fam') {
         chart.shown = copyLayout(to); chart.to = to; chart.start = 0;
         draw();
         if (board.pending) showBoard();
@@ -647,7 +650,7 @@
         bits.forEach(function (bit, bi) {
           var join = wi && !bi ? ' ' : '', chars = Array.from(bit);
           while (chars.length && textWidth(chars.join(''), font) > limit) {
-            var n = chars.length - 1;
+            var n = Math.max(1, chars.length - 1);
             while (n > 1 && textWidth(chars.slice(0, n).join('') + '-', font) > limit) n--;
             tokens.push({ text: chars.splice(0, n).join('') + '-', join: join }); join = '';
           }
@@ -686,8 +689,8 @@
       return from(0, 0);
     }
     function famLabel(fi, r) {
-      var key = fi + '|' + r.toFixed(2);
-      if (labelCache[key]) return labelCache[key];
+      var cached = labelCache[fi];
+      if (cached && cached.r === r) return cached.label;
       var tokens = labelTokens(D.families[fi].title, r), out = null, last = null;
       for (var size = clamp(r * 0.18, 11, 17); size >= 11 && !out; size = Math.max(10.5, size - 0.5)) {
         var font = '500 ' + size.toFixed(1) + 'px ' + SERIF, lead = size * 1.17;
@@ -706,7 +709,8 @@
         while (first.length > 1 && textWidth(first.join('') + '…', fallbackFont) > r * 1.7 - 6) first.pop();
         out = { lines: [first.join('').trim() + '…'], font: fallbackFont, lead: 13, size: 11 };
       }
-      return (labelCache[key] = out);
+      labelCache[fi] = { r: r, label: out };
+      return out;
     }
     function drawText(lines, x, y, font, color, lead, align, halo) {
       ctx.font = font; ctx.textAlign = align || 'center'; ctx.textBaseline = 'middle';
@@ -804,22 +808,27 @@
           for (var fj = 0; fj < fams.length; fj++) {
             var n = S.nodes[fj];
             if (!n || n.a < 0.5) continue;
-            var t = famLabel(fj, n.r), f2 = fams[fj].data;
+            var t = famLabel(fj, moving ? chart.to.nodes[fj].r : n.r), f2 = fams[fj].data;
+            var labelR = moving ? chart.to.nodes[fj].r : n.r;
             var cnt = [count('papers', f2.papers.length)];
             if (f2.lean.length) cnt.push(count('lean', f2.lean.length));
             var cntText = cnt.length > 1 ? T('card.counts', { papers: cnt[0], lean: cnt[1] }) : cnt[0];
             var cf = '400 ' + clamp(t.size * 0.78, 10.5, 13).toFixed(1) + 'px ' + SANS, cl = t.size * 1.05;
             var cy2 = (t.lines.length * t.lead + cl) / 2, ce = cy2 + 2;
-            var showCnt = ce < n.r && textWidth(cntText, cf) <= 2 * Math.sqrt(n.r * n.r - ce * ce) * 0.9 - 6;
+            var showCnt = ce < labelR && textWidth(cntText, cf) <= 2 * Math.sqrt(labelR * labelR - ce * ce) * 0.9 - 6;
             showCnt = showCnt && t.lines.every(function (line, i) {
               var edge = Math.abs(-cy2 + (i + 0.5) * t.lead) + t.lead * 0.45;
-              return edge < n.r && textWidth(line, t.font) <= 2 * Math.sqrt(n.r * n.r - edge * edge) * 0.9 - 6;
+              return edge < labelR && textWidth(line, t.font) <= 2 * Math.sqrt(labelR * labelR - edge * edge) * 0.9 - 6;
             });
             var blockH = t.lines.length * t.lead + (showCnt ? cl : 0);
             var a2 = n.a * words * (matchFam && !searchFolded && !matchFam[fj] ? 0.3 : 1) * (hf >= 0 && !near[fj] ? 0.55 : 1);
             ctx.save(); ctx.globalAlpha = a2;
-            drawText(t.lines, n.x, n.y - blockH / 2, t.font, palette.ink, t.lead, 'center');
-            if (showCnt) drawText([cntText], n.x, n.y - blockH / 2 + t.lines.length * t.lead, cf, palette.muted, cl, 'center');
+            // Fit once at the destination, then scale that fit with the moving disc.
+            // Wrapping at every fractional animation radius stalls slower machines.
+            ctx.translate(n.x, n.y);
+            ctx.scale(n.r / labelR, n.r / labelR);
+            drawText(t.lines, 0, -blockH / 2, t.font, palette.ink, t.lead, 'center');
+            if (showCnt) drawText([cntText], 0, -blockH / 2 + t.lines.length * t.lead, cf, palette.muted, cl, 'center');
             ctx.restore();
           }
         }
@@ -1122,7 +1131,7 @@
       var h = bcOpen('u-bc--r', r.id, ' data-paper="' + escapeHtml(p.id) + '"');
       // In its paper's column a result needs only the number the paper prints.
       h += '<p class="u-bc__lab">' + escapeHtml(r.num || resultName(r)) + (det && det.titleHtml ? ' <span class="u-bc__ttl tex-auto">(' + det.titleHtml + ')</span>' : '') + '</p>';
-      if (!sh) h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T('board.loading')) + '</p>';
+      if (!sh) h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T(failedShards[fams[r.f].d] ? 'result.load_failed' : 'board.loading')) + '</p>';
       else if (det && det.html) {
         var ex = excerpt(det.html, board.budget);
         h += '<div class="u-bc__x">' + ex.html + (ex.cut ? '…' : '') + '</div>';
@@ -1353,12 +1362,12 @@
       var fi = boardFamily();
       if (fi < 0) { hideBoard(); return; }
       var f = D.families[fi], di = fams[fi].d;
-      if (!shards[di]) loadShard(di).then(syncBoard, syncBoard);
+      if (!shards[di] && !failedShards[di]) loadShard(di).then(syncBoard, syncBoard);
       // The neighbours' titles are typeset from their own disciplines' records.
       var near = f.cites.concat(f.citedBy).map(function (c) { return fams[c[0]].d; });
       var ready = near.filter(function (d2) { return shards[d2]; }).length;
       near.forEach(function (d2) { if (!shards[d2] && !failedShards[d2]) loadShard(d2).then(syncBoard, function () {}); });
-      var sig = fi + '|' + (shards[di] ? 1 : 0) + '|' + ready + '|' + board.budget;
+      var sig = fi + '|' + (shards[di] ? 1 : failedShards[di] ? 'failed' : 0) + '|' + ready + '|' + board.budget;
       var fresh = board.fi !== fi;
       if (sig !== board.sig) {
         var keepScroll = board.fi === fi ? boardEl.scrollTop : 0;
@@ -1372,8 +1381,8 @@
       markBoard();
       if (!board.on) {
         board.pending = true;
-        // From the discipline, the family's disc grows to fill the stage first and the
-        // board fades in over it once it settles (stepChart calls showBoard).
+        // Family boards do not wait for an ornamental zoom. chartTo settles a
+        // family target immediately; this frame also covers direct page entries.
         requestAnimationFrame(function () { if (board.pending && !chartAnimating()) showBoard(); });
       }
       layoutPages();
@@ -1681,6 +1690,10 @@
       }
       var o = key ? obj(key) : null;
       if (key && !o) return;
+      // Only an explicit selection may retry a failed detail packet. A redraw or
+      // rejected cached promise must never recursively start another board update.
+      var retryDi = o ? discOf(o) : -1;
+      if (retryDi >= 0 && failedShards[retryDi]) loadShard(retryDi).catch(function () {});
       if (statusEl) statusEl.hidden = true;
       var prev = sel ? obj(sel) : null;
       var revealSelection = !opts.fromHistory || !pendingBoard;
@@ -1878,7 +1891,7 @@
       if (changed && !quiet) arrive([titleEl, viewEl]);
       if (o) {
         var di = discOf(o);
-        if (di >= 0 && !shards[di]) {
+        if (di >= 0 && !shards[di] && !failedShards[di]) {
           var again = function () {
             if (sel !== o.key) return;
             var top = scrollPos(), active = document.activeElement;
@@ -1917,11 +1930,20 @@
       if (shards[di]) return Promise.resolve(shards[di]);
       if (shardLoading[di]) return shardLoading[di];
       var url = root.getAttribute('data-universe-detail').replace('{d}', di);
-      shardLoading[di] = fetchJson(url).then(function (sh) {
+      var retry = !!failedShards[di];
+      failedShards[di] = false;
+      shardLoading[di] = fetchJson(url, retry ? 'reload' : 'default').then(function (sh) {
         if (sh.generation_id !== D.generation_id) throw new Error('detail from another build');
         shards[di] = sh;
+        failedShards[di] = false;
         return sh;
-      }, function (err) { shardLoading[di] = null; failedShards[di] = true; throw err; });
+      }).catch(function (err) {
+        shardLoading[di] = null; failedShards[di] = true;
+        if (sel && discOf(obj(sel)) === di && statusEl) {
+          statusEl.textContent = T('status.parts_failed'); statusEl.hidden = false;
+        }
+        throw err;
+      });
       return shardLoading[di];
     }
     function detail(o) {
