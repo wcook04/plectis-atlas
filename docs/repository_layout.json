@@ -1,5 +1,5 @@
 {
-  "schema": "repository_layout@1",
+  "schema": "repository_layout@2",
   "root_files": [
     ".gitattributes",
     ".gitignore",
@@ -96,5 +96,6 @@
       "python3 skills/repository-organization/scripts/check_layout.py",
       "python3 skills/repository-organization/scripts/test_check_layout.py"
     ]
-  }
+  },
+  "undeclared_directories": "warn"
 }
