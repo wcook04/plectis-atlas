@@ -1477,6 +1477,93 @@ def trail(root, items):
     return '<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '">' + TRAIL_SEP.join(parts) + "</nav>"
 
 
+# Lateral navigation. The breadcrumb climbs (map, field, family); this row moves sideways
+# to the neighbouring family in the same field, the neighbouring Lean statement in the same
+# family, or the neighbouring paper in the same family, in the order the parent page lists
+# them. Each neighbour is a list of (href, title_html, title_plain).
+
+def family_siblings(fid: str, root: str):
+    """The families of fid's field in the field's order, and fid's place among them."""
+    di = DISC_OF.get(fid)
+    if di is None:
+        return None
+    ids = [x for x in DISCIPLINES[di]["families"] if x in FAM]
+    if fid not in ids:
+        return None
+    items = [(f"{root}families/{x}.html", fam_title_html(FAM[x]), tex_plain(FAM[x]["title"])) for x in ids]
+    return items, ids.index(fid), DISCIPLINES[di]["name"]
+
+
+def lean_siblings(sid: str, root: str):
+    """The Lean statements of sid's family in the family page's order (the selected one
+    first, then the backend's order), and sid's place among them."""
+    _fid, doc, _rec = lean_family_doc(sid)
+    if not doc:
+        return None
+    leans = [l["id"][2:] for l in doc.get("lean") or []]
+    sel = ((doc.get("selection") or {}).get("lean") or "")[2:]
+    leans.sort(key=lambda x: x != sel)
+    ids = [x for x in leans if x in ST]
+    if sid not in ids:
+        return None
+    items = []
+    for x in ids:
+        label = curly_prose((ST[x].get("labels") or [x])[0])
+        items.append((f"{root}statements/{quote(x)}.html", f'<span class="md-math">{esc(label)}</span>', tex_plain(label)))
+    return items, ids.index(sid)
+
+
+def paper_siblings(slug: str, root: str):
+    """The papers of slug's family in the family page's order (current papers, previous
+    editions, then papers withdrawn since release day), and slug's place among them."""
+    m = MS.get(slug)
+    fid = (m or {}).get("family")
+    if not fid or fid not in FAM:
+        return None
+    hist = RD().family(fid).get("paper_history") or []
+    ids = [h["id"][2:] for h in hist if h.get("status") == "current"]
+    ids += [h["id"][2:] for h in hist if h.get("status") == "previous-edition"]
+    ids += [x["id"] for x in MANUSCRIPTS if x["status"] == "withdrawn" and x.get("family") == fid]
+    ids = [x for x in dict.fromkeys(ids) if x in MS]
+    if slug not in ids:
+        return None
+    items = []
+    for x in ids:
+        mx = MS[x]
+        # An earlier edition usually shares its title with the current one; say which it is.
+        st = "" if mx["status"] == "current" else status_label(mx["status"]).lower()
+        items.append((f"{root}papers/{quote(x)}.html",
+                      ms_title_html(mx) + (f' <span class="sib__st">({esc(st)})</span>' if st else ""),
+                      tex_plain(mx["title"]) + (f" ({st})" if st else "")))
+    return items, ids.index(slug)
+
+
+def sibling_nav(kind: str, found, **kw) -> str:
+    """The previous and next row: the neighbours' names as links (rel=prev, rel=next) and
+    this page's place in the list between them. Nothing when the page has no neighbour;
+    at either end only the direction that exists."""
+    if not found:
+        return ""
+    items, i = found[0], found[1]
+    if len(items) < 2:
+        return ""
+
+    def link(j, side):
+        href, title_html, title_plain = items[j]
+        arrow = "←" if side == "prev" else "→"
+        arr = f'<span class="sib__arr" aria-hidden="true">{arrow}</span>'
+        t = f'<span class="sib__t">{title_html}</span>'
+        return (f'<a class="sib__a sib__a--{side}" rel="{side}" href="{esc(href)}" '
+                f'aria-label="{esc(C("siblings." + kind + "_" + side, title=title_plain, **kw))}">'
+                + (arr + t if side == "prev" else t + arr) + "</a>")
+
+    prev_ = link(i - 1, "prev") if i > 0 else '<span class="sib__a sib__a--prev" aria-hidden="true"></span>'
+    next_ = link(i + 1, "next") if i + 1 < len(items) else '<span class="sib__a sib__a--next" aria-hidden="true"></span>'
+    pos = f'<p class="sib__pos">{esc(C("siblings." + kind + "_position", n=i + 1, total=len(items), **kw))}</p>'
+    return (f'<nav class="sib" aria-label="{esc(C("siblings." + kind + "_label", **kw))}">'
+            f'{pos}{prev_}{next_}</nav>')
+
+
 def json_script(id_, obj):
     s = json.dumps(obj, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     return f'<script type="application/json" id="{id_}">{s}</script>'
@@ -2211,6 +2298,7 @@ def build_paper(m):
         di = DISC_OF[fam["id"]]
         tr = trail(root, [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d:{DISC_SLUG[di]}'),
                           (fam_title_html(fam), f'{root}families/{fam["id"]}.html'), (ms_title_html(m), None)])
+        tr += sibling_nav("paper", paper_siblings(slug, root))
         if m.get("family_on_release_day"):
             then = tex_plain(m.get("family_title_on_release_day") or fam["title"])
             items.append(f'<p class="lede">{esc(C("paper.in_result_withdrawn", id=fam["id"], title=then))} <a href="{root}families/{fam["id"]}.html#{esc(slug)}">{esc(C("paper.see_result_now"))}</a></p>')
@@ -2932,6 +3020,7 @@ def build_statement(stmt):
 </section>"""
     body = f"""<div class="frame page page--lean">
 {trail(root, trail_items)}
+{sibling_nav("lean", lean_siblings(sid, root))}
 <header class="phead">
  <p class="phead__kicker">{esc(LW('page.kicker'))}</p>
  <h1 class="phead__title md-math">{esc(label)}</h1>
