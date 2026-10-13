@@ -11,7 +11,31 @@
   "problems_one": "One problem has been reported by others; the atlas has not judged it.",
   "problems_many": "{n} problems have been reported by others; the atlas has not judged them.",
   "erdos": "It bears on {problems}, as listed by {source}.",
-  "erdos_number": "Erdős problem #{n}"
+  "erdos_number": "Erdős problem #{n}",
+  "lean_note": "OpenAI’s Lean note",
+  "verdict": {
+   "all_both": "Both outside readers find that the release’s Lean states or implies the whole headline.",
+   "all_one": "{name}, the one outside reader to have read it so far, finds that the release’s Lean states or implies the whole headline.",
+   "part_both": "The outside readers find that the release’s Lean states part of the headline, or a narrower statement.",
+   "part_one": "{name}, the one outside reader to have read it so far, finds that the release’s Lean states part of the headline, or a narrower statement.",
+   "other_both": "The outside readers find that the release’s Lean states a supporting or a different result.",
+   "other_one": "{name}, the one outside reader to have read it so far, finds that the release’s Lean states a supporting or a different result.",
+   "split": "The two outside readers disagree about how much of the headline the release’s Lean states.",
+   "unread": "No outside reader has yet compared the release’s Lean with the headline.",
+   "none": "The release has no Lean statement for this family, so there is nothing for an outside reader to compare with the headline.",
+   "link": "Their readings"
+  },
+  "papers_line": {
+   "current_one": "One current paper",
+   "current_many": "{n} current papers",
+   "withdrawn_one": "one withdrawn on {dates}",
+   "withdrawn_many": "{n} withdrawn on {dates}",
+   "withdrawn_undated_one": "one withdrawn",
+   "withdrawn_undated_many": "{n} withdrawn",
+   "editions_one": "one replaced by a later edition",
+   "editions_many": "{n} replaced by later editions",
+   "joined": "{current}; {rest}."
+  }
  },
  "actions": {
   "compare": "Compare with Lean",
@@ -35,8 +59,8 @@
   "runs_some_by_one": "one outside group reports accepting re-runs of {k} of them at the release’s recorded version",
   "runs_some_by_many": "outside groups report accepting re-runs of {k} of them at the release’s recorded version",
   "runs_none": "no outside group reports an accepted re-run at the release’s recorded version",
-  "readable_papers_one": "One paper, {reading}.",
-  "readable_papers_many": "{n} papers, {reading}.",
+  "readable_papers_one": "One current paper, {reading}.",
+  "readable_papers_many": "{n} current papers, {reading}.",
   "reading_all": "each readable here as a page beside its PDF",
   "reading_one": "readable here as a page beside its PDF",
   "reading_some": "{k} readable here as pages, the others as PDFs",
@@ -90,7 +114,11 @@
   "state_alt": "Possible match to the catalogue description, found from shared wording; not reviewed as the catalogue’s statement.",
   "no_lean_paired": "No Lean statement in the release is paired with this theorem.",
   "more_one": "One more possible match",
-  "more_many": "{n} more possible matches"
+  "more_many": "{n} more possible matches",
+  "state_main": "Possible match to the catalogue description: the paper’s main theorem. Not reviewed as the catalogue’s statement.",
+  "state_words": "Possible match to the catalogue description: of the papers’ statements, it shares the most wording with it. Not reviewed as the catalogue’s statement.",
+  "two_note": "The release does not say which paper theorem its catalogue describes. Both statements above are shown whole: the paper’s main theorem first, then the statement that shares the most wording with the description. The atlas has not reviewed either choice.",
+  "two_note_same": "The release does not say which paper theorem its catalogue describes. Both statements above are shown whole, the closer match to the description’s wording first. The atlas has not reviewed either choice."
  },
  "compare": {
   "heading": "What the release’s Lean states",
@@ -136,14 +164,15 @@
   "row_candidate": "Possible Lean counterpart of {label} in {paper}, found from shared wording; not reviewed.",
   "row_cited": "Its source cites {label} in {paper}; the match is not reviewed.",
   "row_declared": "The release binds it to {label} in {paper}; the match is not reviewed.",
-  "row_none": "No paper theorem is paired with it."
+  "row_none": "No paper theorem is paired with it.",
+  "comparator_once": "A [[comparator|Comparator]] re-run checks OpenAI’s separate proof against a Lean statement, allowing only the axioms the [[challenge|challenge file]] permits. It does not say whether the statement matches the paper’s theorem; that is the outside readers’ question, below."
  },
  "checked": {
   "heading": "Reported checks"
  },
  "readings": {
   "heading": "The outside readers",
-  "intro": "Two outside readers have judged whether the release’s Lean states this family’s headline. Their readings concern the headline as a whole, not one paper theorem.",
+  "intro": "Two outside readers, {names}, have judged whether the release’s Lean states this family’s headline. Their readings concern the headline as a whole, not one paper theorem.",
   "says": "{name} finds that {finds} (their term: “{term}”).",
   "state": {
    "all": "the Lean states or implies all of the headline",
@@ -176,7 +205,7 @@
  },
  "reruns": {
   "heading": "Who re-ran the Lean",
-  "intro": "Outside groups report re-running the release’s Lean through Comparator. Each row is their report; the atlas did not re-run anything. A re-run concerns the Lean statement it ran, never the paper theorem beside it.",
+  "intro": "Outside groups report re-running the release’s Lean through Comparator. Each row is their report; the atlas did not re-run anything.",
   "account": "Their account",
   "recorded": "Recorded",
   "none": "No outside group reports re-running this Lean statement.",
@@ -263,14 +292,26 @@
   "go": "Open the form",
   "check_each": "Check a Lean statement against the paper:",
   "go_label": "Open the form: {what}",
-  "names_more": "and {n} more"
+  "names_more": "and {n} more",
+  "reasons": {
+   "Lexical navigation candidate; catalogue headline identity requires review.": "Nobody has yet confirmed which theorem the catalogue means. The one shown was chosen because it shares the most wording with the description.",
+   "No unique candidate with at least three shared catalogue terms.": "Nobody has yet confirmed which theorem the catalogue means, and no single statement in the papers clearly shares its wording.",
+   "Read the solution-supplied definitions against the intended objects.": "The release’s solution supplies some definitions of its own. Nobody has yet checked that they mean the objects the paper means.",
+   "No Lean object is recorded for this family.": "The release has no Lean statement for this family.",
+   "The attributed exact check is undecided or requires source data.": "An outside exact check did not reach a verdict, or needs data the source does not give.",
+   "Recorded candidate or producer-declared correspondences have no pair-specific review.": "Nobody has yet checked whether each Lean statement and the paper theorem it is paired with say the same thing.",
+   "No imported accepted Comparator report bound to the current pin.": "No outside group has reported an accepted re-run at the release’s recorded version.",
+   "An AI scope draft has no named human review.": "An AI agent has drafted how much of the paper this Lean statement covers; no named person has reviewed the draft."
+  },
+  "reason_fallback": "Nobody has yet checked this by hand."
  },
  "papers": {
   "heading": "Papers",
   "previous": "Previous editions",
   "refs_intro": "Each paper’s outside references are listed with it on its reading page, where each citation is placed. Every outside work cited in the release:",
   "pdf": "PDF",
-  "status": "{status}, {date}"
+  "status": "{status}, {date}",
+  "intro": "Each paper opens as a [[reading-page|reading page]] in the browser, with the PDF beside it. The statements each paper opens with are on its reading page."
  },
  "said": {
   "heading": "What people have said",
@@ -322,5 +363,21 @@
   "open": "Open in the paper",
   "close": "Close",
   "label": "The cited passage, from the paper"
+ },
+ "cites": {
+  "heading": "What these papers cite in the release, and what cites them",
+  "within_heading": "Within this family",
+  "within_cites": "{citing} cites {cited}.",
+  "cites_heading": "Papers elsewhere in the release that this family’s papers cite",
+  "cited_heading": "Papers elsewhere in the release that cite this family’s papers",
+  "cites_none": "This family’s papers cite no paper elsewhere in the release.",
+  "cited_none": "No paper elsewhere in the release cites this family’s papers.",
+  "cited_by_row": "Cited by {papers}.",
+  "cites_row": "Cites {papers}."
+ },
+ "explain": {
+  "issue_claim": "Explain family {id}: {title}",
+  "issue_credit": "Credit for family {id}: {title}",
+  "issue_name": "family {id}, {title}"
  }
 }

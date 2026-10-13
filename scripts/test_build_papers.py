@@ -56,6 +56,7 @@ class MacroExpansion(unittest.TestCase):
             if statements is not None:
                 m["statements"] = statements
             p = bp.Paper(m, Path(d))
+            bp.lean_pairs()  # the backend's pairings load once, outside the conversion's time limit
             signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(TimeoutError("conversion runs away")))
             signal.alarm(30)
             try:
@@ -191,6 +192,46 @@ class SupportMacros(unittest.TestCase):
         loops = [items[f["index"]]["tex"] for f in json.loads(r.stdout)["failures"]
                  if "Too many expansions" in f.get("error", "")]
         self.assertEqual(loops, [])
+
+
+class ReleaseLinks(unittest.TestCase):
+    """A paper of the release cited in a bibliography links to its page on the site."""
+    CITED = "A-counterexample-to-Hadwigers-conjecture-September-23-2026"
+
+    def ref(self):
+        return {"key": "K", "target": self.CITED, "target_latest": self.CITED}
+
+    def test_bibliography_entry_names_the_paper_and_keeps_the_pdf(self):
+        if self.CITED not in bp.reading_pages():
+            self.skipTest("the cited paper has no reading page in data/paper_acceptance.json")
+        text = (f'OpenAI. Preprint <a href="https://github.com/openai/math/blob/main/preprints/{self.CITED}/paper.pdf" '
+                f'rel="noopener">OAI:{self.CITED}</a>, 2026.')
+        out = bp.release_bib_text(text, self.ref())
+        self.assertIn(f'href="../papers/{self.CITED}.html"', out)
+        self.assertIn(f'>{bp.TXT["bib_pdf"]}</a>', out)
+        self.assertNotIn(f">OAI:{self.CITED}<", out)
+
+    def test_a_cited_statement_links_to_its_anchor_only_when_it_is_found(self):
+        if self.CITED not in bp.reading_pages():
+            self.skipTest("the cited paper has no reading page in data/paper_acceptance.json")
+        labels = bp.release_labels(self.CITED)
+        cor = sorted(k for k, v in labels.items() if v[1] == "Corollary" and v[2] == "1.2")
+        if not cor:
+            self.skipTest("no Corollary 1.2 recorded")
+        got = bp.release_xref("Corollary\u00a01.2", self.ref())
+        self.assertIn(f'href="../papers/{self.CITED}.html#{cor[0]}"', got)
+        self.assertEqual(bp.release_xref("Corollary 99.9", self.ref()), "Corollary 99.9")
+        self.assertEqual(bp.release_xref("page 3", self.ref()), "page 3")
+
+
+class PairingWords(unittest.TestCase):
+    def test_every_pairing_state_has_words(self):
+        bp.import_site()
+        for state in bp.S.PAIRED_STATES:
+            self.assertTrue(bp.TXT["lean_how"].get(state, bp.TXT["lean_how_other"]))
+            self.assertTrue(bp.lean_tag(state))
+        self.assertEqual(bp.lean_tag("some-reviewed-state"), bp.TXT["lean_tag"]["reviewed"])
+        self.assertEqual(bp.lean_tag("unknown"), bp.TXT["lean_tag"]["other"])
 
 
 if __name__ == "__main__":

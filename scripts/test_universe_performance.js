@@ -58,7 +58,7 @@ function boardLayout() {
   const board = { on: true, pending: false, fi: 33, per: 2, sig: 'family-034' };
   const state = vm.createContext({
     board, boardEl, narrow: () => false, getComputedStyle: () => ({ fontSize: '16.8px' }),
-    drawWires: () => { wireCalls++; },
+    drawWires: () => { wireCalls++; }, markScrollers: () => {},
     syncBoard: () => { rebuilds++; throw new Error('layout re-entered syncBoard'); }
   });
   vm.runInContext(source.slice(layoutStart, layoutEnd), state);

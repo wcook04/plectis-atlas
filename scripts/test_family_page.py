@@ -148,7 +148,7 @@ def compare_buttons(fid: str, html: str) -> list:
     c = family_page.Ctx(S, S.FAM[fid])
     claim = c.doc.get("claim") or {}
     if claim.get("state") == "candidate" and claim.get("primary_candidate") in c.stmts:
-        shown = [claim["primary_candidate"]]
+        shown = family_page.opening_statements(c)[0]
     else:
         alts = [a for a in claim.get("alternatives") or [] if a.get("statement_id") in c.stmts]
         shown = [a["statement_id"] for a in family_page.tie_order(c, alts)][:3]

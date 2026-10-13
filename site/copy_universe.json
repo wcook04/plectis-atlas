@@ -17,6 +17,14 @@
   "s5": "The atlas credits public work under {community_people} names where it uses that work, and attaches {community_findings} findings to the results they concern.",
   "disciplines_heading": "Disciplines"
  },
+ "since": {
+  "heading": "Since the release.",
+  "text": "OpenAI has withdrawn {withdrawn}: {papers}. It has replaced {editions} with later editions.",
+  "withdrawn": "{n} papers",
+  "withdrawn_one": "1 paper",
+  "editions": "{n} papers",
+  "and": " and "
+ },
  "numbers": {
   "reported": "{value} (as reported by its source)",
   "incomplete": "at least {value} (the count is incomplete)",
@@ -25,7 +33,7 @@
  "key": {
   "heading": "What the colours mean",
   "intro": "Each colour says what two outside readers find the release’s Lean states for a family’s headline result.",
-  "all": "Both find the whole headline stated or implied",
+  "all": "MathVet and cert-machine both find the whole headline stated or implied",
   "part": "Part of it, or a narrower statement",
   "other": "A supporting or a different result",
   "split": "The two readers disagree",
@@ -33,7 +41,12 @@
   "unread": "Not yet read by either",
   "size": "A disc’s area grows with the number of paper results and Lean statements it shows.",
   "citations": "Inside a discipline, pointing at a family draws its citations to the families beside it: brick where its papers cite, grey where they are cited.",
-  "readers": "The readers are MathVet and Carlos Toledo’s cert-machine; each one’s own words are on every family page."
+  "readers": "The readers are MathVet and Carlos Toledo’s cert-machine; each one’s own words are on every family page.",
+  "count_link": "{n} families: show them on the Families list",
+  "counted": "These count families. The release’s {files} are counted one by one on {numbers}, beside an AI agent’s {drafts}; those drafts are separate and colour nothing here.",
+  "counted_files": "{n} Lean files",
+  "counted_numbers": "the Numbers page",
+  "counted_drafts": "draft readings of them"
  },
  "counts": {
   "disc_some": "{n} families, {k} with Lean",
@@ -68,7 +81,7 @@
   "previous": "Previous",
   "next": "Next",
   "field": "Discipline {n} of {of}",
-  "family": "Family {n} of {of} in {where}",
+  "family": "{n} of {of} families in {where}",
   "paper": "Paper {n} of {of} in this family",
   "result": "Result {n} of {of} in this family",
   "lean": "Lean statement {n} of {of} in this family"
@@ -94,12 +107,17 @@
   "count": "{n} matches. Enter opens the first.",
   "show_again": "Show the matches again",
   "shown": "Showing the first {shown}.",
-  "kind_family": "Family",
-  "kind_paper": "Paper",
-  "kind_result": "Theorem",
-  "kind_lean": "Lean",
-  "kind_discipline": "Discipline",
-  "kind_statement": "Statement"
+  "kind_family": "Families",
+  "kind_paper": "Papers",
+  "kind_result": "Theorems and other statements",
+  "kind_lean": "Lean statements",
+  "kind_discipline": "Disciplines",
+  "kind_statement": "Theorems and other statements",
+  "show_all": "Show all {n}",
+  "all": "All",
+  "filter_label": "Show only",
+  "in_paper": "in {title}",
+  "suggest": "Words in the titles that come close:"
  },
  "discipline": {
   "lede": "{counts}. Point at a family here to light it on the map; select it to open its papers and Lean statements.",

@@ -34,6 +34,9 @@
         leqno: opts.leqno, fleqn: opts.fleqn
       });
       node.classList.add('pr-m--ok');
+      // copy-tex copies the annotation: keep it the paper's TeX, without keepShort's braces.
+      var ann = node.querySelector('annotation');
+      if (ann) ann.textContent = tex;
       stats.ok++;
     } catch (err) {
       node.textContent = tex;
@@ -98,5 +101,225 @@
     }
     slice();
   }
+  var words = {};
+  var wsrc = doc.getElementById('pr-words');
+  if (wsrc) { try { words = JSON.parse(wsrc.textContent); } catch (e) { words = {}; } }
+  function W(key, sub) {
+    var s = words[key] || key;
+    for (var k in (sub || {})) s = s.split('{' + k + '}').join(sub[k]);
+    return s;
+  }
+
+  /* ---- The heading of a statement: Lean, Link, Copy TeX ----------------------
+     A short link to each Lean statement the atlas pairs with the theorem (from the
+     atlas note after it), a button copying the address of the statement, and one
+     copying its TeX. The copying is atlas.js's data-copy-text. Added here, not in
+     the HTML, so a passage cloned into another page carries none of them. */
+  function addTools() {
+    var base = art.getAttribute('data-url') || location.href.split('#')[0];
+    var thms = art.querySelectorAll('.pr-thm[data-tex]');
+    for (var i = 0; i < thms.length; i++) {
+      var thm = thms[i];
+      var h = thm.querySelector('.pr-thm-h');
+      if (!h || !thm.id) continue;
+      var name = (h.querySelector('.pr-thm-n') || h).textContent.trim();
+      var bar = doc.createElement('span');
+      bar.className = 'pr-tools';
+      var note = thm.nextElementSibling;
+      if (note && note.classList.contains('pr-atlas')) {
+        var leans = note.querySelectorAll('.pr-lean a[data-tag]');
+        for (var j = 0; j < leans.length; j++) {
+          var a = doc.createElement('a');
+          a.className = 'pr-tool pr-tool--lean';
+          a.href = leans[j].getAttribute('href');
+          var lean = leans[j].textContent.trim();
+          var tag = leans[j].getAttribute('data-tag');
+          a.setAttribute('aria-label', W('lean_label', { lean: lean, tag: tag }));
+          a.innerHTML = '<span class="pr-tool__k"></span> <code></code><span class="pr-tool__tag"></span>';
+          a.firstChild.textContent = W('lean');
+          a.querySelector('code').textContent = lean;
+          a.lastChild.textContent = ', ' + tag;
+          bar.appendChild(a);
+        }
+      }
+      var link = doc.createElement('button');
+      link.type = 'button';
+      link.className = 'pr-tool';
+      link.textContent = W('link');
+      link.setAttribute('aria-label', W('link_label', { name: name }));
+      link.setAttribute('data-copy-text', base + '#' + encodeURI(thm.id).replace(/#/g, '%23'));
+      link.setAttribute('data-copied', W('copied'));
+      var tex = doc.createElement('button');
+      tex.type = 'button';
+      tex.className = 'pr-tool';
+      tex.textContent = W('tex');
+      tex.setAttribute('aria-label', W('tex_label', { name: name }));
+      tex.setAttribute('data-copy-text', thm.getAttribute('data-tex'));
+      tex.setAttribute('data-copied', W('copied'));
+      bar.appendChild(link);
+      bar.appendChild(tex);
+      // Before the statement's paragraph, not inside it, so selecting the statement copies none of it.
+      thm.insertBefore(bar, thm.firstChild);
+    }
+  }
+
+  /* ---- Preview of a reference ------------------------------------------------
+     Pointing at a reference or citation (or focusing it from the keyboard) shows the
+     statement, equation or bibliography entry it names, cloned with its mathematics
+     typeset; a citation of another paper of the release fetches that page once. The
+     link still jumps. Escape or moving away closes it; touch has no preview. */
+  var pop = null, popFor = null, showT = 0, hideT = 0, lastTouch = 0, pages = {};
+  function hostOf(el) {
+    var host = el.classList.contains('pr-lbl') ? el.parentElement : el;
+    return (host && host.closest('.pr-thm, .pr-eq, .pr-float, .pr-sec, .pr-part, .pr-runin, .pr-list > li, .pr-bib-item, .pr-fn, .pr-proof, p')) || el;
+  }
+  function render(node, mac) {
+    if (!window.katex) return;
+    var spans = node.querySelectorAll('span.pr-m:not(.pr-m--ok)');
+    for (var i = 0; i < spans.length; i++) {
+      var s = spans[i], t = s.textContent, d = s.getAttribute('data-d') === '1';
+      try {
+        window.katex.render(!d && window.atlasKeepShortMath ? window.atlasKeepShortMath(t) : t, s, {
+          displayMode: d, macros: Object.assign({}, mac), throwOnError: true, strict: 'ignore', trust: false,
+          maxExpand: 2000, leqno: opts.leqno, fleqn: opts.fleqn });
+        s.classList.add('pr-m--ok');
+      } catch (e) { s.textContent = t; s.classList.add('pr-m--fail'); }
+    }
+  }
+  function cloneOf(el, mac) {
+    var host = hostOf(el);
+    var c = host.cloneNode(true);
+    c.classList.remove('pr-target');
+    var drop = c.querySelectorAll('.pr-tools, .pr-lbl, .copy-fallback');
+    for (var i = 0; i < drop.length; i++) drop[i].parentNode.removeChild(drop[i]);
+    if (c.removeAttribute) c.removeAttribute('id');
+    var ids = c.querySelectorAll('[id]');
+    for (var j = 0; j < ids.length; j++) ids[j].removeAttribute('id');
+    var links = c.querySelectorAll('a, button');
+    for (var k = 0; k < links.length; k++) links[k].setAttribute('tabindex', '-1');
+    render(c, mac);
+    return c;
+  }
+  function fetchPage(url) {
+    if (!pages[url]) {
+      pages[url] = fetch(url, { credentials: 'same-origin' }).then(function (r) {
+        if (!r.ok) throw new Error('status ' + r.status);
+        return r.text();
+      }).then(function (t) { return new DOMParser().parseFromString(t, 'text/html'); });
+      pages[url].catch(function () { delete pages[url]; });
+    }
+    return pages[url];
+  }
+  function place() {
+    if (!pop || !popFor) return;
+    var r = popFor.getBoundingClientRect();
+    var w = Math.min(560, doc.documentElement.clientWidth - 32);
+    pop.style.width = w + 'px';
+    var left = Math.max(16, Math.min(r.left, doc.documentElement.clientWidth - 16 - w));
+    pop.style.left = (left + window.scrollX) + 'px';
+    var below = window.innerHeight - r.bottom;
+    var h = pop.offsetHeight;
+    var top = (below >= h + 12 || below >= r.top) ? r.bottom + 8 : r.top - 8 - h;
+    pop.style.top = (top + window.scrollY) + 'px';
+  }
+  function hide() {
+    clearTimeout(showT);
+    if (!pop) return;
+    if (popFor) popFor.removeAttribute('aria-describedby');
+    pop.hidden = true;
+    pop.innerHTML = '';
+    popFor = null;
+  }
+  function fill(a, content) {
+    if (popFor !== a) return;
+    pop.innerHTML = '';
+    if (typeof content === 'string') {
+      var p = doc.createElement('p');
+      p.className = 'pr-pop__msg';
+      p.textContent = content;
+      pop.appendChild(p);
+    } else pop.appendChild(content);
+    pop.hidden = false;
+    place();
+  }
+  function show(a) {
+    if (!pop) {
+      pop = doc.createElement('div');
+      pop.className = 'pr-pop paper';
+      pop.id = 'pr-pop';
+      pop.setAttribute('role', 'tooltip');
+      pop.hidden = true;
+      pop.addEventListener('mouseenter', function () { clearTimeout(hideT); });
+      pop.addEventListener('mouseleave', function () { hideT = setTimeout(hide, 200); });
+      doc.body.appendChild(pop);
+    }
+    if (popFor === a && !pop.hidden) return;
+    hide();
+    popFor = a;
+    a.setAttribute('aria-describedby', 'pr-pop');
+    var href = a.getAttribute('href') || '';
+    var hash = href.indexOf('#');
+    if (hash < 0) return hide();
+    var id = decodeURIComponent(href.slice(hash + 1));
+    if (hash === 0) {
+      var el = doc.getElementById(id);
+      if (!el) return hide();
+      fill(a, cloneOf(el, macros));
+      return;
+    }
+    fill(a, W('loading'));
+    var url = new URL(href, location.href);
+    fetchPage(url.pathname).then(function (page) {
+      var el = page.getElementById(id);
+      if (!el) return fill(a, W('unavailable'));
+      var mac = {};
+      var ms = page.getElementById('pr-macros');
+      if (ms) { try { mac = JSON.parse(ms.textContent); } catch (e) { mac = {}; } }
+      var wrap = doc.createElement('div');
+      var t = page.querySelector('h1');
+      if (t) {
+        var from = doc.createElement('p');
+        from.className = 'pr-pop__from';
+        from.textContent = t.textContent.trim();
+        wrap.appendChild(from);
+      }
+      wrap.appendChild(cloneOf(doc.importNode(hostOf(el), true), mac));
+      fill(a, wrap);
+    }, function () { fill(a, W('unavailable')); });
+  }
+  var SEL = 'a.pr-ref, a.pr-cite, a.pr-xref';
+  doc.addEventListener('pointerdown', function (e) { if (e.pointerType === 'touch' || e.pointerType === 'pen') lastTouch = Date.now(); }, true);
+  doc.addEventListener('pointerover', function (e) {
+    if (e.pointerType !== 'mouse') return;
+    var a = e.target.closest && e.target.closest(SEL);
+    if (!a || !art.contains(a)) return;
+    clearTimeout(hideT);
+    clearTimeout(showT);
+    showT = setTimeout(function () { show(a); }, 250);
+  });
+  doc.addEventListener('pointerout', function (e) {
+    if (e.pointerType !== 'mouse') return;
+    var a = e.target.closest && e.target.closest(SEL);
+    if (!a || (e.relatedTarget && a.contains(e.relatedTarget))) return;
+    clearTimeout(showT);
+    hideT = setTimeout(hide, 200);
+  });
+  doc.addEventListener('focusin', function (e) {
+    var a = e.target.closest && e.target.closest(SEL);
+    if (!a || !art.contains(a) || Date.now() - lastTouch < 800) return;
+    show(a);
+  });
+  doc.addEventListener('focusout', function (e) {
+    if (popFor && e.target === popFor) hide();
+  });
+  doc.addEventListener('click', function (e) {
+    if (popFor && e.target.closest && e.target.closest(SEL)) hide();
+  });
+  doc.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && popFor && !pop.hidden) { hide(); }
+  });
+  window.addEventListener('resize', hide);
+
+  if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', addTools); else addTools();
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', start); else start();
 })();
