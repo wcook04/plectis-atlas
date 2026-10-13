@@ -198,7 +198,7 @@
   }
  },
  "table": {
-  "lede": "The release’s {lean} Comparator challenge files, {main} of them listed by OpenAI as main results. Each row gives the paper statement the Lean is paired with and how, what the outside readers found about its family, and how many groups report re-running it.",
+  "lede": "The release’s {lean} Lean statements (Comparator challenge files), {main} of them listed by OpenAI as main results. Each row gives the paper statement the Lean is paired with and how, what the outside readers found about its family, and how many groups report re-running it.",
   "list_heading": "Every Lean statement",
   "caption": "Lean statements, with their paired paper statements, the outside readers’ findings for their families and the re-runs accepted",
   "col_statement": "Lean statement",

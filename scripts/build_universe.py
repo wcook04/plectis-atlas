@@ -313,11 +313,12 @@ class Model:
                 # A statement a Lean statement is paired with is drawn too, even when it is
                 # not one of the paper's flagged headline results, so every thread lands.
                 targets = self._pair_targets(doc)
-                for lid, (sid, state) in targets.items():
-                    if sid and sid not in rviews and sid in stmts:
-                        st = stmts[sid]
-                        if not any(sid == x[1] for x in by_ms[st.get("manuscript_id")]):
-                            by_ms[st.get("manuscript_id")].append((10_000 + (st.get("source") or {}).get("line", 0), sid, st, {}))
+                for lid, (sids, state) in targets.items():
+                    for sid in sids:
+                        if sid not in rviews and sid in stmts:
+                            st = stmts[sid]
+                            if not any(sid == x[1] for x in by_ms[st.get("manuscript_id")]):
+                                by_ms[st.get("manuscript_id")].append((10_000 + (st.get("source") or {}).get("line", 0), sid, st, {}))
                 for k, pid in enumerate(v.get("papers") or []):
                     slug = pid[2:]
                     m = S.MS.get(slug) or {}
@@ -347,17 +348,21 @@ class Model:
                     lean_of[l["id"]] = li
                     fams[fi]["lean"].append(li)
                     lsum = r.lean_summary(l["id"]) or {}
-                    sid, state = targets.get(l["id"], (None, "unavailable"))
+                    _, state = targets.get(l["id"], ([], "unavailable"))
                     leans.append({"id": l["id"], "f": fi, "name": l["id"][2:],
                                   "label": plain(lsum.get("name_tex") or l.get("name") or l["id"][2:]),
                                   "acc": list(l.get("accepted_current_sources") or []),
                                   "main": bool(l.get("main_result")), "results": [], "pairing": state,
                                   "href": f"statements/{quote(l['id'][2:])}.html"})
-                for lid, (sid, state) in targets.items():
-                    if sid in res_of and lid in lean_of and results[res_of[sid]]["f"] == fi:
-                        results[res_of[sid]]["lean"].append(lean_of[lid])
-                        leans[lean_of[lid]]["results"].append(res_of[sid])
-                        self.pairs += 1
+                # A Lean statement paired with several theorems hangs under each of them,
+                # the clearest first (the board draws its card there and a reference
+                # under the others).
+                for lid, (sids, state) in targets.items():
+                    for sid in sids:
+                        if sid in res_of and lid in lean_of and results[res_of[sid]]["f"] == fi:
+                            results[res_of[sid]]["lean"].append(lean_of[lid])
+                            leans[lean_of[lid]]["results"].append(res_of[sid])
+                            self.pairs += 1
         # A printed number can repeat inside a family (two editions or companions each
         # with a "Theorem 1.1"): such a label carries its paper's date, or its short
         # title when the dates are the same, so every label on the map names one thing.
@@ -398,24 +403,12 @@ class Model:
 
     @staticmethod
     def _pair_targets(doc) -> dict:
-        """Lean id -> (paper statement id or None, pairing state), as the backend records it:
-        the family's selected Lean statement keeps the selection's own state (a candidate, a
-        citation in the Lean source or a binding the release declares); the others keep their
-        candidate pairing, or none when the backend abstained."""
-        out = {}
-        for p in doc.get("pairing_selections") or []:
-            src = p.get("source")
-            if not src:
-                continue
-            if p.get("status") == "candidate" and p.get("target"):
-                out[src] = (p["target"], "candidate-pairing")
-            else:
-                out[src] = (None, "unavailable")
-        sel = doc.get("selection") or {}
-        if sel.get("lean"):
-            if sel.get("paired_statement") and sel.get("pairing_state") in E.PAIRINGS[:3]:
-                out[sel["lean"]] = (sel["paired_statement"], sel["pairing_state"])
-        return out
+        """Lean id -> ([paper statement ids], pairing state), from build_site.pair_targets:
+        the same pairing the family and statement pages show (a citation in the Lean
+        source or a binding the release declares stands; otherwise the atlas's reading of
+        the Lean text, which may pair one Lean statement with up to three theorems, or
+        with none when no match is confident)."""
+        return S.pair_targets(doc)
 
 
 # ---------------------------------------------------------------- one family's map
@@ -782,74 +775,16 @@ def evidence_words(M, ev, names) -> str:
     return " ".join(parts)
 
 
-_LIST_COUNTERS = {"arabic": str, "alph": lambda n: chr(96 + n), "Alph": lambda n: chr(64 + n),
-                  "roman": lambda n: S.roman(n), "Roman": lambda n: S.roman(n).upper()}
-_PRINTED_CONV = None
-
-
 def list_label_template(opt: str) -> str | None:
-    """The label= key of an enumerate's options ("label=\\textup{(G\\arabic*)},ref=G\\arabic*"),
-    braces and all, or None."""
-    depth, start, parts = 0, 0, []
-    for i, ch in enumerate(opt or ""):
-        if ch == "{":
-            depth += 1
-        elif ch == "}":
-            depth -= 1
-        elif ch == "," and depth == 0:
-            parts.append(opt[start:i])
-            start = i + 1
-    parts.append((opt or "")[start:])
-    for p in parts:
-        k, eq, v = p.partition("=")
-        if eq and k.strip() == "label":
-            v = v.strip()
-            if v.startswith("{") and v.endswith("}"):
-                v = v[1:-1]
-            return v if re.search(r"\\(?:arabic|alph|Alph|roman|Roman)\*", v) else None
-    return None
+    """The label= key of an enumerate's options, or None (build_site.list_label_template)."""
+    return import_site().list_label_template(opt)
 
 
 def printed_list_conv():
-    """The family pages' TeX reader, with each item of an enumerate labelled as the paper
-    labels it: label=(G\\arabic*) prints (G1), (G2), (G3), which the statement's own
-    references then name, where the plain reader would print (1), (2), (3)."""
-    global _PRINTED_CONV
-    if _PRINTED_CONV is not None:
-        return _PRINTED_CONV
-
-    class PrintedListConv(S.LabelTexConv):
-        def list_env(self, kind, body, opt):
-            tpl = list_label_template(opt) if kind == "enumerate" else None
-            if not tpl:
-                return super().list_env(kind, body, opt)
-            out, depth, k, n = [], 0, 0, 0
-            while k < len(body):
-                if body.startswith("\\begin{", k):
-                    depth += 1
-                elif body.startswith("\\end{", k):
-                    depth -= 1
-                elif body[k] == "{":
-                    _, k2 = S.brace_group(body, k)
-                    out.append(body[k:k2])
-                    k = k2
-                    continue
-                elif depth == 0 and re.match(r"\\item\b", body[k:]):
-                    j = S.skip_ws(body, k + 5)
-                    out.append("\\item")
-                    k += 5
-                    if j < len(body) and body[j] == "[":
-                        continue
-                    n += 1
-                    lab = re.sub(r"\\(arabic|alph|Alph|roman|Roman)\*", lambda m: _LIST_COUNTERS[m.group(1)](n), tpl)
-                    out.append("[" + lab + "]")
-                    continue
-                out.append(body[k])
-                k += 1
-            return super().list_env(kind, "".join(out), "")
-
-    _PRINTED_CONV = PrintedListConv
-    return _PRINTED_CONV
+    """The family pages' TeX reader. build_site's TexConv.list_env labels each item of an
+    enumerate as the paper labels it (label=(G\\arabic*) prints (G1), (G2), (G3)), so the
+    map's cards and the family pages print the same labels."""
+    return import_site().LabelTexConv
 
 
 def statement_html(slug: str, st_backend: dict | None, rid: str):
@@ -942,12 +877,14 @@ def build_detail(M, names):
                 det["date"] = p["date"]
                 sh["results"][res["id"]] = det
         lean_doc = {l["id"]: l for l in doc.get("lean") or []}
-        # The words a candidate pairing was found by, as the backend records them.
+        # The words a candidate pairing was found by: the Lean's own words when the atlas
+        # read the Lean text, the catalogue's words for the backend's fallback candidate.
         shared = {}
-        for p in doc.get("pairing_selections") or []:
-            alt = next((a for a in p.get("alternatives") or [] if a.get("target") == p.get("target")), None)
-            if p.get("source") and alt:
-                shared[p["source"]] = list(alt.get("matched_terms") or [])
+        for lid in lean_doc:
+            pinfo = S.lean_pairing(doc, lid)
+            if pinfo.get("state") == "candidate-pairing" and pinfo.get("target"):
+                t = S.pairing_terms(pinfo)
+                shared[lid] = t["lean"] + t["title"] + t["note"] + t["catalogue"]
         for li in f["lean"]:
             L = D["lean"][li]
             l = lean_doc.get(L["id"]) or {}
@@ -1180,7 +1117,9 @@ def number_sentence(M, key: str) -> str:
 # Each colour's families on the Families list (explain.html), by its two reader
 # columns: l is MathVet's reading, r is cert-machine's, c a class. A colour whose
 # families no filter there selects exactly is counted without a link.
-KEY_FILTERS = {"all": "l=full&r=full", "other": "l=other&r=other", "split": "c=disagree", "none": "c=nolean"}
+# Each colour's count links to the Families list filtered by the same colour: the list's
+# rows carry the map's colour (data-t, from tone_class), so every count reproduces exactly.
+KEY_FILTERS = {t: f"t={t}" for t in TONE_ORDER}
 
 
 def explain_rows() -> dict:
@@ -1493,7 +1432,7 @@ def main():
     h.update(canonical(layout))
     contract = [{"generation_id": gen, "drawing_sha256": h.hexdigest()[:20], "upstream_commit": S.COMMIT,
                  "ids": "Statement Map's reader ids: d:, f:, p:, r:, l:",
-                 "pairing": "Statement Map's pairing_selections and selection; candidate pairings are unreviewed"}]
+                 "pairing": "build_site.lean_pairing: Statement Map's citations and bindings, else the atlas's reading of the Lean text; candidate pairings are unreviewed"}]
     data = {"generation_id": gen, "contract": contract, **data}
     layout = {"generation_id": gen, "contract": contract, **layout}
     ddir = OUT / "data"

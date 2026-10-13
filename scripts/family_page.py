@@ -181,11 +181,16 @@ def lean_pairings(S, doc) -> dict:
         lid = l["id"]
         rec = dict(S.lean_pairing(doc, lid))
         rec["shared"] = []
+        rec["shared_by"] = {}
         if rec.get("target"):
-            t = S.pairing_terms(rec)
-            rec["shared"] = t["lean"] + t.get("title", []) + t["note"] + t["catalogue"]
+            rec["targets"] = list(rec.get("targets") or [rec["target"]])
+            for tg in rec["targets"]:
+                t = S.pairing_terms(rec, tg)
+                rec["shared_by"][tg] = t["lean"] + t.get("title", []) + t["note"] + t["catalogue"]
+            rec["shared"] = rec["shared_by"][rec["target"]]
         else:
             rec["state"] = "unavailable"
+            rec["targets"] = []
         out[lid] = rec
     return out
 
@@ -853,14 +858,15 @@ def why_button(c: Ctx, sid: str, terms, *, primary: bool, lean: str | None = Non
     # Two papers can each have a Theorem 1.1: the record's head names the paper and date.
     sub = esc(W("why.from", where=c.where_plain(sid)))
     if lean and tid not in c.tpls:
-        rows = [(W("why.method"), esc(W("why.method_lean", name=lean))),
-                (W("why.words"), esc(", ".join(terms)) if terms else esc(W("claim.shared_none"))),
-                (W("why.review"), esc(W("why.review_lean")))]
+        # With no shared words the method row alone says how it was chosen.
+        rows = [(W("why.method"), esc(W("why.method_lean", name=lean)))]
+        rows += [(W("why.words"), esc(", ".join(terms)))] if terms else []
+        rows += [(W("why.review"), esc(W("why.review_lean")))]
         c.tpls[tid] = record(W("why.kind"), esc(c.label(sid)) + c.stmt_title_html(sid), rows, [], sub=sub)
     if tid not in c.tpls:
-        rows = [(W("why.method"), esc(W("why.method_text"))),
-                (W("why.words"), esc(", ".join(terms)) if terms else esc(W("claim.shared_none"))),
-                (W("why.review"), esc(W("why.review_text")))]
+        rows = [(W("why.method"), esc(W("why.method_text")))]
+        rows += [(W("why.words"), esc(", ".join(terms)))] if terms else []
+        rows += [(W("why.review"), esc(W("why.review_text")))]
         if claim.get("reason"):
             rows.append((W("why.reason"), esc(claim["reason"])))
         c.tpls[tid] = record(W("why.kind"), esc(c.label(sid)) + c.stmt_title_html(sid), rows, [], sub=sub)
@@ -1045,7 +1051,7 @@ def alt_line(c: Ctx, cand: str, rest: list) -> str:
 def paired_lean(c: Ctx, sid: str) -> str | None:
     """The first Lean statement of the family (in the page's order) whose recorded pairing
     targets this paper statement, or None. Only such a statement has a Lean to compare."""
-    return next((l["id"][2:] for l in c.leans if c.pairs[l["id"]].get("target") == sid), None)
+    return next((l["id"][2:] for l in c.leans if sid in (c.pairs[l["id"]].get("targets") or [])), None)
 
 
 def compare_action(c: Ctx, sid: str) -> str:
@@ -1128,18 +1134,30 @@ def comparison_one(c: Ctx, l, *, first: bool, rest: bool = False) -> str:
     name = lid[2:]
     rec = c.pairs[lid]
     state = rec["state"] if rec["target"] else "unavailable"
-    if rec["target"] in c.stmts:
-        paper = c.stmt_card(rec["target"], aid=f"paired-{slug_id(name)}", level=4)
+    shown = [t for t in rec.get("targets") or [] if t in c.stmts]
+    if shown:
+        # A Lean statement paired with several theorems shows each of them, the clearest first.
+        paper = "".join(c.stmt_card(t, aid=f"paired-{slug_id(name)}" + (f"-{k + 1}" if k else ""), level=4)
+                        for k, t in enumerate(shown))
+        if len(shown) > 1:
+            labels = join_and(c.S, [esc(c.label(t)) for t in shown])
+            many = esc(W("compare.paired_many", labels="\x00")).replace("\x00", labels)
+            paper = f'<p class="fx-cmp__many">{many}</p>' + paper
     else:
         why = f'<p class="fx-cmp__why">{esc(W("compare.no_pair_reason", reason=rec["reason"]))}</p>' if rec.get("reason") else ""
         alts = [dict(a, statement_id=a.get("target")) for a in rec["alternatives"]]
         alt = (f'<p class="fx-cmp__why">{esc(W("compare.no_pair_alternatives"))}</p>' + alt_list(c, alts, lean=name)) if alts else ""
         paper = f'<div class="fx-st fx-st--none"><p class="fx-st__none">{esc(W("compare.no_pair"))}</p>{why}{alt}</div>'
     words = ""
-    if rec["target"] and rec["shared"] and state == "candidate-pairing":
-        words = esc(W("compare.shared", words=", ".join(rec["shared"])))
+    if rec["target"] and state == "candidate-pairing":
+        if len(shown) > 1:
+            each = [W("compare.shared_each", label=c.label(t), words=", ".join(rec["shared_by"].get(t) or []))
+                    for t in shown if rec["shared_by"].get(t)]
+            words = esc(W("compare.shared_many", each="; ".join(each))) if each else ""
+        elif rec["shared"]:
+            words = esc(W("compare.shared", words=", ".join(rec["shared"])))
     for sa in c.doc.get("source_associations") or []:
-        if sa.get("challenge") == name and rec["target"] in (sa.get("local_statement_ids") or []):
+        if sa.get("challenge") == name and rec["target"] and rec["target"] in (sa.get("local_statement_ids") or []):
             q = ((sa.get("source") or {}).get("quote") or "").strip()
             if q:
                 words += f' <span class="fx-join__quote">{W("compare.cited_quote", quote=code_spans(q))}</span>'
@@ -1165,11 +1183,16 @@ def lean_index(c: Ctx) -> str:
     for i, l in enumerate(c.leans):
         name = l["id"][2:]
         rec = c.pairs[l["id"]]
-        if rec["target"] in c.stmts:
-            slug = (c.stmts[rec["target"]].get("manuscript_id") or "")[2:]
+        shown = [t for t in rec.get("targets") or [] if t in c.stmts]
+        if shown:
+            slug = (c.stmts[shown[0]].get("manuscript_id") or "")[2:]
             key = {"candidate-pairing": "row_candidate", "producer-cited-association": "row_cited",
                    "producer-declared-binding": "row_declared"}.get(rec["state"], "row_candidate")
-            pair = W("compare." + key, label=c.label(rec["target"]), paper=c.short_title_plain(slug))
+            same = all((c.stmts[t].get("manuscript_id") or "")[2:] == slug for t in shown)
+            label = join_and(c.S, [c.label(t) if same or t == shown[0] else
+                                   W("compare.label_in", label=c.label(t), paper=c.short_title_plain((c.stmts[t].get("manuscript_id") or "")[2:]))
+                                   for t in shown])
+            pair = W("compare." + key, label=label, paper=c.short_title_plain(slug))
         else:
             pair = W("compare.row_none")
         runs = runs_sentence(c, l)
@@ -1269,6 +1292,28 @@ def reading_says(rd, name: str = "") -> str:
     return W("readings.says", name=name or rd.name, finds=W("readings.state").get(state, sayc("tone." + rd.tone)), term=rd.term or "")
 
 
+READER_NOTE_KEYS = ("gap", "note", "definitions_to_check")
+
+
+def reader_note_id(source: str, key: str) -> str:
+    return f"rd-{slug_id(source)}-{key.replace('_', '-')}"
+
+
+def reader_note_for(c: Ctx, text: str) -> str | None:
+    """The id of the outside reader's note that the readers section already prints in
+    full with this text, or None. A reader's request in "What is left to check" then
+    links to it instead of printing it a second time."""
+    t = " ".join(drop_file_refs(text or "").split())
+    if not t:
+        return None
+    for src, rec in c.readings.items():
+        sv = rec.get("source_value") or {}
+        for key in READER_NOTE_KEYS:
+            if sv.get(key) and " ".join(drop_file_refs(sv[key]).split()) == t:
+                return reader_note_id(src, key)
+    return None
+
+
 def readings_html(c: Ctx) -> str:
     S, ev = c.S, c.ev
     head = f'<h3 class="fx-h3" id="readings">{esc(W("readings.heading"))}</h3>'
@@ -1289,9 +1334,9 @@ def readings_html(c: Ctx) -> str:
         credit = rec.get("credit") or {}
         tid = f"ins-rd-{slug_id(rd.source)}"
         notes = []
-        for key, lab in (("gap", "readings.gap"), ("note", "readings.note"), ("definitions_to_check", "readings.defs")):
+        for key, lab in zip(READER_NOTE_KEYS, ("readings.gap", "readings.note", "readings.defs")):
             if sv.get(key):
-                notes.append(f'<p class="fx-rd__note"><span class="fx-rd__k">{esc(W(lab))}:</span> <span class="md-math">{code_spans(drop_file_refs(sv[key]))}</span></p>')
+                notes.append(f'<p class="fx-rd__note" id="{reader_note_id(rd.source, key)}"><span class="fx-rd__k">{esc(W(lab))}:</span> <span class="md-math">{code_spans(drop_file_refs(sv[key]))}</span></p>')
         method = first_sentence(credit.get("method") or "")
         links = []
         if sv.get("url"):
@@ -1622,8 +1667,15 @@ def left_html(c: Ctx) -> str:
                 shown = ", ".join(f'<code translate="no">{esc(n.split(".")[-1])}</code>' for n in names[:8])
                 extra = f' <span class="fx-left__names">{shown}{(" " + esc(W("left.names_more", n=len(names) - 8))) if len(names) > 8 else ""}</span>'
             who = f'{esc(credit)}: ' if credit else ""
+            shown_at = reader_note_for(c, x.get("reason") or "") if kind == "reader-request" else None
+            if shown_at:
+                # The readers section prints the request in full; here it is named once and linked.
+                reason_html = esc(W("left.reader_note_ref", link="\x00")).replace(
+                    "\x00", f'<a href="#{shown_at}">{esc(W("left.reader_note_link"))}</a>')
+            else:
+                reason_html = code_spans(reason)
             rows.append(f'<li class="fx-left__i"><span class="fx-left__t">{label}</span> '
-                        f'<span class="fx-left__r md-math">{who}{code_spans(reason)}</span>{extra} '
+                        f'<span class="fx-left__r md-math">{who}{reason_html}</span>{extra} '
                         f'<a class="ext fx-left__go" href="{esc(url)}" rel="noopener" aria-label="{esc(W("left.go_label", what=what.lower()))}">{esc(W("left.go"))}</a></li>')
         body = folded(rows, 4, S.C("family.show_all", n=len(rows))) if len(rows) > 5 else "".join(rows)
         out.append(f'<div class="fx-left__g"><h3 class="fx-h3">{esc(what)}</h3><ul class="fx-left">{body}</ul></div>')

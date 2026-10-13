@@ -1160,13 +1160,25 @@
       } else h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T('board.no_statement')) + ' ' + link(r.href || p.href, T('result.read')) + '</p>';
       return h + '</div>';
     }
-    function boardLean(li, sh, free) {
+    // A Lean statement paired with several theorems keeps one full card, under the
+    // clearest of them, which names the others; under each other theorem a short card
+    // points back to it, so every theorem it states shows it.
+    function boardLean(li, sh, free, ri) {
       var l = D.lean[li], det = sh && sh.lean ? sh.lean[l.id] : null, kind = pairKind(l.pairing);
       var cand = !free && kind === 'candidate';
-      var h = bcOpen('u-bc--l' + (cand ? ' is-cand' : ''), l.id);
+      var ref = !free && l.results.length > 1 && ri !== undefined && ri !== l.results[0];
+      var pairName = function (x) { var r = D.results[x]; return ri !== undefined && D.results[ri].p === r.p ? (r.num || resultName(r)) : resultCardName(x); };
+      var h = bcOpen('u-bc--l' + (cand ? ' is-cand' : '') + (ref ? ' u-bc--also' : ''), l.id);
       h += '<p class="u-bc__lt">' + escapeHtml(l.label || l.name) + '</p>';
+      if (ref) {
+        h += '<p class="u-bc__ln u-bc__ln--q">' + escapeHtml(T('board.also_ref', { name: pairName(l.results[0]) })) + '</p>';
+        return h + '</div>';
+      }
       if (l.label && l.label !== l.name) h += '<p class="u-bc__id"><code>' + escapeHtml(l.name) + '</code></p>';
       h += '<p class="u-bc__ln u-bc__ln--q">' + escapeHtml(free ? T('board.unpaired') : T('board.pair_' + kind)) + '</p>';
+      if (!free && l.results.length > 1) {
+        h += '<p class="u-bc__ln">' + escapeHtml(T('board.also', { names: l.results.slice(1).map(pairName).join(', ') })) + '</p>';
+      }
       if (det) h += '<p class="u-bc__ln">' + escapeHtml(det.reruns || T('lean.reruns_none')) + '</p>';
       return h + '</div>';
     }
@@ -1217,7 +1229,7 @@
           var r = D.results[ri];
           h += '<li>' + boardResult(ri, sh);
           if (r.lean.length) {
-            h += '<div class="u-leans">' + r.lean.map(function (li) { if (pairKind(D.lean[li].pairing) === 'candidate') anyCand = true; return boardLean(li, sh, false); }).join('') + '</div>';
+            h += '<div class="u-leans">' + r.lean.map(function (li) { if (pairKind(D.lean[li].pairing) === 'candidate') anyCand = true; return boardLean(li, sh, false, ri); }).join('') + '</div>';
           }
           h += '</li>';
         });

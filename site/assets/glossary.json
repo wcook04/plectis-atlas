@@ -3,28 +3,28 @@
  "terms": [
   {
    "id": "family",
-   "term": "Result family",
-   "short": "OpenAI’s grouping of related manuscripts around one headline result. The release has 372, numbered 001 to 377 with five numbers unused."
+   "term": "Family",
+   "short": "OpenAI’s grouping of related papers around one headline result. The release has 372, numbered 001 to 377 with five numbers unused."
   },
   {
    "id": "headline",
    "term": "Headline result",
-   "short": "The main claim OpenAI’s catalogue gives for a result family. A family’s Lean statements may state all of it, part of it, or a supporting step."
+   "short": "The main claim OpenAI’s catalogue gives for a family. A family’s Lean statements may state all of it, part of it, or a supporting step."
   },
   {
    "id": "challenge",
-   "term": "Comparator challenge file",
-   "short": "A Lean file that states one theorem and leaves its proof open, with a configuration naming the theorem, the definitions a solution may supply and the axioms it may use. The release has 416."
+   "term": "Lean statement (a Comparator challenge file)",
+   "short": "A Lean file that states one theorem and leaves its proof open, with a configuration naming the theorem, the definitions a solution may supply and the axioms it may use. The release has 416. The atlas calls each one a Lean statement."
   },
   {
    "id": "comparator",
    "term": "Comparator",
-   "short": "The Lean tool that checks a solution against a challenge file. If it accepts, the solution proves the configured theorem using only the allowed axioms, and the Lean kernel accepts every step."
+   "short": "The Lean tool that checks a solution against a Lean statement. If it accepts, the solution proves the configured theorem using only the allowed axioms, and the Lean kernel accepts every step."
   },
   {
    "id": "sorry",
    "term": "sorry",
-   "short": "Lean’s placeholder for a missing proof. A challenge file leaves its proof as sorry on purpose; the proof is in OpenAI’s separate solution module."
+   "short": "Lean’s placeholder for a missing proof. A Lean statement leaves its proof as sorry on purpose; the proof is in OpenAI’s separate solution module."
   },
   {
    "id": "axioms",
@@ -44,7 +44,7 @@
   {
    "id": "nanoda",
    "term": "nanoda",
-   "short": "An independent type checker for Lean written in Rust. Comparator can run it beside Lean’s own kernel as a second check; OpenAI’s configurations switch it on for 2 of 416 files."
+   "short": "An independent type checker for Lean written in Rust. Comparator can run it beside Lean’s own kernel as a second check; OpenAI’s configurations switch it on for 2 of the 416 Lean statements."
   },
   {
    "id": "mathlib",
@@ -88,8 +88,53 @@
   },
   {
    "id": "withdrawn",
-   "term": "Withdrawn manuscript",
-   "short": "A manuscript OpenAI removed after the release, with a notice explaining the gap. The atlas keeps it, marked, under the family it was listed in on release day."
+   "term": "Withdrawn paper",
+   "short": "A paper OpenAI removed after the release, with a notice explaining the gap. The atlas keeps it, marked, under the family it was listed in on release day."
+  },
+  {
+   "id": "earlier-edition",
+   "term": "Earlier edition",
+   "short": "A paper OpenAI later replaced with a revised edition. The atlas keeps the earlier edition, marked, beside the current one in the same family."
+  },
+  {
+   "id": "mathvet",
+   "term": "MathVet",
+   "short": "One of the two outside readers. It reads each family’s Lean statements against the headline under a published rubric, with help from a model, and runs Comparator itself. Its verdict and note are quoted in its own terms."
+  },
+  {
+   "id": "cert-machine",
+   "term": "cert-machine",
+   "short": "Carlos Toledo’s audit of the release, one of the two outside readers. It re-runs every Lean statement through Comparator with nanoda switched on, reads each family’s Lean statements against the headline clause by clause, and decides finite parts of some papers with exact code."
+  },
+  {
+   "id": "local-vocabulary",
+   "term": "Local vocabulary declarations",
+   "short": "The definitions a Lean statement makes for itself before stating its theorem, found by reading its text. Each is a meaning a reader must check against the paper, because Mathlib does not supply it."
+  },
+  {
+   "id": "pairing-lean-words",
+   "term": "Paired from the Lean statement’s own words",
+   "short": "The atlas chose the paper statement whose words best match the Lean statement’s own text, and only when one statement was a clear match. Nobody has reviewed it."
+  },
+  {
+   "id": "pairing-catalogue-words",
+   "term": "Paired from the catalogue’s words, as a fallback",
+   "short": "When the Lean text matched no paper statement clearly, the atlas used the candidate chosen from the words of OpenAI’s catalogue, and only when that candidate is in the Lean statement’s own paper. Nobody has reviewed it."
+  },
+  {
+   "id": "pairing-none",
+   "term": "A Lean statement with no confident match",
+   "short": "Neither the Lean text nor the catalogue words picked out one paper statement clearly, so the atlas pairs nothing and lists the closest statements instead."
+  },
+  {
+   "id": "pairing-cited",
+   "term": "Paired by a citation in the Lean source",
+   "short": "The Lean source cites the paper statement it formalises, and the atlas records that link as written. Nobody has checked that the two say the same thing."
+  },
+  {
+   "id": "pairing-declared",
+   "term": "Paired by the release’s own declaration",
+   "short": "The release’s own manifest binds the Lean statement to a paper statement, and the atlas records that binding as written. Nobody has checked that the two say the same thing."
   }
  ]
 }
