@@ -158,6 +158,7 @@ Papers are typeset in the browser with KaTeX, and the build checks every one of 
 git clone https://github.com/wcook04/plectis-atlas && cd plectis-atlas
 python3 scripts/reader.py && sh scripts/fetch_upstream.sh
 python3 scripts/build_site.py && python3 scripts/build_papers.py && python3 scripts/build_universe.py
+python3 scripts/check_paper_links.py site/_build
 python3 -m http.server -d site/_build   # http://localhost:8000
 ```
 
@@ -189,7 +190,19 @@ Henry Cohn’s [essay on the technical debt of AI-generated mathematics](https:/
 
 </details>
 
+## Videos and related projects
+
+**Atlas walkthrough:** not yet published. The [project films](https://wcook04.github.io/plectis/#videos) cover the separate Erdős research programme and its working environment.
+
+| Project | What to find there |
+| --- | --- |
+| [Plectis Erdős](https://github.com/wcook04/plectis-erdos) | Original research on eight Erdős problems: papers, Lean proofs, experiments and open questions. [Research website](https://wcook04.github.io/plectis/maths/). |
+| [Plectis toolkit](https://github.com/wcook04/plectis) | Python tools and worked examples for inspecting AI-assisted research. [Component map](https://wcook04.github.io/plectis/docs/system-map.html). |
+| [Safety Core](https://github.com/wcook04/safety-core) | A small, adaptable rulebook, checks and a visual rule map for coding agents. |
+
 ## Licences and independence
+
+Report vulnerabilities through the [private security route](SECURITY.md).
 
 Plectis Atlas is independent of OpenAI and is not affiliated with or endorsed by it. Quoted release material is copyright OpenAI, reproduced under Apache-2.0 from the pinned source. Original Atlas code and documentation are Apache-2.0; contributed explanations are CC BY 4.0. Imported material retains its own terms, including MIT and SIL Open Font License components. See [the licence](LICENSE), [attribution notice](NOTICE) and [source and citation guide](docs/ATTRIBUTION.md).
 
