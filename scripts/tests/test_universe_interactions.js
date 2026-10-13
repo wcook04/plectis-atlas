@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const source = fs.readFileSync(path.join(__dirname, '../site/assets/universe.js'), 'utf8');
+const source = fs.readFileSync(path.join(__dirname, '../../site/assets/universe.js'), 'utf8');
 function range(start, end) {
   const a = source.indexOf(start), b = source.indexOf(end, a + start.length);
   assert.ok(a >= 0 && b > a, `production range missing: ${start}`);

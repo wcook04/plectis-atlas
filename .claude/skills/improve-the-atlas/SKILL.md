@@ -106,3 +106,7 @@ checker is a coverage check, not a permission grant or a priority assessment.
 Inspect embedded font copyright and licence metadata as well as repository
 licences. In particular, KaTeX's fonts use OFL-1.1 even though its code uses
 MIT; keep components with different terms in separate inventory records.
+
+## Repository placement
+
+Keep regression suites in `scripts/tests/` and documentation screenshots in `docs/images/`; builders keep their documented command paths in `scripts/`. Run `python3 scripts/check_repository_structure.py` and `python3 scripts/tests/test_repository_structure.py`. The checker reads the Git index and nonignored untracked candidates, so staged changes are checked without traversing generated website output. Change placement rules with positive and negative fixtures when ownership changes.

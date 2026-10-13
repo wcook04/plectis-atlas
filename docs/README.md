@@ -22,6 +22,6 @@ These guides explain how to contribute to it and work on the repository.
 source boundaries. The folder guides link to it and identify the relevant
 files. The root [README](../README.md) is the introduction for visitors.
 
-The `map-light.png` and `map-dark.png` files illustrate that introduction.
+The `images/map-light.png` and `images/map-dark.png` files illustrate that introduction.
 [Capture provenance and refresh instructions](ARCHITECTURE.md#readme-preview-images)
 record which website version they show.

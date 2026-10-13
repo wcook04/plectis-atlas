@@ -17,7 +17,9 @@ backend/                      imported Statement Map reader packets and receipts
 curated/                      attributed outside records and draft scope readings
 contributions/                authored notes, checks, explanations and templates
 data/                         generated source indexes and rendering metadata
-scripts/                      ingestion, rendering, validation and regression tests
+scripts/                      ingestion, rendering and validation
+scripts/tests/                Python and JavaScript regression suites
+docs/images/                  README screenshots
 site/                         authored copy, settings, styles, scripts and assets
 site/_build/                  generated HTML and assets; ignored by Git
 skills/                       canonical task instructions for agents
@@ -29,7 +31,7 @@ docs/                         repository explanation and README images
 
 The folders separate authored material, imported evidence and generated output.
 The website is built by scripts; it needs no application server or installable
-Python package. Tests stay beside the scripts they exercise and are listed in
+Python package. Tests live in `scripts/tests/`, import their script owners explicitly and are listed in
 the [scripts guide](../scripts/README.md#check-a-change).
 
 The root keeps documents GitHub and contributors expect to find there:
@@ -241,7 +243,7 @@ the relevant checks in [the CI workflow](../.github/workflows/check.yml).
 It covers packet reading, search, extraction, paper conversion, contribution
 validation, community records, generated entry surfaces and a site build.
 For rendered page changes, also inspect the relevant pages and run
-`scripts/test_family_page.py` when family layouts change. The
+`scripts/tests/test_family_page.py` when family layouts change. The
 [Pages workflow](../.github/workflows/pages.yml) shows the full publication
 build, including optional share cards.
 
@@ -258,7 +260,7 @@ also apply to the canonical [`improve-the-atlas` skill](../skills/improve-the-at
 
 ### README preview images
 
-`docs/map-light.png` and `docs/map-dark.png` are real browser captures of the
+`docs/images/map-light.png` and `docs/images/map-dark.png` are real browser captures of the
 same map state. They are displayed by the README's `<picture>` element and
 both link to the website. Keep these stable paths when refreshing them.
 

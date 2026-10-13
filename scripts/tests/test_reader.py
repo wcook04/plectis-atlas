@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Checks for the site's door to Statement Map's packets (scripts/reader.py).
 
-    python3 scripts/test_reader.py
+    python3 scripts/tests/test_reader.py
 
 The vendored export must load and every packet must pass its checks. A page
 must never be built from a packet that was altered, removed, or taken from
@@ -17,10 +17,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import reader as R  # noqa: E402
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 
 
 class VendoredExport(unittest.TestCase):

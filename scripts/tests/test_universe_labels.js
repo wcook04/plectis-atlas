@@ -4,7 +4,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-const source = fs.readFileSync(path.join(__dirname, '../site/assets/universe.js'), 'utf8');
+const source = fs.readFileSync(path.join(__dirname, '../../site/assets/universe.js'), 'utf8');
 const begin = source.indexOf('    function labelTokens(');
 const end = source.indexOf('    function drawText(', begin);
 assert.ok(begin > 0 && end > begin);
