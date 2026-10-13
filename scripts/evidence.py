@@ -28,6 +28,21 @@ TONE = {"all": "full", "part": "part", "narrower": "part", "weaker": "part",
 TONES = ("full", "part", "other", "none")
 PAIRINGS = ("candidate-pairing", "producer-cited-association", "producer-declared-binding", "unavailable")
 
+# How each Lean statement is paired with a paper theorem, as build_site.lean_pairing
+# decides it (its "evidence"), and the class a family carries in the Families list when
+# any of its Lean statements is paired that way. The order is the order a reader meets
+# them: the two kinds of recorded link first, then the atlas's readings, then none.
+PAIRING_EVIDENCE = ("cited", "declared", "lean-words", "catalogue-words", "none")
+PAIRING_CLASS = {"cited": "pair_cited", "declared": "pair_declared", "lean-words": "pair_lean_words",
+                 "catalogue-words": "pair_catalogue_words", "none": "pair_none"}
+PAIRING_CLASSES = tuple(PAIRING_CLASS[e] for e in PAIRING_EVIDENCE)
+# build_site registers lean_pairing here when it loads, so the evidence every page counts
+# is the pairing the family, statement and map pages show. Without it the backend's own
+# records are read: a candidate is then its catalogue-word selection.
+PAIRING_READER = None
+_BACKEND_EVIDENCE = {"producer-cited-association": "cited", "producer-declared-binding": "declared",
+                     "candidate-pairing": "catalogue-words", "unavailable": "none"}
+
 
 def join_names(names) -> str:
     """Credited names joined for a sentence. Each credited name may contain a comma
@@ -76,7 +91,7 @@ class FamilyEvidence:
     readers: tuple         # Reading, in READER_ORDER; tone "none" when that reader has no finding
     agreement: str         # agree | disagree | unknown (the backend's headline_coverage)
     claim: str             # candidate | unresolved
-    pairing: str           # selection.pairing_state
+    pairing: str           # the selected Lean statement's pairing state (build_site.lean_pairing when registered)
     scope_context: str | None
     checks: tuple = field(default=())   # kinds of outside checks by another method ("hol_checks", ...)
     findings: int = 0
@@ -84,6 +99,14 @@ class FamilyEvidence:
     contributions: int = 0
     comparison: str = "unavailable"   # the backend's finer reader_comparison.state
     community: tuple = ()             # (kind, count) of attributed community findings, e.g. ("explanation", 2)
+    pair_evidence: tuple = ()         # each Lean statement's pairing evidence (PAIRING_EVIDENCE), in self.lean's order
+
+    @property
+    def pairing_classes(self) -> tuple:
+        """The Families-list classes for how this family's Lean statements are paired, one
+        per kind present, in PAIRING_EVIDENCE order (empty without Lean)."""
+        have = set(self.pair_evidence)
+        return tuple(PAIRING_CLASS[e] for e in PAIRING_EVIDENCE if e in have)
 
     def community_count(self, kind: str) -> int:
         """How many attributed community findings of this kind the family has
@@ -163,6 +186,17 @@ def family_evidence(r, family_id: str, discipline: str | None = None) -> FamilyE
     cmp = doc.get("reader_comparison") or {}
     sel = doc.get("selection") or {}
     comm = doc.get("community") or {}
+    pair_ev, pairing = [], sel.get("pairing_state") or "unavailable"
+    for l in lean:
+        if PAIRING_READER is not None:
+            p = PAIRING_READER(doc, l.id)
+            pair_ev.append(p.get("evidence") or "none")
+            if l.id == sel.get("lean"):
+                pairing = p.get("state") or "unavailable"
+        else:
+            p = next((x for x in doc.get("pairing_selections") or [] if x.get("source") == l.id), {})
+            st = sel.get("pairing_state") if l.id == sel.get("lean") else ("candidate-pairing" if p.get("status") == "candidate" and p.get("target") else "unavailable")
+            pair_ev.append(_BACKEND_EVIDENCE.get(st or "unavailable", "none"))
     return FamilyEvidence(
         id=doc["id"], num=doc["id"][2:], name=doc.get("name") or fam.get("name") or doc["id"],
         discipline=discipline,
@@ -172,7 +206,8 @@ def family_evidence(r, family_id: str, discipline: str | None = None) -> FamilyE
         lean=lean, readers=tuple(readings),
         agreement=cmp.get("headline_coverage") or cmp.get("state") or "unknown",
         claim=(doc.get("claim") or {}).get("state") or "unresolved",
-        pairing=sel.get("pairing_state") or "unavailable",
+        pairing=pairing,
+        pair_evidence=tuple(pair_ev),
         scope_context=sel.get("scope_context"),
         checks=tuple(kinds),
         findings=len(doc.get("findings") or []),
@@ -208,7 +243,7 @@ def legend_counts(families) -> dict:
     """How many families each mark class covers, for a legend that is also a filter.
     These are counts of what the map draws, made from the same records."""
     out = {"families": len(families), "nolean": 0, "lean": 0, "ring": 0, "disagree": 0,
-           "thread_candidate": 0, "thread_cited": 0}
+           "thread_candidate": 0, "thread_cited": 0, **{k: 0 for k in PAIRING_CLASSES}}
     for t in TONES:
         out["left_" + t] = out["right_" + t] = 0
     for ev in families:
@@ -224,6 +259,8 @@ def legend_counts(families) -> dict:
                 out["thread_candidate"] += 1
             elif ev.pairing in ("producer-cited-association", "producer-declared-binding"):
                 out["thread_cited"] += 1
+            for k in ev.pairing_classes:
+                out[k] += 1
         if ev.checks:
             out["ring"] += 1
         if ev.community_count("explanation"):

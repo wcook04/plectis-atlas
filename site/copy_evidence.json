@@ -86,5 +86,13 @@
   "consequence": "states a consequence of a paper’s theorem",
   "supporting": "states a supporting result",
   "unclear": "unclear"
+ },
+ "pairing_class": {
+  "_note": "How a family’s Lean statements are paired with paper theorems, as filters in the Families list; a family carries each kind any of its Lean statements has.",
+  "pair_cited": "Paired by a citation in the Lean source",
+  "pair_declared": "Paired by the release’s own declaration",
+  "pair_lean_words": "Paired from the Lean statement’s own words",
+  "pair_catalogue_words": "Paired from the catalogue’s words, as a fallback",
+  "pair_none": "A Lean statement with no confident match"
  }
 }

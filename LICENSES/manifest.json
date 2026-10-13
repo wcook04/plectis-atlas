@@ -13,9 +13,10 @@
       "licence": "MIT",
       "licence_file": "LICENSES/MIT-KaTeX.txt",
       "use": "Typesets formulas in the browser; the paper builder checks formulas with the same version.",
-      "changes": "Selected unmodified minified JavaScript, CSS and auto-render extension. Verified against the npm 0.18.9 distribution; the accompanying fonts are listed separately.",
+      "changes": "Selected unmodified minified JavaScript, CSS and the auto-render and copy-tex extensions. Verified against the npm 0.18.9 distribution; the accompanying fonts are listed separately.",
       "files": {
         "site/assets/vendor/katex-0.18.9/contrib/auto-render.min.js": "e5372d199bcdae8b4de71d0f7ceba72a4ba12774a27c60a6f1f77d03b3228ee4",
+        "site/assets/vendor/katex-0.18.9/contrib/copy-tex.min.js": "c571c49b520cb8e9040287338286b21783e39b476660b8b56d9e1c037eeaeaff",
         "site/assets/vendor/katex-0.18.9/katex.min.css": "b9ce0e8ce93f0c18c4986fe1f1c3c269d921b56a69e6c97f83a507916b38aab5",
         "site/assets/vendor/katex-0.18.9/katex.min.js": "155f6c2d673c5912e3b48f45d8830eaad18ae1953915939ceb648ea8b9c3e7e2"
       }

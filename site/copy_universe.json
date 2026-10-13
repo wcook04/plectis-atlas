@@ -11,11 +11,19 @@
  },
  "release": {
   "s1": "OpenAI published {manuscripts_current} current papers in {families} families of related results, across {disciplines} disciplines.",
-  "s2": "{statements_lean} Lean challenge files come with them, linked to {families_with_lean} of the families.",
-  "s3": "OpenAI’s Lean catalogue names {statements_lean_main_results} of the {statements_lean} Lean challenge files as main results.",
+  "s2": "{statements_lean} Lean statements come with them, linked to {families_with_lean} of the families.",
+  "s3": "OpenAI’s Lean catalogue names {statements_lean_main_results} of the {statements_lean} Lean statements as main results.",
   "s4": "Inside the release, {internal_citation_edges} ordered pairs of papers are joined by a citation, and the papers cite {external_works_cited} works outside it. OpenAI has withdrawn {manuscripts_withdrawn} papers and replaced {manuscripts_previous_editions} with later editions.",
   "s5": "The atlas credits public work under {community_people} names where it uses that work, and attaches {community_findings} findings to the results they concern.",
   "disciplines_heading": "Disciplines"
+ },
+ "since": {
+  "heading": "Since the release.",
+  "text": "OpenAI has withdrawn {withdrawn}: {papers}. It has replaced {editions} with later editions.",
+  "withdrawn": "{n} papers",
+  "withdrawn_one": "1 paper",
+  "editions": "{n} papers",
+  "and": " and "
  },
  "numbers": {
   "reported": "{value} (as reported by its source)",
@@ -25,7 +33,7 @@
  "key": {
   "heading": "What the colours mean",
   "intro": "Each colour says what two outside readers find the release’s Lean states for a family’s headline result.",
-  "all": "Both find the whole headline stated or implied",
+  "all": "MathVet and cert-machine both find the whole headline stated or implied",
   "part": "Part of it, or a narrower statement",
   "other": "A supporting or a different result",
   "split": "The two readers disagree",
@@ -33,7 +41,12 @@
   "unread": "Not yet read by either",
   "size": "A disc’s area grows with the number of paper results and Lean statements it shows.",
   "citations": "Inside a discipline, pointing at a family draws its citations to the families beside it: brick where its papers cite, grey where they are cited.",
-  "readers": "The readers are MathVet and Carlos Toledo’s cert-machine; each one’s own words are on every family page."
+  "readers": "The readers are MathVet and Carlos Toledo’s cert-machine; each one’s own words are on every family page.",
+  "count_link": "{n} families: show them on the Families list",
+  "counted": "These count families. The release’s {files} are counted one by one on {numbers}, beside an AI agent’s {drafts}; those drafts are separate and colour nothing here.",
+  "counted_files": "{n} Lean statements",
+  "counted_numbers": "the Numbers page",
+  "counted_drafts": "draft readings of them"
  },
  "counts": {
   "disc_some": "{n} families, {k} with Lean",
@@ -68,7 +81,7 @@
   "previous": "Previous",
   "next": "Next",
   "field": "Discipline {n} of {of}",
-  "family": "Family {n} of {of} in {where}",
+  "family": "{n} of {of} families in {where}",
   "paper": "Paper {n} of {of} in this family",
   "result": "Result {n} of {of} in this family",
   "lean": "Lean statement {n} of {of} in this family"
@@ -94,12 +107,17 @@
   "count": "{n} matches. Enter opens the first.",
   "show_again": "Show the matches again",
   "shown": "Showing the first {shown}.",
-  "kind_family": "Family",
-  "kind_paper": "Paper",
-  "kind_result": "Theorem",
-  "kind_lean": "Lean",
-  "kind_discipline": "Discipline",
-  "kind_statement": "Statement"
+  "kind_family": "Families",
+  "kind_paper": "Papers",
+  "kind_result": "Theorems and other statements",
+  "kind_lean": "Lean statements",
+  "kind_discipline": "Disciplines",
+  "kind_statement": "Theorems and other statements",
+  "show_all": "Show all {n}",
+  "all": "All",
+  "filter_label": "Show only",
+  "in_paper": "in {title}",
+  "suggest": "Words in the titles that come close:"
  },
  "discipline": {
   "lede": "{counts}. Point at a family here to light it on the map; select it to open its papers and Lean statements.",
@@ -157,7 +175,7 @@
   "whole_family": "The whole family on the map: {name}",
   "family_page": "Open the family page",
   "tex_source": "TeX source",
-  "unpaired": "No Lean statement in the release is paired with this result.",
+  "unpaired": "No Lean statement in the release is paired with this theorem.",
   "loading": "Typesetting the statement…",
   "load_failed": "The statement could not load here. Read it in the paper instead.",
   "numbering_note": "The number is the one the paper prints, as the atlas’s reading page computes it from the TeX source. The PDF is authoritative.",
@@ -255,9 +273,9 @@
   "release_numbers": "Every number, with how it was counted",
   "checked_heading": "Who has checked what",
   "checked_intro": "Each check is reported by the person or group named. The atlas shows their records beside the results they reach and has not repeated them.",
-  "checked_cert": "re-ran the release’s Lean files through Comparator with a second kernel, checked finite parts of some results by exact computation, and read each family’s Lean against its headline.",
-  "checked_mathvet": "re-ran the Lean files in a sandbox and read each family’s Lean against its headline under a published rubric.",
-  "checked_neal": "re-ran the Lean files with Lean’s kernel and recorded the time and memory each took.",
+  "checked_cert": "re-ran the release’s Lean statements through Comparator with a second kernel, checked finite parts of some results by exact computation, and read each family’s Lean against its headline.",
+  "checked_mathvet": "re-ran the Lean statements in a sandbox and read each family’s Lean against its headline under a published rubric.",
+  "checked_neal": "re-ran the Lean statements with Lean’s kernel and recorded the time and memory each took.",
   "checked_hol": "proved steps of some results again in HOL Light, with negative controls that must fail.",
   "checked_erdos": "links families to the Erdős problems they address. A link is not a check.",
   "checked_more_link": "Every source, with what each one reports",
@@ -269,7 +287,7 @@
   "help_with_heading": "With an AI account",
   "help_with": "Give your assistant the start-here guide from the repository. It helps you choose one useful note, drafts it privately and leaves the signing to you.",
   "help_with_link": "The start-here guide",
-  "help_queue": "Some Lean files have a specific reason to be read first.",
+  "help_queue": "Some Lean statements have a specific reason to be read first.",
   "help_queue_link": "See which, and why"
  },
  "maplegend": {
@@ -297,8 +315,10 @@
   "citations_one": "1 citation",
   "citations": "{n} citations",
   "readers": "What the outside readers found:",
-  "unpaired_heading": "Lean statements not paired with a theorem",
-  "unpaired": "Not paired with a theorem.",
+  "unpaired_heading": "Lean statements with no confident match to a theorem",
+  "unpaired": "No theorem matches its wording clearly enough to pair it.",
+  "also": "Also paired with {names}.",
+  "also_ref": "Also paired with this theorem; its card is under {name}.",
   "pair_candidate": "Candidate pairing from shared wording, not reviewed.",
   "pair_cited": "The Lean source cites this theorem; the match is not reviewed.",
   "pair_declared": "The release binds them; the match is not reviewed.",

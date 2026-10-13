@@ -430,6 +430,8 @@ async function main() {
       querySelector: () => dialogOpen ? {} : null
     },
     siblingKey: (_o, way) => way < 0 ? 'f:prev' : 'f:next',
+    // A focused field or a box that scrolls sideways keeps its own arrow keys.
+    arrowsBelongTo: t => !!t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName || '') || !!t.isContentEditable || !!t.scrollsSideways),
     select: key => { arrowSelections.push(key); arrowState.sel = key; },
     focusArrival: () => { focusedArrivals++; }
   });
@@ -453,7 +455,8 @@ async function main() {
     arrowEvent('ArrowRight', { tagName: 'DIV' }, { metaKey: true }),
     arrowEvent('ArrowLeft', { tagName: 'DIV' }, { ctrlKey: true }),
     arrowEvent('ArrowRight', { tagName: 'DIV' }, { altKey: true }),
-    arrowEvent('ArrowLeft', { tagName: 'DIV' }, { shiftKey: true })
+    arrowEvent('ArrowLeft', { tagName: 'DIV' }, { shiftKey: true }),
+    arrowEvent('ArrowRight', { tagName: 'DIV', scrollsSideways: true })
   ]) {
     arrowDocumentKey(blocked);
     assert.equal(blocked.defaultPrevented, false, 'typing and modified arrows keep their normal action');

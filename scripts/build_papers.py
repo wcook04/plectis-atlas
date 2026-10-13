@@ -44,7 +44,7 @@ import unicodedata
 from collections import Counter, defaultdict
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
@@ -76,7 +76,8 @@ sys.setrecursionlimit(20000)
 TXT = {
     "kicker": "Reading view",
     "numbering": "Numbering computed from the TeX source; the PDF is the reference.",
-    "converted": "This page is converted from the paper’s TeX source at commit {commit}.",
+    "converted": "This page is converted from the paper’s {source}.",
+    "tex_source_title": "The paper’s TeX source in the release at commit {commit}",
     "figures_one": "One figure is shown as a placeholder; see the PDF for it.",
     "figures_many": "{n} figures are shown as placeholders; see the PDF for them.",
     "partial_h": "This reading view is incomplete",
@@ -111,6 +112,34 @@ TXT = {
         "candidate-pairing": "{lean} is paired with this theorem as a candidate, found by the words the two share; nobody has reviewed the pairing.",
         "producer-cited-association": "The source of {lean} cites this theorem by its label; nobody has reviewed whether the two state the same thing.",
         "producer-declared-binding": "The release binds {lean} to this theorem; nobody has reviewed whether the two state the same thing.",
+    },
+    "lean_how_other": "{lean} is paired with this theorem.",
+    "lean_tag": {
+        "candidate-pairing": "candidate pairing",
+        "producer-cited-association": "cited in its source, not reviewed",
+        "producer-declared-binding": "bound by the release, not reviewed",
+        "reviewed": "reviewed pairing",
+        "other": "paired",
+    },
+    "bib_read": "Reading view on this site:",
+    "bib_pdf": "PDF",
+    "bib_later": " (current edition)",
+    "sib_with_others": "{n} of {total} papers in this family, including {others}",
+    "sib_withdrawn": "withdrawn papers",
+    "sib_earlier": "earlier editions",
+    "sib_both": "withdrawn papers and earlier editions",
+    # Words paper.js shows: the heading's buttons and the reference preview.
+    "ui": {
+        "link": "Link",
+        "link_label": "Copy a link to {name}",
+        "tex": "Copy TeX",
+        "tex_label": "Copy the TeX source of {name}",
+        "copied": "Copied",
+        "lean": "Lean",
+        "lean_label": "Lean statement {lean}, {tag}",
+        "preview": "Preview",
+        "loading": "Loading…",
+        "unavailable": "The passage could not be shown here; follow the link to read it.",
     },
     "family_n": "family {n}",
     "headline_note": "Of the papers’ main statements, this one shares the most words with OpenAI’s description of {families}, so the atlas shows it as the candidate for the theorem that description names. Nobody has reviewed the choice.",
@@ -850,7 +879,7 @@ MATH_REF_RE = re.compile(
     r"Crefrange|vref|subref)(\*?)(?![A-Za-z@])\s*(?:\[[^\]]*\]\s*)?\{([^{}]*)\}(?:\s*\{([^{}]*)\})?")
 MATH_CITE_RE = re.compile(
     r"\\(cite[a-zA-Z]*|Cite[a-zA-Z]*|parencite|textcite)(\*?)(?![A-Za-z@])\s*((?:\[[^\]]*\]\s*){0,2})\{([^{}]*)\}")
-LABEL_RE = re.compile(r"\\label\s*\{([^{}]*)\}")
+LABEL_RE = re.compile(r"\\label\s*(?:\[[^\]]*\]\s*)?\{([^{}]*)\}")
 NONUM_RE = re.compile(r"\\(?:nonumber|notag)(?![A-Za-z@])")
 TAG_RE = re.compile(r"\\tag(\*?)\s*\{")
 QEDHERE_RE = re.compile(r"\\qedhere(?![A-Za-z@])")
@@ -2363,6 +2392,7 @@ class Paper:
         return e
 
     def h_label(self, name, s, start, j, end, out, origin):
+        _, j = read_opt(s, j, end)  # cleveref's \label[type]{key}
         arg, k = read_arg(s, j, end)
         self.set_label(arg, out=out)
         return skip_space_after_word(s, k, end)
@@ -2714,12 +2744,15 @@ class Paper:
         style = spec["style"]
         self.thm_lines[lid] = env
         self.printed[(f, line)] = (strip_tags(ctx["name"]).strip(), num or None)
+        # data-tex: the statement as the author wrote it, for the heading's Copy TeX button
+        # (paper.js adds the Link and Copy TeX buttons, so a passage cloned elsewhere has none).
+        tex_src = f"\\begin{{{env}}}{s[b0:b1]}\\end{{{env}}}"
         out.append(block(f'<div class="pr-thm pr-thm--{style}" id="{self.id_ph(ctx)}" data-env="{esc_a(env)}" '
-                         f'data-src="{esc_a(f)}:{line}">{self.xa_ph(ctx)}{body}</div>'))
+                         f'data-src="{esc_a(f)}:{line}" data-tex="{esc_a(tex_src)}">{self.xa_ph(ctx)}{body}</div>'))
+        mark = lean_pairs().get((self.slug, f, line))
         # What the atlas records at this theorem follows it in a box of its own, named as
         # the atlas's: the paper's statement ends where its author ended it, and the
         # highlight on a linked theorem covers only the author's text.
-        mark = lean_pairs().get((self.slug, f, line))
         if mark and (mark["lean"] or mark["headline"]):
             notes = "".join(lean_evidence_html(x) for x in mark["lean"])
             if mark["headline"]:
@@ -3072,6 +3105,7 @@ class Paper:
                 if word == "endfirsthead":
                     skip_mode = "firsthead"
                 if word == "label":
+                    _, pos = read_opt(s, pos, r1)
                     lab, pos = read_arg(s, pos, r1)
                     self.set_label(lab)
                 if word == "caption":
@@ -3991,6 +4025,8 @@ class Paper:
         if cmd in ("citeyear", "citeyearpar"):
             return ", ".join(self.bib_year(k) for k in keys)
         inner = ", ".join(compress(items))
+        if post and as_html and len(keys) == 1 and keys[0] in self.internal_refs():
+            post = release_xref(post, self.internal_refs()[keys[0]])
         if pre:
             inner = f"{pre} {inner}"
         if post:
@@ -4034,6 +4070,16 @@ class Paper:
         rec = e.get(key)
         return re.sub(r"[{}]", "", rec["fields"].get("year", "")) if rec else "?"
 
+    def internal_refs(self) -> dict:
+        """Bibliography key -> the paper of the release it cites, from data/manuscripts.json's
+        internal_references (build_data.py reads the entry's preprint link or OAI: key)."""
+        if getattr(self, "_internal", None) is None:
+            self._internal = {}
+            for r in self.m.get("internal_references") or []:
+                if r.get("key") and r.get("target") and r["key"] not in self._internal:
+                    self._internal[r["key"]] = r
+        return self._internal
+
     def bibliography_html(self) -> str:
         items = getattr(self, "bib_items", [])
         if not items:
@@ -4041,7 +4087,10 @@ class Paper:
         rn = self.macros.get("refname") or self.macros.get("bibname")
         heading = strip_tags(self.walk_inline(rn.body, None)) if rn else TXT["references"]
         lis = []
+        internal = self.internal_refs()
         for key, label, text in items:
+            if key in internal:
+                text = release_bib_text(text, internal[key])
             lis.append(f'<li class="pr-bib-item" id="bib-{esc_a(quote(key, safe=""))}">'
                        f'<span class="pr-bib-lab">[{label}]</span><span class="pr-bib-text">{text}</span></li>')
         self.toc_bib = heading
@@ -4123,6 +4172,103 @@ class Paper:
             if lid not in ids and lid not in self.thm_lines:
                 missing.append(lid)
         return missing
+
+
+# ------------------------------------------------------------ papers of the release cited by a paper
+
+_PAGES = None
+_LABELS = None
+
+
+def reading_pages() -> set:
+    """Manuscripts that have a reading page, from data/paper_acceptance.json."""
+    global _PAGES
+    if _PAGES is None:
+        try:
+            _PAGES = {r["id"] for r in json.loads(ACCEPTANCE.read_text(encoding="utf-8")).get("papers", [])
+                      if r.get("page")}
+        except (OSError, ValueError, KeyError):
+            _PAGES = set()
+    return _PAGES
+
+
+def release_labels(slug: str) -> dict:
+    """data/paper_labels.json's label map for one paper: label -> [kind, name, number]."""
+    global _LABELS
+    if _LABELS is None:
+        try:
+            _LABELS = {r["manuscript"]: r["labels"] for r in json.loads(LABELS.read_text(encoding="utf-8")).get("rows", [])}
+        except (OSError, ValueError, KeyError):
+            _LABELS = {}
+    return _LABELS.get(slug) or {}
+
+
+def release_target(ref: dict):
+    """(href, title_html, exact) for a paper of the release cited in a bibliography: its
+    reading page when the cited edition is current, else the current edition's reading
+    page, else its family; exact is True when the link opens the edition cited."""
+    import_site()
+    t, latest = ref["target"], ref.get("target_latest") or ref["target"]
+    m = S.MS.get(t)
+    if m and m.get("status") == "current" and t in reading_pages():
+        return f"../papers/{quote(t)}.html", S.ms_title_html(m), True
+    ml = S.MS.get(latest)
+    if ml and ml.get("status") == "current" and latest in reading_pages():
+        return f"../papers/{quote(latest)}.html", S.ms_title_html(ml) + esc_t(TXT["bib_later"]), False
+    fam = (m or ml or {}).get("family")
+    if fam and fam in S.FAM:
+        return f"../families/{quote(fam)}.html#{quote(t)}", S.ms_title_html(m or ml), False
+    return None, None, False
+
+
+def release_bib_text(text: str, ref: dict) -> str:
+    """A bibliography entry citing a paper of the release: its preprint link keeps the
+    PDF as a second route, labelled as one rather than by the folder name, and the
+    entry ends with the paper's title linked to its page on this site."""
+    href, title_html, _exact = release_target(ref)
+    slugs = {ref["target"], ref.get("target_latest") or ref["target"]}
+
+    def relabel(mm):
+        if any(s in mm.group(1) for s in slugs) and ("OAI:" in mm.group(2) or any(s in mm.group(2) for s in slugs)
+                                                       or "github.com" in mm.group(2)):
+            return mm.group(1) + esc_t(TXT["bib_pdf"]) + "</a>"
+        return mm.group(0)
+    text = re.sub(r'(<a href="[^"]*"[^>]*>)([^<]*)</a>', relabel, text)
+    if href:
+        text += (f' <span class="pr-bib-in">{esc_t(TXT["bib_read"])} '
+                 f'<a class="pr-bib-in__a" href="{esc_a(href)}">{title_html}</a>.</span>')
+    return text
+
+
+THM_NAMES = {"thm": "theorem", "theorem": "theorem", "cor": "corollary", "corollary": "corollary",
+             "lem": "lemma", "lemma": "lemma", "prop": "proposition", "proposition": "proposition",
+             "def": "definition", "defn": "definition", "definition": "definition", "conj": "conjecture",
+             "conjecture": "conjecture", "rem": "remark", "remark": "remark", "example": "example",
+             "claim": "claim", "question": "question", "problem": "problem", "hypothesis": "hypothesis",
+             "assumption": "assumption"}
+XREF_RE = re.compile(r"^\s*([A-Za-z]+)\.?\s+(\(?[0-9A-Z]+(?:\.[0-9A-Za-z]+)*\)?)\s*$")
+
+
+def release_xref(post_html: str, ref: dict) -> str:
+    """The note of a citation such as [21, Corollary 1.2], linked to that statement on the
+    cited paper's reading page when the cited edition has one and exactly one statement
+    of the paper prints that name and number; otherwise the note as written."""
+    href, _title, exact = release_target(ref)
+    if not href or not exact or "<" in post_html:
+        return post_html
+    mm = XREF_RE.match(post_html.replace("\u00a0", " ").replace("&nbsp;", " "))
+    if not mm:
+        return post_html
+    name = THM_NAMES.get(mm.group(1).lower())
+    num = mm.group(2)
+    if not name:
+        return post_html
+    hits = sorted(k for k, (_kind, nm, n) in release_labels(ref["target"]).items()
+                  if (nm or "").lower() == name and n == num)
+    if not hits:
+        return post_html
+    # Several labels can sit on one statement; they then print the same name and number.
+    return f'<a class="pr-xref" href="{esc_a(href + frag_href(hits[0]))}">{post_html}</a>'
 
 
 # ------------------------------------------------------------ BibTeX helpers
@@ -4457,11 +4603,22 @@ def lean_evidence_html(mark: dict) -> str:
             TXT["lean_runs_1"] if mark["accepted"] == 1 else TXT["lean_runs_0"]]
     if mark.get("holes"):
         bits.append(TXT["lean_holes_1"] if mark["holes"] == 1 else TXT["lean_holes_n"].format(n=mark["holes"]))
-    link = f'<a href="../statements/{quote(lid)}.html"><code>{esc_t(lid)}</code></a>'
-    how = TXT["lean_how"][mark["state"]].replace("{lean}", "\x00")
-    return (f'<p class="pr-lean pr-lean--{"candidate" if mark["state"] == "candidate-pairing" else "cited"}">'
+    state = mark["state"]
+    # data-tag: the pairing in two words, for the short Lean link paper.js puts on the heading
+    link = (f'<a href="../statements/{quote(lid)}.html" data-tag="{esc_a(lean_tag(state))}">'
+            f'<code>{esc_t(lid)}</code></a>')
+    how = TXT["lean_how"].get(state, TXT["lean_how_other"]).replace("{lean}", "\x00")
+    return (f'<p class="pr-lean pr-lean--{"candidate" if state == "candidate-pairing" else "cited"}">'
             f'<span class="pr-lean__k">{esc_t(TXT["lean_k"])}</span> '
             f'{esc_t(how).replace(chr(0), link)}<span class="pr-lean__ev">{esc_t(TXT["lean_proof"])} {esc_t("; ".join(bits))}.</span></p>')
+
+
+def lean_tag(state: str) -> str:
+    """The pairing state in a few words ("candidate pairing", "reviewed pairing")."""
+    tags = TXT["lean_tag"]
+    if state in tags:
+        return tags[state]
+    return tags["reviewed"] if "review" in (state or "") else tags["other"]
 
 
 def headline_note_html(fids: list) -> str:
@@ -4696,6 +4853,27 @@ def remove_stale(out_dir: Path, slug: str):
 
 # ------------------------------------------------------------ the page
 
+COPY_TEX = f"assets/vendor/katex-{CFG.get('katex_version')}/contrib/copy-tex.min.js"
+
+
+def sibling_row(slug: str, root: str) -> str:
+    """build_site's previous and next row for the papers of a family; when the count
+    includes withdrawn papers or earlier editions, the sentence says so."""
+    found = S.paper_siblings(slug, root)
+    html_ = S.sibling_nav("paper", found)
+    if not html_ or not found:
+        return html_
+    items, i = found[0], found[1]
+    ids = [unquote(h.rsplit("/", 1)[-1][:-len(".html")]) for h, _, _ in items]
+    st = {S.MS[x].get("status") for x in ids if x in S.MS} - {"current"}
+    if not st:
+        return html_
+    others = TXT["sib_both"] if st >= {"withdrawn", "previous-edition"} else (
+        TXT["sib_withdrawn"] if "withdrawn" in st else TXT["sib_earlier"])
+    pos = TXT["sib_with_others"].format(n=i + 1, total=len(items), others=others)
+    return re.sub(r'<p class="sib__pos">.*?</p>', lambda _m: f'<p class="sib__pos">{S.esc(pos)}</p>', html_, count=1)
+
+
 def banner_items(row) -> list[str]:
     out = []
     f = row["formulas"]
@@ -4732,9 +4910,12 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
         if di is not None:
             crumbs.append((esc(S.DISCIPLINES[di]["name"]), f"{root}index.html#o=d:{S.DISC_SLUG[di]}"))
         crumbs.append((S.fam_title_html(fam), f"{root}families/{fam['id']}.html"))
-        crumbs.append((S.ms_title_html(m), None))
+        # The page's own crumb repeats its title (the heading below); when the family has
+        # the same title the trail would print it twice, so it ends at the family.
+        if S.tex_plain(fam["title"]).strip().lower() != S.tex_plain(m["title"]).strip().lower():
+            crumbs.append((S.ms_title_html(m), None))
         trail = S.trail(root, crumbs)
-        trail += S.sibling_nav("paper", S.paper_siblings(m["id"], root))
+        trail += sibling_row(m["id"], root)
     else:
         trail = S.trail(root, [(S.ms_title_html(m), None)])
     title_plain = S.tex_plain(m["title"])
@@ -4747,7 +4928,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
                f'<a class="btn btn--ghost ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" rel="noopener">{esc(TXT["tex_source"])}</a>']
     lede = ""
     if fam:
-        lede = (f'<p class="lede">{esc(site_copy("paper.in_result", "Part of result {id}: {title}.", id=fam["id"], title=S.tex_plain(fam["title"])))} '
+        lede = (f'<p class="lede">{esc(site_copy("paper.in_result", "Part of family {id}: {title}.", id=fam["id"], title=S.tex_plain(fam["title"])))} '
                 f'<a href="{root}families/{fam["id"]}.html#{esc(m["id"])}">{esc(site_copy("paper.read_in_result", "Read it with its result"))}</a></p>')
     notes = ""
     if m.get("version_note"):
@@ -4755,10 +4936,14 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
                   f'<div class="md-math">{S.md_paragraphs(m["version_note"])}</div></div>')
     figs = row["figures"]["placeholders"]
     if row["status"] == "accepted":
-        lines = [TXT["converted"].format(commit=COMMIT[:7]), TXT["numbering"]]
+        lines = [TXT["numbering"]]
         if figs:
             lines.append(TXT["figures_one"] if figs == 1 else TXT["figures_many"].format(n=figs))
-        status = f'<div class="pr-status" role="note"><p>{" ".join(esc(x) for x in lines)}</p></div>'
+        # The commit is named by the link, not printed in the sentence.
+        src_link = (f'<a class="ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" '
+                    f'rel="noopener" title="{esc(TXT["tex_source_title"].format(commit=COMMIT[:7]))}">{esc(TXT["tex_source"])}</a>')
+        converted = esc(TXT["converted"]).replace("{source}", src_link)
+        status = f'<div class="pr-status" role="note"><p>{converted} {" ".join(esc(x) for x in lines)}</p></div>'
     else:
         items = banner_items(row)
         if figs:
@@ -4808,14 +4993,17 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
 {status}
 {abstract}
 {toc}
-<article class="paper" id="pr-paper" lang="en" data-paper="{esc(m['id'])}" data-math-failed="{esc(TXT['math_failed'])}"{attrs}>
+<article class="paper" id="pr-paper" lang="en" data-paper="{esc(m['id'])}" data-math-failed="{esc(TXT['math_failed'])}" data-url="{esc(S.BASE_URL + rel)}"{attrs}>
 {body_html}
 </article>
 {notes_html}
 </div>
-<script type="application/json" id="pr-macros">{macros_json}</script>"""
+<script type="application/json" id="pr-macros">{macros_json}</script>
+<script type="application/json" id="pr-words">{json.dumps(TXT["ui"], ensure_ascii=False)}</script>"""
     desc = S.tex_plain(m.get("abstract") or "") or TXT["description"].format(title=title_plain)
+    # copy-tex: a selection of typeset formulas copies as their TeX, once each.
     extra = (f'{PAGE_MARK}\n<link rel="stylesheet" href="{root}assets/{S.asset_v("paper.css")}">\n'
+             f'<script defer src="{root}{COPY_TEX}"></script>\n'
              f'<script defer src="{root}assets/{S.asset_v("paper.js")}"></script>')
     # Two current papers can share a title: each tab then carries its date.
     page_title = title_plain
@@ -4890,6 +5078,9 @@ def main():
     for name in OWN_ASSETS:
         if (ASSETS / name).exists():
             shutil.copy(ASSETS / name, out_dir / "assets" / name)
+    if (SITE / COPY_TEX).exists():
+        (out_dir / COPY_TEX).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(SITE / COPY_TEX, out_dir / COPY_TEX)
     rows = []
     do_check = check and bool(version)
     if args.jobs <= 1 or len(ms) <= 1:

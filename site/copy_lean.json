@@ -98,8 +98,8 @@
   "readings_intro": "These readings judge the family’s Lean statements against its headline as a whole, not this statement alone, each by the reader’s own published rules.",
   "readings_link": "The readings in full are on the family page.",
   "draft_heading": "OpenAI’s note, and an AI draft reading of it",
-  "alternatives_heading": "Statements that share the most words with it",
-  "alternatives_more": "Other statements that share words with it",
+  "alternatives_heading": "Other candidates, closest first",
+  "alternatives_more": "Other candidates, closest first",
   "alternatives_none": "The backend records no other statement for it.",
   "read_in_paper": {
    "candidate-pairing": "Read the candidate theorem in the paper",
@@ -109,7 +109,8 @@
   "read_below": {
    "candidate-pairing": "See the candidate theorem",
    "producer-cited-association": "See the cited theorem",
-   "producer-declared-binding": "See the declared theorem"
+   "producer-declared-binding": "See the declared theorem",
+   "multi": "See the candidate theorems"
   },
   "pair_line": {
    "candidate-pairing": "Candidate pairing with {ref}, found by the words the two statements share. Nobody has reviewed whether they state the same thing.",
@@ -117,30 +118,49 @@
    "producer-declared-binding": "The release’s manifest binds this declaration to {ref}. Nobody has reviewed whether the two state the same thing."
   },
   "pair_heading": {
-   "candidate-pairing": "Candidate paper theorem: matched by shared words, not reviewed",
+   "candidate-pairing": "Candidate paper theorem, not reviewed",
    "producer-cited-association": "Paper theorem cited in the Lean source, match not reviewed",
    "producer-declared-binding": "Paper theorem bound to it by the release, match not reviewed",
-   "unavailable": "No paper theorem is paired with it"
+   "unavailable": "No confident match with a paper statement",
+   "multi": "Candidate paper theorems, one for each part of the Lean, not reviewed"
   },
   "read_runs": "Who has re-run it",
   "report_check": "Report a check (GitHub issue)",
-  "read_candidates": "See the statements that share its words"
+  "read_candidates": "See the closest candidates",
+  "theorem_name": "Checked theorem:",
+  "theorem_names": "Checked theorems:",
+  "copy_name": "Copy name",
+  "copy_lean": "Copy the Lean"
  },
  "pairing": {
   "ref": "{name} of {title}",
   "of": "of",
-  "shared": "The two share {n} words, among them {words}.",
-  "alt_shared": "Shares {n} words with it, among them {words}.",
   "cited_how": "The docstring of {declaration} names the theorem’s TeX label.",
   "cited_link": "The docstring, from line {line}",
   "join_label": "How the paper theorem and the Lean statement are linked",
   "assoc_unresolved": "The Lean source cites labels that do not resolve to a single theorem, so no theorem is paired.",
   "no_record": "The backend records no candidate theorem for this Lean statement.",
   "reason": "Why none: {reason}",
-  "shared_all": "The two share {n} words: {words}.",
-  "alt_shared_all": "Shares {n} words with it: {words}.",
-  "shared_none": "The two share {n} words.",
-  "alt_shared_none": "Shares {n} words with it."
+  "no_confident": "no paper statement matches the Lean text clearly enough to pair, so the closest candidates are listed below.",
+  "and_more": "and {n} more",
+  "how_lean": "Words of the Lean statement, its names split into words, that also appear in the theorem: {words}.",
+  "how_title": "Found in the paper’s title, which its main theorem states: {words}.",
+  "how_note": "Shared only with the release’s name for the Lean statement or OpenAI’s note on it: {words}.",
+  "how_catalogue": "Shared with the catalogue’s wording or OpenAI’s note, none of them matched in the Lean text: {words}.",
+  "how_nothing": "It shares no telling word with the Lean text; it is listed as the next nearest statement.",
+  "evidence": {
+   "lean-words": "The atlas found this candidate by matching the Lean text against every statement in the family. Nobody has reviewed whether the two state the same thing.",
+   "catalogue-words": "Fallback: no statement matched the Lean text clearly, so this is Statement Map’s candidate, found by words the catalogue’s description and OpenAI’s note share with the theorem. Nobody has reviewed whether the two state the same thing.",
+   "lean-words-multi": "The atlas found these candidates by matching each part of the Lean text against every statement in the family. Nobody has reviewed whether they state the same thing."
+  },
+  "paper_why": {
+   "listed": "Statements in {paper} come first because the release lists only that paper for this Lean statement.",
+   "label": "Statements in {paper} come first because the release’s name for this Lean statement shares words with that paper’s title.",
+   "files": "Statements in {paper} come first because the Lean file and module names share words with that paper’s title.",
+   "draft": "Statements in {paper} come first because the AI draft reading of OpenAI’s note shares words with that paper’s title."
+  },
+  "multi_intro": "The Lean statement is a conjunction, and its parts match {n} of the paper’s results: each is shown below with the words it was matched by.",
+  "method": "How the atlas pairs: the Lean statement’s own text, its names split into words, is matched against every statement in the family; the release’s name and note for it count for less; a main theorem wins a close match; the catalogue’s wording is used only as a fallback. Such a pairing is a candidate, never a review."
  },
  "runs": {
   "state": {
@@ -170,5 +190,61 @@
   "family": "Family {id}:",
   "reruns_one": "Re-run and accepted by one outside group at the release’s pin.",
   "reruns_many": "Re-run and accepted by {n} outside groups at the release’s pin."
+ },
+ "defs": {
+  "show_rest": {
+   "one": "Show the remaining line",
+   "many": "Show the remaining {n} lines"
+  }
+ },
+ "table": {
+  "lede": "The release’s {lean} Lean statements (Comparator challenge files), {main} of them listed by OpenAI as main results. Each row gives the paper statement the Lean is paired with and how, what the outside readers found about its family, and how many groups report re-running it.",
+  "list_heading": "Every Lean statement",
+  "caption": "Lean statements, with their paired paper statements, the outside readers’ findings for their families and the re-runs accepted",
+  "col_statement": "Lean statement",
+  "col_result": "Family",
+  "col_discipline": "Discipline",
+  "col_pair": "Paired paper statement",
+  "col_reader": "{name} on the family",
+  "col_runs": "Re-runs accepted",
+  "col_main": "OpenAI main result",
+  "col_vocab": "Local definitions",
+  "col_lines": "Lines of Lean",
+  "col_notes": "Notes",
+  "pair": {
+   "declared": "bound by the release’s manifest, not reviewed",
+   "cited": "cited in the Lean source, not reviewed",
+   "lean-words": "candidate from the Lean text, not reviewed",
+   "catalogue-words": "fallback candidate from catalogue words, not reviewed",
+   "none": "no confident match"
+  },
+  "their_term": "Their term: “{term}”",
+  "not_read": "Not read",
+  "note_holes_one": "One definition checked by name and type only",
+  "note_holes_many": "{n} definitions checked by name and type only",
+  "note_imports": "Imports outside Mathlib: {names}",
+  "note_axiom": "Declares an axiom",
+  "filter_toggle": "Filters",
+  "filter_discipline": "Discipline",
+  "all_disciplines": "All disciplines",
+  "filter_pairing": "Pairing",
+  "all_pairings": "Any pairing",
+  "filter_reader": "{name}",
+  "reader_any": "Any finding",
+  "filter_words": "Words",
+  "filter_words_ph": "Name, family or discipline",
+  "sort_label": "Sort by",
+  "sort_name": "Name",
+  "sort_discipline": "Discipline",
+  "sort_pair": "Paired paper",
+  "sort_runs": "Most re-runs accepted",
+  "sort_vocab": "Most local definitions",
+  "sort_lines": "Longest Lean",
+  "shown": "{n} of {total} shown",
+  "criteria_lead": "{n} of {total} shown:",
+  "reset": "Clear the filters",
+  "none_match": "No Lean statement matches these filters.",
+  "readers_note": "The outside readers, {names}, judge each family’s Lean against its headline as a whole, so a row shows its family’s finding.",
+  "pair_note": "A candidate pairing is found by matching words and nobody has reviewed it."
  }
 }
