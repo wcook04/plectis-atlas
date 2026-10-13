@@ -2781,17 +2781,21 @@
       if (board.on) { markBoard(); drawWires(); }
       draw();
     });
-    // A row under the pointer in the panel lights its place on the map.
+    // Compact pointer browsing lights the map without reflowing the list.
     root.addEventListener('pointerover', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
       var key = go ? go.getAttribute('data-go') : null;
-      if (go && panelBody && panelBody.contains(go) && key && key !== hover) {
-        hover = key; hoverVia = e.pointerType === 'touch' ? 'touch' : 'list'; cardPtr = null; draw();
+      var via = e.pointerType === 'touch' ? 'touch' : 'list';
+      if (go && panelBody && panelBody.contains(go) && key && (key !== hover || hoverVia === 'map')) {
+        hover = key; hoverVia = via; cardPtr = null; draw();
       }
     });
     root.addEventListener('pointerout', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
-      if (go && panelBody && panelBody.contains(go) && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
+      var next = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest('[data-go]') : null;
+      // Child transitions stay in this row; another row replaces it on over.
+      if (next && panelBody && panelBody.contains(next)) return;
+      if (go && panelBody && panelBody.contains(go) && hoverVia !== 'focus' && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
     });
     // A row reached by the keyboard lights its place on the map and names it there too.
     root.addEventListener('focusin', function (e) {
@@ -2799,11 +2803,12 @@
       var key = go ? go.getAttribute('data-go') : null;
       var visible = false;
       try { visible = go && go.matches(':focus-visible'); } catch (err) { visible = false; }
-      if (go && visible && panelBody && panelBody.contains(go) && key && obj(key)) { hover = key; hoverVia = 'focus'; cardPtr = null; revealEntry(go); draw(); }
+      if (go && visible && panelBody && panelBody.contains(go) && key && obj(key) && (key !== hover || hoverVia !== 'focus')) { hover = key; hoverVia = 'focus'; cardPtr = null; syncActive(); revealEntry(go); draw(); }
     });
     root.addEventListener('focusout', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
-      if (go && hoverVia === 'focus' && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
+      if (go && e.relatedTarget && go.contains(e.relatedTarget)) return;
+      if (go && hoverVia === 'focus' && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; syncActive(); draw(); }
     });
     function showView(v, restoring) {
       root.setAttribute('data-view', v);

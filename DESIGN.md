@@ -436,8 +436,11 @@ list marker alone is not a sentence or a useful preview.
 On desktop, pointing at a family in a discipline brings its expanded sidebar
 entry to the top of the reading area immediately. Keyboard focus uses the same
 alignment. Keep the catalogue order and allow enough scroll range for the last
-entry. Pointer movement within the sidebar must not reposition its rows, and
-leaving the map must not reset the reader's place. A preview does not select an
+entry. Pointer browsing within the sidebar keeps rows compact and must not
+reposition them. Moving between a row's title, status and description must not
+clear its map highlight or trigger another redraw. Keyboard arrival updates
+the expanded entry before aligning it, and internal focus transitions keep it
+steady. Leaving the map must not reset the reader's place. A preview does not select an
 object, change the address or move keyboard focus.
 
 Family labels wrap at existing compound separators and fit every line inside
