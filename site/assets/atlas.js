@@ -780,7 +780,6 @@
   var root = body.getAttribute('data-root') || '';
   var BASE = root + 'data/search/';
   var GEN = body.getAttribute('data-generation') || '';
-  var KIND_ORDER = ['family', 'lean', 'manuscript', 'statement', 'discipline'];
   var cache = {};
 
   function getJSON(path) {
@@ -828,59 +827,258 @@
       });
     });
   }
-  function decorate(e, lab) {
+  function decorate(e, lab, idx) {
     var paper = null;
     if (e.kind === 'statement') {
       var rest = e.id.slice(2), j = rest.indexOf(':');
       paper = lab.papers['p:' + rest.slice(0, j)] || null;
     }
     var name = (lab.statement_names || {})[e.id] || e.name;
-    return { id: e.id, kind: e.kind, name: name, family_ids: e.family_ids || [], url: urlFor(e.id, e.kind), paper: paper };
+    return { id: e.id, kind: e.kind, name: name, family_ids: e.family_ids || [], url: urlFor(e.id, e.kind), paper: paper, idx: idx };
   }
 
-  /* Postings for a query: every token's list, intersected. */
-  function postings(q) {
-    var toks = searchTokens(q);
-    if (!toks.length) return Promise.resolve({ tokens: [], missing: [], hits: [] });
-    return Promise.all([index(), Promise.all(toks.map(shardOf))]).then(function (r) {
-      var idx = r[0], shards = r[1];
-      return Promise.all(shards.map(function (s) {
-        var path = idx.shards[s];
-        return path ? getJSON(path) : Promise.resolve({ terms: {} });
-      })).then(function (docs) {
-        var lists = docs.map(function (d, k) { return (d.terms && d.terms[toks[k]]) || []; });
-        var missing = toks.filter(function (t, k) { return !lists[k].length; });
-        return { tokens: toks, missing: missing, hits: missing.length ? [] : intersect(lists), idx: idx };
+  /* The front door's search words (scripts/build_universe.py, data/universe-search/):
+     the vocabulary by first letter, each statement's printed name, short formula words
+     and the text a result line quotes. Every file must carry this page's generation;
+     when one is missing the search keeps to the backend's exact words. */
+  var WBASE = root + 'data/universe-search/';
+  var wcache = {};
+  function getWords(path) {
+    if (!wcache[path]) {
+      wcache[path] = fetch(WBASE + path).then(function (r) {
+        if (!r.ok) throw new Error(path + ': HTTP ' + r.status);
+        return r.json();
+      }).then(function (j) {
+        if (GEN && j.generation_id !== GEN) throw new Error(path + ' is from another generation');
+        return j;
+      });
+      wcache[path].catch(function () { delete wcache[path]; });
+    }
+    return wcache[path];
+  }
+  function vocabShard(t) { var c = t.charAt(0); return /[a-z0-9]/.test(c) ? c : '_'; }
+  var vocabs = {};
+  function vocab(c) {
+    if (!vocabs[c]) {
+      vocabs[c] = getWords('words.json').then(function (meta) {
+        if ((meta.vocab_shards || []).indexOf(c) < 0) return { terms: [], df: {}, flat: {} };
+        return getWords('vocab-' + c + '.json').then(function (j) {
+          var V = { terms: [], df: {}, flat: {} };
+          String(j.terms || '').split('\n').forEach(function (row) {
+            var k = row.indexOf('\t');
+            if (k < 1) return;
+            var t = row.slice(0, k);
+            V.terms.push(t); V.df[t] = +row.slice(k + 1);
+            var f = t.replace(/-/g, '');
+            (V.flat[f] = V.flat[f] || []).push(t);
+          });
+          return V;
+        });
+      });
+      vocabs[c].catch(function () { delete vocabs[c]; });
+    }
+    return vocabs[c];
+  }
+  /* The plural or the singular of an English word, both ways ("matrix", "matrices"). */
+  function numberForms(t) {
+    var c = [];
+    if (/ices$/.test(t)) c.push(t.slice(0, -4) + 'ix', t.slice(0, -4) + 'ex');
+    if (/(ix|ex)$/.test(t)) c.push(t.slice(0, -2) + 'ices');
+    if (/ies$/.test(t)) c.push(t.slice(0, -3) + 'y');
+    if (/[^aeiou]y$/.test(t)) c.push(t.slice(0, -1) + 'ies');
+    if (/(s|x|z|ch|sh)es$/.test(t)) c.push(t.slice(0, -2));
+    if (/[^su]s$/.test(t)) c.push(t.slice(0, -1));
+    if (!/s$/.test(t)) c.push(t + 's');
+    if (/(s|x|z|ch|sh)$/.test(t)) c.push(t + 'es');
+    return c;
+  }
+  var PREFIX_MAX = 24;
+  /* Every indexed word a typed word stands for: itself; its plural or singular; the
+     same word with or without a hyphen ("logconcave", "log-concave"); and, for the last
+     word while it is being typed, the words it begins ("Sob" for "Sobolev"). */
+  function wordForms(t, V, last) {
+    var out = [t];
+    var add = function (w) { if (V.df[w] && out.indexOf(w) < 0) out.push(w); };
+    if (t.length < 3 || /^[0-9.]+$/.test(t)) return out;
+    numberForms(t).forEach(add);
+    var flat = t.replace(/-/g, '');
+    (V.flat[flat] || []).forEach(add);
+    numberForms(flat).forEach(function (f) { (V.flat[f] || []).forEach(add); });
+    if (last) {
+      var lo = 0, hi = V.terms.length;
+      while (lo < hi) { var mid = (lo + hi) >> 1; if (V.terms[mid] < t) lo = mid + 1; else hi = mid; }
+      var more = [];
+      for (var i = lo; i < V.terms.length && V.terms[i].lastIndexOf(t, 0) === 0; i++) if (V.terms[i] !== t) more.push(V.terms[i]);
+      more.sort(function (a, b) { return V.df[b] - V.df[a] || (a < b ? -1 : 1); });
+      more.slice(0, PREFIX_MAX).forEach(add);
+    }
+    return out;
+  }
+  /* A short formula typed as a word ("L^2", "W^{1,p}", "\ell_1"): the key the build
+     gives it (braces and spaces dropped; mirrors ATOM in scripts/build_universe.py), or
+     null when the word is not exactly one such formula. */
+  var ATOM = /(^|[^A-Za-z\\])([A-Za-z]|\\ell|\\mathbb\s*\{[A-Z]\}|\\mathcal\s*\{[A-Z]\})\s*([\^_])\s*(\{[^{}$]{1,12}\}|\\[A-Za-z]+|[0-9A-Za-z])/g;
+  function atomKey(base, op, sup) { return base.replace(/[\s{}]/g, '') + op + sup.replace(/[\s{}]/g, ''); }
+  function atomWord(w) {
+    var s = String(w).replace(/^\$|\$$/g, '');
+    ATOM.lastIndex = 0;
+    var m = ATOM.exec(s);
+    if (!m || m.index + m[1].length !== 0 || m.index + m[0].length !== s.length) return null;
+    return atomKey(m[2], m[3], m[4]);
+  }
+  function isLiteral(w) {
+    var toks = searchTokens(w);
+    return toks.length > 0 && toks.every(function (t) { return t.length < 2 || /^[0-9]+$/.test(t); });
+  }
+  /* How the query is read: per typed word, the index words it stands for (one group
+     each; an entry must hold a word of every group), formula words, and whether some
+     words are only numbers or single letters ("1.1"), which then must appear as typed. */
+  function plan(q) {
+    var raw = String(q == null ? '' : q), words = raw.trim().split(/\s+/).filter(Boolean);
+    var typingLast = !/\s$/.test(raw);
+    var groups = [], atoms = [], literal = false, seen = {};
+    words.forEach(function (w, wi) {
+      var key = /[\^_]/.test(w) ? atomWord(w) : null;
+      if (key) { atoms.push(key); return; }
+      if (isLiteral(w) && words.length > 1) literal = true;
+      var toks = searchTokens(w);
+      toks.forEach(function (t, ti) {
+        if (seen[t]) return;
+        seen[t] = 1;
+        groups.push({ t: t, last: typingLast && wi === words.length - 1 && ti === toks.length - 1 });
       });
     });
+    return { groups: groups, atoms: atoms, literal: literal, raw: raw.trim() };
+  }
+  function expand(pl) {
+    return Promise.all(pl.groups.map(function (g) {
+      return vocab(vocabShard(g.t)).then(function (V) { return wordForms(g.t, V, g.last); }, function () { return [g.t]; });
+    }));
+  }
+  function atomLists(keys) {
+    if (!keys.length) return Promise.resolve([]);
+    return getWords('atoms.json').then(function (j) {
+      var A = j.atoms || {}, lower = null;
+      return keys.map(function (k) {
+        if (A[k]) return A[k];
+        lower = lower || Object.keys(A).reduce(function (m, x) { (m[x.toLowerCase()] = m[x.toLowerCase()] || []).push(x); return m; }, {});
+        var out = {};
+        (lower[k.toLowerCase()] || []).forEach(function (x) { A[x].forEach(function (i) { out[i] = 1; }); });
+        return Object.keys(out).map(Number).sort(function (a, b) { return a - b; });
+      });
+    }, function () { return null; });
+  }
+  function union(lists) {
+    if (lists.length === 1) return lists[0];
+    var set = {};
+    lists.forEach(function (l) { for (var i = 0; i < l.length; i++) set[l[i]] = 1; });
+    return Object.keys(set).map(Number).sort(function (a, b) { return a - b; });
+  }
+
+  /* Postings for a query: for each typed word, the union of the lists of every index word
+     it stands for; then the words intersected. */
+  function postings(q) {
+    var pl = plan(q);
+    if (!pl.groups.length && !pl.atoms.length) return Promise.resolve({ tokens: [], missing: [], hits: [], forms: [], plan: pl });
+    return Promise.all([index(), expand(pl), atomLists(pl.atoms)]).then(function (r) {
+      var idx = r[0], forms = r[1], alists = r[2];
+      // A formula word the build has not seen is read as its plain words.
+      if (alists === null || alists.some(function (l) { return !l.length; })) {
+        if (pl.atoms.length && !pl.fellBack) {
+          var plain = postings(pl.raw.replace(/[\^_{}\\$]/g, ' '));
+          return plain.then(function (p) { p.plan.atoms = pl.atoms; p.plan.atomMissing = true; return p; });
+        }
+        alists = [];
+      }
+      var terms = [];
+      forms.forEach(function (f) { f.forEach(function (t) { if (terms.indexOf(t) < 0) terms.push(t); }); });
+      return Promise.all(terms.map(shardOf)).then(function (shards) {
+        return Promise.all(shards.map(function (s) {
+          var path = idx.shards[s];
+          return path ? getJSON(path) : Promise.resolve({ terms: {} });
+        }));
+      }).then(function (docs) {
+        var byTerm = {};
+        terms.forEach(function (t, k) { byTerm[t] = (docs[k].terms && docs[k].terms[t]) || []; });
+        var lists = forms.map(function (f) { return union(f.map(function (t) { return byTerm[t]; })); });
+        var missing = pl.groups.filter(function (g, k) { return !lists[k].length; }).map(function (g) { return g.t; });
+        var all = lists.concat(alists);
+        return { tokens: pl.groups.map(function (g) { return g.t; }), missing: missing, forms: forms, plan: pl,
+                 hits: missing.length || !all.length ? [] : intersect(all), idx: idx };
+      });
+    });
+  }
+  /* A query with a word made only of numbers or single letters ("Theorem 1.1") keeps the
+     entries that hold the words as typed, together: a statement whose printed name is
+     Theorem 1.1, or a Lean file, paper or family whose text says it. */
+  function foldPhrase(s) { return casefold(String(s || '').normalize('NFKC')).replace(/[~\s ]+/g, ' ').trim(); }
+  function hasPhrase(hay, ph) {
+    var h = foldPhrase(hay), at = 0;
+    while ((at = h.indexOf(ph, at)) >= 0) {
+      var before = h.charAt(at - 1), after = h.slice(at + ph.length, at + ph.length + 2);
+      if (!/[\p{L}\p{N}]/u.test(before) && !/^([\p{L}\p{N}]|\.[0-9])/u.test(after)) return true;
+      at += 1;
+    }
+    return false;
+  }
+  function literalFilter(p, lab) {
+    var ph = foldPhrase(p.plan.raw);
+    if (!p.plan.literal) return Promise.resolve(p.hits);
+    var blocks = {};
+    p.hits.forEach(function (i) { var k = kindOf(lab, i); if (k !== 'statement' && k !== 'discipline') blocks[Math.floor(i / 64)] = 1; });
+    return Promise.all([getWords('names.json'), Promise.all(Object.keys(blocks).map(function (b) { return textBlock(+b * 64); }))]).then(function (r) {
+      var names = r[0].names || [], keep = {};
+      p.hits.forEach(function (i) {
+        var k = kindOf(lab, i);
+        if (k === 'statement' || k === 'discipline') return;
+        var b = textCache[Math.floor(i / 64)];
+        if (b && hasPhrase(b.text[i - b.start], ph)) keep[i] = 1;
+      });
+      // Every statement whose printed name is the query ("Theorem 1.1"), whatever its text says.
+      names.forEach(function (n, i) { if (n && hasPhrase(n, ph) && foldPhrase(n).length <= ph.length + 2) keep[i] = 1; });
+      var kept = Object.keys(keep).map(Number).sort(function (a, b) { return a - b; });
+      if (kept.length) p.missing = [];
+      return kept.length ? kept : p.hits;
+    }, function () { return p.hits; });
+  }
+  var textCache = {};
+  function textBlock(i) {
+    var b = Math.floor(i / 64), name = 'text-' + ('000' + b).slice(-4) + '.json';
+    return getWords(name).then(function (j) { textCache[b] = j; return j; });
   }
 
   /* query(q, {statements: n}): every matching family, Lean statement, paper and
      discipline, and the first n matching paper statements (default 400). The array
-     also carries .counts by kind, .tokens, .missing and .truncated. */
+     also carries .counts by kind, .tokens, .missing, .truncated and .forms (the index
+     words each typed word stood for). */
   function exactQuery(q, opts) {
     var limit = (opts && opts.statements != null) ? opts.statements : 400;
     return Promise.all([postings(q), labels()]).then(function (r) {
-      var p = r[0], lab = r[1], counts = { family: 0, lean: 0, manuscript: 0, statement: 0, discipline: 0 };
-      var pick = [], st = 0;
-      p.hits.forEach(function (i) {
-        var k = kindOf(lab, i);
-        counts[k] = (counts[k] || 0) + 1;
-        if (k !== 'statement' || st++ < limit) pick.push(i);
-      });
-      return (pick.length ? entries(p.idx, pick) : Promise.resolve([])).then(function (es) {
-        var out = es.map(function (e) { return decorate(e, lab); });
-        // Family numbers are in the map's own search rows. Preserve that lookup
-        // when the shared word index answers instead, retaining its other hits.
-        var number = String(q == null ? '' : q).trim(), fid = 'f:' + number;
-        var family = /^\d{3}$/.test(number) && (lab.families || {})[fid];
-        if (family && !out.some(function (r) { return r.id === fid; })) {
-          out.unshift({ id: fid, kind: 'family', name: family.n, family_ids: [fid], url: urlFor(fid, 'family'), paper: null });
-          counts.family++;
-        }
-        out.counts = counts; out.tokens = p.tokens; out.missing = family ? [] : p.missing;
-        out.truncated = counts.statement > limit;
-        return out;
+      var p = r[0], lab = r[1];
+      return literalFilter(p, lab).then(function (hits) {
+        var counts = { family: 0, lean: 0, manuscript: 0, statement: 0, discipline: 0 };
+        var pick = [], st = 0;
+        hits.forEach(function (i) {
+          var k = kindOf(lab, i);
+          counts[k] = (counts[k] || 0) + 1;
+          if (k !== 'statement' || st++ < limit) pick.push(i);
+        });
+        return (pick.length ? entries(p.idx, pick) : Promise.resolve([])).then(function (es) {
+          var seen = {}, out = [];
+          es.forEach(function (e, k) { if (!seen[e.id]) { seen[e.id] = 1; out.push(decorate(e, lab, pick[k])); } });
+          // Family numbers are in the map's own search rows. Preserve that lookup
+          // when the shared word index answers instead, retaining its other hits.
+          var number = String(q == null ? '' : q).trim(), fid = 'f:' + number;
+          var family = /^\d{3}$/.test(number) && (lab.families || {})[fid];
+          if (family && !out.some(function (x) { return x.id === fid; })) {
+            out.unshift({ id: fid, kind: 'family', name: family.n, family_ids: [fid], url: urlFor(fid, 'family'), paper: null });
+            counts.family++;
+          }
+          out.counts = counts; out.tokens = p.tokens; out.missing = family || hits.length ? [] : p.missing;
+          out.forms = p.forms || []; out.atoms = p.plan.atoms || []; out.phrase = p.plan.literal ? p.plan.raw : '';
+          out.truncated = counts.statement > limit;
+          return out;
+        });
       });
     });
   }
@@ -1009,18 +1207,30 @@
   }
   /* How closely an entry's own name answers the query: 0 for the Lean statement the query
      names exactly, 1 when its name holds every word (accents aside, so "erdos" ranks the
-     Erdős families as "Erdős" does), 2 otherwise. */
-  function nameRank(r, q) {
+     Erdős families as "Erdős" does; a word counts in any of the forms it stood for),
+     2 otherwise. */
+  function nameRank(r, q, forms) {
     var words = searchTokens(bare(q));
     if (r.kind === 'lean' && casefold(r.id.slice(2)) === casefold(String(q == null ? '' : q).trim())) return 0;
     if (!words.length) return 2;
-    var own = searchTokens(bare(r.name));
-    return words.every(function (w) { return own.indexOf(w) >= 0; }) ? 1 : 2;
+    var own = searchTokens(bare(r.name)), fm = {};
+    (forms || []).forEach(function (f) { fm[bare(f[0])] = f; });
+    return words.every(function (w) {
+      var f = fm[w] || [w];
+      return f.some(function (x) { return own.indexOf(bare(x)) >= 0; });
+    }) ? 1 : 2;
   }
+  /* One order for every list of results, the dialog's and the front door's: the kinds in
+     KIND_ORDER, and within a kind the closest names first, then the release's order. A
+     kind holding the Lean statement named exactly comes first. */
+  var KIND_ORDER = ['discipline', 'family', 'manuscript', 'statement', 'lean'];
   function rankByName(res, q) {
-    var keyed = res.map(function (r, i) { return { r: r, i: i, k: nameRank(r, q) }; });
-    keyed.sort(function (a, b) { return a.k - b.k || a.i - b.i; });
+    var keyed = res.map(function (r, i) { return { r: r, i: i, k: nameRank(r, q, res.forms) }; });
+    var exact = keyed.some(function (x) { return x.k === 0; });
+    var order = function (kind) { return exact && kind === 'lean' ? -1 : KIND_ORDER.indexOf(kind); };
+    keyed.sort(function (a, b) { return order(a.r.kind) - order(b.r.kind) || a.k - b.k || a.i - b.i; });
     keyed.forEach(function (x, i) { res[i] = x.r; });
+    res.kindOrder = exact ? ['lean'].concat(KIND_ORDER.filter(function (k) { return k !== 'lean'; })) : KIND_ORDER.slice();
     return res;
   }
   function query(q, opts) {
@@ -1033,14 +1243,141 @@
           Object.keys(res.counts || {}).forEach(function (k) { out.counts[k] = res.counts[k]; });
           out.counts.lean = (out.counts.lean || 0) + 1;
           out.tokens = res.tokens; out.truncated = res.truncated;
+          out.forms = res.forms; out.atoms = res.atoms; out.phrase = res.phrase;
           out.missing = []; out.respelled = res.length ? res.respelled : null;
         }
         return rankByName(out, q);
       }, function () { return res; });
     });
   }
+
+  /* A statement's name in a result list: the name its paper prints ("Proposition 4.2"),
+     with its own title where it has one; never the TeX label it was filed under. */
+  function displayName(r, names) {
+    if (r.kind !== 'statement') return r.name;
+    var printed = r.idx != null && names ? names[r.idx] : null;
+    var isLabel = /^[A-Za-z]+:\S*$/.test(r.name || '');
+    if (printed) return isLabel ? printed : printed + ' (' + r.name + ')';
+    return isLabel ? statementName(r.name) : r.name;
+  }
+  function names() { return getWords('names.json').then(function (j) { return j.names || []; }, function () { return null; }); }
+
+  /* Why an entry matched: one line of its text (a statement, a Lean file's source, an
+     abstract or the catalogue's description) around the first word that matched, the
+     words marked. Formulas stay whole and are typeset; a Lean line stays code. */
+  function escText(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function reEsc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function snippet(r, res) {
+    if (r.idx == null || r.kind === 'discipline') return Promise.resolve(null);
+    return textBlock(r.idx).then(function (b) {
+      var text = b.text[r.idx - b.start] || '';
+      if (!text) return null;
+      var words = [];
+      (res.forms || []).forEach(function (f) { f.forEach(function (t) { if (t.length > 1 || (res.forms.length === 1 && !res.atoms.length)) words.push(t); }); });
+      (res.phrase ? res.phrase.split(/\s+/) : []).forEach(function (w) { if (isLiteral(w)) words.push(w.toLowerCase()); });
+      words.sort(function (a, c) { return c.length - a.length; });
+      var wordRe = words.length ? new RegExp('(^|[^\\p{L}\\p{N}])(' + words.map(reEsc).join('|') + ')(?![\\p{L}\\p{N}]|-[\\p{L}\\p{N}])', 'giu') : null;
+      var atomHit = function (seg) {
+        if (!res.atoms || !res.atoms.length) return false;
+        var keys = [], m;
+        ATOM.lastIndex = 0;
+        while ((m = ATOM.exec(seg))) keys.push(atomKey(m[2], m[3], m[4]).toLowerCase());
+        return res.atoms.some(function (a) { return keys.indexOf(a.toLowerCase()) >= 0; });
+      };
+      var code = r.kind === 'lean';
+      // Segments: prose and, outside Lean, formulas between dollars.
+      var segs = [], parts = code ? [text] : text.split(/(\$[^$]*\$)/), at = 0;
+      parts.forEach(function (s, j) { if (s) segs.push({ s: s, m: !code && j % 2 === 1, a: at }); at += s.length; });
+      var first = -1;
+      segs.forEach(function (g) {
+        if (first >= 0) return;
+        if (g.m) { if (atomHit(g.s)) first = g.a; return; }
+        if (wordRe) { wordRe.lastIndex = 0; var mm = wordRe.exec(g.s); if (mm) first = g.a + mm.index + mm[1].length; }
+      });
+      var budget = code ? 150 : 200, start = first < 0 ? 0 : Math.max(0, first - (code ? 40 : 60)), end = start + budget;
+      if (code && first >= 0) { var ls = text.lastIndexOf('\n', first); if (ls >= start - 80) start = ls + 1; }
+      // Never start or stop inside a formula or a word.
+      segs.forEach(function (g) {
+        if (g.m && start > g.a && start < g.a + g.s.length) start = g.a;
+        if (g.m && end > g.a && end < g.a + g.s.length) end = g.a + g.s.length;
+      });
+      if (start > 0 && /\S/.test(text.charAt(start - 1))) { var sp = text.indexOf(' ', start); if (sp > 0 && sp < (first < 0 ? start + 30 : first)) start = sp + 1; }
+      if (end < text.length && /\S/.test(text.charAt(end))) { var sp2 = text.lastIndexOf(' ', end); if (sp2 > start + 40) end = sp2; }
+      var html = '';
+      segs.forEach(function (g) {
+        var a = Math.max(start, g.a), z = Math.min(end, g.a + g.s.length);
+        if (z <= a) return;
+        var piece = g.s.slice(a - g.a, z - g.a);
+        if (g.m) {
+          var span = '<span class="m">' + escText(piece.slice(1, -1)) + '</span>';
+          html += atomHit(piece) ? '<mark>' + span + '</mark>' : span;
+          return;
+        }
+        if (code) piece = piece.replace(/\s*\n\s*/g, ' ');
+        if (!wordRe) { html += escText(piece); return; }
+        var last = 0, mm2;
+        wordRe.lastIndex = 0;
+        while ((mm2 = wordRe.exec(piece))) {
+          var w0 = mm2.index + mm2[1].length;
+          html += escText(piece.slice(last, w0)) + '<mark>' + escText(mm2[2]) + '</mark>';
+          last = w0 + mm2[2].length;
+          if (wordRe.lastIndex === mm2.index) wordRe.lastIndex++;
+        }
+        html += escText(piece.slice(last));
+      });
+      // The catalogue's own italics, subscripts and superscripts stay; any other tag is text.
+      if (!code) html = html.replace(/&lt;(\/?)(i|em|sub|sup)&gt;/g, '<$1$2>');
+      html = (start > 0 ? '… ' : '') + html.trim() + (end < text.length ? ' …' : '');
+      return { html: html, code: code, matched: first >= 0 };
+    }, function () { return null; });
+  }
+
+  /* When nothing matches: the title words nearest to the words that found nothing
+     (at most two edits, or sharing a long beginning). */
+  var titleWords = null;
+  function editDistance(a, b, max) {
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    var prev = [], cur, i, j;
+    for (j = 0; j <= b.length; j++) prev[j] = j;
+    for (i = 1; i <= a.length; i++) {
+      cur = [i];
+      var best = i;
+      for (j = 1; j <= b.length; j++) {
+        cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1));
+        if (cur[j] < best) best = cur[j];
+      }
+      if (best > max) return max + 1;
+      prev = cur;
+    }
+    return prev[b.length];
+  }
+  function suggest(missing) {
+    return labels().then(function (lab) {
+      if (!titleWords) {
+        titleWords = {};
+        var add = function (t) { typedWords(t).forEach(function (w) { if (w.length > 3 && !/^[0-9]+$/.test(w)) { var k = bare(casefold(w)); if (!titleWords[k]) titleWords[k] = w; } }); };
+        Object.keys(lab.papers || {}).forEach(function (k) { add(lab.papers[k]); });
+        Object.keys(lab.families || {}).forEach(function (k) { add((lab.families[k] || {}).n); });
+      }
+      var out = [];
+      (missing || []).forEach(function (m) {
+        var b = bare(casefold(m)), scored = [];
+        if (b.length < 3) return;
+        var max = b.length > 6 ? 2 : 1;
+        Object.keys(titleWords).forEach(function (k) {
+          var d = editDistance(b, k, max);
+          if (d <= max || (b.length >= 5 && k.lastIndexOf(b.slice(0, 5), 0) === 0)) scored.push([d, k]);
+        });
+        scored.sort(function (x, y) { return x[0] - y[0] || (x[1] < y[1] ? -1 : 1); });
+        scored.slice(0, 5).forEach(function (x) { if (out.indexOf(titleWords[x[1]]) < 0) out.push(titleWords[x[1]]); });
+      });
+      return out.slice(0, 6);
+    }, function () { return []; });
+  }
+
   global.AtlasSearch = { query: query, tokens: searchTokens, url: urlFor, labels: labels,
     statementName: function (n) { return statementName(n); }, richName: function (n) { return richName(n); },
+    displayName: displayName, names: names, snippet: snippet, suggest: suggest, kindOrder: KIND_ORDER.slice(),
     family: function (fid) { return labels().then(function (l) { return l.families[fid] || null; }); } };
 
   /* ---- The search dialog ------------------------------------------------ */
@@ -1051,7 +1388,7 @@
   var status = dlg.querySelector('.search__status');
   var T = function (k) { return dlg.getAttribute('data-' + k) || ''; };
   var fmt = function (s, o) { return s.replace(/\{(\w+)\}/g, function (m, k) { return o[k] != null ? o[k] : m; }); };
-  var SHOW = 6, shown = {}, last = null, seq = 0, sel = -1, timer = 0, renderedQuery = null;
+  var SHOW = 6, shown = {}, last = null, seq = 0, sel = -1, timer = 0, renderedQuery = null, NAMES = null;
 
   function el(tag, cls, text) {
     var e = doc.createElement(tag);
@@ -1075,8 +1412,7 @@
     } else {
       var tt = el('span', 'sr__t');
       if (r.kind === 'statement') {
-        var sn = statementName(r.name);
-        tt.appendChild(sn ? el('span', 'sr__name', sn) : richEl('span', 'sr__name md-math', r.name));
+        tt.appendChild(richEl('span', 'sr__name md-math', displayName(r, NAMES)));
         tt.appendChild(richEl('span', 'sr__k md-math', r.paper ? fmt(T('in-paper'), { title: r.paper }) : ''));
       } else if (r.kind === 'lean') {
         var nm = el('span', 'sr__name');
@@ -1099,7 +1435,46 @@
       }
       a.appendChild(tt);
     }
+    if (r.idx != null && r.kind !== 'discipline') {
+      var x = el('span', 'sr__x');
+      x.setAttribute('data-snip', String(r.idx));
+      (a.querySelector('.sr__t') || a).appendChild(x);
+    }
     return a;
+  }
+  /* Each row's line of text with the matched words marked, filled in as its text arrives. */
+  function fillSnippets(scope, res, mine) {
+    Array.prototype.forEach.call(scope.querySelectorAll('[data-snip]:not([data-done])'), function (x) {
+      x.setAttribute('data-done', '1');
+      var r = res.filter(function (h) { return String(h.idx) === x.getAttribute('data-snip'); })[0];
+      if (!r) return;
+      snippet(r, res).then(function (sn) {
+        if (!sn || mine !== seq) { x.remove(); return; }
+        x.innerHTML = sn.code ? '<code>' + sn.html + '</code>' : sn.html;
+        if (window.atlasRenderMath && !sn.code) window.atlasRenderMath(x);
+      });
+    });
+  }
+  function suggestions(res) {
+    if (!res.missing || !res.missing.length) return;
+    var mine = seq;
+    suggest(res.missing).then(function (ws) {
+      if (mine !== seq || !ws.length) return;
+      var p = el('p', 'sr-suggest');
+      p.appendChild(el('span', '', (T('suggest') || 'Words in the titles that come close:') + ' '));
+      ws.forEach(function (w, i) {
+        var b = el('button', 'sr-suggest__w', w);
+        b.type = 'button';
+        b.addEventListener('click', function () {
+          var q = input.value, re = new RegExp(reEsc(res.missing[0]), 'i');
+          input.value = re.test(q) ? q.replace(re, w) : w;
+          shown = {}; run(); input.focus();
+        });
+        p.appendChild(b);
+        if (i < ws.length - 1) p.appendChild(doc.createTextNode(', '));
+      });
+      list.appendChild(p);
+    });
   }
   function render(res, lab, said) {
     /* The status echoes the words as typed ("SiegelZeros", not "siegelzeros"). */
@@ -1109,7 +1484,7 @@
     list.innerHTML = '';
     sel = -1;
     input.removeAttribute('aria-activedescendant');
-    var total = 0, k = 0;
+    var total = 0, k = 0, kinds = res.kindOrder || KIND_ORDER;
     KIND_ORDER.forEach(function (kind) { total += res.counts[kind] || 0; });
     if (!toks.length) { status.textContent = ''; dlg.removeAttribute('data-state'); return; }
     if (!total) {
@@ -1117,11 +1492,12 @@
       status.textContent = res.missing.length
         ? fmt(res.missing.length === 1 ? T('missing-one') : T('missing-many'), { words: shownWords(res.missing) })
         : fmt(T('apart'), { words: quoteList(typed) });
+      suggestions(res);
       return;
     }
     dlg.setAttribute('data-state', 'results');
     status.textContent = fmt(total === 1 ? T('found-one') : T('found'), { n: total.toLocaleString('en-GB'), words: quoteList(typed) });
-    KIND_ORDER.forEach(function (kind) {
+    kinds.forEach(function (kind) {
       var n = res.counts[kind] || 0;
       if (!n) return;
       var rows = res.filter(function (r) { return r.kind === kind; });
@@ -1154,15 +1530,16 @@
       list.appendChild(el('p', 'sr-note', T('truncated')));
     }
     if (window.atlasRenderMath) window.atlasRenderMath(list);
+    fillSnippets(list, res, seq);
   }
   function run() {
     var q = input.value, my = ++seq;
     renderedQuery = null;
     dlg.setAttribute('aria-busy', 'true');
     var want = Math.max(400, shown.statement || 0);
-    return Promise.all([query(q, { statements: want }), labels()]).then(function (r) {
+    return Promise.all([query(q, { statements: want }), labels(), names()]).then(function (r) {
       if (my !== seq || input.value !== q) return false;
-      last = r[0];
+      last = r[0]; NAMES = r[2];
       dlg.removeAttribute('aria-busy');
       render(r[0], r[1], r[0].respelled || q);
       renderedQuery = q;

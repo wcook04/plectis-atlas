@@ -782,6 +782,76 @@ def evidence_words(M, ev, names) -> str:
     return " ".join(parts)
 
 
+_LIST_COUNTERS = {"arabic": str, "alph": lambda n: chr(96 + n), "Alph": lambda n: chr(64 + n),
+                  "roman": lambda n: S.roman(n), "Roman": lambda n: S.roman(n).upper()}
+_PRINTED_CONV = None
+
+
+def list_label_template(opt: str) -> str | None:
+    """The label= key of an enumerate's options ("label=\\textup{(G\\arabic*)},ref=G\\arabic*"),
+    braces and all, or None."""
+    depth, start, parts = 0, 0, []
+    for i, ch in enumerate(opt or ""):
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+        elif ch == "," and depth == 0:
+            parts.append(opt[start:i])
+            start = i + 1
+    parts.append((opt or "")[start:])
+    for p in parts:
+        k, eq, v = p.partition("=")
+        if eq and k.strip() == "label":
+            v = v.strip()
+            if v.startswith("{") and v.endswith("}"):
+                v = v[1:-1]
+            return v if re.search(r"\\(?:arabic|alph|Alph|roman|Roman)\*", v) else None
+    return None
+
+
+def printed_list_conv():
+    """The family pages' TeX reader, with each item of an enumerate labelled as the paper
+    labels it: label=(G\\arabic*) prints (G1), (G2), (G3), which the statement's own
+    references then name, where the plain reader would print (1), (2), (3)."""
+    global _PRINTED_CONV
+    if _PRINTED_CONV is not None:
+        return _PRINTED_CONV
+
+    class PrintedListConv(S.LabelTexConv):
+        def list_env(self, kind, body, opt):
+            tpl = list_label_template(opt) if kind == "enumerate" else None
+            if not tpl:
+                return super().list_env(kind, body, opt)
+            out, depth, k, n = [], 0, 0, 0
+            while k < len(body):
+                if body.startswith("\\begin{", k):
+                    depth += 1
+                elif body.startswith("\\end{", k):
+                    depth -= 1
+                elif body[k] == "{":
+                    _, k2 = S.brace_group(body, k)
+                    out.append(body[k:k2])
+                    k = k2
+                    continue
+                elif depth == 0 and re.match(r"\\item\b", body[k:]):
+                    j = S.skip_ws(body, k + 5)
+                    out.append("\\item")
+                    k += 5
+                    if j < len(body) and body[j] == "[":
+                        continue
+                    n += 1
+                    lab = re.sub(r"\\(arabic|alph|Alph|roman|Roman)\*", lambda m: _LIST_COUNTERS[m.group(1)](n), tpl)
+                    out.append("[" + lab + "]")
+                    continue
+                out.append(body[k])
+                k += 1
+            return super().list_env(kind, "".join(out), "")
+
+    _PRINTED_CONV = PrintedListConv
+    return _PRINTED_CONV
+
+
 def statement_html(slug: str, st_backend: dict | None, rid: str):
     """The statement typeset as the family pages typeset it (TeX spans for KaTeX), from
     the Atlas's own data/manuscripts.json, joined by the backend statement's manuscript,
@@ -801,8 +871,8 @@ def statement_html(slug: str, st_backend: dict | None, rid: str):
         hit = next((st for st in m.get("statements") or [] if st.get("label") == label), None)
     if hit is None:
         return None
-    conv = S.LabelTexConv(m, "")
-    sec = U("result.appendix") if hit.get("appendix") else U("result.section", n=hit.get("section") or "?")
+    conv = printed_list_conv()(m, "")
+    sec =U("result.appendix") if hit.get("appendix") else U("result.section", n=hit.get("section") or "?")
     return {
         "html": keep_punctuation(conv.blocks(hit["text"])),
         "titleHtml": conv.text(hit["title"], inline=True) if hit.get("title") else None,
@@ -918,6 +988,171 @@ def build_search(M):
     return rows
 
 
+# ---------------------------------------------------------------- search words
+
+# The site's search (window.AtlasSearch in assets/atlas.js) matches Statement Map's
+# exact tokens. These files, in data/universe-search/, let it say why an entry matched
+# and forgive the usual variations, without changing what the backend's index holds.
+# Every list is in the index's entry order.
+#   words.json        which vocabulary files exist, and the size of a text block
+#   vocab-<c>.json    every indexed word starting with c, with how many entries hold it: for
+#                     a prefix of the last word, plural and singular forms, and spellings
+#                     with or without a hyphen
+#   names.json        the name each statement prints ("Proposition 4.2"), or null
+#   atoms.json        each short formula word ("L^2", "W^{1,p}") with the entries holding it
+#   text-<n>.json     per block of entries, the text a result line quotes: the statement,
+#                     the Lean source, the abstract or the catalogue's description
+TEXT_BLOCK = 64
+TEXT_CAP = {"statement": 1600, "lean": 2400, "manuscript": 1400, "family": 1200, "discipline": 0}
+_CMD_ARG = re.compile(r"\\(?:emph|textit|textbf|textup|textrm|textsc|textsf|texttt|mbox|hbox|underline|uline|textnormal)\s*\{([^{}]*)\}")
+_DROP_ARG = re.compile(r"\\(?:label|index|footnote|vspace|hspace|phantom|nocite)\*?\s*(?:\[[^\]]*\])?\s*\{[^{}]*\}")
+_CITE = re.compile(r"\\(?:cite[a-z]*|citet|citep)\*?\s*(?:\[[^\]]*\])?\s*\{[^{}]*\}")
+_REF = re.compile(r"\\(eqref|ref|cref|Cref|autoref|Autoref)\*?\s*\{([^{}]*)\}")
+_ENV_MATH = re.compile(r"\\begin\{(equation|align|gather|multline|eqnarray|displaymath|flalign|alignat)(\*?)\}(?:\{[^{}]*\})?(.*?)\\end\{\1\2\}", re.S)
+_ENV = re.compile(r"\\(?:begin|end)\{[^{}]*\}(?:\[[^\]]*\])?")
+
+
+def snippet_tex(text: str, labels: dict) -> str:
+    """A statement's TeX as one line a result list can quote: prose as prose, each formula
+    kept whole between dollars for KaTeX, references printed as the paper prints them."""
+    t = re.sub(r"(?<!\\)%[^\n]*", "", text or "")
+
+    def ref(m):
+        rec = labels.get(m.group(2).split(",")[0].strip())
+        if not rec or not rec[2]:
+            return "??"
+        if m.group(1) == "eqref" or rec[0] == "equation":
+            return f"({rec[2]})"
+        if m.group(1) in ("cref", "Cref", "autoref", "Autoref"):
+            return f"{rec[1] or S.KIND_WORD.get(rec[0]) or ''} {rec[2]}".strip()
+        return rec[2]
+
+    def display(body: str) -> str:
+        body = re.sub(r"\\\\(\[[^\]]*\])?", " ", body).replace("&", " ")
+        body = re.sub(r"\\(?:nonumber|notag|label\{[^{}]*\})", "", body)
+        return " $" + re.sub(r"\s+", " ", body).strip() + "$ "
+
+    t = _ENV_MATH.sub(lambda m: display(m.group(3)), t)
+    t = re.sub(r"\\\[(.*?)\\\]", lambda m: display(m.group(1)), t, flags=re.S)
+    t = re.sub(r"\$\$(.*?)\$\$", lambda m: display(m.group(1)), t, flags=re.S)
+    t = re.sub(r"\\\((.*?)\\\)", lambda m: "$" + m.group(1).strip() + "$", t, flags=re.S)
+    t = _REF.sub(ref, t)
+    t = _DROP_ARG.sub("", t)
+    t = _CITE.sub("", t)
+    for _ in range(3):
+        t = _CMD_ARG.sub(r"\1", t)
+    t = _ENV.sub(" ", t)
+    t = re.sub(r"\\item\s*(\[[^\]]*\])?", lambda m: " " + (m.group(1)[1:-1] + " " if m.group(1) else ""), t)
+    t = t.replace("~", " ").replace("``", "“").replace("''", "”")
+    t = re.sub(r"\s+", " ", t).strip()
+    return re.sub(r"\s+([.,;:])", r"\1", t)
+
+
+def cap_text(t: str, n: int) -> str:
+    """At most about n characters, cut between formulas and at a word, with an ellipsis."""
+    if len(t) <= n:
+        return t
+    cut, inside = 0, False
+    for i, ch in enumerate(t[:n]):
+        if ch == "$" and (i == 0 or t[i - 1] != "\\"):
+            inside = not inside
+        if ch == " " and not inside:
+            cut = i
+    return t[:cut or n].rstrip(" ,;:") + "…"
+
+
+def lean_snippet(src: str) -> str:
+    """A Lean file as a result line quotes it: from its first docstring or declaration,
+    without imports and options."""
+    lines = [ln for ln in (src or "").splitlines() if not re.match(r"\s*(import|open|set_option|namespace|end|section|noncomputable section)\b", ln)]
+    t = "\n".join(lines)
+    m = re.search(r"/--|^\s*(?:theorem|lemma|def|abbrev|structure|class|instance|axiom)\b", t, re.M)
+    t = t[m.start():] if m else t
+    return re.sub(r"\n\s*\n+", "\n", t).strip()
+
+
+def vocab_shard(term: str) -> str:
+    """The file a word's vocabulary row is in (mirrors vocabShard in site/assets/atlas.js)."""
+    c = term[:1]
+    return c if re.fullmatch(r"[a-z0-9]", c) else "_"
+
+
+# A short formula a reader types as a search word: a letter with a superscript or a
+# subscript ("L^2", "W^{1,p}", "\\ell_1"), read as one word. The key drops braces and
+# spaces (mirrors mathAtoms in site/assets/atlas.js).
+ATOM = re.compile(r"(?<![A-Za-z\\])([A-Za-z]|\\ell|\\mathbb\s*\{[A-Z]\}|\\mathcal\s*\{[A-Z]\})\s*([\^_])\s*(\{[^{}$]{1,12}\}|\\[A-Za-z]+|[0-9A-Za-z])")
+
+
+def atom_key(base: str, op: str, sup: str) -> str:
+    return re.sub(r"[\s{}]", "", base) + op + re.sub(r"[\s{}]", "", sup)
+
+
+def atom_postings(entries, texts) -> dict:
+    """Each formula word, with the entries whose name or quoted text holds it."""
+    out = defaultdict(set)
+    for i, (e, t) in enumerate(zip(entries, texts)):
+        for m in ATOM.finditer((e.get("name") or "") + " " + (t if e["kind"] != "lean" else "")):
+            out[atom_key(*m.groups())].add(i)
+    return {k: sorted(v) for k, v in sorted(out.items()) if len(v) <= 4000}
+
+
+def build_search_words(M):
+    """vocab.json and text-<n>.json for the site's search (see the note above)."""
+    r = M.r
+    idx = r.search_index
+    entries = []
+    for k, chunk in enumerate(idx["entry_chunks"]):
+        doc = r.packet(chunk)
+        if doc.get("start") != k * idx["entry_chunk_size"]:
+            raise SystemExit(f"{chunk} starts at {doc.get('start')}")
+        entries.extend(doc["entries"])
+    if len(entries) != idx["entry_count"]:
+        raise SystemExit(f"search entries: {len(entries)} read, the index says {idx['entry_count']}")
+    df = defaultdict(int)
+    for logical in idx["shards"].values():
+        for term, post in (r.packet(logical).get("terms") or {}).items():
+            df[term] += len(post)
+    vocab = sorted(df)
+    lean_src = {s["id"]: s.get("lean") or "" for s in S.STATEMENTS}
+    fam_desc = {f["id"]: f.get("description") or "" for f in S.FAMILIES}
+    names, texts = [], []
+    for e in entries:
+        kind, eid = e["kind"], e["id"]
+        name, text = None, ""
+        if kind == "statement":
+            slug, _, label = eid[2:].partition(":")
+            ms = S.MS.get(slug) or {}
+            st = next((x for x in ms.get("statements") or [] if x.get("label") == label), None)
+            if st:
+                row = S.STATEMENT_NUMBERS.get((slug, st.get("file"), st.get("line")))
+                if row and row.get("statement_sha256") == st.get("sha256"):
+                    name = f'{row["kind"]} {row["number"]}' if row.get("number") else U("result.unnumbered_label", kind=row["kind"])
+                text = snippet_tex(st.get("text") or "", S.PAPER_LABELS.get(slug, {}))
+        elif kind == "lean":
+            text = lean_snippet(lean_src.get(eid[2:], ""))
+        elif kind == "manuscript":
+            text = snippet_tex((S.MS.get(eid[2:]) or {}).get("abstract") or "", {})
+        elif kind == "family":
+            text = snippet_tex(fam_desc.get(eid[2:], ""), {})
+        names.append(name)
+        texts.append(cap_text(text, TEXT_CAP.get(kind, 0)))
+    blocks = [{"generation_id": M.gen, "start": s, "text": texts[s:s + TEXT_BLOCK]}
+              for s in range(0, len(entries), TEXT_BLOCK)]
+    # The vocabulary in files by first letter: a prefix, a plural and a spelling with or
+    # without a hyphen all share their word's first letter. Long bare numbers are left out.
+    shards = defaultdict(list)
+    for t in vocab:
+        if re.fullmatch(r"[0-9]{5,}", t):
+            continue
+        shards[vocab_shard(t)].append(f"{t}\t{df[t]}")
+    words = {"generation_id": M.gen, "schema": "plectis-atlas-search-words/1", "text_block": TEXT_BLOCK,
+             "entry_count": len(entries), "vocab_shards": sorted(shards),
+             "names": {"generation_id": M.gen, "names": names},
+             "atoms": {"generation_id": M.gen, "atoms": atom_postings(entries, texts)}}
+    vocab_files = {k: {"generation_id": M.gen, "terms": "\n".join(v)} for k, v in shards.items()}
+    return words, blocks, vocab_files
+
+
 # ---------------------------------------------------------------- the page
 
 def num_link(M, key: str) -> str:
@@ -942,20 +1177,85 @@ def number_sentence(M, key: str) -> str:
     return linked(tpl, **{k: num_link(M, k) for k in re.findall(r"\{(\w+)\}", tpl)})
 
 
+# Each colour's families on the Families list (explain.html), by its two reader
+# columns: l is MathVet's reading, r is cert-machine's, c a class. A colour whose
+# families no filter there selects exactly is counted without a link.
+KEY_FILTERS = {"all": "l=full&r=full", "other": "l=other&r=other", "split": "c=disagree", "none": "c=nolean"}
+
+
+def explain_rows() -> dict:
+    """The Families list's rows as built (explain.html in --out): family number -> its
+    filter attributes, so each colour's link is checked to select exactly its families."""
+    page = OUT / "explain.html"
+    rows = {}
+    if not page.exists():
+        return rows
+    for m in re.finditer(r'<tr id="f-(\d+)"([^>]*)>', page.read_text(encoding="utf-8")):
+        attrs = dict(re.findall(r'data-([a-z])="([^"]*)"', m.group(2)))
+        rows[m.group(1)] = attrs
+    return rows
+
+
+def filter_selects(rows: dict, query: str) -> set:
+    """The family numbers explain.html?<query> shows (mirrors data-filter-families in atlas.js)."""
+    want = dict(kv.split("=", 1) for kv in query.split("&"))
+    out = set()
+    for num, a in rows.items():
+        if all((k == "c" and v in a.get("c", "").split()) or (k != "c" and a.get(k) == v) for k, v in want.items()):
+            out.add(num)
+    return out
+
+
 def key_html(M) -> str:
-    """The colour key: one line for each meaning, with how many families it covers."""
+    """The colour key: one line for each meaning, with how many families it covers, each
+    count linked to the same families on the Families list; then what the counts count."""
     counts = {t: 0 for t in TONE_ORDER}
+    members = defaultdict(set)
     for f in M.data["families"]:
         counts[f["tone"]] += 1
+        members[f["tone"]].add(f["num"])
+    listed = explain_rows()
     rows = []
     for t in TONE_ORDER:
         if not counts[t]:
             continue
+        n = esc(counts[t])
+        q = KEY_FILTERS.get(t)
+        if q and filter_selects(listed, q) != members[t]:
+            print(f"universe: the colour key's link explain.html?{q} does not select exactly the {counts[t]} families coloured {t}; left unlinked")
+            q = None
+        num = (f'<a class="u-key__n" href="explain.html?{esc(q)}" aria-label="{esc(U("key.count_link", n=counts[t]))}">{n}</a>'
+               if q else f'<span class="u-key__n">{n}</span>')
         rows.append(f'<li data-tone="{t}"><span class="u-dot u-dot--{t}" aria-hidden="true"></span>'
-                    f'<span class="u-key__t">{esc(U("key." + t))}</span><span class="u-key__n">{counts[t]}</span></li>')
+                    f'<span class="u-key__t">{esc(U("key." + t))}</span>{num}</li>')
+    counted = linked(U("key.counted"), files=esc(U("key.counted_files", n=M.r.number("statements_lean").get("value") or 0)),
+                     numbers=f'<a href="numbers.html#n-statements_lean">{esc(U("key.counted_numbers"))}</a>',
+                     drafts=f'<a href="numbers.html#h-n-scope">{esc(U("key.counted_drafts"))}</a>')
     return (f'<h2 class="u-h2" id="u-key-h">{esc(U("key.heading"))}</h2>'
             f'<p class="u-note">{esc(U("key.intro"))} <a href="sources.html">{esc(U("key.readers"))}</a></p><ul class="u-key" aria-labelledby="u-key-h">{"".join(rows)}</ul>'
+            f'<p class="u-note u-key__counted">{counted}</p>'
             f'<p class="u-note">{esc(U("key.size"))} {esc(U("key.citations"))}</p>')
+
+
+def since_html(M) -> str:
+    """Since the release: the withdrawn papers by name, each linked to its page, and how
+    many papers OpenAI replaced with later editions (Statement Map's receipts)."""
+    wd = M.r.number_receipt("manuscripts_withdrawn")
+    members = wd.get("members") or []
+    if len(members) != wd.get("value"):
+        raise SystemExit(f"withdrawn papers: {len(members)} named, the receipt counts {wd.get('value')}")
+    links = []
+    for pid in members:
+        ms = S.MS.get(pid[2:])
+        if not ms:
+            raise SystemExit(f"withdrawn paper {pid} is not in data/manuscripts.json")
+        links.append(f'<a href="papers/{esc(quote(pid[2:]))}.html">{esc(S.tex_plain(ms["title"]))}</a>')
+    eds = M.r.number("manuscripts_previous_editions").get("value")
+    papers = links[0] if len(links) == 1 else ", ".join(links[:-1]) + U("since.and") + links[-1]
+    withdrawn = U("since.withdrawn_one") if len(links) == 1 else U("since.withdrawn", n=len(links))
+    text = linked(U("since.text"), withdrawn=esc(withdrawn), papers=papers,
+                  editions=f'<a href="numbers.html#n-manuscripts_previous_editions">{esc(U("since.editions", n=eds))}</a>')
+    return f'<p class="u-since"><b class="u-since__h">{esc(U("since.heading"))}</b> {text}</p>'
 
 
 def discipline_rows(M) -> str:
@@ -1071,8 +1371,9 @@ def page_body(M, gen, data_version=None) -> str:
   <div class="u-panel__body" data-u-scroll>
    <div class="u-results" data-u-results hidden></div>
    <div class="u-view" data-u-view>
-    <section class="u-keysec" id="u-key">{key_html(M)}</section>
     <p class="u-lede">{number_sentence(M, 's1')} {number_sentence(M, 's2')}</p>
+    {since_html(M)}
+    <section class="u-keysec" id="u-key">{key_html(M)}</section>
     <p class="u-nojs">{esc(U('page.nojs'))}</p>
     <p class="u-keyjump"><a href="#u-key" data-u-keyjump>{esc(U('key.heading'))}</a></p>
     <section class="u-discsec">{discipline_rows(M)}</section>
@@ -1209,6 +1510,18 @@ def main():
     for di, sh in enumerate(detail):
         (ddir / f"universe-detail-{di}.json").write_text(dump({"generation_id": gen, **sh}), encoding="utf-8")
     (ddir / "universe-search.json").write_text(dump({"generation_id": gen, "rows": search}), encoding="utf-8")
+    words, blocks, vocab_files = build_search_words(M)
+    wdir = ddir / "universe-search"
+    if wdir.is_dir():
+        shutil.rmtree(wdir)
+    wdir.mkdir(parents=True)
+    for part in ("names", "atoms"):
+        (wdir / f"{part}.json").write_text(dump(words.pop(part)), encoding="utf-8")
+    (wdir / "words.json").write_text(dump(words), encoding="utf-8")
+    for k, v in vocab_files.items():
+        (wdir / f"vocab-{k}.json").write_text(dump(v), encoding="utf-8")
+    for b in blocks:
+        (wdir / f"text-{b['start'] // TEXT_BLOCK:04d}.json").write_text(dump(b), encoding="utf-8")
     (OUT / "assets").mkdir(parents=True, exist_ok=True)
     for name in OWN_ASSETS:
         shutil.copy(ASSETS / name, OUT / "assets" / name)
@@ -1230,6 +1543,8 @@ def main():
           f"{counts['results']} results drawn, {counts['lean']} Lean statements, {counts['pairs']} pairings drawn")
     print(f"universe: data {sizes['universe-data.json']:,} B, parts {sizes['universe-parts.json']:,} B, layout {sizes['universe-layout.json']:,} B, "
           f"search {sizes['universe-search.json']:,} B, detail {total_detail:,} B in {len(detail)} files; "
+          f"search names {(wdir / 'names.json').stat().st_size:,} B, formulas {(wdir / 'atoms.json').stat().st_size:,} B, vocabulary {sum(p.stat().st_size for p in wdir.glob('vocab-*.json')):,} B, "
+          f"text {sum(p.stat().st_size for p in wdir.glob('text-*.json')):,} B in {len(blocks)} files; "
           f"page {(OUT / 'index.html').stat().st_size:,} B")
 
 

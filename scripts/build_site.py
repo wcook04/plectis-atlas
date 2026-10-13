@@ -2509,11 +2509,17 @@ def definitions_html(stmt, lines_html, cap=24):
         h = a
         while h < b and ":=" not in lines[h] and not lines[h].rstrip().endswith(" where") and h - a < 3:
             h += 1
+        # A declaration of up to ten lines is shown whole; a longer one shows its head
+        # and folds the rest, which starts after the head so no line is repeated.
+        if b - a + 1 <= 10:
+            h = b
         head = "".join(f'<span class="ln" data-n="{i + 1}">{lines_html[i]}</span>' for i in range(a, h + 1))
         more = ""
         if b > h:
-            bodyl = "".join(f'<span class="ln" data-n="{i + 1}">{lines_html[i]}</span>' for i in range(a, b + 1))
-            more = f'<details class="decl__more"><summary>{esc(C("statement.def_show", n=b - a + 1))}</summary><pre class="lean lean--snippet"><code>{bodyl}</code></pre></details>'
+            bodyl = "".join(f'<span class="ln" data-n="{i + 1}">{lines_html[i]}</span>' for i in range(h + 1, b + 1))
+            rest = b - h
+            more = (f'<details class="decl__more"><summary>{esc(LW("defs.show_rest.one") if rest == 1 else LW("defs.show_rest.many", n=rest))}</summary>'
+                    f'<pre class="lean lean--snippet lean--cont"><code>{bodyl}</code></pre></details>')
         sn = full.rsplit(".", 1)
         ns_ = f'<span class="vocab__ns">{esc(sn[0])}.</span>' if len(sn) == 2 else ""
         items.append(f'<li class="decl"><p class="decl__name"><span class="vocab__kind">{esc(kind_word(vocab[full]["kind"]))}</span> <code>{ns_}{esc(sn[-1])}</code> <a class="vocab__line" href="#L{a + 1}">{esc(C("statement.line", line=a + 1))}</a></p><pre class="lean lean--snippet"><code>{head}</code></pre>{more}</li>')
@@ -2578,7 +2584,7 @@ def lean_family_doc(lid: str):
     return fid, doc, rec
 
 
-def lean_pairing(doc: dict, lid: str) -> dict:
+def backend_pairing(doc: dict, lid: str) -> dict:
     """The backend's pairing for one Lean statement of a family, as recorded:
 
     1. the family's selection, when it names this Lean statement;
@@ -2621,6 +2627,381 @@ def lean_pairing(doc: dict, lid: str) -> dict:
     elif ps:
         out["reason"] = ps.get("abstention_reason")
     return out
+
+
+# The atlas's own reading of a Lean statement against its family's statements, used
+# only where the backend records no citation or binding. The backend's lexical
+# candidate matched catalogue and scope-note wording, which often names a different
+# theorem from the one the Lean states; this reading starts from the Lean text itself
+# (identifiers split at capitals and underscores, the definitions it reaches, its
+# docstrings), uses the release's name and note for the Lean statement only as a
+# secondary source, prefers the paper the Lean belongs to when the release's names say
+# which, and prefers a main theorem on a tie. It is a candidate, never a review.
+
+_PAIR_STOP = frozenset("""
+a about above after again all also an and any are as at be been being below between both but by can do does each
+either for from further given has have having here hold holds if in into is it its itself let more most no nor of on
+once only or other our out over own same she so some such than that the their them then there these they this those
+through thus to too under until up very was we were what when where whether which while who whom why will with
+would every exist exists satisfy satisfies satisfying fixed following define defined denote denotes write written
+theorem lemma def abbrev fun sorry namespace end oai noncomputable section classical exact open show type prop true
+false set finset card filter icc ico ioc ioo nat mk val coe sub add mul div pow succ fin ne lt le gt ge iff not
+main statement problem answer claim corollary proposition instance structure class decide simp intro use refine
+mathrm mathbb mathcal mathfrak mathbf mathsf operatorname frac tfrac dfrac left right leq geq neq cdot cdots ldots
+dots text textbf textit emph begin label ref cite eqref quad qquad sum prod int lim limsup liminf sup inf infty
+mid subset subseteq langle rangle big bigl bigr bigg biggl biggr displaystyle tag nonumber align equation itemize
+item enumerate colon mapsto vert lvert rvert lfloor rfloor lceil rceil hat bar tilde overline underline sim approx
+""".split())
+_LEAN_SYMBOLS = {"Fintype": " finite type ", "ℝ": " real ", "ℕ": " natural integer ", "ℤ": " integer ", "ℂ": " complex ", "ℚ": " rational ", "π": " pi ", "ζ": " zeta "}
+_TEX_SETS = {"R": "real", "N": "natural integer", "Z": "integer", "C": "complex", "Q": "rational"}
+
+
+_STEMS: dict = {}
+
+
+def _pair_stem(w: str) -> str:
+    """A crude English stem so 'colouring', 'colorable' and 'colors' meet."""
+    if w in _STEMS:
+        return _STEMS[w]
+    key = w
+    w = w.replace("colour", "color")
+    for suf, rep in (("abilities", ""), ("ability", ""), ("ables", ""), ("able", ""), ("ings", ""), ("ing", ""),
+                     ("ations", ""), ("ation", ""), ("ies", "y"), ("es", ""), ("ed", ""), ("s", "")):
+        if w.endswith(suf) and len(w) - len(suf) >= 3 and not w.endswith("ss"):
+            w = w[: len(w) - len(suf)] + rep
+            break
+    if len(w) > 4 and w.endswith("e"):
+        w = w[:-1]
+    _STEMS[key] = w
+    return w
+
+
+_WORDS: dict = {}
+
+
+def _pair_words(text: str, lean: bool = False) -> dict:
+    """{stem: the word as first written} for a Lean or TeX text (cached per text)."""
+    key = (text, lean)
+    if key not in _WORDS:
+        _WORDS[key] = _pair_words_uncached(text, lean)
+    return _WORDS[key]
+
+
+_PW_SPLIT = re.compile(r"[A-Z]+(?![a-z])|[A-Z]?[a-z]+")
+_PW_IDENT = re.compile(r"[A-Za-z][A-Za-z0-9']*")
+
+
+def _pair_words_uncached(text: str, lean: bool) -> dict:
+    out = {}
+    t = text or ""
+    # Constants such as 7/8 or 26m/75 are the most telling words two statements share:
+    # \frac{26m}{75} and 26 * (m : ℚ) / 75 both become 26m/75.
+    if lean:
+        f = re.sub(r"\(\s*([\w.']+)\s*:\s*[^()]*\)", r"\1", t)
+        f = re.sub(r"(\d)\s*\*\s*([A-Za-z])", r"\1\2", f)
+    else:
+        f = re.sub(r"\\[td]?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}", r" \1/\2 ", t)
+        f = re.sub(r"\\[td]?frac\s*(\w)\s*(\w)", r" \1/\2 ", f)
+    for m in re.finditer(r"(?<![\w.\\])([0-9]+[a-z]?|[a-z])\s*/\s*([0-9]+)(?![\w.])", f):
+        if any(ch.isdigit() for ch in m[1] + m[2]):
+            k = f"{m[1]}/{m[2]}"
+            out.setdefault(k, k)
+    if lean:
+        for k, v in _LEAN_SYMBOLS.items():
+            t = t.replace(k, v)
+    else:
+        t = re.sub(r"\\mathbb\s*\{?\s*([RNZCQ])\s*\}?", lambda m: " " + _TEX_SETS[m[1]] + " ", t)
+        t = re.sub(r"\\([A-Za-z]+)", r" \1 ", t)
+    for part in set(_PW_IDENT.findall(t)):
+        for w in _PW_SPLIT.findall(part.replace("'", "")):
+            lw = w.lower()
+            if len(lw) < 2 or lw in _PAIR_STOP:
+                continue
+            s = _pair_stem(lw)
+            if len(s) >= 2 and s not in _PAIR_STOP:
+                out.setdefault(s, lw)
+    return out
+
+
+def _depth0_split(text: str, sep: str) -> list:
+    parts, depth, cur = [], 0, []
+    for ch in text:
+        if ch in "([{⟨":
+            depth += 1
+        elif ch in ")]}⟩":
+            depth -= 1
+        if ch == sep and depth == 0:
+            parts.append("".join(cur))
+            cur = []
+        else:
+            cur.append(ch)
+    parts.append("".join(cur))
+    return [p for p in parts if p.strip()]
+
+
+def _lean_reading(stmt) -> dict:
+    """The pieces of a Lean statement the reading matches on: the checked statement's
+    conjuncts, the definitions each reaches by name, and the file's docstrings."""
+    spans, lines = decl_spans(stmt)
+    shorts = {full.split(".")[-1]: full for full in spans}
+    names = (stmt["comparator"]["theorem_names"] or stmt["comparator"].get("definition_names") or stmt["theorems"][:1])
+    body_of = lambda full: "\n".join(lines[spans[full][0]:spans[full][1] + 1])
+
+    def after_assign(txt):
+        return txt.split(":=", 1)[1] if ":=" in txt else txt
+
+    def idents(txt):
+        found = set()
+        for tok in re.findall(r"[\w'.]+", txt):
+            found.add(tok)
+            found.update(tok.split("."))
+        return [shorts[t] for t in found if t in shorts]
+
+    uses = {}
+
+    def reach(txt, skip=(), names_only=False, as_list=False):
+        seen, queue, out = set(skip), list(idents(txt)), []
+        while queue:
+            full = queue.pop(0)
+            if full in seen:
+                continue
+            seen.add(full)
+            b = body_of(full)
+            out.append(full.split(".")[-1] if names_only else b)
+            if full not in uses:
+                uses[full] = idents(b)
+            queue.extend(uses[full])
+        return out if as_list else "\n".join(out)
+
+    conjuncts, statement = [], []
+    for t in names:
+        if t not in spans:
+            continue
+        txt = body_of(t)
+        if t in stmt["comparator"]["theorem_names"] or t in stmt["theorems"]:
+            head = txt.split(":=", 1)[0]
+            depth, cut = 0, None
+            for k, ch in enumerate(head):
+                if ch in "([{⟨":
+                    depth += 1
+                elif ch in ")]}⟩":
+                    depth -= 1
+                elif ch == ":" and depth == 0:
+                    cut = k
+                    break
+            typ = head[cut + 1:] if cut is not None else head
+            ident = typ.strip()
+            if re.fullmatch(r"[\w.']+", ident) and ident.split(".")[-1] in shorts:
+                typ = after_assign(body_of(shorts[ident.split(".")[-1]]))
+            statement.append(head)
+            # A conjunction under a quantifier is one statement's clauses; only a
+            # top-level conjunction states several results outright.
+            under = re.match(r"\s*(∀|∃|fun\b|λ|¬|Π)", typ) is not None
+            conjuncts += [(c, under) for c in _depth0_split(typ, "∧")]
+        else:
+            statement.append(txt)
+            conjuncts.append((txt, False))
+    docs = " ".join([d for d in stmt.get("docstrings") or [] if isinstance(d, str)]
+                    + [d.get("doc") or "" for d in stmt.get("declarations") or []])
+    return {"statement": "\n".join(statement), "conjuncts": conjuncts, "reach": reach,
+            "skip": tuple(n for n in names), "docs": docs}
+
+
+def _lean_vector(r, text) -> dict:
+    """{stem: (weight, word, where)}: the checked text at full weight, its docstrings a
+    little lower, the bodies of the definitions it reaches lower still."""
+    vec = {}
+    pieces = [(1.0, text), (0.9, r["reach"](text, r["skip"], names_only=True)), (0.8, r["docs"])]
+    pieces += [(0.25, b) for b in r["reach"](text, r["skip"], as_list=True)]
+    for w, txt in pieces:
+        for s, word in _pair_words(txt, lean=True).items():
+            if s not in vec or vec[s][0] < w:
+                vec[s] = (w, word, "lean")
+    return vec
+
+
+_PAIR_POOL: dict = {}
+
+
+def _pair_pool(doc) -> dict:
+    """The family's statements as the reading sees them: words, paper, main-theorem flag."""
+    key = doc.get("id")
+    if key in _PAIR_POOL:
+        return _PAIR_POOL[key]
+    rows = []
+    for s in doc.get("statements") or []:
+        m, st, rec = ms_statement(doc, s["id"])
+        text = ((st or {}).get("text") or "") + " " + ((st or {}).get("title") or "")
+        words = _pair_words(text)
+        if not words:
+            continue
+        label = s["id"].rsplit(":", 1)[-1] if s["id"].count(":") >= 2 else ""
+        num = s.get("printed_number") or ""
+        main = ("main" in label.lower()) or (s.get("display") == "Theorem" and num in ("1", "1.1", "A"))
+        title = _pair_words((m or {}).get("title") or "") if main else {}
+        rows.append({"id": s["id"], "paper": (s.get("manuscript_id") or "")[2:], "words": words, "main": main,
+                     "headline": bool((st or {}).get("headline")),
+                     "title": {k: v for k, v in title.items() if k not in words}})
+    df = Counter(t for r_ in rows for t in set(r_["words"]) | set(r_["title"]))
+    n = len(rows)
+    import math
+    idf = {t: math.log((n + 1) / (c + 0.5)) for t, c in df.items()}
+    _PAIR_POOL[key] = {"rows": rows, "idf": idf, "avg": (sum(len(r_["words"]) for r_ in rows) / n) if n else 1}
+    return _PAIR_POOL[key]
+
+
+def _lean_paper(stmt, doc, lrec, pool) -> tuple:
+    """(paper slug, [evidence keys]) when the release's names for the Lean statement say
+    which paper it belongs to, else (None, [])."""
+    papers = sorted({r_["paper"] for r_ in pool["rows"]})
+    listed = [p for p in stmt.get("papers") or [] if p in papers]
+    if len(papers) == 1:
+        return papers[0], []
+    if len(listed) == 1:
+        return listed[0], ["listed"]
+    names = " ".join(stmt.get("labels") or [])
+    files = " ".join([stmt["file"].rsplit("/", 1)[-1].rsplit(".", 1)[0], stmt["comparator"].get("solution_module") or ""])
+    draft = (((lrec or {}).get("scope_draft") or {}).get("value") or {}).get("note") or ""
+    titles = {p: set(_pair_words((MS.get(p) or {}).get("title") or p.replace("-", " "))) for p in papers}
+    # Each source in turn, the release's own name first: the first that singles out
+    # one paper by at least two title words decides.
+    for keyname, txt in (("label", names), ("files", files), ("draft", draft)):
+        words = set(_pair_words(txt, lean=keyname == "files"))
+        hits = sorted(((len(words & titles[p]), p) for p in papers), reverse=True)
+        if hits and hits[0][0] >= 2 and (len(hits) == 1 or hits[0][0] > hits[1][0]):
+            return hits[0][1], [keyname]
+    return None, []
+
+
+def _rank(vec, note, pool, paper=None):
+    """Statements ranked by the words they share with the Lean (vec) and, at a third of
+    the weight, with the release's name and note for it (note)."""
+    out = []
+    idf = pool["idf"]
+    for r_ in pool["rows"]:
+        lean_hit = [(s, vec[s]) for s in r_["words"] if s in vec]
+        title_hit = [(s, vec[s]) for s in r_["title"] if s in vec]
+        note_hit = [s for s in r_["words"] if s in note and s not in vec]
+        lean_score = sum(w * idf[s] for s, (w, _, _) in lean_hit) + sum(0.6 * w * idf[s] for s, (w, _, _) in title_hit)
+        score = lean_score + sum(0.35 * idf[s] for s in note_hit)
+        # A long statement shares more words by its length alone.
+        norm = 0.6 + 0.4 * len(r_["words"]) / pool["avg"]
+        lean_score /= norm
+        score /= norm
+        if r_["main"]:
+            score *= 1.15
+        if paper and r_["paper"] == paper:
+            score *= 1.6
+        out.append({"target": r_["id"], "score": round(score, 3), "lean_score": round(lean_score, 3),
+                    "lean_terms": [r_["words"][s] for s, _ in sorted(lean_hit, key=lambda x: -idf[x[0]])],
+                    "note_terms": [r_["words"][s] for s in sorted(note_hit, key=lambda x: -idf[x])],
+                    "title_terms": [r_["title"][s] for s, _ in sorted(title_hit, key=lambda x: -idf[x[0]])],
+                    "paper": r_["paper"], "main": r_["main"], "headline": r_["headline"]})
+    out.sort(key=lambda a: (-a["score"], not a["main"], a["target"]))
+    for a in out:
+        a["matched_terms"] = a["lean_terms"] + a["title_terms"] + a["note_terms"]
+        a["shared_words"] = len(a["matched_terms"])
+    return out
+
+
+def _confident(ranked, floor=1.4, ratio=1.25, one_constant=False) -> bool:
+    """A clear match: enough of the Lean's own words, at least two of them (or, for one
+    conjunct, a single shared constant such as 26m/75), and well ahead of the next."""
+    if not ranked or ranked[0]["lean_score"] < floor:
+        return False
+    terms = ranked[0]["lean_terms"] + ranked[0]["title_terms"]
+    if len(terms) < 2 and not (one_constant and any("/" in t for t in terms)):
+        return False
+    return len(ranked) == 1 or ranked[0]["score"] >= ratio * ranked[1]["score"]
+
+
+_LEAN_PAIRING: dict = {}
+
+
+def lean_pairing(doc: dict, lid: str) -> dict:
+    """One Lean statement's pairing with the family's paper statements.
+
+    A citation in the Lean source or a binding in the release's manifest, as the backend
+    records it, stands. Otherwise the atlas reads the Lean text against the family's
+    statements (see _rank above) and pairs it when one statement, or one per conjunct of
+    the Lean, is a clear match; when none is clear it falls back to the backend's
+    catalogue-word candidate only if that candidate lies in the Lean's own paper, and
+    otherwise pairs nothing and lists the closest statements.
+
+    Returns {state, target, targets, evidence, paper, paper_why, reason, alternatives,
+    method, association, record}; evidence is one of declared, cited, lean-words,
+    catalogue-words, none. A candidate is never a review."""
+    lid = lid if lid.startswith("l:") else "l:" + lid
+    key = (doc.get("id"), lid)
+    if key in _LEAN_PAIRING:
+        return _LEAN_PAIRING[key]
+    out = backend_pairing(doc, lid)
+    backend_alts = out["alternatives"]
+    out.update(targets=[out["target"]] if out["target"] else [], paper=None, paper_why=[],
+               evidence={"producer-declared-binding": "declared", "producer-cited-association": "cited"}.get(out["state"], "none"))
+    stmt = ST.get(lid[2:])
+    pool = _pair_pool(doc)
+    if not stmt or not pool["rows"]:
+        if out["state"] == "candidate-pairing":
+            out["evidence"] = "catalogue-words"
+        _LEAN_PAIRING[key] = out
+        return out
+    lrec = next((l for l in doc.get("lean") or [] if l.get("id") == lid), None)
+    r = _lean_reading(stmt)
+    vec = _lean_vector(r, r["statement"])
+    draft = (((lrec or {}).get("scope_draft") or {}).get("value") or {})
+    note = set(_pair_words(" ".join((stmt.get("labels") or []) + [draft.get("quote") or ""])))
+    paper, paper_why = _lean_paper(stmt, doc, lrec, pool)
+    ranked = _rank(vec, note, pool, paper)
+    out.update(alternatives=ranked[:8], paper=paper, paper_why=paper_why, method="atlas-lean-words")
+    if out["evidence"] in ("declared", "cited"):
+        _LEAN_PAIRING[key] = out
+        return out
+    in_paper = [a for a in ranked if not paper or a["paper"] == paper]
+    targets = []
+    if len(r["conjuncts"]) >= 2:
+        for c, under in r["conjuncts"]:
+            cr = [a for a in _rank(_lean_vector(r, c), set(), pool, paper) if not paper or a["paper"] == paper]
+            if under and cr and not any("/" in t for t in cr[0]["lean_terms"]):
+                continue   # a clause under a quantifier counts only when it shares a constant
+            # Several targets only among the paper's headline results, the ones its
+            # introduction states: a conjunct matching an inner proposition is a step.
+            if _confident(cr, floor=1.0, ratio=1.35, one_constant=True) and cr[0]["headline"] and cr[0]["target"] not in targets:
+                targets.append(cr[0]["target"])
+        if not 2 <= len(targets) <= 3:
+            targets = []
+    if not targets and _confident(in_paper):
+        targets = [in_paper[0]["target"]]
+    if targets:
+        targets.sort(key=lambda t: next(i for i, a in enumerate(ranked) if a["target"] == t))
+        out.update(state="candidate-pairing", target=targets[0], targets=targets, evidence="lean-words", reason=None)
+    elif out["state"] == "candidate-pairing" and (not paper or out["target"].split(":")[1] == paper):
+        b = next((a for a in backend_alts if a.get("target") == out["target"]), {})
+        out.update(targets=[out["target"]], evidence="catalogue-words", backend_terms=list(b.get("matched_terms") or []))
+    else:
+        out.update(state="unavailable", target=None, targets=[], evidence="none",
+                   reason=LW("pairing.no_confident"))
+    _LEAN_PAIRING[key] = out
+    return out
+
+
+def pairing_terms(pinfo: dict, target: str | None = None) -> dict:
+    """{lean, note, catalogue}: the words a candidate pairing was found by, split by where
+    they come from."""
+    target = target or pinfo.get("target")
+    if pinfo.get("evidence") == "catalogue-words" and target == pinfo.get("target"):
+        return {"lean": [], "title": [], "note": [], "catalogue": list(pinfo.get("backend_terms") or [])}
+    a = next((x for x in pinfo.get("alternatives") or [] if x.get("target") == target), {})
+    if not a.get("lean_terms") and not a.get("note_terms") and not a.get("title_terms") and a.get("matched_terms"):
+        return {"lean": [], "title": [], "note": [], "catalogue": list(a["matched_terms"])}   # a backend record
+    return {"lean": list(a.get("lean_terms") or []), "title": list(a.get("title_terms") or []),
+            "note": list(a.get("note_terms") or []), "catalogue": []}
+
+
+def pair_targets(doc: dict) -> dict:
+    """Lean id -> (paper statement id or None, pairing state) for every Lean statement of a
+    family, from lean_pairing: the shape the map board's _pair_targets returns."""
+    return {l["id"]: (lean_pairing(doc, l["id"])["target"], lean_pairing(doc, l["id"])["state"]) for l in doc.get("lean") or []}
 
 
 def backend_statement(doc: dict, stmt_id: str) -> dict | None:
@@ -2671,6 +3052,44 @@ def statement_ref_html(doc, stmt_id, root) -> str:
     return LW("pairing.ref", name="\x00", title="\x01").replace("\x00", link).replace("\x01", f'<span class="tex-auto">{title}</span>')
 
 
+def words_list(terms: list, show: int = 8) -> str:
+    """'a, b and c', at most show words, with 'and n more' past that."""
+    shown = list(terms[:show])
+    if not shown:
+        return ""
+    if len(terms) > show:
+        return ", ".join(shown) + " " + LW("pairing.and_more", n=say(len(terms) - show))
+    return ", ".join(shown[:-1]) + (" " + LW("and") + " " if len(shown) > 1 else "") + shown[-1]
+
+
+def shared_words_sentence(pinfo: dict, target: str | None = None, show: int = 8) -> list:
+    """The sentences saying which words a candidate was found by and where each comes
+    from: the Lean text, the paper's title (for a main theorem), the release's name and
+    note for the Lean, or, for the fallback, the catalogue's wording."""
+    t = pairing_terms(pinfo, target)
+    out = []
+    if t["lean"]:
+        out.append(LW("pairing.how_lean", words=words_list(t["lean"], show)))
+    if t.get("title"):
+        out.append(LW("pairing.how_title", words=words_list(t["title"], show)))
+    if t["note"]:
+        out.append(LW("pairing.how_note", words=words_list(t["note"], show)))
+    if t["catalogue"]:
+        out.append(LW("pairing.how_catalogue", words=words_list(t["catalogue"], show)))
+    if not out:
+        out.append(LW("pairing.how_nothing"))
+    return out
+
+
+def paper_pref_sentence(pinfo: dict) -> str:
+    """Why the candidates come from one paper, when the release's names say which."""
+    if not pinfo.get("paper") or not pinfo.get("paper_why"):
+        return ""
+    m = MS.get(pinfo["paper"]) or {}
+    title = f'<span class="tex-auto">{ms_title_html(m)}</span>' if m else esc(pinfo["paper"])
+    return esc(LW("pairing.paper_why." + pinfo["paper_why"][0], paper="\x00")).replace("\x00", title)
+
+
 def join_html(doc, pinfo, root) -> str:
     """The words at the join between the paper theorem and the Lean statement: what
     links them, by what evidence, and that nobody has reviewed the match."""
@@ -2679,11 +3098,13 @@ def join_html(doc, pinfo, root) -> str:
            "producer-declared-binding": "join--cited"}.get(state, "join--none")
     parts = [] if state in PAIRED_STATES else [f'<p class="join__words">{esc(evidence.say("pairing." + state))}</p>']
     if state == "candidate-pairing":
-        alt = next((a for a in pinfo["alternatives"] if a.get("target") == pinfo["target"]), None)
-        terms = (alt or {}).get("matched_terms") or []
-        n = (alt or {}).get("shared_words") or len(terms)
-        if terms:
-            parts.append(f'<p class="join__how">{esc(shared_words_sentence("pairing.shared", n, terms, 8))}</p>')
+        ev_key = pinfo.get("evidence", "lean-words") + ("-multi" if len(pinfo.get("targets") or []) > 1 else "")
+        parts.append(f'<p class="join__words">{esc(LW("pairing.evidence." + ev_key))}</p>')
+        if len(pinfo.get("targets") or []) < 2:
+            parts.append(f'<p class="join__how">{esc(" ".join(shared_words_sentence(pinfo)))}</p>')
+        pref = paper_pref_sentence(pinfo)
+        if pref:
+            parts.append(f'<p class="join__how">{pref}</p>')
     elif state == "producer-cited-association" and pinfo.get("association"):
         a = pinfo["association"]
         src = a.get("source") or {}
@@ -2696,27 +3117,15 @@ def join_html(doc, pinfo, root) -> str:
     return f'<div class="join {cls}" role="note" aria-label="{esc(LW("pairing.join_label"))}">{"".join(parts)}</div>'
 
 
-def shared_words_sentence(key: str, n: int, terms: list, show: int) -> str:
-    """'The two share nine words, among them a, b and c.' or, when every word is listed,
-    'The two share three words: a, b and c.'"""
-    shown = terms[:show]
-    if not shown:
-        return LW(key.replace("shared", "shared_none"), n=say(n))
-    words = ", ".join(shown[:-1]) + (" " + LW("and") + " " if len(shown) > 1 else "") + shown[-1]
-    return LW(key + ("_all" if len(shown) >= n else ""), n=say(n), words=words)
-
-
 def alternatives_html(doc, pinfo, root, limit=4) -> str:
-    """The statements that share the most words with the Lean statement, with the
-    reason each was listed, as the backend recorded them."""
-    rows = [a for a in pinfo["alternatives"] if a.get("target") and a.get("target") != pinfo["target"]][:limit]
-    if not rows:
-        return ""
+    """The other close statements, as a visible list: each with the Lean words it shares,
+    or, when it shares none, the words it shares with the release's name and note."""
+    shown = set(pinfo.get("targets") or []) | {pinfo.get("target")}
+    rows = [a for a in pinfo["alternatives"] if a.get("target") and a["target"] not in shown and a.get("score", 1) > 0][:limit]
     items = []
     for a in rows:
-        terms = a.get("matched_terms") or []
-        items.append(f'<li>{statement_ref_html(doc, a["target"], root)}. '
-                     f'<span class="muted">{esc(shared_words_sentence("pairing.alt_shared", a.get("shared_words") or len(terms), terms, 6))}</span></li>')
+        why = " ".join(shared_words_sentence(pinfo, a["target"], show=6))
+        items.append(f'<li>{statement_ref_html(doc, a["target"], root)}. <span class="muted">{esc(why)}</span></li>')
     return "".join(items)
 
 
@@ -2879,24 +3288,40 @@ def build_statement(stmt):
     write_page(card_rel, head(card_rel, label, label, noindex=True) + f'\n<body class="card-only" data-root="{root}">\n{card_body}\n{macros_script([paper_ms["id"]] if paper_ms else [])}\n</body></html>\n', index=False)
     # After the Lean statement: the paper theorem it is paired with, under a heading that
     # carries the pairing's state, the words at the join first, then the theorem itself.
-    pair_heading = LW("page.pair_heading." + (pinfo["state"] if pinfo["state"] in PAIRED_STATES and paper_st else "unavailable"))
+    multi = len(pinfo.get("targets") or []) > 1 and bool(paper_st)
+    pair_heading = LW("page.pair_heading." + ("multi" if multi else pinfo["state"] if pinfo["state"] in PAIRED_STATES and paper_st else "unavailable"))
+    # Other candidates stay visible, closest first, with the words each shares.
+    alts = alternatives_html(doc, pinfo, root, limit=6 if paper_st else 5) if doc else ""
+    alts_html = (f'<h3 class="h3">{esc(LW("page.alternatives_heading"))}</h3><ul class="alts">{alts}</ul>' if alts else "")
+    method_html = f'<p class="small muted pair__method">{esc(LW("pairing.method"))}</p>' if doc and pinfo["state"] not in ("producer-cited-association", "producer-declared-binding") else ""
     if paper_st:
-        others = alternatives_html(doc, pinfo, root, limit=6)
-        others_html = (f'<details class="more"><summary>{esc(LW("page.alternatives_more"))}</summary>'
-                       f'<ul class="alts">{others}</ul></details>') if others else ""
+        blocks = []
+        for t in (pinfo["targets"] if multi else [pinfo["target"]]):
+            tm, tst, _ = ms_statement(doc, t)
+            if not tst:
+                continue
+            how = (f'<p class="join__how small">{esc(" ".join(shared_words_sentence(pinfo, t)))}</p>' if multi else "")
+            blocks.append(f'<div class="pair__target"><p class="claim__src">{statement_ref_html(doc, t, root)}</p>{how}'
+                          + render_paper_statement(tm, tst, root, conv if tm is paper_ms else TexConv(tm, root), "claim") + "</div>")
+        intro = f'<p class="intro">{esc(LW("pairing.multi_intro", n=say(len(blocks))))}</p>' if multi else ""
         paper_read = (f'<h2 class="h2" id="h-claim">{esc(pair_heading)}</h2>'
-                      + join_html(doc, pinfo, root)
-                      + f'<p class="claim__src">{statement_ref_html(doc, pinfo["target"], root)}</p>'
-                      + render_paper_statement(paper_ms, paper_st, root, conv, "claim") + others_html)
+                      + join_html(doc, pinfo, root) + intro + "".join(blocks) + alts_html + method_html)
     else:
-        alts = alternatives_html(doc, pinfo, root) if doc else ""
         reason = pinfo.get("reason")
+        pref = paper_pref_sentence(pinfo)
         paper_read = (f'<h2 class="h2" id="h-claim">{esc(pair_heading)}</h2>'
                       + join_html(doc, pinfo, root)
                       + (f'<p>{esc(LW("pairing.reason", reason=reason[0].lower() + reason[1:]))}</p>' if reason else "")
-                      + (f'<h3 class="h3">{esc(LW("page.alternatives_heading"))}</h3><ul class="alts">{alts}</ul>' if alts else ""))
+                      + (f'<p class="small">{pref}</p>' if pref else "")
+                      + alts_html + method_html)
     # ... the Lean statement with the definitions needed to read it ...
     snippet_full = lean_snippet_html(stmt, lines_html)
+    # The same lines as plain text for the Copy button (the rendered lines are spans).
+    _src = stmt["lean"].split("\n")
+    _tg = stmt["comparator"]["theorem_names"] or stmt["theorems"][:1]
+    _ranges = (lean_key_ranges(stmt["lean"], _tg) if _tg else
+               sorted({sp for n_, sp in decl_spans(stmt)[0].items() if n_ in (stmt["comparator"].get("definition_names") or [])}))
+    lean_copy = "\n\n".join("\n".join(_src[a:b + 1]) for a, b in _ranges)
     defs = definitions_html(stmt, lines_html)
     holes = def_holes(stmt)
     definition_only = not stmt["comparator"]["theorem_names"] and bool(holes)
@@ -2988,24 +3413,26 @@ def build_statement(stmt):
     problems = findings_for(sid=sid, kinds={'error-reported', 'correction', 'replay-fail'})
     more_finds = findings_for(sid=sid, kinds={'explanation', 'commentary', 'follow-up-result'})
     human_name = summ.get("name")
-    subtitle = (f'<p class="phead__sub"><code>{camel_breaks(sid)}</code></p>' if not human_name or human_name == label
-                else f'<p class="phead__sub"><span class="md-math">{esc(human_name)}</span> <code>{camel_breaks(sid)}</code></p>')
-    # The action that opens the paper theorem and the qualification of the pairing it
-    # follows form one group: the button says which theorem it opens (the candidate, the
-    # cited or the declared one), and the line above it says which theorem that is and
-    # that nobody has reviewed the match. Once for the group, before the action.
+    # Under the heading: the release's own name for it (when it differs) and the fully
+    # qualified name of each checked theorem, each with a Copy button.
+    thm_names = stmt["comparator"]["theorem_names"] or stmt["comparator"].get("definition_names") or stmt["theorems"][:1]
+    name_items = "".join(f'<span class="phead__thm"><code translate="no">{camel_breaks(n_)}</code> '
+                         f'<button class="btn btn--quiet copy" type="button" data-copy-text="{esc(n_)}" aria-label="{esc(LW("page.copy_name") + " " + n_)}">{esc(LW("page.copy_name"))}</button></span>'
+                         for n_ in thm_names)
+    subtitle = ((f'<p class="phead__sub"><span class="md-math">{esc(human_name)}</span></p>' if human_name and human_name != label else "")
+                + (f'<p class="phead__sub phead__thms"><span class="phead__thmk">{esc(LW("page.theorem_name" if len(thm_names) == 1 else "page.theorem_names"))}</span> {name_items}</p>' if thm_names
+                   else f'<p class="phead__sub"><code>{camel_breaks(sid)}</code></p>'))
+    # The header carries the actions only; how the paper theorem is paired, and that
+    # nobody has reviewed it, is said with the theorem below the Lean.
     reading_href = (root + paper_rec["reading_page"]) if paper_rec and paper_rec.get("reading_page") else None
     paired = pinfo["state"] in PAIRED_STATES and bool(paper_st)
-    if paired:
-        ref = esc(backend_printed(paper_rec, paper_st)) + " " + esc(LW("pairing.of")) + f' <span class="tex-auto">{ms_title_html(paper_ms)}</span>'
-        pair_line = esc(LW("page.pair_line." + pinfo["state"], ref="\x00")).replace("\x00", ref)
-        read_label = LW("page.read_in_paper." + pinfo["state"]) if reading_href else LW("page.read_below." + pinfo["state"])
-        read_primary = (f'<a class="btn btn--primary" href="{esc(reading_href or "#h-claim")}" aria-describedby="h-pair-line">'
-                        f'{esc(read_label)}</a>')
+    if paired and pinfo["state"] != "candidate-pairing" and reading_href:
+        read_primary = f'<a class="btn btn--primary" href="{esc(reading_href)}">{esc(LW("page.read_in_paper." + pinfo["state"]))}</a>'
+    elif paired:
+        read_primary = f'<a class="btn btn--primary" href="#h-claim">{esc(LW("page.read_below." + ("multi" if multi else pinfo["state"])))}</a>'
     else:
-        pair_line = esc(evidence.say("pairing.unavailable"))
-        read_primary = f'<a class="btn btn--primary" href="#h-claim" aria-describedby="h-pair-line">{esc(LW("page.read_candidates"))}</a>'
-    action_group = (f'<div class="phead__go"><p class="phead__pair" id="h-pair-line">{pair_line}</p>'
+        read_primary = f'<a class="btn btn--primary" href="#h-claim">{esc(LW("page.read_candidates"))}</a>'
+    action_group = (f'<div class="phead__go">'
                     f'<p class="actions">{read_primary}<a class="btn btn--ghost" href="#h-runs">{esc(LW("page.read_runs"))}</a>'
                     f'<a class="btn btn--quiet ext" href="{esc(check_url(sid))}" rel="noopener">{esc(LW("page.report_check"))}</a></p></div>')
     runs_section = lean_runs_html(lrec, root) if lrec else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
@@ -3032,7 +3459,7 @@ def build_statement(stmt):
 <section class="band band--tight claim claim--lean" aria-labelledby="h-lean-read">
  <h2 class="h2" id="h-lean-read">{esc(LW('page.lean_heading'))}</h2>
  <p class="intro">{esc(lean_intro)}</p>
- <pre class="lean lean--snippet lean--read"><code>{snippet_full}</code></pre>
+ <div class="lean__tools"><button class="btn btn--quiet copy" type="button" data-copy-text="{esc(lean_copy)}">{esc(LW('page.copy_lean'))}</button><pre class="lean lean--snippet lean--read"><code>{snippet_full}</code></pre></div>
  <p class="leanc__note">{ctext(lean_note)}</p>
  {defs}
  {holes_html}
@@ -3325,38 +3752,156 @@ def build_explain():
 
 
 def build_statements_table():
+    """statements.html: every Lean statement with what a reviewer needs beside it: the
+    paper statement it is paired with (and how), what the outside readers found about
+    its family, and how many groups report re-running it; filters by discipline, pairing
+    and each reader's finding; on a phone, one card per statement with a sort menu."""
     rel = "statements.html"
+    r = RD()
+    T = lambda k, **kw: LW("table." + k, **kw)
+    reader_names = {}
+    evs = {}
+    for s in STATEMENTS:
+        for fid_ in s.get("families") or []:
+            if fid_ not in evs:
+                evs[fid_] = evidence.family_evidence(r, "f:" + fid_)
+                for rd in evs[fid_].readers:
+                    if rd.tone != "none" and rd.name and rd.name != rd.source:
+                        reader_names.setdefault(rd.source, rd.name)
+    order = evidence.reader_order(set(reader_names))[:2]
+    short_name = {s_: reader_names.get(s_, s_).split(", ")[-1] for s_ in order}
+    disc_slug = {}
+    counts = Counter()
     rows = []
     for s in STATEMENTS:
         fid = s["families"][0] if s.get("families") else None
         f = FAM.get(fid)
         di = DISC_OF.get(fid)
+        dname = DISCIPLINES[di]["name"] if di is not None else ""
+        dslug = slugify(dname) if dname else ""
+        disc_slug[dslug] = dname
         label = curly_prose((s.get("labels") or [s["id"]])[0])
-        nm = len(s["non_mathlib_imports"])
+        # the pairing, as lean_pairing reads it
+        bfid, doc, lrec = lean_family_doc(s["id"])
+        pinfo = lean_pairing(doc, s["id"]) if doc else {"state": "unavailable", "targets": [], "evidence": "none"}
+        ev_kind = pinfo.get("evidence", "none")
+        if pinfo["state"] == "producer-declared-binding":
+            ev_kind = "declared"
+        elif pinfo["state"] == "producer-cited-association":
+            ev_kind = "cited"
+        refs, sort_v = [], ""
+        for t in pinfo.get("targets") or []:
+            m, st, rec = ms_statement(doc, t)
+            if not st:
+                continue
+            name = backend_printed(rec, st)
+            href = (rec or {}).get("reading_page") or (f"papers/{quote(m['id'])}.html" if m else "")
+            refs.append(f'<a href="{esc(href)}">{esc(name)}</a><span class="cell__sub tex-auto">{ms_title_html(m)}</span>')
+            sort_v = sort_v or (tex_plain(m["title"]) + " " + name).lower()
+        how = T("pair." + ev_kind)
+        pair_cell = ("".join(refs) + f'<span class="cell__sub">{esc(how)}</span>') if refs else f'<span class="cell__none">{esc(how)}</span>'
+        classes = [ev_kind]
+        if len(refs) > 1:
+            classes.append("several")
+        if s["main_result"]:
+            classes.append("main")
+        # what the outside readers found about the family, in words
+        ev = evs.get(fid)
+        tones, rcells = {}, []
+        for side, src in enumerate(order):
+            rd = next((x for x in (ev.readers if ev else []) if x.source == src), None)
+            tone = rd.tone if rd and rd.term else "none"
+            tones[side] = tone
+            counts[(side, tone)] += 1
+            cell = (f'<span class="cell__plain">{esc(cap(evidence.say("tone_short." + tone)))}</span>'
+                    f'<span class="cell__sub">{esc(T("their_term", term=rd.term))}</span>') if tone != "none" else f'<span class="cell__none">{esc(T("not_read"))}</span>'
+            rcells.append(f'<td class="t-reader" data-v="{esc(tone if tone != "none" else "~")}" data-label="{esc(T("col_reader", name=short_name[src]))}">{cell}</td>')
+        acc = len((lrec or {}).get("accepted_current_sources") or [])
+        counts[ev_kind] += 1
+        # notes: definition holes, imports outside Mathlib, a declared axiom
         nh = len(s["comparator"].get("definition_names") or [])
-        rows.append(f'<tr data-q="{esc((label + " " + s["id"] + " " + (tex_plain(f["title"]) if f else "") + " " + (DISCIPLINES[di]["name"] if di is not None else "")).lower())}">'
-                    f'<td class="t-title" data-v="{esc(label.lower())}"><a href="statements/{esc(s["id"])}.html"><span class="md-math">{esc(label)}</span></a><code class="t-id">{esc(s["id"])}</code></td>'
-                    f'<td data-v="{esc(fid or "")}">{f"<a href=\"families/{fid}.html\">{fam_title_html(f)}</a>" if f else ""}</td>'
-                    f'<td data-v="{esc(DISCIPLINES[di]["name"] if di is not None else "")}">{esc(DISCIPLINES[di]["name"] if di is not None else "")}</td>'
-                    f'<td class="t-c" data-v="{1 if s["main_result"] else 0}">{esc(C("statements.yes") if s["main_result"] else C("statements.no"))}</td>'
-                    f'<td class="t-num" data-v="{s["vocabulary_count"]}">{num(s["vocabulary_count"])}</td>'
-                    f'<td class="t-num" data-v="{s["statement_lines"]}">{num(s["statement_lines"])}</td>'
-                    f'<td class="t-num" data-v="{nm}">{num(nm) if nm else ""}</td>'
-                    f'<td class="t-num" data-v="{nh}">{num(nh) if nh else ""}</td></tr>')
-    cols = [("statement", "t"), ("result", "t"), ("discipline", "t"), ("main", "n"), ("vocab", "n"), ("lines", "n"), ("imports", "n"), ("holes", "n")]
-    ths = "".join(f'<th scope="col" class="{"t-num" if t == "n" and k != "main" else ("t-c" if k == "main" else "")}" aria-sort="none"><button type="button" class="sort" data-sort="{i}" data-type="{t}">{esc(C("statements.col_" + k))}</button></th>' for i, (k, t) in enumerate(cols))
-    body = f"""<div class="frame page">
-<header class="phead">
+        nm = s["non_mathlib_imports"]
+        notes = []
+        if nh:
+            notes.append(T("note_holes_one") if nh == 1 else T("note_holes_many", n=num(nh)))
+        if nm:
+            notes.append(T("note_imports", names=", ".join(nm[:3]) + ("…" if len(nm) > 3 else "")))
+        if s.get("declares_axiom"):
+            notes.append(T("note_axiom"))
+        notes_html = "".join(f'<span class="cell__sub">{esc(n_)}</span>' for n_ in notes)
+        q = " ".join([label, s["id"], tex_plain(f["title"]) if f else "", dname, how]).lower()
+        rows.append(
+            f'<tr data-q="{esc(q)}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none")}" data-r="{tones.get(1, "none")}">'
+            f'<td class="t-title" data-v="{esc(label.lower())}"><a href="statements/{esc(s["id"])}.html"><span class="md-math">{esc(label)}</span></a>'
+            f'<code class="t-lid">{esc(s["id"])}</code><span class="cell__sub t-disc-inline">{esc(dname)}</span></td>'
+            f'<td data-v="{esc(fid or "")}" data-label="{esc(T("col_result"))}">{f"<a href=\"families/{fid}.html\">{fam_title_html(f)}</a>" if f else ""}</td>'
+            f'<td class="t-disc" data-v="{esc(dname)}">{esc(dname)}</td>'
+            f'<td class="t-pair" data-v="{esc(sort_v or "~")}" data-label="{esc(T("col_pair"))}">{pair_cell}</td>'
+            + "".join(rcells) +
+            f'<td class="t-num" data-v="{acc}" data-label="{esc(T("col_runs"))}">{num(acc)}</td>'
+            f'<td class="t-c" data-v="{1 if s["main_result"] else 0}" data-label="{esc(T("col_main"))}">{esc(C("statements.yes") if s["main_result"] else C("statements.no"))}</td>'
+            f'<td class="t-num" data-v="{s["vocabulary_count"]}" data-label="{esc(T("col_vocab"))}">{num(s["vocabulary_count"])}</td>'
+            f'<td class="t-num" data-v="{s["statement_lines"]}" data-label="{esc(T("col_lines"))}">{num(s["statement_lines"])}</td>'
+            f'<td class="t-notes" data-v="{len(notes)}" data-label="{esc(T("col_notes"))}">{notes_html}</td></tr>')
+    cols = [("statement", "s", ""), ("result", "s", ""), ("discipline", "s", "t-disc"), ("pair", "s", "t-pair")]
+    heads = [f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none"><button type="button" class="sort" data-sort="{i}" data-type="{t}">{esc(T("col_" + k))}</button></th>'
+             for i, (k, t, c) in enumerate(cols)]
+    for side, src in enumerate(order):
+        heads.append(f'<th scope="col" class="t-reader" aria-sort="none"><button type="button" class="sort" data-sort="{4 + side}" data-type="s">{esc(T("col_reader", name=short_name[src]))}</button></th>')
+    base = 4 + len(order)
+    for j, (k, c) in enumerate((("runs", "t-num"), ("main", "t-c"), ("vocab", "t-num"), ("lines", "t-num"), ("notes", ""))):
+        heads.append(f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none"><button type="button" class="sort" data-sort="{base + j}" data-type="n">{esc(T("col_" + k))}</button></th>')
+
+    def select(id_, label, key, opts):
+        return (f'<div class="filters__g"><label class="filters__h" for="{id_}">{esc(label)}</label>'
+                f'<select class="select" id="{id_}" data-filter="{key}">{"".join(opts)}</select></div>')
+    dcount = Counter(slugify(DISCIPLINES[DISC_OF[s["families"][0]]]["name"]) for s in STATEMENTS if s.get("families") and DISC_OF.get(s["families"][0]) is not None)
+    dopts = [f'<option value="">{esc(T("all_disciplines"))}</option>'] + [
+        f'<option value="{k}">{esc(v)} ({num(dcount[k])})</option>' for k, v in sorted(disc_slug.items(), key=lambda x: x[1]) if k]
+    popts = [f'<option value="">{esc(T("all_pairings"))}</option>'] + [
+        f'<option value="{k}">{esc(cap(T("pair." + k)))} ({num(counts[k])})</option>' for k in ("declared", "cited", "lean-words", "catalogue-words", "none") if counts[k]]
+    selects = [select("sf-d", T("filter_discipline"), "d", dopts), select("sf-c", T("filter_pairing"), "c", popts)]
+    for side, src in enumerate(order):
+        opts = [f'<option value="">{esc(T("reader_any"))}</option>'] + [
+            f'<option value="{tone}">{esc(cap(evidence.say("tone_short." + tone)))} ({num(counts[(side, tone)])})</option>'
+            for tone in evidence.TONES if counts[(side, tone)]]
+        selects.append(select(f"sf-{side}", T("filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts))
+    selects.append(f'<div class="filters__g filters__g--q"><label class="filters__h" for="sf-q">{esc(T("filter_words"))}</label>'
+                   f'<input class="filter-input" id="sf-q" type="search" data-filter="q" autocomplete="off" spellcheck="false" placeholder="{esc(T("filter_words_ph"))}"></div>')
+    sort_menu = [("0:s:ascending", "sort_name"), ("2:s:ascending", "sort_discipline"), ("3:s:ascending", "sort_pair"),
+                 (f"{base}:n:descending", "sort_runs"), (f"{base + 2}:n:descending", "sort_vocab"), (f"{base + 3}:n:descending", "sort_lines")]
+    sort_select = (f'<div class="filters__g filters__g--sort"><label class="filters__h" for="sf-sort">{esc(T("sort_label"))}</label>'
+                   f'<select class="select" id="sf-sort" data-sort-table="stmt-table">'
+                   + "".join(f'<option value="{v}">{esc(T(k))}</option>' for v, k in sort_menu) + "</select></div>")
+    total = len(STATEMENTS)
+    lede = T("lede", lean=NUM("statements_lean"), main=NUM("statements_lean_main_results"))
+    readers_note = T("readers_note", names=evidence.join_names([prose_credit(reader_names.get(s_, s_)) for s_ in order]))
+    body = f"""<div class="frame page page--families page--stmts">
+<header class="phead phead--compact">
  <h1 class="phead__title">{esc(C('statements.title'))}</h1>
- <p class="lede">{esc(C('statements.lede', lean=NUM('statements_lean'), main=NUM('statements_lean_main_results')))}</p>
+ <p class="phead__lede">{esc(lede)}</p>
 </header>
-<div class="filters"><label class="vh" for="tbl-filter">{esc(C('statements.filter'))}</label><input id="tbl-filter" class="filter-input" type="search" placeholder="{esc(C('statements.filter'))}" data-filter-rows="stmt-table"><p class="filters__n muted" aria-live="polite" data-shown-template="{esc(C('statements.shown', n='{n}'))}">{esc(C('statements.shown', n=len(STATEMENTS)))}</p></div>
-<div class="table-wrap"><table class="tbl tbl--sortable" id="stmt-table">
- <thead><tr>{ths}</tr></thead>
+<section class="band band--table" aria-labelledby="h-stmt-list">
+<h2 class="h2 vh" id="h-stmt-list">{esc(T('list_heading'))}</h2>
+<div class="filters filters--families" data-filter-families="stmt-table">
+ <button type="button" class="btn btn--ghost filters__toggle" aria-expanded="false" aria-controls="stmt-filters">{esc(T('filter_toggle'))}</button>
+ {sort_select}
+ <div class="filters__panel" id="stmt-filters">{''.join(selects)}</div>
+ <div class="filters__status">
+  <p class="filters__n" aria-live="polite" data-shown-template="{esc(T('shown', n='{n}', total=num(total)))}" data-criteria-lead="{esc(T('criteria_lead'))}">{esc(T('shown', n=num(total), total=num(total)))}</p>
+  <button type="button" class="btn btn--quiet filters__reset" hidden>{esc(T('reset'))}</button>
+ </div>
+ <p class="filters__note">{esc(readers_note)} {esc(T('pair_note'))}</p>
+</div>
+<p class="filters__empty" hidden>{esc(T('none_match'))}</p>
+<div class="table-wrap"><table class="tbl tbl--sortable tbl--families tbl--stmts" id="stmt-table">
+ <caption class="vh">{esc(T('caption'))}</caption>
+ <thead><tr>{''.join(heads)}</tr></thead>
  <tbody>{''.join(rows)}</tbody>
 </table></div>
+</section>
 </div>"""
-    write_page(rel, page(rel, C("statements.title"), C("statements.lede", lean=NUM("statements_lean"), main=NUM("statements_lean_main_results")), body, current="statements"))
+    write_page(rel, page(rel, C("statements.title"), lede, body, current="statements"))
 
 
 NUMBER_PACKETS = ("number-receipt", "number-members")

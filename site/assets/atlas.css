@@ -1056,3 +1056,54 @@ code.path { overflow-wrap: normal; word-break: normal; }
   .filters--families .filters__g--sort .select { min-width: 0; }
   .tbl--families td[data-label]:not(.t-lean):has(> .cell__dash:only-child) { display: none; }
 }
+
+/* family page: usability pass */
+/* Under the family title: the outside readers' verdict in words (the meaning the map's
+   colour carries) and the count of current, withdrawn and replaced papers, as the lede. */
+.fx .fx-fact--lede { margin-top: 10px; }
+.fx .fx-fact--lede + .fx-fact--lede { margin-top: 4px; }
+.fx .fx-verdict { color: var(--ink); }
+/* Connections: each row names the family paper on the other end of the citation. */
+.rel__by { font-size: var(--fs-small); color: var(--ink-soft); }
+.fx-within { margin: 0 0 18px; }
+.fx-within li { margin: 4px 0; max-width: 70ch; }
+.fx .fx-intro--comparator { margin-top: 6px; }
+
+/* map + search: usability pass */
+.sr__name, .sr__k { overflow-wrap: break-word; }
+.sr__x { display: block; margin-top: 2px; font: 400 var(--fs-small)/1.45 var(--serif); color: var(--ink-soft); overflow-wrap: break-word; }
+.sr__x:empty { display: none; }
+.sr__x code { font: 400 0.75rem/1.45 var(--mono); white-space: normal; overflow-wrap: anywhere; }
+.sr__x mark { background: color-mix(in oklab, var(--steel-text) 22%, transparent); color: inherit; border-radius: 2px; padding: 0 1px; }
+.sr__x .katex { font-size: 1em; }
+.sr-suggest { margin: 0; padding: 4px 18px 14px; font-size: var(--fs-meta); color: var(--ink-soft); }
+.sr-suggest__w { min-height: 28px; padding: 2px 8px; border: 1px solid var(--rule-strong); border-radius: var(--r-sm); background: var(--surface); color: var(--steel-text); font-size: var(--fs-small); cursor: pointer; }
+
+/* statements: lean pairing pass */
+.phead__thms { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.phead__thmk { color: var(--muted); font-size: var(--fs-small); }
+.phead__thm { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 6px; min-width: 0; }
+.phead__thm code { overflow-wrap: anywhere; }
+.phead__thm .copy, .lean__tools .copy { min-height: 28px; padding: 2px 10px; font-size: var(--fs-small); }
+.lean__tools { position: relative; }
+.lean__tools > .copy { display: block; margin: 0 0 6px auto; }
+.lean--cont { margin-top: 0; }
+.pair__target { margin: 0 0 18px; }
+.pair__method { margin-top: 14px; max-width: 72ch; }
+.tbl--stmts .t-lid { display: block; font-size: var(--fs-small); color: var(--faint); overflow-wrap: anywhere; }
+.tbl--stmts .t-pair { min-width: 14em; max-width: 22em; }
+.tbl--stmts .t-pair .cell__sub { display: block; }
+.tbl--stmts .t-notes { min-width: 10em; max-width: 16em; }
+.tbl--stmts .t-notes .cell__sub { display: block; }
+@media (max-width: 767px) {
+  .tbl--stmts .t-pair, .tbl--stmts .t-notes { min-width: 0; max-width: none; }
+  .tbl--stmts td.t-pair[data-label] > *, .tbl--stmts td.t-notes[data-label] > * { grid-column: 2; }
+  .tbl--stmts td.t-notes:not(:has(*)) { display: none; }
+}
+/* The header row stays in view: the list scrolls inside its own box, so the sticky
+   heads have a scrolling ancestor to stick to (the box also scrolls sideways). */
+@media (min-width: 768px) {
+  .page--stmts .table-wrap { max-height: calc(100vh - 96px); max-height: calc(100dvh - 96px); overflow: auto; overscroll-behavior: contain; }
+  .tbl--stmts th { position: sticky; top: 0; z-index: 2; background: var(--page); box-shadow: 0 1px 0 var(--rule-strong); }
+  .tbl--stmts .t-title { min-width: 15em; max-width: 24em; }
+}

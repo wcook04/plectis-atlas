@@ -1233,6 +1233,28 @@
       return h;
     }
     // Typeset every card: each result with its own paper's macros.
+    // A displayed formula wider than its card scrolls sideways: it takes focus, so a
+    // keyboard reader can scroll it with the arrow keys (which then do not step).
+    var SCROLLERS = '.m-d, .u-bc__x, .u-stmt, .u-lean, .u-example, .lean, .tex-fallback';
+    function markScrollers(scope) {
+      if (!scope) return;
+      Array.prototype.forEach.call(scope.querySelectorAll(SCROLLERS), function (x) {
+        var wide = x.scrollWidth > x.clientWidth + 1;
+        if (wide && !x.hasAttribute('tabindex')) { x.setAttribute('tabindex', '0'); x.setAttribute('data-u-scroller', ''); }
+        else if (!wide && x.hasAttribute('data-u-scroller')) { x.removeAttribute('tabindex'); x.removeAttribute('data-u-scroller'); }
+      });
+    }
+    // True when the arrow key belongs to what has focus: a field, or a box that scrolls sideways.
+    function arrowsBelongTo(target) {
+      for (var n = target; n && n.nodeType === 1 && n !== document.body; n = n.parentElement) {
+        if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName) || n.isContentEditable) return true;
+        if (n.matches(SCROLLERS + ', pre, .table-wrap') && n.scrollWidth > n.clientWidth + 1) {
+          var ox = getComputedStyle(n).overflowX;
+          if (ox === 'auto' || ox === 'scroll') return true;
+        }
+      }
+      return false;
+    }
     function typesetBoard(fi) {
       var di = fams[fi].d;
       Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--r'), function (c) { katexIn(c, c.getAttribute('data-paper'), di); });
@@ -1254,6 +1276,7 @@
       papersEl.style.columnCount = narrow() ? '' : String(per);
       cols.forEach(function (c) { c.hidden = false; });
       drawWires();
+      markScrollers(boardEl);
       repositionBoardCard();
     }
     function drawWires() {
@@ -2173,6 +2196,7 @@
           window.katex.render(src, s, { displayMode: display, macros: macros, throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
         } catch (err) { s.textContent = tex; s.classList.add('m-fail'); }
       }
+      if (el === viewEl) requestAnimationFrame(function () { markScrollers(viewEl); });
       // Abstracts retain the source's delimiters; render those with the same
       // paper-local macros as explicit theorem spans before the global pass.
       if (window.renderMathInElement) Array.prototype.forEach.call(el.querySelectorAll('.tex-auto[data-u-paper]:not([data-done])'), function (host) {
@@ -2314,7 +2338,10 @@
     }
     function familyHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
-      var h = '<p class="u-kicker">' + escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })) + '</p>';
+      // The row above already says "3 of 37 families in Combinatorics"; the kicker then
+      // names the family by its number in the release, and the discipline only once.
+      var stepped = !!stepperHtml(obj(f.id));
+      var h = '<p class="u-kicker">' + escapeHtml(stepped ? T('family.short', { num: f.num }) : T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })) + '</p>';
       if (!det) return h + loadingHtml(f.d, 'discipline.loading', 'discipline.failed');
       h += sectionNav(['papers', 'lean', evidenceSection(det), 'connections'].filter(function (part) { return part !== 'lean' || f.lean.length; }));
       h += para(T('panel.family_counts', { papers: count('papers', f.papers.length), lean: count('lean', f.lean.length) }), 'u-facts');
@@ -2513,6 +2540,7 @@
       return searchLoading;
     }
     var matchList = [];
+    var searchShown = { q: null, kind: '', all: false };   // the kind chip and "Show all" for the current words
     var searchFolded = false;   // the reader opened a match and folded the list away
     var searchEdited = false;
     function rememberSearch() {
@@ -2557,21 +2585,16 @@
       // hits light their families here and list beside the map. The map's own rows
       // stand in until it is.
       if (window.AtlasSearch && typeof window.AtlasSearch.query === 'function') {
-        return Promise.resolve(window.AtlasSearch.query(raw)).then(function (hits) {
+        var AS = window.AtlasSearch;
+        if (q !== searchShown.q) searchShown = { q: q, kind: '', all: false };
+        var want = searchShown.all ? 100000 : 400;
+        return Promise.all([AS.query(raw, { statements: want }), AS.names ? AS.names() : null]).then(function (both) {
           if (query !== q) return;
-          hits = hits || [];
-          // Disciplines, families, papers and Lean statements before the paper
-          // statements that mention the words; within a kind, an entry whose own name
-          // holds every word comes first (the search dialog orders its groups so).
-          // Accents folded on both sides, so "erdos" ranks the Erdős families as "Erdős" does.
-          var fold = function (list) { return list.map(function (t) { return String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }); };
-          var toks = window.AtlasSearch.tokens ? fold(window.AtlasSearch.tokens(q)) : [];
-          var order = { discipline: 0, family: 1, manuscript: 2, lean: 3, statement: 4 };
-          hits = hits.map(function (h, i) {
-            var own = toks.length ? fold(window.AtlasSearch.tokens(h.name || '')) : [];
-            var named = toks.every(function (t) { return own.indexOf(t) >= 0; });
-            return { h: h, i: i, k: order[h.kind] != null ? order[h.kind] : 5, n: named ? 0 : 1 };
-          }).sort(function (a, b) { return a.k - b.k || a.n - b.n || a.i - b.i; }).map(function (x) { return x.h; });
+          var hits = both[0] || [], names = both[1];
+          // One order with the search dialog (assets/atlas.js rankByName): disciplines,
+          // families, papers, statements, Lean statements, the closest names first.
+          var kinds = hits.kindOrder || AS.kindOrder || ['discipline', 'family', 'manuscript', 'statement', 'lean'];
+          var counts = hits.counts || {};
           matches = {}; matchFam = {}; matchList = [];
           hits.forEach(function (hit) {
             if (obj(hit.id)) { matches[hit.id] = true; matchList.push(hit.id); }
@@ -2579,9 +2602,14 @@
             var own = obj(hit.id), f = famOf(own);
             if (f >= 0) matchFam[f] = true;
           });
-          var shown = hits.slice(0, 60);
-          var kindKey = { manuscript: 'paper' };
-          var kindWord = function (k) { var key = 'search.kind_' + (kindKey[k] || k); return T(key) !== key ? T(key) : k; };
+          var total = 0;
+          kinds.forEach(function (k) { total += counts[k] || 0; });
+          if (!hits.length) total = 0;
+          var kind = searchShown.kind && counts[searchShown.kind] ? searchShown.kind : '';
+          var pool = kind ? hits.filter(function (h) { return h.kind === kind; }) : hits;
+          var poolN = kind ? counts[kind] : total;
+          var shown = searchShown.all ? pool : pool.slice(0, 60);
+          var kindWord = function (k) { return T('search.kind_' + ({ manuscript: 'paper' }[k] || k)); };
           // A name is the paper's own text: its TeX dashes become dashes outside $...$,
           // and its mathematics is typeset below.
           var words = function (s) {
@@ -2589,27 +2617,72 @@
               return j % 2 ? part : part.replace(/---/g, '—').replace(/--/g, '–');
             }).join('');
           };
-          var head = hits.length ? (hits.length === 1 ? T('search.count_one') : T('search.count', { n: hits.length })) : T('search.none');
-          if (hits.length > shown.length) head += ' ' + T('search.shown', { shown: shown.length });
-          resultsEl.hidden = false;
-          resultsEl.innerHTML = '<p class="u-note" role="status">' + escapeHtml(head) + '</p><ul class="u-rows">' + shown.map(function (hit) {
-            // A statement with no title of its own is named by its label in the
-            // index ("thm:main"); the map names it as its paper prints it.
+          var head = total ? (total === 1 ? T('search.count_one') : T('search.count', { n: fmtNum(total) })) : T('search.none');
+          var h = '<p class="u-note u-results__head" role="status">' + escapeHtml(head) + '</p>';
+          // Chips: every kind that matched, with its count; one shows only that kind.
+          var present = kinds.filter(function (k) { return counts[k]; });
+          if (present.length > 1) {
+            h += '<div class="u-chips" role="group" aria-label="' + escapeHtml(T('search.filter_label')) + '">' +
+              '<button type="button" class="u-chip" data-u-kind="" aria-pressed="' + (!kind) + '">' + escapeHtml(T('search.all')) + ' <span class="u-chip__n">' + fmtNum(total) + '</span></button>' +
+              present.map(function (k) {
+                return '<button type="button" class="u-chip" data-u-kind="' + k + '" aria-pressed="' + (kind === k) + '">' + escapeHtml(kindWord(k)) + ' <span class="u-chip__n">' + fmtNum(counts[k]) + '</span></button>';
+              }).join('') + '</div>';
+          }
+          var row = function (hit) {
             var own = obj(hit.id);
-            var AS = window.AtlasSearch, isLabel = /^[A-Za-z]+:\S*$/.test(hit.name || '');
-            var nameHtml = own && hit.kind === 'statement' && isLabel ? escapeHtml(nameOf(own))
-              : isLabel && AS.statementName ? escapeHtml(AS.statementName(hit.name))
-              : AS.richName ? AS.richName(hit.name) : escapeHtml(words(hit.name));
-            var inner = '<span class="u-row__k">' + escapeHtml(kindWord(hit.kind)) + '</span><span class="u-row__t md-math">' + nameHtml + '</span>';
+            var nameHtml;
+            if (hit.kind === 'statement') nameHtml = AS.richName(AS.displayName ? AS.displayName(hit, names) : hit.name);
+            else if (hit.kind === 'lean') nameHtml = '<code>' + escapeHtml(hit.id.slice(2)) + '</code>';
+            else nameHtml = AS.richName ? AS.richName(hit.name) : escapeHtml(words(hit.name));
+            var inner = '<span class="u-row__t md-math">' + nameHtml + '</span>';
             var fo = obj((hit.family_ids || [])[0]);
-            if (own && own.kind === 'd') inner += '<span class="u-row__n">' + escapeHtml(discCounts(D.disciplines[own.i])) + '</span>';
-            // A family's row names its discipline; any other row names its family.
-            else if (fo && hit.kind === 'family') inner += '<span class="u-row__n">' + escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.disciplines[D.families[fo.i].d].name) + '</span>';
-            else if (fo) inner += '<span class="u-row__n">' + escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.families[fo.i].title) + '</span>';
-            if (obj(hit.id)) return '<li>' + goBtn(hit.id, inner, 'u-row u-row--hit') + '</li>';
+            var ctx = '';
+            if (own && own.kind === 'd') ctx = escapeHtml(discCounts(D.disciplines[own.i]));
+            // A family's row names its discipline; a statement its paper; any other row its family.
+            else if (fo && hit.kind === 'family') ctx = escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.disciplines[D.families[fo.i].d].name);
+            else if (hit.kind === 'statement' && hit.paper) ctx = AS.richName(T('search.in_paper', { title: hit.paper }));
+            else if (hit.kind === 'lean' && hit.name && hit.name !== hit.id.slice(2)) ctx = AS.richName(hit.name) + (fo ? escapeHtml(', ' + T('family.short', { num: D.families[fo.i].num })) : '');
+            else if (fo) ctx = escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.families[fo.i].title);
+            if (ctx) inner += '<span class="u-row__n md-math">' + ctx + '</span>';
+            if (hit.idx != null && hit.kind !== 'discipline') inner += '<span class="u-row__x" data-snip="' + hit.idx + '"></span>';
+            if (own) return '<li>' + goBtn(hit.id, inner, 'u-row u-row--hit') + '</li>';
             return '<li><a class="u-row u-row--hit" href="' + escapeHtml(hit.url) + '">' + inner + '</a></li>';
-          }).join('') + '</ul>';
+          };
+          kinds.forEach(function (k) {
+            var rows = shown.filter(function (hit) { return hit.kind === k; });
+            if (!rows.length) return;
+            h += '<h3 class="u-h3 u-results__kind">' + escapeHtml(kindWord(k)) + ' <span class="u-chip__n">' + fmtNum(counts[k] || rows.length) + '</span></h3>';
+            h += '<ul class="u-rows">' + rows.map(row).join('') + '</ul>';
+          });
+          if (poolN > shown.length) {
+            h += '<p class="u-results__more"><button type="button" class="u-more-btn" data-u-all>' + escapeHtml(T('search.show_all', { n: fmtNum(poolN) })) + '</button> <span class="u-note">' + escapeHtml(T('search.shown', { shown: fmtNum(shown.length) })) + '</span></p>';
+          }
+          resultsEl.hidden = false;
+          resultsEl.innerHTML = h;
           if (window.atlasRenderMath) window.atlasRenderMath(resultsEl);
+          // Each row's line of text with the matched words marked, as it arrives.
+          if (AS.snippet) Array.prototype.forEach.call(resultsEl.querySelectorAll('[data-snip]'), function (x) {
+            var hit = shown.filter(function (sh) { return String(sh.idx) === x.getAttribute('data-snip'); })[0];
+            if (!hit) return;
+            AS.snippet(hit, hits).then(function (sn) {
+              if (query !== q || !x.isConnected) return;
+              if (!sn) { x.remove(); return; }
+              x.innerHTML = sn.code ? '<code>' + sn.html + '</code>' : sn.html;
+              if (!sn.code && window.atlasRenderMath) window.atlasRenderMath(x);
+            });
+          });
+          // Nothing found: the title words nearest to what was typed.
+          if (!total && hits.missing && hits.missing.length && AS.suggest) {
+            AS.suggest(hits.missing).then(function (ws) {
+              if (query !== q || !ws.length) return;
+              var p = document.createElement('p');
+              p.className = 'u-note u-suggest';
+              p.innerHTML = escapeHtml(T('search.suggest')) + ' ' + ws.map(function (w) {
+                return '<button type="button" class="u-suggest__w" data-u-suggest="' + escapeHtml(w) + '" data-u-for="' + escapeHtml(hits.missing[0]) + '">' + escapeHtml(w) + '</button>';
+              }).join(', ');
+              resultsEl.appendChild(p);
+            });
+          }
           draw();
           return matchList;
         }, function () {});
@@ -2849,6 +2922,16 @@
         });
       });
     });
+    if (resultsEl) resultsEl.addEventListener('click', function (e) {
+      var chip = e.target.closest('[data-u-kind]'), all = e.target.closest('[data-u-all]'), sug = e.target.closest('[data-u-suggest]');
+      if (chip) { searchShown.kind = chip.getAttribute('data-u-kind'); searchShown.all = false; runSearch(true).then(function () { var c = resultsEl.querySelector('[data-u-kind="' + searchShown.kind + '"]'); if (c) c.focus(); }); }
+      else if (all) { searchShown.all = true; runSearch(true); }
+      else if (sug && searchIn) {
+        var re = new RegExp(sug.getAttribute('data-u-for').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+        searchIn.value = re.test(searchIn.value) ? searchIn.value.replace(re, sug.getAttribute('data-u-suggest')) : sug.getAttribute('data-u-suggest');
+        searchEdited = true; runSearch(); searchIn.focus();
+      }
+    });
     if (searchIn) {
       var t = 0;
       searchIn.addEventListener('focus', function () { if (D && !window.AtlasSearch) loadSearch().catch(function () {}); });
@@ -2889,6 +2972,7 @@
       if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
       // Left and right step to the previous or next sibling at the same level.
       if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && sel && !e.shiftKey && !document.querySelector('dialog[open]')) {
+        if (arrowsBelongTo(e.target) || arrowsBelongTo(document.activeElement)) return;
         var to = siblingKey(obj(sel), e.key === 'ArrowLeft' ? -1 : 1);
         if (to) { e.preventDefault(); select(to, { trail: true }); focusArrival(); }
         return;
