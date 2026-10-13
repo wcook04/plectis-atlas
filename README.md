@@ -7,7 +7,7 @@ An independent reader for [OpenAI’s mathematics release](https://github.com/op
 <a href="https://wcook04.github.io/plectis-atlas/">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/map-dark.png">
-    <img src="docs/map-light.png" width="1440" height="790" alt="The Plectis Atlas map: the release’s seventeen disciplines as labelled regions, each holding its families as discs coloured by what two outside readers find the family’s Lean states, with a disc left open where the release has no Lean.">
+    <img src="docs/map-light.png" width="1440" alt="The Plectis Atlas map: the release’s seventeen disciplines as labelled regions, each holding its families as discs coloured by what two outside readers find the family’s Lean states, with a disc left open where the release has no Lean.">
   </picture>
 </a>
 
@@ -22,7 +22,7 @@ OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lea
 <a href="https://wcook04.github.io/plectis-atlas/#o=f%3A003">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/family-dark.png">
-    <img src="docs/family-light.png" width="1440" height="790" alt="Family 003, the quasi-Riemann hypothesis, opened on the map: its papers as columns, each theorem with the opening of its statement typeset, the Lean statements paired with them joined by dashed lines, and the families that cite it and that it cites on either side.">
+    <img src="docs/family-light.png" width="1440" alt="Family 003, the quasi-Riemann hypothesis, opened on the map: its papers as columns, each theorem with the opening of its statement typeset, the Lean statements paired with them joined by dashed lines, and the families that cite it and that it cites on either side.">
   </picture>
 </a>
 
@@ -67,7 +67,7 @@ All counts describe the release at the commit in [`upstream.json`](upstream.json
 - The TeX sources of the current manuscripts contain 2,255 theorem, 4,745 proposition, 1,267 corollary and 12,397 lemma environments, repeated statements included.
 - **Draft scope reading.** Of 416 challenge files, an AI agent drafted 307 as stating a paper's headline theorem, 21 part of one, 28 a consequence, 24 a weaker form and 35 a supporting result; for 1 OpenAI's note leaves it unclear. The agent classified each file from OpenAI's scope note, quoting the note; no person has reviewed it.
 - **Outside readers.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine) each read every family's Lean against its headline, independently of OpenAI and of each other. Their findings, in their own terms, are on each family page and in the Families list.
-- **Every paper in the browser.** 689 of the 719 current manuscripts have a full reading page made from their TeX, with every formula, cross-reference, citation and theorem anchor checked (figures are shown as placeholders); the other 30 have a reading page with a banner listing what did not convert. Formulas are checked with the KaTeX version the site loads. The PDF stays the reference (`data/paper_acceptance.json`).
+- **Every paper in the browser.** 696 of the 719 current manuscripts have a full reading page made from their TeX, with every formula, cross-reference, citation and theorem anchor checked (figures are shown as placeholders); the other 23 have a reading page with a banner listing what did not convert. Formulas are checked with the KaTeX version the site loads. The PDF stays the reference (`data/paper_acceptance.json`).
 
 Counted by Statement Map from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb), generation `e44fe048bf34`. The unit, rule, state and credit behind each number, and its members, are on the site's Numbers page.
 <!-- numbers:end -->
