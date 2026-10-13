@@ -80,3 +80,10 @@ The core Python scripts use the standard library and need Python 3.10 or newer. 
 ## Writing
 
 Explanations follow `STYLE.md`. When you draft prose for a person, keep their own sentences where they wrote them, and write plainly: short declarative sentences, every term defined at first use, no slogans. The atlas's own documentation uses British spelling and avoids em dashes.
+
+## Folder organisation
+
+For tree changes, new file families or file placement, read
+[repository-organization](skills/repository-organization/SKILL.md) and the
+[local directory roles](docs/repository_layout.json). Preserve source owners and
+public interfaces; run the layout gate on the worktree and on staged contents.
