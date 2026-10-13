@@ -118,6 +118,9 @@ give space and emphasis to what the current task needs, at each depth.
   subscriber per discipline. Only the current board and latest sidebar visit
   refresh when it arrives; revisiting a node cannot queue repeated typesetting
   or layout work.
+- A pointer double-click retains the first card through reading-panel reflow.
+  Its second click opens that card even if the sidebar has moved beneath it;
+  dragging, cancelled gestures and modified clicks do not open it.
 
 ## The thread
 
