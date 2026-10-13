@@ -5056,6 +5056,9 @@ def main():
                     help="the pinned openai/math checkout")
     ap.add_argument("--out", default=str(OUT), help="site build directory (default site/_build)")
     args = ap.parse_args()
+    if not (Path(args.upstream) / "preprints").is_dir():
+        ap.error(f"upstream preprints directory is missing: {Path(args.upstream) / 'preprints'}. "
+                 "Run sh scripts/fetch_upstream.sh, or pass --upstream with the pinned openai/math checkout.")
     t0 = time.time()
     import_site()
     ms = load_manuscripts()

@@ -17,9 +17,31 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import build_papers as bp  # noqa: E402
+
+
+class MissingUpstream(unittest.TestCase):
+    def test_missing_checkout_fails_before_loading_or_writing_metadata(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "existing output"
+            output.mkdir()
+            sentinel = output / "sentinel.txt"
+            sentinel.write_text("preserve existing pages", encoding="utf-8")
+            for extra in ([], ["--no-math-check"]):
+                with self.subTest(extra=extra), \
+                        patch.object(sys, "argv", ["build_papers.py", "--upstream",
+                                                 str(Path(directory) / "missing"),
+                                                 "--out", str(output), *extra]), \
+                        patch.object(bp, "import_site") as load_site, \
+                        self.assertRaises(SystemExit) as error:
+                    bp.main()
+                self.assertEqual(error.exception.code, 2)
+                load_site.assert_not_called()
+                self.assertEqual(list(output.iterdir()), [sentinel])
+                self.assertEqual(sentinel.read_text(), "preserve existing pages")
 
 
 class LayoutCommands(unittest.TestCase):
