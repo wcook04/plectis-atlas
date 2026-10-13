@@ -1107,3 +1107,14 @@ code.path { overflow-wrap: normal; word-break: normal; }
   .tbl--stmts th { position: sticky; top: 0; z-index: 2; background: var(--page); box-shadow: 0 1px 0 var(--rule-strong); }
   .tbl--stmts .t-title { min-width: 15em; max-width: 24em; }
 }
+
+/* round 2: list pages */
+/* A head that names a glossary term: the words link the term, the arrow beside them sorts. */
+th > a.term + .sort--arrow { min-width: 24px; min-height: 24px; margin-left: 2px; vertical-align: baseline; }
+th > a.term + .sort--arrow::after { content: "\2195"; }
+th[aria-sort="ascending"] > a.term + .sort--arrow::after { content: "\2191"; }
+th[aria-sort="descending"] > a.term + .sort--arrow::after { content: "\2193"; }
+.filters__h a.term { color: inherit; }
+/* "Search all text": the site search with the same words, under the family-name box. */
+.filters__all { display: inline-block; margin-top: 4px; font-size: var(--fs-small); color: var(--ink-soft); }
+.filters__g--q { flex-basis: 14rem; }

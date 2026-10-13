@@ -799,6 +799,15 @@ class TexConv:
                 lab, j2 = brace_group(seg, j, "[", "]")
                 seg = seg[j2:]
             items.append((lab, seg))
+        # A paper's own item labels (label=(G\arabic*)) print as the paper prints them,
+        # (G1), (G2), (G3), which the statement's own references then name.
+        tpl = list_label_template(opt) if kind == "enumerate" else None
+        if tpl:
+            n = 0
+            for i, (lab, seg) in enumerate(items):
+                if lab is None:
+                    n += 1
+                    items[i] = (re.sub(r"\\(arabic|alph|Alph|roman|Roman)\*", lambda m: _LIST_COUNTERS[m.group(1)](n), tpl), seg)
         style = "decimal"
         o = opt or ""
         if "roman" in o or re.search(r"\(?i\)", o):
@@ -820,6 +829,33 @@ class TexConv:
             lis.append(f'<li><span class="li-lab">{label}</span><div class="li-body">{self.blocks(seg)}</div></li>')
         tag = "ul" if kind == "itemize" else "ol"
         return f'{BLOCK_OPEN}<{tag} class="tex-list">{"".join(lis)}</{tag}>{BLOCK_CLOSE}'
+
+
+_LIST_COUNTERS = {"arabic": str, "alph": lambda n: chr(96 + n), "Alph": lambda n: chr(64 + n),
+                  "roman": lambda n: roman(n), "Roman": lambda n: roman(n).upper()}
+
+
+def list_label_template(opt: str) -> str | None:
+    """The label= key of an enumerate's options ("label=\\textup{(G\\arabic*)},ref=G\\arabic*"),
+    braces and all, or None when the options set no counter label."""
+    depth, start, parts = 0, 0, []
+    for i, ch in enumerate(opt or ""):
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+        elif ch == "," and depth == 0:
+            parts.append(opt[start:i])
+            start = i + 1
+    parts.append((opt or "")[start:])
+    for p in parts:
+        k, eq, v = p.partition("=")
+        if eq and k.strip() == "label":
+            v = v.strip()
+            if v.startswith("{") and v.endswith("}"):
+                v = v[1:-1]
+            return v if re.search(r"\\(?:arabic|alph|Alph|roman|Roman)\*", v) else None
+    return None
 
 
 def _top_level(t: str) -> str:
@@ -1248,7 +1284,7 @@ def RD():
 
 SEARCH_TEXT_KEYS = ("family", "in-paper", "in-family", "discipline-n", "found", "found-one", "missing-one", "missing-many",
                     "apart", "failed", "more", "truncated", "kind-family", "kind-lean", "kind-manuscript",
-                    "kind-statement", "kind-discipline")
+                    "kind-statement", "kind-discipline", "suggest")
 
 
 def search_data_attrs() -> str:
@@ -1513,6 +1549,13 @@ def lean_siblings(sid: str, root: str):
     return items, ids.index(sid)
 
 
+class Siblings(tuple):
+    """(items, index), as every sibling finder returns, with the words for this page's
+    place when the plain count needs qualifying (papers counted with withdrawn papers
+    and earlier editions say so)."""
+    position = None
+
+
 def paper_siblings(slug: str, root: str):
     """The papers of slug's family in the family page's order (current papers, previous
     editions, then papers withdrawn since release day), and slug's place among them."""
@@ -1535,7 +1578,15 @@ def paper_siblings(slug: str, root: str):
         items.append((f"{root}papers/{quote(x)}.html",
                       ms_title_html(mx) + (f' <span class="sib__st">({esc(st)})</span>' if st else ""),
                       tex_plain(mx["title"]) + (f" ({st})" if st else "")))
-    return items, ids.index(slug)
+    found = Siblings((items, ids.index(slug)))
+    nw = sum(1 for x in ids if MS[x]["status"] == "withdrawn")
+    ne = sum(1 for x in ids if MS[x]["status"] not in ("current", "withdrawn"))
+    what = ([C("siblings.withdrawn_1") if nw == 1 else C("siblings.withdrawn_n", k=nw)] if nw else []) + \
+           ([C("siblings.editions_1") if ne == 1 else C("siblings.editions_n", k=ne)] if ne else [])
+    if what:
+        found.position = C("siblings.paper_including", n=ids.index(slug) + 1, total=len(ids),
+                           what=C("siblings.and_join").join(what))
+    return found
 
 
 def sibling_nav(kind: str, found, **kw) -> str:
@@ -1559,7 +1610,8 @@ def sibling_nav(kind: str, found, **kw) -> str:
 
     prev_ = link(i - 1, "prev") if i > 0 else '<span class="sib__a sib__a--prev" aria-hidden="true"></span>'
     next_ = link(i + 1, "next") if i + 1 < len(items) else '<span class="sib__a sib__a--next" aria-hidden="true"></span>'
-    pos = f'<p class="sib__pos">{esc(C("siblings." + kind + "_position", n=i + 1, total=len(items), **kw))}</p>'
+    pos_words = getattr(found, "position", None) or C("siblings." + kind + "_position", n=i + 1, total=len(items), **kw)
+    pos = f'<p class="sib__pos">{esc(pos_words)}</p>'
     return (f'<nav class="sib" aria-label="{esc(C("siblings." + kind + "_label", **kw))}">'
             f'{pos}{prev_}{next_}</nav>')
 
@@ -2499,8 +2551,12 @@ def needed_definitions(stmt, cap=24):
     return found, spans, lines, vocab
 
 
-def definitions_html(stmt, lines_html, cap=24):
+def definitions_html(stmt, lines_html, cap=24, shown=()):
+    """The local definitions the checked statement reaches, each with its source lines.
+    A definition whose lines the Lean block above already shows (shown: 0-based inclusive
+    line ranges, such as the definition a theorem's type names) is not repeated."""
     names, spans, lines, vocab = needed_definitions(stmt, cap)
+    names = [n_ for n_ in names if not any(a <= spans[n_][0] and spans[n_][1] <= b for a, b in shown)]
     if not names:
         return ""
     items = []
@@ -2985,6 +3041,10 @@ def lean_pairing(doc: dict, lid: str) -> dict:
     return out
 
 
+# Every page counts the pairing these pages show (the Families list, the cards, the map).
+evidence.PAIRING_READER = lean_pairing
+
+
 def pairing_terms(pinfo: dict, target: str | None = None) -> dict:
     """{lean, note, catalogue}: the words a candidate pairing was found by, split by where
     they come from."""
@@ -2999,9 +3059,15 @@ def pairing_terms(pinfo: dict, target: str | None = None) -> dict:
 
 
 def pair_targets(doc: dict) -> dict:
-    """Lean id -> (paper statement id or None, pairing state) for every Lean statement of a
-    family, from lean_pairing: the shape the map board's _pair_targets returns."""
-    return {l["id"]: (lean_pairing(doc, l["id"])["target"], lean_pairing(doc, l["id"])["state"]) for l in doc.get("lean") or []}
+    """Lean id -> (paper statement ids, pairing state) for every Lean statement of a
+    family, from lean_pairing. The ids are every statement the Lean is paired with, the
+    clearest first; an empty list is "no confident match". The map board and the family
+    page both read this, so they draw the same pairs."""
+    out = {}
+    for l in doc.get("lean") or []:
+        p = lean_pairing(doc, l["id"])
+        out[l["id"]] = (list(p.get("targets") or ([p["target"]] if p.get("target") else [])), p["state"])
+    return out
 
 
 def backend_statement(doc: dict, stmt_id: str) -> dict | None:
@@ -3322,7 +3388,7 @@ def build_statement(stmt):
     _ranges = (lean_key_ranges(stmt["lean"], _tg) if _tg else
                sorted({sp for n_, sp in decl_spans(stmt)[0].items() if n_ in (stmt["comparator"].get("definition_names") or [])}))
     lean_copy = "\n\n".join("\n".join(_src[a:b + 1]) for a, b in _ranges)
-    defs = definitions_html(stmt, lines_html)
+    defs = definitions_html(stmt, lines_html, shown=_ranges)
     holes = def_holes(stmt)
     definition_only = not stmt["comparator"]["theorem_names"] and bool(holes)
     lean_intro = (LW("panel.intro_holes", names=", ".join(h["short"] for h in holes))
@@ -3550,6 +3616,26 @@ def quiet_none(label: str) -> str:
     return f'<span class="cell__none cell__dash"><span aria-hidden="true">\u2013</span><span class="vh">{esc(label)}</span></span>'
 
 
+def head_term(tid, label_html: str) -> str:
+    """A column head or filter label that is also its glossary term, when the glossary
+    has one (the same link and hover as [[id|text]] in copy)."""
+    return term_link(tid, label_html) if tid and tid in GLOSSARY else label_html
+
+
+def sort_head(i: int, typ: str, label: str, tid=None) -> str:
+    """A sortable column head. With a glossary term, the words link the term and the
+    arrow beside them sorts; otherwise the whole head is the sort button."""
+    if tid and tid in GLOSSARY:
+        return (f'{term_link(tid, esc(label))}<button type="button" class="sort sort--arrow" data-sort="{i}" data-type="{typ}" '
+                f'aria-label="{esc(C("explain.sort_by", col=label))}"></button>')
+    return f'<button type="button" class="sort" data-sort="{i}" data-type="{typ}">{esc(label)}</button>'
+
+
+def reader_term(source: str):
+    """The glossary term for an outside reader ("mathvet", "cert-machine"), if there is one."""
+    return source if source in GLOSSARY else None
+
+
 def build_explain():
     """The Families list: all of the release's families as rows, each state said in words
     from the backend's records (scripts/evidence.py): papers, Lean statements, each
@@ -3560,8 +3646,12 @@ def build_explain():
     rel = "explain.html"
     r = RD()
     evs = evidence.all_families(r)
-    counts = evidence.legend_counts(evs)
+    counts = dict(evidence.legend_counts(evs))
     say_e = evidence.say
+    # The map's colour for each family, by the map's own rule, so that every count in
+    # the map's colour key is reproduced here by one filter (build_universe.KEY_FILTERS).
+    import build_universe as BU
+    colour_words = json.loads((SITE / "copy_universe.json").read_text(encoding="utf-8"))["key"]
     # The two readers' names, in the order the evidence vocabulary sets.
     reader_names = {}
     for ev in evs:
@@ -3587,10 +3677,8 @@ def build_explain():
             classes.append("lean")
             if ev.agreement == "disagree":
                 classes.append("disagree")
-            if ev.pairing == "candidate-pairing":
-                classes.append("thread_candidate")
-            elif ev.pairing in ("producer-cited-association", "producer-declared-binding"):
-                classes.append("thread_cited")
+            # how its Lean statements are paired, one class per kind present (scripts/evidence.py)
+            classes += list(ev.pairing_classes)
         else:
             classes.append("nolean")
         if ev.checks:
@@ -3601,6 +3689,21 @@ def build_explain():
             classes.append("explained_by_others")
         if problems:
             classes.append("problems_reported")
+        # the same records that write the row's edition note
+        if ev.withdrawn:
+            classes.append("has_withdrawn")
+        if ev.editions:
+            classes.append("has_edition")
+        for key in ("has_withdrawn", "has_edition"):
+            if key in classes:
+                counts[key] = counts.get(key, 0) + 1
+        tone = BU.tone_class(ev)
+        counts["t_" + tone] = counts.get("t_" + tone, 0) + 1
+        # papers elsewhere in the release that cite one of the family's papers, by the
+        # rule the family page's "Cited by" list uses
+        own = set(f["manuscripts"]) if f else set()
+        citing = {c for slug in own for c in (MS.get(slug, {}).get("cited_by_in_collection") or []) if c not in own}
+        cited_n = len(citing)
         title = fam_title_html(f) if f else esc(ev.name)
         name_plain = tex_plain(f["title"]) if f else ev.name
         # papers
@@ -3663,34 +3766,43 @@ def build_explain():
             expl = reading + status
         rows.append(
             f'<tr id="f-{fid}" data-q="{esc((fid + " " + name_plain + " " + dname).lower())}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none") if k else "nolean"}" '
-            f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}">'
+            f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}" data-t="{tone}">'
             f'<td class="t-num t-id" data-v="{fid}">{fid}</td>'
             f'<td class="t-title" data-v="{esc(name_plain.lower())}"><a href="families/{fid}.html">{title}</a>'
             f'<span class="cell__sub t-disc-inline">{esc(dname)}</span>{editions}{agree}</td>'
             f'<td class="t-disc" data-v="{esc(dname)}">{esc(dname)}</td>'
             f'<td class="t-num" data-v="{ev.papers}" data-label="{esc(C("explain.col_papers"))}">{papers}</td>'
             f'<td class="t-num t-lean" data-v="{k}" data-label="{esc(C("explain.col_lean"))}">{lean_cell}</td>'
+            f'<td class="t-num t-cited" data-v="{cited_n}" data-label="{esc(C("explain.col_cited"))}">'
+            f'{num(cited_n) if cited_n else quiet_none(C("explain.cited_none"))}</td>'
             + "".join(c.replace('<td class="t-reader"', f'<td class="t-reader" data-label="{esc(C("explain.col_reader", name=short_name[order[i]]))}"', 1)
                       for i, c in enumerate(rcells)) +
             f'<td class="t-num" data-v="{rerun}" data-label="{esc(C("explain.col_runs"))}">{runs_cell}</td>'
             f'<td data-v="{esc(checks)}" data-label="{esc(C("explain.col_checks"))}">{checks_cell}</td>'
             f'<td data-v="{st}" data-label="{esc(C("explain.col_status"))}">{"".join(expl)}</td></tr>')
     # Filters, in one row: discipline, evidence, each reader's finding, and words.
-    def select(fid_, label, key, opts):
-        return (f'<div class="filters__g"><label class="filters__h" for="{fid_}">{esc(label)}</label>'
+    def select(fid_, label, key, opts, term=None):
+        return (f'<div class="filters__g"><label class="filters__h" for="{fid_}">{head_term(term, esc(label))}</label>'
                 f'<select class="select" id="{fid_}" data-filter="{key}">{"".join(opts)}</select></div>')
     dopts = [f'<option value="">{esc(C("explain.all_disciplines"))}</option>']
     for d in r.universe.get("disciplines") or []:
         dopts.append(f'<option value="{slugify(d["name"])}">{esc(d["name"])} ({num(len(d.get("family_ids") or []))})</option>')
     eopts = [f'<option value="">{esc(C("explain.all_evidence"))}</option>']
-    for group, keys in (("lean", ("lean", "nolean")), ("readers", ("disagree",)), ("pairing", ("thread_candidate", "thread_cited")),
-                        ("checks", ("ring",)), ("explanations", ("explained_by_others",)), ("problems", ("problems_reported",))):
+    for group, keys in (("lean", ("lean", "nolean")), ("readers", ("disagree",)), ("pairing", evidence.PAIRING_CLASSES),
+                        ("checks", ("ring",)), ("explanations", ("explained_by_others",)), ("problems", ("problems_reported",)),
+                        ("papers", ("has_withdrawn", "has_edition"))):
         # An option that would lead to an empty list is not offered.
-        shown_opts = "".join(f'<option value="{key}">{esc(C("explain.ev_" + key))} ({num(counts.get(key, 0))})</option>'
+        def ev_label(key):
+            return say_e("pairing_class." + key) if group == "pairing" else C("explain.ev_" + key)
+        shown_opts = "".join(f'<option value="{key}">{esc(ev_label(key))} ({num(counts.get(key, 0))})</option>'
                              for key in keys if counts.get(key, 0))
         if shown_opts:
             eopts.append(f'<optgroup label="{esc(C("explain.evgroup_" + group))}">{shown_opts}</optgroup>')
-    selects = [select("ff-d", C("explain.filter_discipline"), "d", dopts), select("ff-c", C("explain.filter_evidence"), "c", eopts)]
+    topts = [f'<option value="">{esc(C("explain.colour_any"))}</option>'] + [
+        f'<option value="{t_}">{esc(colour_words[t_])} ({num(counts["t_" + t_])})</option>'
+        for t_ in BU.TONE_ORDER if counts.get("t_" + t_)]
+    selects = [select("ff-d", C("explain.filter_discipline"), "d", dopts), select("ff-c", C("explain.filter_evidence"), "c", eopts),
+               select("ff-t", C("explain.filter_colour"), "t", topts)]
     for side, src in enumerate(order):
         opts = [f'<option value="">{esc(C("explain.reader_any"))}</option>']
         for tone in evidence.TONES:
@@ -3698,22 +3810,28 @@ def build_explain():
             if not n:
                 continue   # an option that leads to an empty list is not offered
             opts.append(f'<option value="{tone}">{esc(cap(say_e("tone_short." + tone)))} ({num(n)})</option>')
-        selects.append(select(f"ff-{side}", C("explain.filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts))
+        selects.append(select(f"ff-{side}", C("explain.filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts,
+                              term=reader_term(src)))
     selects.append(f'<div class="filters__g filters__g--q"><label class="filters__h" for="ff-q">{esc(C("explain.filter_words"))}</label>'
-                   f'<input class="filter-input" id="ff-q" type="search" data-filter="q" autocomplete="off" spellcheck="false" placeholder="{esc(C("explain.filter_words_ph"))}"></div>')
-    sort_cols = [("id", "n"), ("result", "s"), ("discipline", "s"), ("papers", "n"), ("lean", "n")]
+                   f'<input class="filter-input" id="ff-q" type="search" data-filter="q" autocomplete="off" spellcheck="false" placeholder="{esc(C("explain.filter_words_ph"))}">'
+                   f'<a class="filters__all" href="index.html" data-search-all="index.html">{esc(C("explain.search_all"))}</a></div>')
+    sort_cols = [("id", "n"), ("result", "s"), ("discipline", "s"), ("papers", "n"), ("lean", "n"), ("cited", "n")]
+    col_terms = {"result": "family", "lean": "challenge"}
     heads = []
     for i, (key, typ) in enumerate(sort_cols):
         cls = ' class="t-num"' if typ == "n" else (' class="t-disc"' if key == "discipline" else "")
-        heads.append(f'<th scope="col"{cls} aria-sort="{"ascending" if key == "id" else "none"}"><button type="button" class="sort" data-sort="{i}" data-type="{typ}">{esc(C("explain.col_" + key))}</button></th>')
+        heads.append(f'<th scope="col"{cls} aria-sort="{"ascending" if key == "id" else "none"}">'
+                     f'{sort_head(i, typ, C("explain.col_" + key), col_terms.get(key))}</th>')
     for src in order:
-        heads.append(f'<th scope="col" class="t-reader">{esc(C("explain.col_reader", name=short_name[src]))}</th>')
-    heads.append(f'<th scope="col" class="t-num" aria-sort="none"><button type="button" class="sort" data-sort="{len(sort_cols) + 2}" data-type="n">{esc(C("explain.col_runs"))}</button></th>')
+        heads.append(f'<th scope="col" class="t-reader">{head_term(reader_term(src), esc(C("explain.col_reader", name=short_name[src])))}</th>')
+    runs_i = len(sort_cols) + len(order)
+    heads.append(f'<th scope="col" class="t-num" aria-sort="none">{sort_head(runs_i, "n", C("explain.col_runs"), "rerun")}</th>')
     heads.append(f'<th scope="col">{esc(C("explain.col_checks"))}</th>')
     heads.append(f'<th scope="col">{esc(C("explain.col_status"))}</th>')
     # On a phone the column heads are hidden; this menu sorts the list instead.
     sort_menu = [("0:n:ascending", "sort_id"), ("1:s:ascending", "sort_name"), ("2:s:ascending", "sort_discipline"),
-                 ("3:n:descending", "sort_papers"), ("4:n:descending", "sort_lean"), (f"{len(sort_cols) + 2}:n:descending", "sort_runs")]
+                 ("3:n:descending", "sort_papers"), ("4:n:descending", "sort_lean"), ("5:n:descending", "sort_cited"),
+                 (f"{runs_i}:n:descending", "sort_runs")]
     sort_select = (f'<div class="filters__g filters__g--sort"><label class="filters__h" for="ff-sort">{esc(C("explain.sort_label"))}</label>'
                    f'<select class="select" id="ff-sort" data-sort-table="families-table">'
                    + "".join(f'<option value="{v}">{esc(C("explain." + k))}</option>' for v, k in sort_menu) + "</select></div>")
@@ -3725,6 +3843,7 @@ def build_explain():
 <header class="phead phead--compact">
  <h1 class="phead__title">{esc(C('explain.title'))}</h1>
  <p class="phead__lede">{esc(C('explain.lede', families=NUM('families')))}</p>
+ <p class="phead__invite"><a href="citations-within.html">{esc(C('explain.cited_link'))}</a></p>
  {invite}
 </header>
 <section class="band band--table" aria-labelledby="h-list">
@@ -3844,28 +3963,30 @@ def build_statements_table():
             f'<td class="t-num" data-v="{s["statement_lines"]}" data-label="{esc(T("col_lines"))}">{num(s["statement_lines"])}</td>'
             f'<td class="t-notes" data-v="{len(notes)}" data-label="{esc(T("col_notes"))}">{notes_html}</td></tr>')
     cols = [("statement", "s", ""), ("result", "s", ""), ("discipline", "s", "t-disc"), ("pair", "s", "t-pair")]
-    heads = [f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none"><button type="button" class="sort" data-sort="{i}" data-type="{t}">{esc(T("col_" + k))}</button></th>'
+    # column heads link their glossary term where the glossary has one
+    head_terms = {"statement": "challenge", "result": "family", "pair": "pairing", "runs": "rerun", "vocab": "local-vocabulary"}
+    heads = [f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none">{sort_head(i, t, T("col_" + k), head_terms.get(k))}</th>'
              for i, (k, t, c) in enumerate(cols)]
     for side, src in enumerate(order):
-        heads.append(f'<th scope="col" class="t-reader" aria-sort="none"><button type="button" class="sort" data-sort="{4 + side}" data-type="s">{esc(T("col_reader", name=short_name[src]))}</button></th>')
+        heads.append(f'<th scope="col" class="t-reader" aria-sort="none">{sort_head(4 + side, "s", T("col_reader", name=short_name[src]), reader_term(src))}</th>')
     base = 4 + len(order)
     for j, (k, c) in enumerate((("runs", "t-num"), ("main", "t-c"), ("vocab", "t-num"), ("lines", "t-num"), ("notes", ""))):
-        heads.append(f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none"><button type="button" class="sort" data-sort="{base + j}" data-type="n">{esc(T("col_" + k))}</button></th>')
+        heads.append(f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none">{sort_head(base + j, "n", T("col_" + k), head_terms.get(k))}</th>')
 
-    def select(id_, label, key, opts):
-        return (f'<div class="filters__g"><label class="filters__h" for="{id_}">{esc(label)}</label>'
+    def select(id_, label, key, opts, term=None):
+        return (f'<div class="filters__g"><label class="filters__h" for="{id_}">{head_term(term, esc(label))}</label>'
                 f'<select class="select" id="{id_}" data-filter="{key}">{"".join(opts)}</select></div>')
     dcount = Counter(slugify(DISCIPLINES[DISC_OF[s["families"][0]]]["name"]) for s in STATEMENTS if s.get("families") and DISC_OF.get(s["families"][0]) is not None)
     dopts = [f'<option value="">{esc(T("all_disciplines"))}</option>'] + [
         f'<option value="{k}">{esc(v)} ({num(dcount[k])})</option>' for k, v in sorted(disc_slug.items(), key=lambda x: x[1]) if k]
     popts = [f'<option value="">{esc(T("all_pairings"))}</option>'] + [
         f'<option value="{k}">{esc(cap(T("pair." + k)))} ({num(counts[k])})</option>' for k in ("declared", "cited", "lean-words", "catalogue-words", "none") if counts[k]]
-    selects = [select("sf-d", T("filter_discipline"), "d", dopts), select("sf-c", T("filter_pairing"), "c", popts)]
+    selects = [select("sf-d", T("filter_discipline"), "d", dopts), select("sf-c", T("filter_pairing"), "c", popts, term="pairing")]
     for side, src in enumerate(order):
         opts = [f'<option value="">{esc(T("reader_any"))}</option>'] + [
             f'<option value="{tone}">{esc(cap(evidence.say("tone_short." + tone)))} ({num(counts[(side, tone)])})</option>'
             for tone in evidence.TONES if counts[(side, tone)]]
-        selects.append(select(f"sf-{side}", T("filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts))
+        selects.append(select(f"sf-{side}", T("filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts, term=reader_term(src)))
     selects.append(f'<div class="filters__g filters__g--q"><label class="filters__h" for="sf-q">{esc(T("filter_words"))}</label>'
                    f'<input class="filter-input" id="sf-q" type="search" data-filter="q" autocomplete="off" spellcheck="false" placeholder="{esc(T("filter_words_ph"))}"></div>')
     sort_menu = [("0:s:ascending", "sort_name"), ("2:s:ascending", "sort_discipline"), ("3:s:ascending", "sort_pair"),
@@ -3964,7 +4085,11 @@ def number_credit(summary: dict) -> str:
         n_ = i.get("credit") or i.get("source")
         if n_ and n_ not in names:
             names.append(n_)
-    who = "; ".join(names) or cr.get("kind") or ""
+    kind = cr.get("kind") or ""
+    # A credit with no named input says how it was made, in words (never the backend's kind id).
+    who = "; ".join(names) or COPY["numbers"]["credit_kinds"].get(kind) or ""
+    if not names and kind and kind not in COPY["numbers"]["credit_kinds"]:
+        warn(f"numbers: no words for credit kind {kind!r} (site/copy.json numbers.credit_kinds)")
     return who
 
 
@@ -3998,7 +4123,14 @@ def build_numbers():
             state = s.get("state") or "computed"
             value = number_value(s)
             label = labels.get(k) or k.replace("_", " ")
-            rule = s.get("rule") or ""
+            # The backend's rule names its fields; the page says it in words, and the raw rule
+            # stays in the receipt (data/...). A rule without words is left off the page.
+            rule = COPY["numbers"]["rule_words"].get(k, "")
+            if not rule:
+                warn(f"numbers: no plain rule for {k!r} (site/copy.json numbers.rule_words)")
+            unit = COPY["numbers"]["unit_words"].get(s.get("unit") or "", "")
+            if s.get("unit") and not unit:
+                warn(f"numbers: no words for the unit {s.get('unit')!r} (site/copy.json numbers.unit_words)")
             credit = number_credit(s)
             receipt = s.get("receipt") or {}
             raw = f'data/{receipt.get("path")}' if receipt.get("path") else ""
@@ -4007,8 +4139,8 @@ def build_numbers():
  <p class="numrow__v{' numrow__v--unknown' if s.get('value') is None else ''}">{esc(value)}</p>
  <div class="numrow__t">
   <h3 class="h3">{esc(cap(label))}</h3>
-  <p class="numrow__unit">{esc(C('numbers.unit', unit=s.get('unit') or ''))} <span class="numrow__state numrow__state--{esc(state)}">{esc(state_words)}</span></p>
-  <p class="numrow__rule"><span class="numrow__k">{esc(C('numbers.rule'))}</span> {esc(rule)}</p>
+  <p class="numrow__unit">{esc(C('numbers.unit', unit=unit)) if unit else ''} <span class="numrow__state numrow__state--{esc(state)}">{esc(state_words)}</span></p>
+  {f'<p class="numrow__rule"><span class="numrow__k">{esc(C("numbers.rule"))}</span> {esc(rule)}</p>' if rule else ''}
   {f'<p class="numrow__credit"><span class="numrow__k">{esc(C("numbers.credit"))}</span> {esc(credit)}</p>' if credit != common_credit else ''}
   <details class="receipt" data-key="{esc(k)}"><summary>{esc(C('numbers.records'))}</summary>
    <div class="receipt__body"><p class="small muted">{esc(C('numbers.records_nojs'))} <a href="{esc(raw)}">{esc(C('numbers.records_raw'))}</a></p></div>
@@ -4099,6 +4231,15 @@ def build_references_outside():
     write_page(rel, page(rel, C("references_outside.title"), C("references_outside.lede", works=NUM("external_works_cited"), citations=NUM("external_citations"), n=len(hl)), body))
 
 
+def used_on(nf: int, nfam: int) -> str:
+    """What an outside effort is attached to: its findings and the families they concern,
+    or only the families it covers when no finding is recorded."""
+    fams = C("sources.on_result" if nfam == 1 else "sources.on_results")
+    if not nf:
+        return C("sources.covers", families=fams)
+    return C("sources.used_on", findings=C("sources.findings_one") if nf == 1 else C("sources.findings_many", n=nf), families=fams)
+
+
 def build_sources():
     rel = "sources.html"
     rows = []
@@ -4134,7 +4275,12 @@ def build_sources():
         for licence_file in attribution.inventory()["source_licences"].get(src["id"], []):
             provenance.append(f'<a href="{esc(licence_file)}">{esc(C("sources.licence_copy"))}</a>')
         fields = src.get("fields") or {}
-        flist = "".join(f"<li><strong>{esc(k)}</strong>: {esc(v)}</li>" for k, v in fields.items())
+        # each field the source adds, named in words (the field id stays in the data)
+        field_words = COPY["sources"]["field_words"]
+        for k in fields:
+            if k not in field_words:
+                warn(f"sources: no words for the field {k!r} of {src['id']} (site/copy.json sources.field_words)")
+        flist = "".join(f"<li><strong>{esc(field_words.get(k) or cap(k.replace('_', ' ')))}</strong>: {esc(v)}</li>" for k, v in fields.items())
         authors = ", ".join(a.get("name") or a.get("handle") or "" for a in (src.get("authors") or []))
         ingested.append(f"""<article class="ceff" id="src-{esc(src['id'])}">
  <h3 class="h3"><a class="ext" href="{esc(src.get('url') or '')}" rel="noopener"><span class="md-math">{esc(src.get('name') or src['id'])}</span></a></h3>
@@ -4153,7 +4299,7 @@ def build_sources():
  <h3 class="h3"><a class="ext" href="{esc(e['url'])}" rel="noopener"><span class="md-math">{esc(curly_prose(e['name']))}</span></a></h3>
  <p class="muted small">{esc(credit_names(e))}{', ' if credit_names(e) else ''}{esc(e.get('date') or '')}, {esc(C('community.reuse_' + e.get('reuse', 'link')))} {esc(C('community.licence', licence=e.get('licence') or 'n/a'))}</p>
  <p class="md-math">{esc(e['summary'])}</p>
- {('<p class="small">' + esc(C('sources.used_on', findings=C('sources.findings_one') if nf == 1 else C('sources.findings_many', n=nf), results=C('sources.on_result' if len(fams) == 1 else 'sources.on_results'))) + ' ' + fam_links + '</p>') if fams else ''}
+ {('<p class="small">' + esc(used_on(nf, len(fams))) + ' ' + fam_links + '</p>') if fams else ''}
  {adopted_list_html(e.get('adopted'))}
 </article>""")
     people = {(a.get("name") or a.get("handle")) for e in COMMUNITY["list"] for a in (e.get("authors") or [])}
@@ -4189,7 +4335,7 @@ def build_citations_within():
  <p class="work__rank">{k}</p>
  <div class="work__t">
   <h2 class="work__h"><a href="papers/{esc(m['id'])}.html">{ms_title_html(m)}</a></h2>
-  <p class="work__n">{esc(C('citations_within.cited_by', n=e['cited_by']))}. {esc(lean)}.{(' ' + C('words.result').capitalize() + ' <a href="families/' + f['id'] + '.html">' + fam_title_html(f) + '</a>') if f else ''}</p>
+  <p class="work__n">{esc(C('citations_within.cited_by', n=e['cited_by']))}. {esc(lean)}.{(' ' + C('words.result').capitalize() + ' ' + f['id'] + ': <a href="families/' + f['id'] + '.html">' + fam_title_html(f) + '</a>') if f else ''}</p>
   <ul class="work__list">{citing}</ul>
  </div>
 </article>""")

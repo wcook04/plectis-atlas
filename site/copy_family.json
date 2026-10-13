@@ -92,7 +92,6 @@
   "in_paper_undated": "In {paper}",
   "read_passage": "Read it in the paper",
   "pdf": "PDF",
-  "shared_none": "It shares no words with the description.",
   "alternatives": "Statements that share words with the description",
   "alternatives_other": "Other statements that share words with the description",
   "alt_in": "in {paper}",
@@ -147,6 +146,10 @@
   "no_pair_reason": "{reason}",
   "no_pair_alternatives": "Statements it shares words with:",
   "shared": "The words they share: {words}.",
+  "shared_many": "The words it shares {each}.",
+  "shared_each": "with {label}: {words}",
+  "paired_many": "It is paired with {labels}, each shown below.",
+  "label_in": "{label} of {paper}",
   "lean_main": "the release lists it as a main result",
   "lean_support": "the release lists it as a supporting statement",
   "lean_open": "Open the Lean statement whole",
@@ -278,6 +281,8 @@
  },
  "left": {
   "heading": "What is left to check",
+  "reader_note_ref": "its request is printed in full under {link}.",
+  "reader_note_link": "the outside readers",
   "intro": "Each item names exactly what it concerns. Its link opens a GitHub form with that target and its fingerprint filled in, so a contribution stays tied to the text you read.",
   "kinds": {
    "scope-review": "Read the Lean statement against the paper",

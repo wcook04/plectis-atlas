@@ -278,7 +278,8 @@
   });
 
   /* The Families list: filters by discipline, evidence, each outside reader's finding
-     and words, combined; the state lives in the address (?d=&c=&l=&r=&q=) so a
+     and words, combined, and by the map's colour (t, the key's links); the state lives
+     in the address (?d=&c=&t=&l=&r=&q=) so a
      filtered list can be shared. Without JavaScript the whole list shows and the
      filters stay hidden. */
   Array.prototype.forEach.call(doc.querySelectorAll('[data-filter-families]'), function (wrap) {
@@ -286,8 +287,15 @@
     if (!table) return;
     var empty = doc.querySelector('.filters__empty');
     var reset = wrap.querySelector('.filters__reset');
-    var KEYS = ['d', 'c', 'l', 'r', 'q'];
-    var state = { d: '', c: '', l: '', r: '', q: '' };
+    var KEYS = ['d', 'c', 't', 'l', 'r', 'q'];
+    var state = { d: '', c: '', t: '', l: '', r: '', q: '' };
+    /* "Search all text": the site search, opened with the same words. */
+    var searchAll = wrap.querySelector('[data-search-all]');
+    function syncSearchAll() {
+      if (!searchAll) return;
+      var w = (state.q || '').trim();
+      searchAll.href = searchAll.getAttribute('data-search-all') + (w ? '?q=' + encodeURIComponent(w) : '');
+    }
     var controls = {};
     wrap.querySelectorAll('[data-filter]').forEach(function (el) { controls[el.getAttribute('data-filter')] = el; });
     wrap.hidden = false;
@@ -305,6 +313,7 @@
         var q = row.getAttribute('data-q') || '';
         var ok = (!state.d || row.getAttribute('data-d') === state.d) &&
           (!state.c || (' ' + row.getAttribute('data-c') + ' ').indexOf(' ' + state.c + ' ') >= 0) &&
+          (!state.t || row.getAttribute('data-t') === state.t) &&
           (!state.l || row.getAttribute('data-l') === state.l) &&
           (!state.r || row.getAttribute('data-r') === state.r) &&
           words.every(function (w) { return norm(q).indexOf(w) >= 0; });
@@ -312,6 +321,7 @@
         if (ok) n++;
       });
       shownCount(wrap, n);
+      syncSearchAll();
       /* The active criteria in words, after the count. */
       var parts = [];
       KEYS.forEach(function (k) {
@@ -1496,7 +1506,7 @@
       return;
     }
     dlg.setAttribute('data-state', 'results');
-    status.textContent = fmt(total === 1 ? T('found-one') : T('found'), { n: total.toLocaleString('en-GB'), words: quoteList(typed) });
+    status.textContent = fmt(total === 1 ? T('found-one') : T('found'), { n: total.toLocaleString('en-GB'), words: '‘' + typed.join(' ') + '’' });
     kinds.forEach(function (kind) {
       var n = res.counts[kind] || 0;
       if (!n) return;

@@ -879,7 +879,7 @@ MATH_REF_RE = re.compile(
     r"Crefrange|vref|subref)(\*?)(?![A-Za-z@])\s*(?:\[[^\]]*\]\s*)?\{([^{}]*)\}(?:\s*\{([^{}]*)\})?")
 MATH_CITE_RE = re.compile(
     r"\\(cite[a-zA-Z]*|Cite[a-zA-Z]*|parencite|textcite)(\*?)(?![A-Za-z@])\s*((?:\[[^\]]*\]\s*){0,2})\{([^{}]*)\}")
-LABEL_RE = re.compile(r"\\label\s*\{([^{}]*)\}")
+LABEL_RE = re.compile(r"\\label\s*(?:\[[^\]]*\]\s*)?\{([^{}]*)\}")
 NONUM_RE = re.compile(r"\\(?:nonumber|notag)(?![A-Za-z@])")
 TAG_RE = re.compile(r"\\tag(\*?)\s*\{")
 QEDHERE_RE = re.compile(r"\\qedhere(?![A-Za-z@])")
@@ -2392,6 +2392,7 @@ class Paper:
         return e
 
     def h_label(self, name, s, start, j, end, out, origin):
+        _, j = read_opt(s, j, end)  # cleveref's \label[type]{key}
         arg, k = read_arg(s, j, end)
         self.set_label(arg, out=out)
         return skip_space_after_word(s, k, end)
@@ -3104,6 +3105,7 @@ class Paper:
                 if word == "endfirsthead":
                     skip_mode = "firsthead"
                 if word == "label":
+                    _, pos = read_opt(s, pos, r1)
                     lab, pos = read_arg(s, pos, r1)
                     self.set_label(lab)
                 if word == "caption":
@@ -4926,7 +4928,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
                f'<a class="btn btn--ghost ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" rel="noopener">{esc(TXT["tex_source"])}</a>']
     lede = ""
     if fam:
-        lede = (f'<p class="lede">{esc(site_copy("paper.in_result", "Part of result {id}: {title}.", id=fam["id"], title=S.tex_plain(fam["title"])))} '
+        lede = (f'<p class="lede">{esc(site_copy("paper.in_result", "Part of family {id}: {title}.", id=fam["id"], title=S.tex_plain(fam["title"])))} '
                 f'<a href="{root}families/{fam["id"]}.html#{esc(m["id"])}">{esc(site_copy("paper.read_in_result", "Read it with its result"))}</a></p>')
     notes = ""
     if m.get("version_note"):
