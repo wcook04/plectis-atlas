@@ -59,7 +59,7 @@ python3 scripts/test_family_page.py
 | Family layouts and statement snippets | [test_family_page.py](test_family_page.py) |
 | Previous and next links between families, Lean statements and papers | [test_sibling_nav.py](test_sibling_nav.py) |
 | A contribution file or its validation | [check_contributions.py](check_contributions.py); see [Contributing](../CONTRIBUTING.md) |
-| Links between built paper and Lean pages | [check_paper_links.py](check_paper_links.py), after the complete build |
+| Links between built paper and Lean pages | [test_check_paper_links.py](test_check_paper_links.py); [check_paper_links.py](check_paper_links.py), after the complete build |
 
 For documentation and skill changes:
 

@@ -7,7 +7,7 @@ An independent reader for [OpenAI’s mathematics release](https://github.com/op
 <a href="https://wcook04.github.io/plectis-atlas/">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/map-dark.png">
-    <img src="docs/map-light.png" width="1440" height="790" alt="The Plectis Atlas map: the release’s seventeen disciplines as labelled regions, each holding its families as discs coloured by what two outside readers find the family’s Lean states, with a disc left open where the release has no Lean.">
+    <img src="docs/map-light.png" width="1440" alt="The Plectis Atlas map: the release’s seventeen disciplines as labelled regions, each holding its families as discs coloured by what two outside readers find the family’s Lean states, with a disc left open where the release has no Lean.">
   </picture>
 </a>
 
@@ -22,7 +22,7 @@ OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lea
 <a href="https://wcook04.github.io/plectis-atlas/#o=f%3A003">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/family-dark.png">
-    <img src="docs/family-light.png" width="1440" height="790" alt="Family 003, the quasi-Riemann hypothesis, opened on the map: its papers as columns, each theorem with the opening of its statement typeset, the Lean statements paired with them joined by dashed lines, and the families that cite it and that it cites on either side.">
+    <img src="docs/family-light.png" width="1440" alt="Family 003, the quasi-Riemann hypothesis, opened on the map: its papers as columns, each theorem with the opening of its statement typeset, the Lean statements paired with them joined by dashed lines, and the families that cite it and that it cites on either side.">
   </picture>
 </a>
 
@@ -67,7 +67,7 @@ All counts describe the release at the commit in [`upstream.json`](upstream.json
 - The TeX sources of the current manuscripts contain 2,255 theorem, 4,745 proposition, 1,267 corollary and 12,397 lemma environments, repeated statements included.
 - **Draft scope reading.** Of 416 challenge files, an AI agent drafted 307 as stating a paper's headline theorem, 21 part of one, 28 a consequence, 24 a weaker form and 35 a supporting result; for 1 OpenAI's note leaves it unclear. The agent classified each file from OpenAI's scope note, quoting the note; no person has reviewed it.
 - **Outside readers.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine) each read every family's Lean against its headline, independently of OpenAI and of each other. Their findings, in their own terms, are on each family page and in the Families list.
-- **Every paper in the browser.** 689 of the 719 current manuscripts have a full reading page made from their TeX, with every formula, cross-reference, citation and theorem anchor checked (figures are shown as placeholders); the other 30 have a reading page with a banner listing what did not convert. Formulas are checked with the KaTeX version the site loads. The PDF stays the reference (`data/paper_acceptance.json`).
+- **Every paper in the browser.** 696 of the 719 current manuscripts have a full reading page made from their TeX, with every formula, cross-reference, citation and theorem anchor checked (figures are shown as placeholders); the other 23 have a reading page with a banner listing what did not convert. Formulas are checked with the KaTeX version the site loads. The PDF stays the reference (`data/paper_acceptance.json`).
 
 Counted by Statement Map from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb), generation `e44fe048bf34`. The unit, rule, state and credit behind each number, and its members, are on the site's Numbers page.
 <!-- numbers:end -->
@@ -158,6 +158,7 @@ Papers are typeset in the browser with KaTeX, and the build checks every one of 
 git clone https://github.com/wcook04/plectis-atlas && cd plectis-atlas
 python3 scripts/reader.py && sh scripts/fetch_upstream.sh
 python3 scripts/build_site.py && python3 scripts/build_papers.py && python3 scripts/build_universe.py
+python3 scripts/check_paper_links.py site/_build
 python3 -m http.server -d site/_build   # http://localhost:8000
 ```
 
@@ -189,7 +190,19 @@ Henry Cohn’s [essay on the technical debt of AI-generated mathematics](https:/
 
 </details>
 
+## Videos and related projects
+
+**Atlas walkthrough:** not yet published. The [project films](https://wcook04.github.io/plectis/#videos) cover the separate Erdős research programme and its working environment.
+
+| Project | What to find there |
+| --- | --- |
+| [Plectis Erdős](https://github.com/wcook04/plectis-erdos) | Original research on eight Erdős problems: papers, Lean proofs, experiments and open questions. [Research website](https://wcook04.github.io/plectis/maths/). |
+| [Plectis toolkit](https://github.com/wcook04/plectis) | Python tools and worked examples for inspecting AI-assisted research. [Component map](https://wcook04.github.io/plectis/docs/system-map.html). |
+| [Safety Core](https://github.com/wcook04/safety-core) | A small, adaptable rulebook, checks and a visual rule map for coding agents. |
+
 ## Licences and independence
+
+Report vulnerabilities through the [private security route](SECURITY.md).
 
 Plectis Atlas is independent of OpenAI and is not affiliated with or endorsed by it. Quoted release material is copyright OpenAI, reproduced under Apache-2.0 from the pinned source. Original Atlas code and documentation are Apache-2.0; contributed explanations are CC BY 4.0. Imported material retains its own terms, including MIT and SIL Open Font License components. See [the licence](LICENSE), [attribution notice](NOTICE) and [source and citation guide](docs/ATTRIBUTION.md).
 

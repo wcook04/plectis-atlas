@@ -48,7 +48,9 @@ jobs:
       - name: The data parsers read their fixtures correctly
         run: python3 scripts/test_build_data.py
       - name: The paper reader converts its fixtures correctly
-        run: python3 scripts/test_build_papers.py
+        run: |
+          python3 scripts/test_build_papers.py
+          python3 scripts/test_check_paper_links.py
       - name: Previous and next links follow each parent page's order
         run: python3 scripts/test_sibling_nav.py
       - name: The contribution checker rejects what it should
@@ -69,3 +71,8 @@ jobs:
         run: |
           python3 scripts/build_site.py
           python3 scripts/attribution.py --built site/_build
+      - name: Paper links pass the same integration check as the website release
+        run: |
+          sh scripts/fetch_upstream.sh
+          python3 scripts/build_papers.py --jobs 2
+          python3 scripts/check_paper_links.py site/_build
