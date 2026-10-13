@@ -1627,6 +1627,30 @@
       cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
       if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
     }
+    // Reading width changes on the first click. The next press in a double-click
+    // may therefore land on the sidebar or another card, outside the old board.
+    var boardClick = null, boardRepeatPress = null, boardDoubleOpened = false;
+    function boardDoublePress(e) {
+      boardRepeatPress = null; boardDoubleOpened = false;
+      var prior = boardClick; boardClick = null;
+      if (!prior || e.button !== 0 || e.isPrimary === false || e.pointerType === 'touch' ||
+          e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !board.on || board.fi !== prior.fi || sel !== prior.key) return;
+      var elapsed = e.timeStamp - prior.time;
+      if (elapsed < 0 || elapsed > 500 || Math.hypot(e.clientX - prior.x, e.clientY - prior.y) > 8) return;
+      boardRepeatPress = { key: prior.key, fi: prior.fi, x: e.clientX, y: e.clientY, time: prior.time };
+    }
+    function boardDoubleClick(e) {
+      var press = boardRepeatPress; boardRepeatPress = null;
+      if (!press || e.detail === 0 || e.defaultPrevented || e.button > 0 ||
+          e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !board.on || board.fi !== press.fi || sel !== press.key ||
+          e.timeStamp - press.time > 500 || Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) return;
+      boardPress = null; boardDoubleOpened = true;
+      e.preventDefault(); e.stopImmediatePropagation();
+      openFromBoard(press.key);
+    }
+    root.addEventListener('pointerdown', boardDoublePress, true);
+    root.addEventListener('click', boardDoubleClick, true);
+    root.addEventListener('pointercancel', function () { boardClick = null; boardRepeatPress = null; }, true);
     function selectFromBoard(key) {
       if (key !== sel) select(key, { trail: true });
       hideBoardCard();
@@ -1641,7 +1665,7 @@
     }
     if (boardEl) {
       boardEl.addEventListener('pointerdown', function (e) {
-        boardPress = e.button === 0 && e.isPrimary !== false ? { x: e.clientX, y: e.clientY } : null;
+        boardPress = e.button === 0 && e.isPrimary !== false ? { x: e.clientX, y: e.clientY, pointerType: e.pointerType } : null;
       });
       boardEl.addEventListener('pointercancel', function () { boardPress = null; });
       boardEl.addEventListener('click', function (e) {
@@ -1665,14 +1689,17 @@
         }
         var key = c.getAttribute('data-bk');
         selectFromBoard(key);
+        if (press && press.pointerType !== 'touch' && e.detail !== 0) boardClick = { key: key, fi: board.fi, x: e.clientX, y: e.clientY, time: e.timeStamp };
       });
       boardEl.addEventListener('dblclick', function (e) {
+        if (boardDoubleOpened) { boardDoubleOpened = false; return; }
+        if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         if (e.target.closest('a')) return;
         var c = e.target.closest('[data-bk]');
         if (c) openFromBoard(c.getAttribute('data-bk'));
       });
       boardEl.addEventListener('keydown', function (e) {
-        boardPress = null;
+        boardPress = null; boardClick = null; boardRepeatPress = null;
         var c = e.target && e.target.getAttribute && e.target.getAttribute('data-bk') ? e.target : null;
         if (!c) return;
         var key = c.getAttribute('data-bk');
@@ -2846,6 +2873,7 @@
       });
     }
     document.addEventListener('keydown', function (e) {
+      boardClick = null; boardRepeatPress = null;
       var tag = e.target && e.target.tagName;
       var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable);
       if (e.key === 'Escape') {

@@ -23,6 +23,8 @@ const boardVisibility = range('    function showBoard()', '    // The chosen car
 const boardPages = range('    function layoutPages()', '    function showBoard()');
 const boardSync = range('    function refreshBoardNeighbours()', '    function showBoard()');
 const boardPointer = range("    if (boardEl) {\n      boardEl.addEventListener('pointerdown'", "      boardEl.addEventListener('pointerover'") + '    }';
+const boardRepeat = range('    var boardClick = null, boardRepeatPress = null, boardDoubleOpened = false;', '    function selectFromBoard(key)');
+const documentKeys = range("    document.addEventListener('keydown', function (e) {", "    window.addEventListener('hashchange'");
 const detailAgain = range('          var again = function () {', '          watchPanelShard(di, again);');
 const panelWatch = range('    function watchPanelShard(di, again)', '    function renderPanel(quiet)');
 const hashState = range('    function updateHash(', '    function panelScroller()');
@@ -453,7 +455,8 @@ async function main() {
   };
   const ground = { closest: () => null, matches: () => true };
   const boardPointerState = context({
-    boardPress: null, board: { page: 0 }, sel: 'r:old',
+    boardPress: null, boardClick: null, boardRepeatPress: null, boardDoubleOpened: false,
+    board: { page: 0 }, sel: 'r:old',
     boardEl: { addEventListener: (type, fn) => { boardHandlers[type] = fn; }, contains: () => true },
     selectFromBoard: key => boardSelected.push(key),
     stepBack: () => { boardBacks++; }, openFromBoard: () => { boardOpens++; },
@@ -491,6 +494,106 @@ async function main() {
   boardHandlers.click(boardEvent(cardText, 40, 10));
   assert.equal(boardSelected.length, 4, 'keyboard activation and later click both select');
   assert.equal(boardOpens, 0, 'none of these gestures double-open a result');
+
+  function shiftedBoardFixture() {
+    const rootHandlers = {}, boardHandlers = {}, selected = [], opened = [];
+    const card = key => ({ getAttribute: attr => attr === 'data-bk' ? key : null });
+    const target = key => ({
+      getAttribute: () => null,
+      closest: selector => selector === '[data-bk]' ? card(key) : null,
+      matches: () => false
+    });
+    const outside = { getAttribute: () => null, closest: () => null, matches: () => false };
+    const state = context({
+      root: { addEventListener: (type, fn, capture) => { assert.equal(capture, true); rootHandlers[type] = fn; } },
+      boardEl: { addEventListener: (type, fn) => { boardHandlers[type] = fn; }, contains: () => true },
+      board: { on: true, fi: 0, page: 0 }, boardPress: null, sel: 'r:old',
+      selectFromBoard: key => { selected.push(key); state.sel = key; },
+      openFromBoard: key => opened.push(key),
+      hideBoardCard() {}, layoutBoard() {}, stepBack() {}
+    });
+    vm.runInContext(boardRepeat + boardPointer, state);
+    const event = (which, x, y, time, more = {}) => ({
+      target: which, clientX: x, clientY: y, timeStamp: time,
+      button: 0, isPrimary: true, pointerType: 'mouse', detail: 1,
+      defaultPrevented: false, stopped: false,
+      preventDefault() { this.defaultPrevented = true; },
+      stopImmediatePropagation() { this.stopped = true; }, ...more
+    });
+    const dispatch = (type, e, withinBoard) => {
+      if (rootHandlers[type]) rootHandlers[type](e);
+      if (!e.stopped && withinBoard && boardHandlers[type]) boardHandlers[type](e);
+      return e;
+    };
+    const first = () => {
+      const a = target('r:first');
+      dispatch('pointerdown', event(a, 30, 40, 100), true);
+      dispatch('click', event(a, 30, 40, 110), true);
+      assert.deepEqual(selected, ['r:first'], 'first card click selects but does not open');
+      assert.deepEqual(opened, []);
+      return a;
+    };
+    return { state, selected, opened, target, outside, event, dispatch, first };
+  }
+  const shifted = shiftedBoardFixture();
+  shifted.first();
+  shifted.dispatch('pointerdown', shifted.event(shifted.outside, 31, 40, 230), false);
+  const shiftedSecond = shifted.dispatch('click', shifted.event(shifted.outside, 31, 40, 240, { detail: 2 }), false);
+  assert.deepEqual(shifted.opened, ['r:first'], 'second click over displaced sidebar opens the original card');
+  assert.deepEqual(shifted.selected, ['r:first'], 'capture handles the second click before sidebar handlers');
+  assert.equal(shiftedSecond.defaultPrevented, true);
+  assert.equal(shiftedSecond.stopped, true);
+
+  const otherCard = shiftedBoardFixture();
+  otherCard.first();
+  const secondTarget = otherCard.target('r:other');
+  otherCard.dispatch('pointerdown', otherCard.event(secondTarget, 30, 40, 230), true);
+  otherCard.dispatch('click', otherCard.event(secondTarget, 30, 40, 240, { detail: 2 }), true);
+  assert.deepEqual(otherCard.opened, ['r:first'], 'shifted hit over another card opens original key');
+  assert.deepEqual(otherCard.selected, ['r:first'], 'second card does not steal the double click');
+  otherCard.dispatch('dblclick', otherCard.event(secondTarget, 30, 40, 245, { detail: 2 }), true);
+  assert.deepEqual(otherCard.opened, ['r:first'], 'native dblclick cannot duplicate the capture open');
+
+  for (const [name, pointer, clickEvent] of [
+    ['drag', { x: 30, y: 40, time: 230 }, { x: 50, y: 40, time: 240 }],
+    ['modifier', { x: 30, y: 40, time: 230, metaKey: true }, { x: 30, y: 40, time: 240, metaKey: true }],
+    ['touch', { x: 30, y: 40, time: 230, pointerType: 'touch' }, { x: 30, y: 40, time: 240 }],
+    ['expiry', { x: 30, y: 40, time: 700 }, { x: 30, y: 40, time: 710 }]
+  ]) {
+    const rejected = shiftedBoardFixture();
+    rejected.first();
+    rejected.dispatch('pointerdown', rejected.event(rejected.outside, pointer.x, pointer.y, pointer.time, pointer), false);
+    rejected.dispatch('click', rejected.event(rejected.outside, clickEvent.x, clickEvent.y, clickEvent.time,
+      { detail: 2, ...clickEvent }), false);
+    assert.deepEqual(rejected.opened, [], `${name} cannot open a displaced board card`);
+  }
+  const changed = shiftedBoardFixture();
+  changed.first(); changed.state.sel = 'r:unrelated';
+  changed.dispatch('pointerdown', changed.event(changed.outside, 30, 40, 230), false);
+  changed.dispatch('click', changed.event(changed.outside, 30, 40, 240, { detail: 2 }), false);
+  assert.deepEqual(changed.opened, [], 'changed selection invalidates the old double-click target');
+  const cancelled = shiftedBoardFixture();
+  cancelled.first();
+  cancelled.dispatch('pointerdown', cancelled.event(cancelled.outside, 30, 40, 230), false);
+  cancelled.dispatch('pointercancel', cancelled.event(cancelled.outside, 30, 40, 235), false);
+  cancelled.dispatch('click', cancelled.event(cancelled.outside, 30, 40, 240, { detail: 2 }), false);
+  assert.deepEqual(cancelled.opened, [], 'cancelled second press cannot open a card');
+  const keyboardInterruption = shiftedBoardFixture();
+  const keyTarget = keyboardInterruption.first();
+  keyboardInterruption.dispatch('keydown', keyboardInterruption.event(keyTarget, 30, 40, 220, { key: 'Escape' }), true);
+  keyboardInterruption.dispatch('pointerdown', keyboardInterruption.event(keyboardInterruption.outside, 30, 40, 230), false);
+  keyboardInterruption.dispatch('click', keyboardInterruption.event(keyboardInterruption.outside, 30, 40, 240, { detail: 2 }), false);
+  assert.deepEqual(keyboardInterruption.opened, [], 'keyboard interaction clears stale first-click latch');
+  const shortcutInterruption = shiftedBoardFixture();
+  const shortcutTarget = shortcutInterruption.first();
+  let documentKey;
+  shortcutInterruption.state.document = { addEventListener: (_type, fn) => { documentKey = fn; }, querySelector: () => null };
+  shortcutInterruption.state.searchIn = { focus() {}, select() {} };
+  vm.runInContext(documentKeys, shortcutInterruption.state);
+  documentKey(shortcutInterruption.event(shortcutTarget, 30, 40, 220, { key: '/' }));
+  shortcutInterruption.dispatch('pointerdown', shortcutInterruption.event(shortcutInterruption.outside, 30, 40, 230), false);
+  shortcutInterruption.dispatch('click', shortcutInterruption.event(shortcutInterruption.outside, 30, 40, 240, { detail: 2 }), false);
+  assert.deepEqual(shortcutInterruption.opened, [], 'search shortcut cancels the gesture before board key handlers run');
 
   // The preview guard is registered before both map and board click handlers.
   // A text drag must stop their selection handler, then release the next click.
