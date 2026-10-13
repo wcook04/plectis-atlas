@@ -4734,6 +4734,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
         crumbs.append((S.fam_title_html(fam), f"{root}families/{fam['id']}.html"))
         crumbs.append((S.ms_title_html(m), None))
         trail = S.trail(root, crumbs)
+        trail += S.sibling_nav("paper", S.paper_siblings(m["id"], root))
     else:
         trail = S.trail(root, [(S.ms_title_html(m), None)])
     title_plain = S.tex_plain(m["title"])

@@ -20,7 +20,7 @@
 @media (min-width: 1240px) { .fx { --fx-col: 52rem; --fx-rail: 232px; --fx-gap: 48px; } }
 @media (min-width: 1700px) { .fx { --fx-col: 68rem; --fx-rail: 260px; --fx-gap: 56px; } }
 .fx-head > :not(.fx-bar) { max-width: var(--fx-col); }
-.fx-head > .fx-bar { max-width: calc(var(--fx-col) + var(--fx-gap) + var(--fx-rail)); }
+.fx-head > .fx-bar, .fx-head > .sib { max-width: calc(var(--fx-col) + var(--fx-gap) + var(--fx-rail)); }
 .fx-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; margin-bottom: 16px; }
 .fx-bar .trail { margin: 0; }
 .fx-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }

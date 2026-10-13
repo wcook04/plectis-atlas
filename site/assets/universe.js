@@ -144,6 +144,7 @@
     var panelBody = root.querySelector('[data-u-scroll]');
     var viewEl = root.querySelector('[data-u-view]');
     var trailEl = root.querySelector('[data-u-trail]');
+    var stepEl = root.querySelector('[data-u-step]');
     var titleEl = root.querySelector('#u-title');
     var listSec = root.querySelector('.u-listsec');
     var resultsEl = root.querySelector('[data-u-results]');
@@ -1057,22 +1058,20 @@
        it (dashed for a candidate pairing), and a neighbouring family to the papers that
        carry the citation (brick where this family cites, grey where it is cited). */
     var boardEl = root.querySelector('[data-u-board]');
-    var board = { fi: -1, sig: '', page: 0, per: 1, cols: 0, on: false, pending: false, budget: 170, hideT: 0, ringKey: null, revealKey: null, selectionKey: null };
+    var board = { fi: -1, sig: '', per: 1, on: false, pending: false, hideT: 0, ringKey: null, revealKey: null, selectionKey: null };
     var boardFontVersion = 0;
     var boardPress = null;
     var pendingBoard = null;
     function boardPosition() {
-      return board.fi < 0 || !boardEl ? null : { family: D.families[board.fi].id, column: board.page * board.per, y: boardEl.scrollTop };
+      return board.fi < 0 || !boardEl ? null : { family: D.families[board.fi].id, y: boardEl.scrollTop };
     }
     function restoreBoardPosition() {
       if (!pendingBoard || !board.on || board.fi < 0 || pendingBoard.family !== D.families[board.fi].id) return;
       var position = pendingBoard;
-      board.page = Math.floor((position.column || 0) / Math.max(1, board.per));
       layoutBoard();
       boardEl.scrollTop = position.y || 0;
       if (pendingBoard === position && shards[fams[board.fi].d]) pendingBoard = null;
     }
-    var SIDE_MAX = 8;
     function boardFamily() { var o = sel ? obj(sel) : null; return partsReady && o && o.kind !== 'd' ? famOf(o) : -1; }
     function dateValue(s) { var t = s ? Date.parse(s) : NaN; return isFinite(t) ? t : Infinity; }
     // The opening of a statement, concisely: its first sentence (the second too when the
@@ -1156,8 +1155,8 @@
       h += '<p class="u-bc__lab">' + escapeHtml(r.num || resultName(r)) + (det && det.titleHtml ? ' <span class="u-bc__ttl tex-auto">(' + det.titleHtml + ')</span>' : '') + '</p>';
       if (!sh) h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T(failedShards[fams[r.f].d] ? 'result.load_failed' : 'board.loading')) + '</p>';
       else if (det && det.html) {
-        var ex = excerpt(det.html, board.budget);
-        h += '<div class="u-bc__x" data-u-budget="' + board.budget + '">' + ex.html + (ex.cut ? '…' : '') + '</div>';
+        // The whole statement, as the paper prints it: a card never stops mid-sentence.
+        h += '<div class="u-bc__x">' + det.html + '</div>';
       } else h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T('board.no_statement')) + ' ' + link(r.href || p.href, T('result.read')) + '</p>';
       return h + '</div>';
     }
@@ -1193,9 +1192,7 @@
       var h = '<section class="u-board__side u-board__side--' + way + '"><h3>' + escapeHtml(T(way === 'in' ? 'board.cited_by' : 'board.cites')) + '</h3>';
       if (!list.length) return h + '<p class="u-board__none">' + escapeHtml(T(way === 'in' ? 'board.none_in' : 'board.none_out')) + '</p></section>';
       var sorted = list.slice().sort(function (a, b) { return b[1] - a[1] || a[0] - b[0]; });
-      sorted.slice(0, SIDE_MAX).forEach(function (c) { h += boardNeighbour(c[0], c[1], way); });
-      var more = sorted.length - SIDE_MAX;
-      if (more > 0) h += '<p class="u-board__more">' + escapeHtml(more === 1 ? T('board.more_one') : T('board.more', { n: more })) + '</p>';
+      sorted.forEach(function (c) { h += boardNeighbour(c[0], c[1], way); });
       return h + '</section>';
     }
     function boardHtml(fi) {
@@ -1210,13 +1207,9 @@
         var said = fdet.readers.map(function (rd) { return rd.name + ' ' + rd.words; }).join('; ') + '.';
         h += '<p class="u-board__r"><b>' + escapeHtml(T('board.readers')) + '</b> ' + escapeHtml(said + (fdet.agree ? ' ' + fdet.agree : '')) + '</p>';
       } else if (fdet && fdet.agree) h += '<p class="u-board__r"><b>' + escapeHtml(T('board.readers')) + '</b> ' + escapeHtml(fdet.agree) + '</p>';
-      h += '</div><div class="u-board__cols">' + boardSide('in', f.citedBy) + '<div class="u-board__main"><div class="u-board__bar">' +
-        '<span class="u-pager" data-u-pager hidden>' +
-        '<button type="button" data-u-page="-1" aria-label="' + escapeHtml(T('board.earlier')) + '"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>' +
-        '<span data-u-page-n></span>' +
-        '<button type="button" data-u-page="1" aria-label="' + escapeHtml(T('board.later')) + '"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button></span></div>' +
+      h += '</div><div class="u-board__cols">' + boardSide('in', f.citedBy) + '<div class="u-board__main">' +
         '<div class="u-board__papers" data-u-papers>';
-      var papers = f.papers.slice().sort(function (a, b) { return dateValue(D.papers[a].date) - dateValue(D.papers[b].date) || a - b; });
+      var papers = familyPapers(fi);
       var anyCand = false;
       papers.forEach(function (pi) {
         h += '<section class="u-col" data-pi="' + pi + '">' + boardPaper(pi) + '<ol>';
@@ -1246,7 +1239,8 @@
       katexIn(boardEl.querySelector('.u-board__head'), null, di);
       Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--f'), function (c) { katexIn(c, null, fams[+c.getAttribute('data-g')].d); });
     }
-    // Paper and unpaired-Lean columns share the board's pagination.
+    // Every paper shows at once: the columns fill the board's width and wrap onto
+    // further rows, so a family's papers are read together, never one page at a time.
     function layoutBoard() {
       if (!board.on && !board.pending) return;
       var papersEl = boardEl.querySelector('[data-u-papers]');
@@ -1255,67 +1249,11 @@
       var fpx = parseFloat(getComputedStyle(boardEl).fontSize) || 16;
       var per = narrow() ? cols.length : Math.max(1, Math.floor((papersEl.clientWidth + 1.25 * fpx) / (14 * fpx + 1.25 * fpx)));
       per = Math.min(per, Math.max(1, cols.length));
-      // Keep the first visible column when the reading panel changes the width.
-      if (per !== board.per) board.page = Math.floor(board.page * board.per / per);
-      board.per = per; board.cols = cols.length;
-      var pages = Math.max(1, Math.ceil(cols.length / per));
-      board.page = clamp(board.page, 0, pages - 1);
-      papersEl.style.gridTemplateColumns = narrow() ? '' : 'repeat(' + per + ', minmax(0, 1fr))';
-      papersEl.style.gridAutoFlow = 'row';
-      cols.forEach(function (c, i) { c.hidden = i < board.page * per || i >= (board.page + 1) * per; });
-      var pager = boardEl.querySelector('[data-u-pager]');
-      if (pager) {
-        pager.hidden = pages < 2;
-        var from = board.page * per + 1, to = Math.min(cols.length, (board.page + 1) * per);
-        var mixed = cols.some(function (col) { return col.classList.contains('u-col--free'); });
-        pager.querySelector('[data-u-page-n]').textContent = mixed
-          ? T('board.mixed_page', { page: board.page + 1, pages: pages })
-          : T(from === to ? 'board.page_one' : 'board.page', { from: from, to: to, n: cols.length });
-        var prev = pager.querySelector('[data-u-page="-1"]'), next = pager.querySelector('[data-u-page="1"]');
-        prev.setAttribute('aria-label', T(mixed ? 'board.previous_page' : 'board.earlier'));
-        next.setAttribute('aria-label', T(mixed ? 'board.next_page' : 'board.later'));
-        prev.disabled = board.page === 0;
-        next.disabled = board.page >= pages - 1;
-      }
-      // The statements' length follows the column's width: about four lines of it.
-      var rc = papersEl.querySelector('.u-col:not([hidden]) .u-bc--r');
-      if (rc && rc.clientWidth > 0) {
-        var cpl = (rc.clientWidth - 1.5 * fpx) / (fpx * 0.48);
-        var want = clamp(Math.round(cpl * 4 / 10) * 10, 90, 420);
-        if (Math.abs(want - board.budget) >= 20) board.budget = want;
-      }
-      fitExcerpts();
+      board.per = per;
+      // Columns pack like a newspaper, so a paper with many results leaves no gap beside it.
+      papersEl.style.columnCount = narrow() ? '' : String(per);
+      cols.forEach(function (c) { c.hidden = false; });
       drawWires();
-    }
-    // An excerpt that would run past its card's four or five lines (a formula wider or
-    // taller than the estimate) is cut shorter, so no statement is ever clipped mid-line.
-    function fitExcerpts() {
-      var di = fams[board.fi] ? fams[board.fi].d : -1, sh = shards[di];
-      if (!sh || !sh.results) return;
-      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-col:not([hidden]) .u-bc--r .u-bc__x:not(.u-bc__x--none)'), function (x) {
-        var c = x.closest('.u-bc'), det = sh.results[c.getAttribute('data-bk')];
-        if (!det || !det.html || !x.clientWidth) return;
-        var css = getComputedStyle(x), size = parseFloat(css.fontSize) || 16;
-        var fit = [board.budget, x.clientWidth, size, css.lineHeight, boardFontVersion].join('|');
-        var previousFit = x.getAttribute('data-u-fit');
-        if (previousFit === fit) return;
-        var b = board.budget, n = 0, most = 7.6 * size;
-        // Resize and pagination change only visible excerpts. Rebuilding the whole
-        // board from layout can toggle its scrollbar and column count indefinitely.
-        if (previousFit || +x.getAttribute('data-u-budget') !== b) {
-          var fresh = excerpt(det.html, b);
-          x.innerHTML = fresh.html + (fresh.cut ? '…' : '');
-          x.setAttribute('data-u-budget', b);
-          katexIn(x, c.getAttribute('data-paper'), di);
-        }
-        while ((x.offsetHeight > most || x.scrollWidth > x.clientWidth + 1) && n < 6) {
-          b = Math.round(b * 0.8); n++;
-          var ex = excerpt(det.html, b);
-          x.innerHTML = ex.html + (ex.cut ? '…' : '');
-          katexIn(x, c.getAttribute('data-paper'), di);
-        }
-        x.setAttribute('data-u-fit', fit);
-      });
     }
     function drawWires() {
       var inEl = boardEl && boardEl.querySelector('[data-u-board-in]'), svg = inEl && inEl.querySelector('[data-u-wires]');
@@ -1377,13 +1315,6 @@
         c.setAttribute('aria-pressed', k === sel ? 'true' : 'false');
       });
     }
-    // The page that shows the selection.
-    function pageToSelection() {
-      var c = sel && boardEl.querySelector('.u-col [data-bk="' + (window.CSS && CSS.escape ? CSS.escape(sel) : sel) + '"]');
-      if (!c || !board.per) return;
-      var col = c.closest('.u-col'), cols = Array.prototype.slice.call(col.parentNode.children);
-      board.page = Math.floor(cols.indexOf(col) / board.per);
-    }
     // A new selection from the panel can sit below the board's visible rows.
     // Reveal it within the board; history still restores its saved reading place.
     function revealBoardSelection() {
@@ -1411,13 +1342,12 @@
       var active = document.activeElement;
       if (!active || !boardEl.contains(active)) return null;
       var card = active.closest('[data-bk]');
-      return { key: card && card.getAttribute('data-bk'), way: card && card.getAttribute('data-way'), href: active.getAttribute('href'), page: active.getAttribute('data-u-page') };
+      return { key: card && card.getAttribute('data-bk'), way: card && card.getAttribute('data-way'), href: active.getAttribute('href') };
     }
     function restoreBoardFocus(saved) {
       if (!saved) return;
       var target = null;
-      if (saved.page !== null) target = boardEl.querySelector('[data-u-page="' + saved.page + '"]');
-      else if (saved.key) {
+      if (saved.key) {
         Array.prototype.some.call(boardEl.querySelectorAll('[data-bk]'), function (c) {
           if (c.getAttribute('data-bk') !== saved.key) return false;
           if (saved.way && c.getAttribute('data-way') !== saved.way) return false;
@@ -1463,7 +1393,7 @@
       var focused = null;
       if (sig !== board.sig) {
         var keepScroll = board.fi === fi ? boardEl.scrollTop : 0;
-        if (fresh) { board.page = 0; board.selectionKey = null; }
+        if (fresh) board.selectionKey = null;
         else focused = rememberBoardFocus();
         board.fi = fi; board.sig = sig;
         boardEl.innerHTML = boardHtml(fi);
@@ -1488,7 +1418,7 @@
     }
     function layoutPages() {
       var keep = board.on; board.on = true; layoutBoard();
-      if (board.selectionKey !== sel) { pageToSelection(); board.selectionKey = sel; layoutBoard(); }
+      board.selectionKey = sel;
       board.on = keep;
     }
     function showBoard() {
@@ -1672,8 +1602,6 @@
         var press = boardPress; boardPress = null;
         if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) { e.preventDefault(); return; }
         if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        var pg = e.target.closest('[data-u-page]');
-        if (pg) { board.page += +pg.getAttribute('data-u-page'); hideBoardCard(); layoutBoard(); return; }
         if (e.target.closest('a')) return;
         var c = e.target.closest('[data-bk]');
         if (e.detail > 1) return;
@@ -1991,6 +1919,60 @@
       });
       return items.join('<span class="u-crumb-sep" aria-hidden="true">/</span>');
     }
+    // The selection's siblings in reading order: fields of the release, families of a
+    // field, and a family's papers, results and Lean statements in the board's order.
+    function familyPapers(fi) {
+      return D.families[fi].papers.slice().sort(function (a, b) { return dateValue(D.papers[a].date) - dateValue(D.papers[b].date) || a - b; });
+    }
+    function siblings(o) {
+      if (!o) return null;
+      var all = function (n) { var out = []; for (var i = 0; i < n; i++) out.push(i); return out; };
+      if (o.kind === 'd') return { list: all(D.disciplines.length), key: function (i) { return D.disciplines[i].id; }, name: function (i) { return escapeHtml(D.disciplines[i].name); }, pos: 'step.field' };
+      if (o.kind === 'f') {
+        var d = fams[o.i].d;
+        return { list: all(D.families.length).filter(function (i) { return fams[i].d === d; }), key: function (i) { return D.families[i].id; },
+          name: function (i) { return escapeHtml(T('family.short', { num: D.families[i].num }) + ': ' + D.families[i].title); }, pos: 'step.family', where: D.disciplines[d].name };
+      }
+      var fi = famOf(o), papers = familyPapers(fi);
+      if (o.kind === 'p') return { list: papers, key: function (i) { return D.papers[i].id; }, name: function (i) { return escapeHtml(D.papers[i].short); }, pos: 'step.paper' };
+      if (o.kind === 'r') {
+        var rs = [];
+        papers.forEach(function (pi) { rs = rs.concat(D.papers[pi].results); });
+        return { list: rs, key: function (i) { return D.results[i].id; }, name: function (i) { var n = resultName(D.results[i]), t = D.papers[D.results[i].p].short; return escapeHtml(n.indexOf(t) < 0 ? n + ', ' + t : n); }, pos: 'step.result' };
+      }
+      if (o.kind === 'l') return { list: D.families[fi].lean, key: function (i) { return D.lean[i].id; }, name: function (i) { return escapeHtml(D.lean[i].label || D.lean[i].name); }, pos: 'step.lean' };
+      return null;
+    }
+    function siblingKey(o, way) {
+      var sb = siblings(o), at = sb ? sb.list.indexOf(o.i) : -1;
+      if (at < 0) return null;
+      var j = at + way;
+      return j >= 0 && j < sb.list.length ? sb.key(sb.list[j]) : null;
+    }
+    // One compact row under the breadcrumbs: up is the trail, sideways is this.
+    function stepperHtml(o) {
+      var sb = siblings(o), at = sb ? sb.list.indexOf(o.i) : -1;
+      if (at < 0 || sb.list.length < 2) return '';
+      var side = function (j, way) {
+        var i = j >= 0 && j < sb.list.length ? sb.list[j] : null;
+        var label = T(way === 'prev' ? 'step.previous' : 'step.next');
+        if (i === null) return '<span class="u-step__go u-step__go--' + way + ' is-end" aria-hidden="true">' + escapeHtml(label) + '</span>';
+        var name = sb.name(i);
+        return '<button type="button" class="u-go u-step__go u-step__go--' + way + '" data-go="' + escapeHtml(sb.key(i)) + '" title="' + name + '" aria-label="' + escapeHtml(label) + ': ' + name + '" aria-keyshortcuts="' + (way === 'prev' ? 'ArrowLeft' : 'ArrowRight') + '">' + escapeHtml(label) + '</button>';
+      };
+      return side(at - 1, 'prev') + '<span class="u-step__pos">' + escapeHtml(T(sb.pos, { n: at + 1, of: sb.list.length, where: sb.where || '' })) + '</span>' + side(at + 1, 'next');
+    }
+    function renderStepper(o) {
+      if (!stepEl) return;
+      var active = document.activeElement;
+      var way = active && stepEl.contains(active) ? (active.classList.contains('u-step__go--prev') ? 'prev' : 'next') : null;
+      var html = o ? stepperHtml(o) : '';
+      stepEl.innerHTML = html; stepEl.hidden = !html;
+      if (way) {
+        var target = stepEl.querySelector('button.u-step__go--' + way) || stepEl.querySelector('button') || titleEl;
+        if (target) target.focus({ preventScroll: true });
+      }
+    }
     function scopeName(o) {
       if (!o) return '';
       return o.kind === 'd' ? D.disciplines[o.i].name : D.families[famOf(o)].title;
@@ -2053,6 +2035,7 @@
       updateLegend(o && o.kind !== 'd' ? famOf(o) : -1);
       if (trailEl) trailEl.innerHTML = trailHtml();
       if (trailEl) trailEl.hidden = !o;
+      renderStepper(o);
       var groundEl = root.querySelector('[data-u-ground]');
       if (groundEl) groundEl.hidden = !!o;
       var html = '';
@@ -2326,7 +2309,7 @@
       h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(T('key.' + f.tone)) + '</span></p>';
       h += '<figure class="u-cat"><figcaption>' + link(D.catalogue_url, T('family.catalogue')) + ' ' + escapeHtml(T('family.catalogue_says')) + '</figcaption>' +
         '<blockquote class="tex-auto">' + det.desc + '</blockquote>' +
-        (det.descMore ? '<p class="u-cat__more">' + link(f.href + '#h-desc', T('family.catalogue_more')) + '</p>' : '') + '</figure>';
+        '</figure>';
       // "Compare the theorem with its Lean" only when a Lean statement is paired with the
       // candidate theorem; it opens that pairing on the family page.
       var co = det.candidate ? obj(det.candidate) : null, cr = co && co.kind === 'r' ? D.results[co.i] : null;
@@ -2887,6 +2870,12 @@
         return;
       }
       if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+      // Left and right step to the previous or next sibling at the same level.
+      if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && sel && !e.shiftKey && !document.querySelector('dialog[open]')) {
+        var to = siblingKey(obj(sel), e.key === 'ArrowLeft' ? -1 : 1);
+        if (to) { e.preventDefault(); select(to, { trail: true }); focusArrival(); }
+        return;
+      }
       if (e.key === '/' && searchIn && !document.querySelector('dialog[open]')) {
         // The site's own search owns '/' elsewhere; on this page it finds on the map.
         e.preventDefault(); e.stopImmediatePropagation(); searchIn.focus(); searchIn.select(); return;

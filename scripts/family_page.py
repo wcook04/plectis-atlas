@@ -615,6 +615,7 @@ def head_html(c: Ctx) -> str:
     facts = "".join(f'<p class="fx-fact">{x}</p>' for x in extra)
     return f"""<header class="fx-head">
  <div class="fx-bar">{trail}{tools}</div>
+ {S.sibling_nav("family", S.family_siblings(c.num, root), discipline=disc)}
  <h1 class="fx-title{' fx-title--long' if len(title_plain) > 64 else ''}"><span class="tex-auto">{S.rich(curly_tex(f["title"]))}</span></h1>
  {quote}{facts}
 </header>"""
