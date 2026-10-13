@@ -52,13 +52,14 @@ function boardLayout() {
   const layoutEnd = source.indexOf('    function drawWires()', layoutStart);
   assert.ok(layoutStart >= 0 && layoutEnd > layoutStart);
   const cols = Array.from({ length: 14 }, (_, i) => ({ hidden: i % 3 === 0, classList: { contains: () => false } }));
-  let width = 740, wireCalls = 0, rebuilds = 0;
+  let width = 740, wireCalls = 0, repositionCalls = 0, rebuilds = 0;
   const papersEl = { children: cols, style: {}, get clientWidth() { return width; } };
   const boardEl = { querySelector: key => key === '[data-u-papers]' ? papersEl : null };
   const board = { on: true, pending: false, fi: 33, per: 2, sig: 'family-034' };
   const state = vm.createContext({
     board, boardEl, narrow: () => false, getComputedStyle: () => ({ fontSize: '16.8px' }),
     drawWires: () => { wireCalls++; },
+    repositionBoardCard: () => { repositionCalls++; },
     syncBoard: () => { rebuilds++; throw new Error('layout re-entered syncBoard'); }
   });
   vm.runInContext(source.slice(layoutStart, layoutEnd), state);
@@ -74,11 +75,90 @@ function boardLayout() {
     assert.equal(shown(), 14, 'a resize hides no column');
   }
   assert.equal(wireCalls, 101, 'wire placement follows each layout');
+  assert.equal(repositionCalls, 101, 'every board layout repositions a visible preview');
   assert.equal(rebuilds, 0, 'layout never rebuilds or re-enters syncBoard');
   assert.equal(board.sig, 'family-034', 'width does not invalidate the board');
   console.log('universe board layout: every column shows, width only re-packs, no rebuild');
 }
 boardLayout();
+
+// Dense boards generate many nested pointerover events for the same card. The
+// visible preview should retain its placement until its source, mode, packet,
+// or geometry changes; each full placement reads every nearby card's bounds.
+function boardPreviewPlacement() {
+  const begin = source.indexOf('    function hideBoardCard(dismiss)');
+  const end = source.indexOf('    var boardClick = null,', begin);
+  assert.ok(begin >= 0 && end > begin, 'production board-card handlers are present');
+  let rectReads = 0, timerClears = 0, wireDraws = 0, htmlWrites = 0;
+  const stageSize = { width: 1100, height: 760 };
+  const bounds = (left, top, width, height) => ({ left, top, right: left + width, bottom: top + height, width, height });
+  const sourceCard = (left, key = 'f:near') => ({
+    getAttribute: attr => attr === 'data-bk' ? key : null,
+    getBoundingClientRect: () => { rectReads++; return bounds(left, 320, 130, 90); },
+    closest: () => null,
+    classList: { contains: () => false }
+  });
+  const first = sourceCard(930), second = sourceCard(580);
+  const neighbours = Array.from({ length: 35 }, (_, i) => sourceCard(60 + i * 20, `f:other-${i}`));
+  const classes = new Set();
+  const cardEl = {
+    offsetWidth: 300, offsetHeight: 200, style: {},
+    classList: { add: name => classes.add(name), remove: name => classes.delete(name), contains: name => classes.has(name) },
+    querySelector: () => null,
+    set innerHTML(html) { htmlWrites++; this.html = html; }, get innerHTML() { return this.html; }
+  };
+  const board = { on: true, hoverKey: null, hoverVia: '', hoverEl: null, dismissedKey: null, hideT: null };
+  const state = vm.createContext({
+    Math, Array, board, boardEl: {
+      querySelectorAll: () => [first, second, ...neighbours],
+      contains: el => el === first || el === second || neighbours.includes(el)
+    }, cardEl,
+    stage: { getBoundingClientRect: () => { rectReads++; return bounds(0, 0, stageSize.width, stageSize.height); } },
+    hoverMQ: { matches: true }, narrow: () => false,
+    shards: {}, obj: key => ({ key }), discOf: () => 0,
+    cardKey: '', cardOn: false, cardBox: null,
+    clearTimeout: () => { timerClears++; }, hideCard: () => { state.cardOn = false; },
+    drawWires: () => { wireDraws++; }, boardCardHtml: key => `${key}:${state.shards[0]?.version || 'loading'}`,
+    katexIn() {}, overlap: () => 0,
+    clamp: (value, lo, hi) => Math.max(lo, Math.min(hi, value))
+  });
+  vm.runInContext(source.slice(begin, end), state);
+  state.showBoardCard(first, 'pointer');
+  const initialReads = rectReads;
+  assert.ok(initialReads > 35, 'first placement measures the dense board');
+  board.hideT = 123;
+  for (let i = 0; i < 50; i++) state.showBoardCard(first, 'pointer');
+  assert.equal(rectReads, initialReads, 'unchanged visible card avoids repeated full-board measurements');
+  assert.ok(timerClears >= 51, 're-entry still cancels a pending hide');
+  assert.equal(htmlWrites, 1, 'unchanged card retains its typeset preview');
+
+  const firstBox = state.cardBox;
+  state.showBoardCard(second, 'pointer');
+  assert.ok(rectReads > initialReads, 'a distinct DOM card with the same key gets a new placement');
+  assert.notEqual(state.cardBox.x0, firstBox.x0, 'placement follows the actual source card');
+  const afterSecond = rectReads;
+  state.showBoardCard(second, 'focus');
+  assert.ok(rectReads > afterSecond, 'focus mode gets its own placement');
+  const beforePacket = htmlWrites;
+  state.shards[0] = { version: 'ready-a' };
+  state.showBoardCard(second, 'focus');
+  assert.equal(htmlWrites, beforePacket + 1, 'new detail packet refreshes preview content');
+
+  stageSize.width = 780;
+  state.repositionBoardCard();
+  assert.ok(state.cardBox.x0 >= 8 && state.cardBox.x1 <= stageSize.width - 8,
+    'forced layout placement keeps the preview inside the narrowed stage');
+  state.hideBoardCard();
+  assert.equal(board.hoverEl, null, 'hide releases the preview source element');
+  board.dismissedKey = 'f:near';
+  const beforeDismissedReads = rectReads;
+  state.showBoardCard(second, 'pointer');
+  assert.equal(rectReads, beforeDismissedReads, 'dismissed card does not resurrect under stationary pointer');
+  assert.equal(board.hoverKey, null);
+  assert.ok(wireDraws >= 1);
+  console.log('universe board preview: nested hover re-entry is cached; invalidations and bounds are respected');
+}
+boardPreviewPlacement();
 
 
 // Repeated pointer/selection work must share one completion watcher per pending

@@ -340,6 +340,11 @@ Under reduced motion every transition is instant, discs jump and the ring is
 not drawn. Touch screens get no hover card; tapping
 selects.
 
+Moving within a board card keeps its preview in place without measuring every
+other card again. A width or font change places the preview again beside its
+source, within the current stage. Two citation cards can name the same family
+on opposite sides; each keeps its own preview position.
+
 What motion must never do: make a candidate look settled, move text a reader
 is reading, delay the mathematics, or run in a loop.
 
