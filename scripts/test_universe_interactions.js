@@ -24,6 +24,7 @@ const boardPages = range('    function layoutPages()', '    function showBoard()
 const boardSync = range('    function refreshBoardNeighbours()', '    function showBoard()');
 const boardPointer = range("    if (boardEl) {\n      boardEl.addEventListener('pointerdown'", "      boardEl.addEventListener('pointerover'") + '    }';
 const boardRepeat = range('    var boardClick = null, boardRepeatPress = null, boardDoubleOpened = false;', '    function selectFromBoard(key)');
+const documentKeys = range("    document.addEventListener('keydown', function (e) {", "    window.addEventListener('hashchange'");
 const detailAgain = range('          var again = function () {', '          watchPanelShard(di, again);');
 const panelWatch = range('    function watchPanelShard(di, again)', '    function renderPanel(quiet)');
 const hashState = range('    function updateHash(', '    function panelScroller()');
@@ -583,6 +584,16 @@ async function main() {
   keyboardInterruption.dispatch('pointerdown', keyboardInterruption.event(keyboardInterruption.outside, 30, 40, 230), false);
   keyboardInterruption.dispatch('click', keyboardInterruption.event(keyboardInterruption.outside, 30, 40, 240, { detail: 2 }), false);
   assert.deepEqual(keyboardInterruption.opened, [], 'keyboard interaction clears stale first-click latch');
+  const shortcutInterruption = shiftedBoardFixture();
+  const shortcutTarget = shortcutInterruption.first();
+  let documentKey;
+  shortcutInterruption.state.document = { addEventListener: (_type, fn) => { documentKey = fn; }, querySelector: () => null };
+  shortcutInterruption.state.searchIn = { focus() {}, select() {} };
+  vm.runInContext(documentKeys, shortcutInterruption.state);
+  documentKey(shortcutInterruption.event(shortcutTarget, 30, 40, 220, { key: '/' }));
+  shortcutInterruption.dispatch('pointerdown', shortcutInterruption.event(shortcutInterruption.outside, 30, 40, 230), false);
+  shortcutInterruption.dispatch('click', shortcutInterruption.event(shortcutInterruption.outside, 30, 40, 240, { detail: 2 }), false);
+  assert.deepEqual(shortcutInterruption.opened, [], 'search shortcut cancels the gesture before board key handlers run');
 
   // The preview guard is registered before both map and board click handlers.
   // A text drag must stop their selection handler, then release the next click.

@@ -2873,6 +2873,7 @@
       });
     }
     document.addEventListener('keydown', function (e) {
+      boardClick = null; boardRepeatPress = null;
       var tag = e.target && e.target.tagName;
       var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable);
       if (e.key === 'Escape') {
