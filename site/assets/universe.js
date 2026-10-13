@@ -1254,6 +1254,7 @@
       papersEl.style.columnCount = narrow() ? '' : String(per);
       cols.forEach(function (c) { c.hidden = false; });
       drawWires();
+      repositionBoardCard();
     }
     function drawWires() {
       var inEl = boardEl && boardEl.querySelector('[data-u-board-in]'), svg = inEl && inEl.querySelector('[data-u-wires]');
@@ -1504,11 +1505,12 @@
       if (dismiss) board.dismissedKey = board.hoverKey;
       clearTimeout(board.hideT);
       board.hoverVia = '';
+      board.hoverEl = null;
       if (board.hoverKey) { board.hoverKey = null; if (board.on) drawWires(); }
       if (cardEl) cardEl.classList.remove('is-board');
       hideCard();
     }
-    function showBoardCard(el, via) {
+    function showBoardCard(el, via, reposition) {
       if (!cardEl || !board.on || narrow()) return;
       if (via !== 'focus' && !(hoverMQ && hoverMQ.matches)) return;
       var key = el.getAttribute('data-bk');
@@ -1516,11 +1518,15 @@
       // Wait for that pointer or keyboard focus to leave before showing it again.
       if (board.dismissedKey === key) return;
       board.dismissedKey = null;
-      board.hoverVia = via;
       clearTimeout(board.hideT);
+      var ck = 'b:' + key + (shards[discOf(obj(key))] ? '+' : '');
+      // Formula spans and paragraph children bubble many pointerover events.
+      // An unchanged preview needs no new whole-board placement scan. Keep
+      // distinct left/right cards for the same family as separate sources.
+      if (!reposition && cardOn && board.hoverEl === el && board.hoverVia === via && cardKey === ck) return;
+      board.hoverEl = el; board.hoverVia = via;
       if (board.hoverKey !== key) { board.hoverKey = key; drawWires(); }
       cardEl.classList.add('is-board');
-      var ck = 'b:' + key + (shards[discOf(obj(key))] ? '+' : '');
       if (ck !== cardKey) {
         cardEl.innerHTML = boardCardHtml(key);
         var px = cardEl.querySelector('[data-paper]');
@@ -1556,6 +1562,12 @@
       cardBox = best;
       cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
       if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
+    }
+    function repositionBoardCard() {
+      if (!cardOn || !board.on || !board.hoverEl) return;
+      if (narrow() || !boardEl.contains(board.hoverEl)) { hideBoardCard(); return; }
+      // Width and font changes re-pack the board while focus may stay put.
+      showBoardCard(board.hoverEl, board.hoverVia, true);
     }
     // Reading width changes on the first click. The next press in a double-click
     // may therefore land on the sidebar or another card, outside the old board.
