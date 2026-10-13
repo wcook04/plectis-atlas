@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Regression fixtures for the parsers in build_data.py.
 
-    python3 scripts/test_build_data.py
+    python3 scripts/tests/test_build_data.py
 
 Each fixture is a small input whose correct reading was decided independently of the code.
 They come from a rigour review of the atlas (11 October 2026) that found these cases by
@@ -15,7 +15,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import build_data as bd  # noqa: E402
 
 

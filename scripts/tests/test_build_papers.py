@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Regression fixtures for the paper reader in build_papers.py.
 
-    python3 scripts/test_build_papers.py
-    KATEX_JS=path/to/node_modules/katex python3 scripts/test_build_papers.py   # also renders with KaTeX
+    python3 scripts/tests/test_build_papers.py
+    KATEX_JS=path/to/node_modules/katex python3 scripts/tests/test_build_papers.py   # also renders with KaTeX
 
 Each fixture comes from a failure found by building every paper of the release.
 Standard library only.
@@ -18,7 +18,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import build_papers as bp  # noqa: E402
 
 

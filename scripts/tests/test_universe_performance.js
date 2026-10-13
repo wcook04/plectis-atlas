@@ -4,7 +4,7 @@
 // cache work, not browser frame time or typographic fidelity.
 const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
 const assert = require('node:assert/strict');
-const source = fs.readFileSync(path.join(__dirname, '../site/assets/universe.js'), 'utf8');
+const source = fs.readFileSync(path.join(__dirname, '../../site/assets/universe.js'), 'utf8');
 const start = source.indexOf('    function labelTokens(');
 const end = source.indexOf('    function drawText(', start);
 assert.ok(start >= 0 && end > start);

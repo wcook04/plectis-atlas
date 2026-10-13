@@ -4,7 +4,7 @@ Builds the pages into a temporary directory and checks what DESIGN.md and the br
 pin: the anchors other pages link to, the theorem shown only when the backend names a
 candidate, every state in words (no symbol mark), every inspection trigger with its
 record, no repeated ids, and every "what is left to check" link carrying its target's
-exact fingerprint. Standard library only: python3 scripts/test_family_page.py
+exact fingerprint. Standard library only: python3 scripts/tests/test_family_page.py
 """
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from html import unescape
 from pathlib import Path
 from urllib.parse import unquote
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import build_site as S  # noqa: E402
 import family_page  # noqa: E402
