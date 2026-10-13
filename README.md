@@ -6,8 +6,8 @@ An independent reader for [OpenAI’s mathematics release](https://github.com/op
 
 <a href="https://wcook04.github.io/plectis-atlas/">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/map-dark.png">
-    <img src="docs/map-light.png" width="1440" alt="The Plectis Atlas map: the release’s seventeen disciplines as labelled regions, each holding its families as discs coloured by what two outside readers find the family’s Lean states, with a disc left open where the release has no Lean.">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/map-dark.png">
+    <img src="docs/images/map-light.png" width="1440" alt="The Plectis Atlas map: the release’s seventeen disciplines as labelled regions, each holding its families as discs coloured by what two outside readers find the family’s Lean states, with a disc left open where the release has no Lean.">
   </picture>
 </a>
 
@@ -21,8 +21,8 @@ OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lea
 
 <a href="https://wcook04.github.io/plectis-atlas/#o=f%3A003">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/family-dark.png">
-    <img src="docs/family-light.png" width="1440" alt="Family 003, the quasi-Riemann hypothesis, opened on the map: its papers as columns, each theorem with the opening of its statement typeset, the Lean statements paired with them joined by dashed lines, and the families that cite it and that it cites on either side.">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/family-dark.png">
+    <img src="docs/images/family-light.png" width="1440" alt="Family 003, the quasi-Riemann hypothesis, opened on the map: its papers as columns, each theorem with the opening of its statement typeset, the Lean statements paired with them joined by dashed lines, and the families that cite it and that it cites on either side.">
   </picture>
 </a>
 
@@ -140,11 +140,14 @@ For more, [explain a result](skills/explain-a-result/SKILL.md), [compare a state
 | [backend/](backend/) | Pinned evidence records exported by Statement Map |
 | [data/](data/) | Generated source indexes and paper-rendering metadata |
 | [site/](site/README.md) | Page copy, styles and browser code |
-| [scripts/](scripts/README.md) | Builders, importers and checks |
+| [scripts/](scripts/README.md) | Builders, importers and checks; regression suites in `scripts/tests/` |
+| [docs/images/](docs/images/) | Light and dark README screenshots |
 | [docs/](docs/README.md) | Documentation index and architecture guide |
 | [skills/](skills/) | Task instructions for coding agents |
 
 The [documentation index](docs/README.md) collects the guides for contributors and developers.
+`python3 scripts/check_repository_structure.py` enforces these roles in CI; it checks
+Git candidates, including staged additions, while ignoring generated website output.
 
 <a id="build-it-yourself"></a>
 

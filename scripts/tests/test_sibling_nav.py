@@ -2,7 +2,7 @@
 families step through their field, Lean statements through their family, papers through
 their family, in the parent page's order; the ends show only the direction that exists;
 the links carry rel=prev and rel=next. Standard library only:
-python3 scripts/test_sibling_nav.py
+python3 scripts/tests/test_sibling_nav.py
 """
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ import unittest
 from html import unescape
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import build_site as S  # noqa: E402
 import family_page  # noqa: E402

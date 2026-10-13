@@ -24,7 +24,7 @@ checked to find a prefix of the last word, plural and singular forms, a hyphen e
 way, a formula word (L^2), statements by printed number (Theorem 1.1), a marked line of
 text per result and the nearest title words when nothing matches.
 
-    python3 scripts/test_search.py
+    python3 scripts/tests/test_search.py
 
 Skips, with a message, when node is not installed. Standard library only.
 """
@@ -41,7 +41,7 @@ import tempfile
 import unicodedata
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 

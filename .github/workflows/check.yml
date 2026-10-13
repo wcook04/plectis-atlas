@@ -36,23 +36,27 @@ jobs:
             mkdir -p ".trusted/$(dirname "$f")" && cp -- "$f" ".trusted/$f"
           done < "$RUNNER_TEMP/changed"
           cd .trusted && xargs -0 -r python3 scripts/check_contributions.py --strict < "$RUNNER_TEMP/changed"
+      - name: Repository roles and placement regressions
+        run: |
+          python3 scripts/check_repository_structure.py
+          python3 scripts/tests/test_repository_structure.py
       - name: Statement Map's vendored packets pass the reader's checks
-        run: python3 scripts/test_reader.py
+        run: python3 scripts/tests/test_reader.py
       - name: The site search normalises queries exactly as Statement Map indexed them
-        run: python3 scripts/test_search.py
+        run: python3 scripts/tests/test_search.py
       - name: Map labels and navigation handle dense views and loading failures
         run: |
-          node scripts/test_universe_labels.js
-          node scripts/test_universe_interactions.js
-          node scripts/test_universe_performance.js
+          node scripts/tests/test_universe_labels.js
+          node scripts/tests/test_universe_interactions.js
+          node scripts/tests/test_universe_performance.js
       - name: The data parsers read their fixtures correctly
-        run: python3 scripts/test_build_data.py
+        run: python3 scripts/tests/test_build_data.py
       - name: The paper reader converts its fixtures correctly
         run: |
-          python3 scripts/test_build_papers.py
-          python3 scripts/test_check_paper_links.py
+          python3 scripts/tests/test_build_papers.py
+          python3 scripts/tests/test_check_paper_links.py
       - name: Previous and next links follow each parent page's order
-        run: python3 scripts/test_sibling_nav.py
+        run: python3 scripts/tests/test_sibling_nav.py
       - name: The contribution checker rejects what it should
         run: python3 scripts/check_contributions.py --self-test
       - name: Contributions are well formed
@@ -66,7 +70,7 @@ jobs:
       - name: README numbers match the data
         run: python3 scripts/sync_readme.py --check
       - name: Attribution inventory and notice regressions
-        run: python3 scripts/test_attribution.py
+        run: python3 scripts/tests/test_attribution.py
       - name: Site builds with licence notices
         run: |
           python3 scripts/build_site.py

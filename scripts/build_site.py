@@ -4476,7 +4476,7 @@ SEARCH_PACKETS = ("search-index", "search-shard", "search-entries")
 
 def search_url(entry_id: str, kind: str) -> str | None:
     """The Atlas page that reads a search entry (mirrors urlFor in site/assets/atlas.js;
-    scripts/test_search.py checks both against the backend's own reading_page routes)."""
+    scripts/tests/test_search.py checks both against the backend's own reading_page routes)."""
     head, _, rest = entry_id.partition(":")
     quote_c = lambda v: quote(v, safe="-_.!~*'()")    # encodeURIComponent
     if kind == "family":

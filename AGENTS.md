@@ -81,7 +81,9 @@ The core Python scripts use the standard library and need Python 3.10 or newer. 
 
 Explanations follow `STYLE.md`. When you draft prose for a person, keep their own sentences where they wrote them, and write plainly: short declarative sentences, every term defined at first use, no slogans. The atlas's own documentation uses British spelling and avoids em dashes.
 
-## Folder organisation
+## Repository organisation
+
+Keep builders and their shared modules in `scripts/`, regression suites in `scripts/tests/`, and documentation screenshots in `docs/images/`. Follow `docs/ARCHITECTURE.md` before moving sources. Run `python3 scripts/check_repository_structure.py` and its regression suite after a structural change; update callers, links and the canonical skills, then regenerate skill mirrors. Generated data, backend exports and website output retain their existing owners.
 
 For tree changes, new file families or file placement, read
 [repository-organization](skills/repository-organization/SKILL.md) and the
