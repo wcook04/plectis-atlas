@@ -733,19 +733,6 @@ def sentences(text: str) -> list[str]:
     return [unmask(LEAN_LINK.sub("", s)) for s in out if LEAN_LINK.sub("", s)]
 
 
-def lead_sentences(text: str, limit: int = 360) -> tuple[str, bool]:
-    """The first sentences of a description, at least one and up to about `limit`
-    characters, and whether anything was left out."""
-    ss = sentences(text)
-    out, n = [], 0
-    for s in ss:
-        if out and n + len(s) > limit:
-            break
-        out.append(s)
-        n += len(s) + 1
-    return " ".join(out), len(out) < len(ss)
-
-
 def no_links(h: str) -> str:
     """HTML for inside a link (a list entry is one): its own links become plain text."""
     return re.sub(r"</?a\b[^>]*>", "", h)
@@ -854,13 +841,12 @@ def build_detail(M, names):
         sh = shards[f["d"]]
         cat = ((doc.get("claim") or {}).get("catalogue_claim") or {}).get("text") or ""
         ss = sentences(cat)
-        lead, more = lead_sentences(cat)
         kinds = [E.say("check_kind." + c) for c in ev.checks if c in E.WORDS["check_kind"]]
         claim = doc.get("claim") or {}
         sh["families"][f["id"]] = {
             "titleHtml": no_links(S.rich(ev.name)),
             "first": no_links(S.rich(ss[0] if ss else "")),
-            "desc": S.rich(lead), "descMore": more,
+            "desc": S.rich(cat),
             "evidence": evidence_words(M, ev, names),
             "agree": ev.agreement_sentence() if ev.has_lean else "",
             "readers": reader_rows(ev, doc) if ev.has_lean else [],
@@ -1074,6 +1060,7 @@ def page_body(M, gen, data_version=None) -> str:
  <aside class="u-panel" aria-labelledby="u-title">
   <div class="u-panel__head">
    <nav class="u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail hidden></nav>
+   <nav class="u-step" aria-label="{esc(U('step.label'))}" data-u-step hidden></nav>
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
    <p class="u-ground" data-u-ground>{esc(U('page.independent'))}</p>
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">

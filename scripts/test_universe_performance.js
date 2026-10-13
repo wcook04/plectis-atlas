@@ -44,176 +44,42 @@ const tiny = vm.runInContext("labelTokens('UnbreakableWord', 1)", c, { timeout: 
 assert.ok(tiny.length > 0 && tiny.length <= 'UnbreakableWord'.length);
 console.log(`universe performance: 30 frames, ${titles.length} cached family fits, ${widths} width calls`);
 
-// A 15 px scrollbar can move the family board across its two/three-column
-// threshold. The card width then changes the excerpt budget from 170 to 100.
-// Layout must refresh the visible excerpt without rebuilding the whole board:
+// Every paper column shows: the board wraps columns instead of paging them, and
+// a width change only re-packs the columns. Layout never rebuilds the board:
 // that rebuild used to toggle the scrollbar and call syncBoard indefinitely.
 function boardLayout() {
   const layoutStart = source.indexOf('    function layoutBoard()');
   const layoutEnd = source.indexOf('    function drawWires()', layoutStart);
   assert.ok(layoutStart >= 0 && layoutEnd > layoutStart);
-  const cols = Array.from({ length: 14 }, () => ({ hidden: false, classList: { contains: () => false } }));
-  const pagerControls = {
-    '[data-u-page-n]': { textContent: '' },
-    '[data-u-page="-1"]': { setAttribute() {}, disabled: false },
-    '[data-u-page="1"]': { setAttribute() {}, disabled: false }
-  };
-  const pager = { hidden: false, querySelector: key => pagerControls[key] };
-  let width = 740, excerptCalls = 0, katexCalls = 0, wireCalls = 0, rebuilds = 0;
-  const resultCard = { getAttribute: key => key === 'data-bk' ? 'r:test' : 'p:test' };
-  const x = {
-    innerHTML: 'initial excerpt', clientWidth: 365, offsetHeight: 0, scrollWidth: 0,
-    attrs: { 'data-u-budget': '170' },
-    getAttribute(key) { return this.attrs[key]; },
-    setAttribute(key, value) { this.attrs[key] = String(value); },
-    closest: () => resultCard
-  };
-  const rc = { get clientWidth() { return width === 740 ? 365 : 231; } };
-  const papersEl = {
-    children: cols, style: {}, get clientWidth() { return width; },
-    querySelector: () => rc
-  };
-  const boardEl = {
-    querySelector: key => key === '[data-u-papers]' ? papersEl : key === '[data-u-pager]' ? pager : null,
-    querySelectorAll: () => [x]
-  };
-  const board = { on: true, pending: false, fi: 33, per: 2, page: 2, cols: 14, budget: 170, sig: 'family-034' };
+  const cols = Array.from({ length: 14 }, (_, i) => ({ hidden: i % 3 === 0, classList: { contains: () => false } }));
+  let width = 740, wireCalls = 0, rebuilds = 0;
+  const papersEl = { children: cols, style: {}, get clientWidth() { return width; } };
+  const boardEl = { querySelector: key => key === '[data-u-papers]' ? papersEl : null };
+  const board = { on: true, pending: false, fi: 33, per: 2, sig: 'family-034' };
   const state = vm.createContext({
-    board, boardEl, fams: Object.assign(Array(34).fill(null), { 33: { d: 1 } }),
-    shards: { 1: { results: { 'r:test': { html: 'source statement' } } } },
-    narrow: () => false, getComputedStyle: () => ({ fontSize: '16.8px' }),
-    clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), T: key => key,
-    excerpt: (html, budget) => { excerptCalls++; return { html: `${html}:${budget}`, cut: false }; },
-    katexIn: () => { katexCalls++; }, drawWires: () => { wireCalls++; }, boardFontVersion: 0,
+    board, boardEl, narrow: () => false, getComputedStyle: () => ({ fontSize: '16.8px' }),
+    drawWires: () => { wireCalls++; },
     syncBoard: () => { rebuilds++; throw new Error('layout re-entered syncBoard'); }
   });
   vm.runInContext(source.slice(layoutStart, layoutEnd), state);
+  const shown = () => cols.filter(c => !c.hidden).length;
   vm.runInContext('layoutBoard()', state, { timeout: 1000 });
   assert.equal(board.per, 2);
-  assert.equal(board.page, 2);
-  assert.deepEqual(cols.map((c, i) => c.hidden ? -1 : i).filter(i => i >= 0), [4, 5]);
-  assert.equal(excerptCalls, 0, 'unchanged budget keeps the existing excerpt');
-  width = 755;
-  vm.runInContext('layoutBoard()', state, { timeout: 1000 });
-  assert.equal(board.per, 3);
-  assert.equal(board.page, 1, 'resize keeps the first previously visible column');
-  assert.deepEqual(cols.map((c, i) => c.hidden ? -1 : i).filter(i => i >= 0), [3, 4, 5]);
-  assert.equal(board.budget, 100);
-  assert.equal(x.innerHTML, 'source statement:100');
-  assert.equal(x.getAttribute('data-u-budget'), '100');
-  width = 740;
-  vm.runInContext('layoutBoard()', state, { timeout: 1000 });
-  assert.equal(board.per, 2);
-  assert.equal(board.budget, 170);
-  assert.equal(x.innerHTML, 'source statement:170');
-  assert.equal(excerptCalls, 2, 'each width change refreshes the visible excerpt once');
-  assert.equal(katexCalls, 2);
-  vm.runInContext('layoutBoard()', state, { timeout: 1000 });
-  assert.equal(excerptCalls, 2, 'stable width does no extra excerpt work');
-  board.page = 4;
-  x.setAttribute('data-u-budget', 100); // a newly visible page still has its old budget
-  delete x.attrs['data-u-fit'];
-  vm.runInContext('layoutBoard()', state, { timeout: 1000 });
-  assert.deepEqual(cols.map((c, i) => c.hidden ? -1 : i).filter(i => i >= 0), [8, 9]);
-  assert.equal(x.innerHTML, 'source statement:170', 'pagination refreshes a stale visible excerpt');
-  assert.equal(excerptCalls, 3);
-  assert.equal(wireCalls, 5, 'wire placement follows each bounded layout');
+  assert.equal(shown(), 14, 'every paper column shows');
+  assert.equal(papersEl.style.columnCount, '2');
   for (let i = 0; i < 100; i++) {
     width = i % 2 === 0 ? 755 : 740;
     vm.runInContext('layoutBoard()', state, { timeout: 1000 });
-    assert.equal(board.budget, i % 2 === 0 ? 100 : 170);
+    assert.equal(board.per, i % 2 === 0 ? 3 : 2);
+    assert.equal(shown(), 14, 'a resize hides no column');
   }
-  assert.equal(excerptCalls, 103, '100 width flips perform 100 bounded excerpt refreshes');
-  assert.equal(katexCalls, 103);
-  assert.equal(wireCalls, 105);
+  assert.equal(wireCalls, 101, 'wire placement follows each layout');
   assert.equal(rebuilds, 0, 'layout never rebuilds or re-enters syncBoard');
-  assert.equal(board.sig, 'family-034', 'excerpt width does not invalidate the board');
-  console.log('universe board layout: 15 px width toggle, bounded excerpt refresh, no rebuild');
+  assert.equal(board.sig, 'family-034', 'width does not invalidate the board');
+  console.log('universe board layout: every column shows, width only re-packs, no rebuild');
 }
 boardLayout();
 
-// An excerpt that still overflows after six shortening attempts must not repeat
-// those six KaTeX renders on every unrelated board refresh. A width or font
-// change is a new fit and may try again.
-function excerptFitMemo() {
-  const begin = source.indexOf('    function fitExcerpts()');
-  const end = source.indexOf('    function drawWires()', begin);
-  assert.ok(begin >= 0 && end > begin);
-  let width = 180, fontSize = '16px', excerptCalls = 0, katexCalls = 0;
-  const card = { getAttribute: key => key === 'data-bk' ? 'r:test' : 'p:test' };
-  const x = {
-    innerHTML: 'initial', attrs: { 'data-u-budget': '170' },
-    get clientWidth() { return width; }, offsetHeight: 999, scrollWidth: 999,
-    getAttribute(key) { return this.attrs[key]; },
-    setAttribute(key, value) { this.attrs[key] = String(value); },
-    closest: () => card
-  };
-  const state = vm.createContext({
-    board: { fi: 0, budget: 170 }, boardFontVersion: 0, fams: [{ d: 0 }],
-    shards: { 0: { results: { 'r:test': { html: 'long source statement' } } } },
-    boardEl: { querySelectorAll: () => [x] },
-    getComputedStyle: () => ({ fontSize }),
-    excerpt: (html, budget) => { excerptCalls++; return { html: `${html}:${budget}`, cut: true }; },
-    katexIn: () => { katexCalls++; }
-  });
-  vm.runInContext(source.slice(begin, end), state);
-  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
-  assert.equal(excerptCalls, 6, 'first overflowing fit has a six-attempt ceiling');
-  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
-  assert.equal(excerptCalls, 6, 'identical geometry reuses the exhausted fit');
-  width = 150;
-  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
-  assert.equal(excerptCalls, 13, 'changed width restores source, then permits six fit attempts');
-  fontSize = '17px';
-  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
-  assert.equal(excerptCalls, 20, 'changed font restores source, then permits six fit attempts');
-  state.boardFontVersion++;
-  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
-  assert.equal(excerptCalls, 27, 'font-load version restores source before refitting');
-  assert.equal(katexCalls, excerptCalls);
-  console.log('universe excerpts: exhausted fits are cached by width and font');
-}
-excerptFitMemo();
-
-function excerptExpandsAtSameBudget() {
-  const begin = source.indexOf('    function fitExcerpts()');
-  const end = source.indexOf('    function drawWires()', begin);
-  let width = 120, renders = 0;
-  const card = { getAttribute: key => key === 'data-bk' ? 'r:test' : 'p:test' };
-  const x = {
-    innerHTML: 'source:170', attrs: { 'data-u-budget': '170' }, scrollWidth: 0,
-    get clientWidth() { return width; },
-    get offsetHeight() {
-      const shown = Number(this.innerHTML.split(':')[1]);
-      return width < 200 && shown > 80 ? 999 : 20;
-    },
-    getAttribute(key) { return this.attrs[key]; },
-    setAttribute(key, value) { this.attrs[key] = String(value); },
-    closest: () => card
-  };
-  const state = vm.createContext({
-    board: { fi: 0, budget: 170 }, boardFontVersion: 0, fams: [{ d: 0 }],
-    shards: { 0: { results: { 'r:test': { html: 'source' } } } },
-    boardEl: { querySelectorAll: () => [x] },
-    getComputedStyle: () => ({ fontSize: '16px', lineHeight: '24px' }),
-    excerpt: (html, budget) => { renders++; return { html: `${html}:${budget}`, cut: budget < 170 }; },
-    katexIn() {}
-  });
-  vm.runInContext(source.slice(begin, end), state);
-  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
-  const shortened = Number(x.innerHTML.match(/source:(\d+)/)[1]);
-  assert.ok(shortened < 170, 'narrow card shortens the excerpt');
-  assert.equal(state.board.budget, 170, 'fitting a card does not change the board budget');
-  const narrowRenders = renders;
-  width = 300;
-  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
-  assert.equal(x.innerHTML, 'source:170', 'wider card restores the full source at the same board budget');
-  assert.equal(renders, narrowRenders + 1, 'expansion needs one source render');
-  vm.runInContext('fitExcerpts()', state, { timeout: 1000 });
-  assert.equal(renders, narrowRenders + 1, 'stable expanded geometry is cached');
-  console.log('universe excerpts: narrow-to-wide card restores text at unchanged budget');
-}
-excerptExpandsAtSameBudget();
 
 // Repeated pointer/selection work must share one completion watcher per pending
 // shard. The former syncBoard registered 50 own callbacks and then 100 neighbour
