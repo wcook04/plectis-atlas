@@ -291,6 +291,24 @@ code.sr__name { font-size: 0.86rem; }
 .trail a:hover { color: var(--ink); }
 .trail [aria-current] { color: var(--ink-soft); }
 .trail__sep { color: var(--faint); margin-inline-end: 0.45em; }
+/* The previous and next row under the breadcrumb (build_site.sibling_nav): the neighbouring
+   family, Lean statement or paper by name, this page's place between them. One line on a
+   wide screen; stacked on a phone. Names wrap rather than truncate, so nothing is hidden. */
+.sib { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: "prev pos next"; align-items: baseline; gap: 4px 20px; max-width: 64rem; margin: -6px 0 22px; padding-block: 8px; border-block: 1px solid var(--rule); font-size: var(--fs-meta); line-height: 1.45; color: var(--muted); }
+.sib__pos { grid-area: pos; margin: 0; color: var(--faint); text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sib__a { display: inline-flex; align-items: baseline; gap: 0.45em; min-height: 24px; min-width: 0; color: var(--muted); overflow-wrap: anywhere; }
+.sib__a--prev { grid-area: prev; justify-self: start; }
+.sib__a--next { grid-area: next; justify-self: end; text-align: end; }
+a.sib__a:hover { color: var(--ink); }
+.sib__arr { flex: none; color: var(--faint); }
+.sib__t { text-wrap: pretty; }
+.sib__st { color: var(--faint); }
+@media (max-width: 640px) {
+  .sib { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pos" "prev" "next"; gap: 6px; }
+  .sib__pos { text-align: start; white-space: normal; }
+  .sib__a--next { justify-self: start; text-align: start; }
+  span.sib__a { display: none; }
+}
 .phead { margin-bottom: 24px; max-width: 64rem; }
 .phead__kicker { font-size: var(--fs-meta); color: var(--muted); margin: 0 0 6px; }
 .phead__kicker code { color: var(--ink-soft); }

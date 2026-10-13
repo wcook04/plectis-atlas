@@ -25,6 +25,7 @@ const boardSync = range('    function refreshBoardNeighbours()', '    function s
 const boardPointer = range("    if (boardEl) {\n      boardEl.addEventListener('pointerdown'", "      boardEl.addEventListener('pointerover'") + '    }';
 const boardRepeat = range('    var boardClick = null, boardRepeatPress = null, boardDoubleOpened = false;', '    function selectFromBoard(key)');
 const documentKeys = range("    document.addEventListener('keydown', function (e) {", "    window.addEventListener('hashchange'");
+const stepperRender = range('    function renderStepper(o)', '    function scopeName(o)');
 const detailAgain = range('          var again = function () {', '          watchPanelShard(di, again);');
 const panelWatch = range('    function watchPanelShard(di, again)', '    function renderPanel(quiet)');
 const hashState = range('    function updateHash(', '    function panelScroller()');
@@ -209,28 +210,23 @@ async function main() {
   boardState.hideBoard();
   assert.equal(attributes.has('inert'), true, 'even not-yet-visible board becomes inert');
   assert.equal(boardState.board.pending, false);
-  // Async detail replies can ask the board to lay out again. A reader-selected
-  // page is still the reader's page until a new selection requests a reveal.
-  let pageLayouts = 0, pageResets = 0;
+  // Async detail replies can ask the board to lay out again; every column already
+  // shows, so a layout only records the selection it was drawn for.
+  let pageLayouts = 0;
   const chosenPage = context({
-    board: { on: false, pending: true, fi: 0, page: 3, per: 2, revealKey: null, selectionKey: 'd:test' },
-    layoutBoard: () => { pageLayouts++; },
-    pageToSelection: () => { pageResets++; chosenPage.board.page = 0; }
+    board: { on: false, pending: true, fi: 0, per: 2, revealKey: null, selectionKey: 'd:test' },
+    layoutBoard: () => { pageLayouts++; }
   });
   vm.runInContext(boardPages, chosenPage);
+  chosenPage.sel = 'f:a';
   chosenPage.layoutPages();
   assert.ok(pageLayouts > 0, 'board layout still runs for asynchronous updates');
   assert.equal(chosenPage.board.on, false, 'temporary layout visibility is restored');
-  assert.equal(chosenPage.board.page, 3, 'asynchronous updates preserve the chosen page');
-  assert.equal(pageResets, 0, 'selection paging does not run without a new selection');
-  chosenPage.sel = 'f:a';
-  chosenPage.layoutPages();
-  assert.equal(pageResets, 1, 'a new selection reveals its page once');
   assert.equal(chosenPage.board.selectionKey, 'f:a');
 
   // A neighbour packet enriches only its side card. The whole board and its
   // focused controls stay in place; the own-family packet may rebuild but
-  // restores the same card or pager control after replacement.
+  // restores the same card after replacement.
   let rebuilds = 0, enriched = 0;
   const title = { innerHTML: 'old title' };
   const sideAttrs = { 'data-g': '1', 'data-bk': 'f:b' };
@@ -245,33 +241,26 @@ async function main() {
     querySelectorAll: () => [], closest: () => null,
     focus: () => { doc.activeElement = replacement; }
   };
-  const replacementPager = { closest: () => null, focus: () => { doc.activeElement = replacementPager; } };
   const oldCard = {
     getAttribute: key => key === 'data-bk' ? 'r:chosen' : null,
     closest: key => key === '[data-bk]' ? oldCard : null
-  };
-  const oldPager = {
-    getAttribute: key => key === 'data-u-page' ? '-1' : null,
-    closest: () => null
   };
   const boardEl = {
     scrollTop: 75,
     set innerHTML(value) { rebuilds++; doc.activeElement = null; this.html = value; },
     get innerHTML() { return this.html; },
-    contains: el => el === sideCard || el === oldCard || el === oldPager,
-    querySelectorAll: key => key === '.u-bc--f' ? [sideCard] : key === '[data-bk]' ? [replacement] : [],
-    querySelector: key => key === '[data-u-page="-1"]' ? replacementPager : null
+    contains: el => el === sideCard || el === oldCard,
+    querySelectorAll: key => key === '.u-bc--f' ? [sideCard] : key === '[data-bk]' ? [replacement] : []
   };
   const boardState2 = context({
     D: { families: [{ id: 'f:a', cites: [[1, 1]], citedBy: [] }, { id: 'f:b', cites: [], citedBy: [] }] },
     fams: [{ d: 0 }, { d: 1 }], sel: 'f:a', boardEl, document: doc,
-    board: { fi: 0, sig: '0|1', on: true, pending: false, page: 2, per: 2,
+    board: { fi: 0, sig: '0|1', on: true, pending: false, per: 2,
       selectionKey: 'f:a', ringKey: null },
     shards: { 0: {} }, failedShards: { 1: true },
     boardFamily: () => 0, boardHtml: () => '<replacement board>',
     typesetBoard() {}, hideBoardCard() {}, markBoard() {}, layoutBoard() {},
     ringBoard() {}, restoreBoardPosition() {}, revealBoardSelection() {},
-    pageToSelection() { throw new Error('async refresh reset the chosen page'); },
     katexIn: () => { enriched++; }, loadShard: () => Promise.resolve({})
   });
   vm.runInContext(boardSync, boardState2);
@@ -279,7 +268,7 @@ async function main() {
   boardState2.syncBoard();
   boardState2.shards[1] = { families: { 'f:b': { titleHtml: 'ready title' } } };
   boardState2.syncBoard();
-  assert.equal(rebuilds, 0, 'neighbour readiness does not rebuild papers or pager');
+  assert.equal(rebuilds, 0, 'neighbour readiness does not rebuild papers');
   assert.equal(title.innerHTML, 'ready title');
   assert.equal(sideAttrs['data-u-detail'], 'ready');
   assert.equal(enriched, 1, 'new side title is typeset once');
@@ -289,10 +278,6 @@ async function main() {
   boardState2.syncBoard();
   assert.equal(rebuilds, 1, 'own-family readiness refreshes board content');
   assert.equal(doc.activeElement, replacement, 'own-family rebuild restores card focus');
-  boardState2.board.sig = '0|0';
-  doc.activeElement = oldPager;
-  boardState2.syncBoard();
-  assert.equal(doc.activeElement, replacementPager, 'own-family rebuild restores pager focus');
 
   // A detail packet replaces the sidebar HTML after focus has already reached
   // a row. The callback must return focus to the matching new row, including the
@@ -392,6 +377,91 @@ async function main() {
     assert.equal(renders, replacements, 'sidebar typesetting is bounded to that replacement');
     assert.equal(Object.keys(pendingPanel.panelShardWaiting).length, 0, 'settled sidebar callback is released');
   }
+  // renderPanel replaces the sibling nav on every selection and detail update.
+  // Preserve focus by direction, with an end-of-list and no-sibling fallback.
+  const stepDoc = { activeElement: null };
+  const stepButton = way => ({
+    classList: { contains: name => name === `u-step__go--${way}` },
+    focus(options) { assert.equal(options.preventScroll, true); stepDoc.activeElement = this; }
+  });
+  const stepHeading = { focus(options) { assert.equal(options.preventScroll, true); stepDoc.activeElement = this; } };
+  const stepEl = {
+    buttons: [], hidden: false,
+    contains(el) { return this.buttons.includes(el); },
+    querySelector(selector) {
+      if (selector === 'button') return this.buttons[0] || null;
+      const way = selector.endsWith('--prev') ? 'prev' : 'next';
+      return this.buttons.find(b => b.classList.contains(`u-step__go--${way}`)) || null;
+    },
+    set innerHTML(html) {
+      this.buttons = ['prev', 'next'].filter(way => html.includes(way)).map(stepButton);
+      this.html = html;
+    }
+  };
+  const stepState = vm.createContext({ stepEl, titleEl: stepHeading, document: stepDoc, stepperHtml: o => o.buttons });
+  vm.runInContext(stepperRender, stepState);
+  stepEl.innerHTML = 'prev next';
+  stepDoc.activeElement = stepEl.buttons[0];
+  stepState.renderStepper({ buttons: 'prev next' });
+  assert.equal(stepDoc.activeElement, stepEl.buttons[0], 'Previous focus follows its replacement button');
+  stepDoc.activeElement = stepEl.buttons[1];
+  stepState.renderStepper({ buttons: 'prev next' });
+  assert.equal(stepDoc.activeElement, stepEl.buttons[1], 'Next focus follows its replacement button');
+  stepDoc.activeElement = stepEl.buttons[1];
+  stepState.renderStepper({ buttons: 'prev' });
+  assert.equal(stepDoc.activeElement, stepEl.buttons[0], 'at the end, focus moves to remaining sibling button');
+  stepDoc.activeElement = stepEl.buttons[0];
+  stepState.renderStepper({ buttons: '' });
+  assert.equal(stepDoc.activeElement, stepHeading, 'without a sibling button, focus moves to heading');
+  const elsewhere = {};
+  stepEl.innerHTML = 'prev next';
+  stepDoc.activeElement = elsewhere;
+  stepState.renderStepper({ buttons: 'prev next' });
+  assert.equal(stepDoc.activeElement, elsewhere, 'async nav replacement does not steal external focus');
+
+  let arrowDocumentKey, focusedArrivals = 0;
+  const arrowSelections = [];
+  let dialogOpen = false;
+  const arrowState = context({
+    sel: 'f:a', boardClick: null, boardRepeatPress: null,
+    document: {
+      addEventListener(type, fn, capture) { assert.equal(type, 'keydown'); assert.equal(capture, true); arrowDocumentKey = fn; },
+      querySelector: () => dialogOpen ? {} : null
+    },
+    siblingKey: (_o, way) => way < 0 ? 'f:prev' : 'f:next',
+    select: key => { arrowSelections.push(key); arrowState.sel = key; },
+    focusArrival: () => { focusedArrivals++; }
+  });
+  vm.runInContext(documentKeys, arrowState);
+  const arrowEvent = (key, target = { tagName: 'DIV' }, more = {}) => ({
+    key, target, defaultPrevented: false,
+    preventDefault() { this.defaultPrevented = true; },
+    stopImmediatePropagation() {}, ...more
+  });
+  assert.equal(arrowDocumentKey(arrowEvent('ArrowLeft')), undefined);
+  assert.deepEqual(arrowSelections, ['f:prev']);
+  assert.equal(focusedArrivals, 1, 'left arrow focuses the newly selected sibling');
+  const right = arrowEvent('ArrowRight'); arrowDocumentKey(right);
+  assert.equal(right.defaultPrevented, true);
+  assert.deepEqual(arrowSelections, ['f:prev', 'f:next']);
+  assert.equal(focusedArrivals, 2, 'right arrow focuses the newly selected sibling');
+  for (const blocked of [
+    arrowEvent('ArrowLeft', { tagName: 'INPUT' }),
+    arrowEvent('ArrowRight', { tagName: 'TEXTAREA' }),
+    arrowEvent('ArrowLeft', { tagName: 'DIV', isContentEditable: true }),
+    arrowEvent('ArrowRight', { tagName: 'DIV' }, { metaKey: true }),
+    arrowEvent('ArrowLeft', { tagName: 'DIV' }, { ctrlKey: true }),
+    arrowEvent('ArrowRight', { tagName: 'DIV' }, { altKey: true }),
+    arrowEvent('ArrowLeft', { tagName: 'DIV' }, { shiftKey: true })
+  ]) {
+    arrowDocumentKey(blocked);
+    assert.equal(blocked.defaultPrevented, false, 'typing and modified arrows keep their normal action');
+  }
+  dialogOpen = true;
+  const dialogArrow = arrowEvent('ArrowRight'); arrowDocumentKey(dialogArrow);
+  assert.equal(dialogArrow.defaultPrevented, false, 'open dialog blocks sibling shortcut');
+  assert.deepEqual(arrowSelections, ['f:prev', 'f:next'], 'blocked arrows never select a sibling');
+  assert.equal(focusedArrivals, 2, 'blocked arrows never move arrival focus');
   const c = context();
   vm.runInContext(hit, c);
   assert.equal(c.hitAt(20, 20, true), 'f:a', 'click can hit the visible moving family');

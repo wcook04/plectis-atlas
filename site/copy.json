@@ -35,6 +35,21 @@
   "map": "Map",
   "menu": "Menu"
  },
+ "siblings": {
+  "_note": "The previous and next row under a breadcrumb: the neighbouring family in the same field, Lean statement in the same family, or paper in the same family. {title} is the neighbour's name; {n} and {total} give this page's place.",
+  "family_label": "Families in {discipline}",
+  "family_position": "{n} of {total} families in {discipline}",
+  "family_prev": "Previous family in {discipline}: {title}",
+  "family_next": "Next family in {discipline}: {title}",
+  "lean_label": "Lean statements in this family",
+  "lean_position": "{n} of {total} Lean statements in this family",
+  "lean_prev": "Previous Lean statement in this family: {title}",
+  "lean_next": "Next Lean statement in this family: {title}",
+  "paper_label": "Papers in this family",
+  "paper_position": "{n} of {total} papers in this family",
+  "paper_prev": "Previous paper in this family: {title}",
+  "paper_next": "Next paper in this family: {title}"
+ },
  "search": {
   "title": "Search the atlas",
   "placeholder": "Whole words, for example Siegel zeros or SiegelZeros",

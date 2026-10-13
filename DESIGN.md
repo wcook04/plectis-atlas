@@ -75,13 +75,16 @@ map for where things are, the list for reading them.
   opens the family.
 - **A family: a board of cards** in the Zenith Code Map Focus grammar. Its
   papers are columns in date order (short title, date, "Read the paper");
-  under each, a card per result with its printed number and the opening of the
+  under each, a card per result with its printed number and the whole
   statement typeset with the paper's macros; under a result, the Lean statement
   paired with it (label, identifier, the pairing in words, the re-run
   sentence), joined by a connector, dashed for a candidate. "Cited by" families
   on the left, "Cites" on the right. One line at the foot says what a dashed
   line means; there is no key. On a phone the board is one column of the same
   cards. A click always leads to mathematics, never to a status page.
+  Every paper appears on the board, with columns that wrap and no paper pager.
+  Previous and next under the breadcrumbs move between siblings at the current
+  level; arrow keys do the same and keep a visible keyboard focus target.
 - Hover explains, click selects, double-click or Enter opens, Escape steps
   back. Selection lives in the URL (`#o=f%3A003`,
   `#o=d%3Anumber-theory`, `#o=r:...`, `#o=l:...`); Back and Forward restore it;

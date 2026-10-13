@@ -57,6 +57,7 @@ python3 scripts/test_family_page.py
 | Source extraction | [test_build_data.py](test_build_data.py) |
 | Paper rendering | [test_build_papers.py](test_build_papers.py) |
 | Family layouts and statement snippets | [test_family_page.py](test_family_page.py) |
+| Previous and next links between families, Lean statements and papers | [test_sibling_nav.py](test_sibling_nav.py) |
 | A contribution file or its validation | [check_contributions.py](check_contributions.py); see [Contributing](../CONTRIBUTING.md) |
 | Links between built paper and Lean pages | [check_paper_links.py](check_paper_links.py), after the complete build |
 
