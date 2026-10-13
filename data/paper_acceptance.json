@@ -22,8 +22,8 @@
  },
  "summary": {
   "papers": 719,
-  "accepted": 688,
-  "partial": 31,
+  "accepted": 689,
+  "partial": 30,
   "unavailable": 0,
   "formulas": {
    "total": 1269365,
@@ -35,7 +35,7 @@
   "figure_placeholders": 1105,
   "reasons": {
    "formula failures": 15,
-   "unresolved references": 9,
+   "unresolved references": 8,
    "unresolved citations": 6,
    "pages included from PDF": 1
   }
@@ -23052,13 +23052,11 @@
   },
   {
    "id": "Integrability-of-split-tangent-bundles-on-rationally-connected-manifolds-September-23-2026",
-   "status": "partial",
+   "status": "accepted",
    "page": "papers/Integrability-of-split-tangent-bundles-on-rationally-connected-manifolds-September-23-2026.html",
    "pdf_url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/preprints/Integrability-of-split-tangent-bundles-on-rationally-connected-manifolds-September-23-2026/main.pdf",
    "main_tex": "build/main.tex",
-   "reasons": [
-    "unresolved references"
-   ],
+   "reasons": [],
    "formulas": {
     "total": 589,
     "distinct": 367,
@@ -23070,39 +23068,9 @@
    },
    "refs": {
     "total": 43,
-    "unresolved": 21,
-    "labels": [
-     "lem:formal",
-     "lem:rational",
-     "lem:removal",
-     "lem:surface",
-     "lem:variation",
-     "prop:box",
-     "prop:transport",
-     "thm:main"
-    ],
-    "examples": [
-     {
-      "label": "thm:main",
-      "where": "build/sections/introduction.tex:38"
-     },
-     {
-      "label": "thm:main",
-      "where": "build/sections/introduction.tex:50"
-     },
-     {
-      "label": "thm:main",
-      "where": "build/sections/introduction.tex:150"
-     },
-     {
-      "label": "lem:surface",
-      "where": "build/sections/boxes.tex:389"
-     },
-     {
-      "label": "lem:surface",
-      "where": "build/sections/boxes.tex:449"
-     }
-    ]
+    "unresolved": 0,
+    "labels": [],
+    "examples": []
    },
    "cites": {
     "total": 25,
@@ -23138,10 +23106,8 @@
     "missing": 0
    },
    "labels": {
-    "defined": 17,
-    "duplicates": [
-     "["
-    ]
+    "defined": 27,
+    "duplicates": []
    },
    "bibliography": {
     "source": "thebibliography",
