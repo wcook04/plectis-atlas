@@ -26,6 +26,7 @@ const boardPointer = range("    if (boardEl) {\n      boardEl.addEventListener('
 const boardRepeat = range('    var boardClick = null, boardRepeatPress = null, boardDoubleOpened = false;', '    function selectFromBoard(key)');
 const documentKeys = range("    document.addEventListener('keydown', function (e) {", "    window.addEventListener('hashchange'");
 const stepperRender = range('    function renderStepper(o)', '    function scopeName(o)');
+const listPreview = range("    root.addEventListener('pointerover', function (e) {", '    function showView(v, restoring)');
 const detailAgain = range('          var again = function () {', '          watchPanelShard(di, again);');
 const panelWatch = range('    function watchPanelShard(di, again)', '    function renderPanel(quiet)');
 const hashState = range('    function updateHash(', '    function panelScroller()');
@@ -462,6 +463,83 @@ async function main() {
   assert.equal(dialogArrow.defaultPrevented, false, 'open dialog blocks sibling shortcut');
   assert.deepEqual(arrowSelections, ['f:prev', 'f:next'], 'blocked arrows never select a sibling');
   assert.equal(focusedArrivals, 2, 'blocked arrows never move arrival focus');
+
+  const listHandlers = {};
+  let listDraws = 0, listSyncs = 0, listReveals = 0;
+  const focusSequence = [];
+  const makeRow = key => {
+    const element = {
+      getAttribute: attr => attr === 'data-go' ? key : null,
+      matches: selector => selector === ':focus-visible',
+      closest: selector => selector === '[data-go]' ? element : null,
+      contains: child => child === element || child.owner === element
+    };
+    return element;
+  };
+  const row = makeRow('f:a'), otherRow = makeRow('f:b');
+  const listChild = owner => ({ owner, closest: selector => selector === '[data-go]' ? owner : null });
+  const titlePart = listChild(row), statusPart = listChild(row), synopsisPart = listChild(row), nextPart = listChild(otherRow);
+  const outsideRow = { closest: () => null };
+  const listState = context({
+    root: { addEventListener: (type, fn) => { listHandlers[type] = fn; } },
+    panelBody: { contains: element => element === row || element === otherRow },
+    hover: null, hoverVia: '', cardPtr: { x: 1 },
+    syncActive: () => { listSyncs++; focusSequence.push('sync'); }, draw: () => { listDraws++; },
+    revealEntry: () => { listReveals++; focusSequence.push('reveal'); }
+  });
+  vm.runInContext(listPreview, listState);
+  listHandlers.pointerover({ target: titlePart, pointerType: 'mouse', relatedTarget: outsideRow });
+  assert.equal(listState.hover, 'f:a', 'entering a row previews its map object');
+  assert.equal(listState.hoverVia, 'list');
+  assert.equal(listSyncs, 0, 'pointer preview keeps compact sidebar rows unchanged');
+  assert.equal(listDraws, 1);
+  listHandlers.pointerout({ target: titlePart, relatedTarget: statusPart });
+  listHandlers.pointerover({ target: statusPart, relatedTarget: titlePart, pointerType: 'mouse' });
+  listHandlers.pointerout({ target: statusPart, relatedTarget: synopsisPart });
+  assert.equal(listState.hover, 'f:a', 'moving within title, status and synopsis keeps the preview');
+  assert.equal(listDraws, 1, 'within-row transitions do not redraw the map');
+  assert.equal(listSyncs, 0, 'within-row transitions do not expand active state');
+  listHandlers.pointerout({ target: synopsisPart, relatedTarget: outsideRow });
+  assert.equal(listState.hover, null, 'leaving the row clears pointer preview');
+  assert.equal(listSyncs, 0, 'pointer departure leaves compact sidebar layout unchanged');
+
+  listHandlers.pointerover({ target: titlePart, pointerType: 'mouse', relatedTarget: outsideRow });
+  const beforeHandoffDraws = listDraws, beforeHandoffSyncs = listSyncs;
+  listHandlers.pointerout({ target: titlePart, relatedTarget: nextPart });
+  assert.equal(listState.hover, 'f:a', 'row-to-row pointerout waits for the incoming row');
+  assert.equal(listDraws, beforeHandoffDraws, 'row-to-row pointerout does not redraw an empty preview');
+  listHandlers.pointerover({ target: nextPart, pointerType: 'mouse', relatedTarget: titlePart });
+  assert.equal(listState.hover, 'f:b', 'incoming row replaces the preview directly');
+  assert.equal(listDraws, beforeHandoffDraws + 1, 'row handoff draws only the new preview');
+  assert.equal(listSyncs, beforeHandoffSyncs, 'row handoff keeps compact sidebar layout');
+  listHandlers.pointerout({ target: nextPart, relatedTarget: outsideRow });
+
+  listState.hover = 'f:a'; listState.hoverVia = 'map';
+  const beforeMapHandoffDraws = listDraws, beforeMapHandoffSyncs = listSyncs;
+  listHandlers.pointerover({ target: titlePart, relatedTarget: outsideRow, pointerType: 'mouse' });
+  assert.equal(listState.hoverVia, 'list', 'same-key map hover transfers ownership to the sidebar row');
+  assert.equal(listDraws, beforeMapHandoffDraws + 1);
+  assert.equal(listSyncs, beforeMapHandoffSyncs, 'map-to-list handoff does not expand synopsis');
+  listHandlers.pointerover({ target: statusPart, relatedTarget: titlePart, pointerType: 'mouse' });
+  assert.equal(listDraws, beforeMapHandoffDraws + 1, 'repeated over within transferred row does not redraw');
+  listHandlers.pointerout({ target: statusPart, relatedTarget: outsideRow });
+
+  listHandlers.focusin({ target: titlePart, relatedTarget: outsideRow });
+  assert.equal(listState.hover, 'f:a', 'keyboard focus previews the row');
+  assert.equal(listState.hoverVia, 'focus');
+  assert.equal(listReveals, 1);
+  assert.deepEqual(focusSequence, ['sync', 'reveal'], 'keyboard arrival expands before revealing the focused row');
+  const focusedDraws = listDraws, focusedSyncs = listSyncs;
+  listHandlers.focusout({ target: titlePart, relatedTarget: statusPart });
+  listHandlers.focusin({ target: statusPart, relatedTarget: titlePart });
+  listHandlers.pointerout({ target: statusPart, relatedTarget: outsideRow });
+  assert.equal(listState.hover, 'f:a', 'within-row focus and pointer departure preserve keyboard preview');
+  assert.equal(listState.hoverVia, 'focus');
+  assert.equal(listDraws, focusedDraws, 'stable focused row does not redraw');
+  assert.equal(listSyncs, focusedSyncs, 'stable focused row does not resynchronize');
+  listHandlers.focusout({ target: statusPart, relatedTarget: outsideRow });
+  assert.equal(listState.hover, null, 'actual keyboard departure clears preview');
+  assert.equal(listSyncs, focusedSyncs + 1, 'focus departure clears active state');
   const c = context();
   vm.runInContext(hit, c);
   assert.equal(c.hitAt(20, 20, true), 'f:a', 'click can hit the visible moving family');
