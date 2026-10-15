@@ -260,30 +260,42 @@ also apply to the canonical [`improve-the-atlas` skill](../skills/improve-the-at
 
 ### README preview images
 
-The README opens with `docs/images/reader-light.jpg` and
-`docs/images/reader-dark.jpg`: real browser captures of the paper reader for
-*Quasipolynomial Bounds for Arithmetic Progressions*. Both link to that paper’s
-public reading page. The family board remains a second preview, using
+The README opens with `docs/images/overview-light.png` and
+`docs/images/overview-dark.png`: real browser captures of the entire release
+map, with its discipline regions, family dots, release summary and colour key.
+Both link to the public Atlas front page. The paper reader now sits beside the
+“What you can do” feature table; the family board remains a separate detail view.
+
+The overview pair was captured on 15 October 2026 from a local build of main
+commit `96d9f05d8f1a5cf4fefbc47879b4dfbc1278ccc6`, using the documented quick
+preview commands above. The map reads Statement Map generation
+`sha256:e44fe048bf34d4e55b76af0e42f931ce1121c5c189edf0e8cd6061a5902b3e47`.
+The native owners are `scripts/build_universe.py`, `site/assets/universe.js`
+and `site/assets/universe.css`, with the shared `atlas.css`, fonts and theme
+control. No map, labels, data or interface elements were reconstructed.
+
+To reproduce the overview, open the locally served front page with no selection
+or URL fragment, at a 1440 × 980 CSS pixel viewport and device scale 1. Wait for
+the native map and fonts to load, and move the pointer off the map. The overview
+fits all disciplines automatically; it has no zoom or pan controls. Capture each
+theme through the site's own switch, keeping the viewport and scroll position.
+These are full viewport PNG captures with no crop or pixel editing. Inspect both
+at full size and in the GitHub README at desktop and phone widths. At phone
+width the image is a linked thumbnail; its caption and text routes remain the
+reading path.
+
+The paper reader pair, `reader-light.jpg` and `reader-dark.jpg`, shows
+*Quasipolynomial Bounds for Arithmetic Progressions*. It was captured on
+15 October 2026 from the public deployment of Atlas commit
+`4ac8e9f09057cd0a1c311df02bca0520839ae616`, verified against
+[the successful Pages build](https://github.com/wcook04/plectis-atlas/actions/runs/38424773534).
+It uses the actual output of `scripts/build_papers.py`, `site/assets/paper.css`
+and the shared typography, fonts and theme control, at a 1440 × 900 CSS pixel
+viewport. The PDF remains the reference. The family board uses
 `family-light.png` and `family-dark.png`.
 
-The reader captures were taken on 15 October 2026 from the public deployment
-of Atlas commit `4ac8e9f09057cd0a1c311df02bca0520839ae616`, verified against
-[the successful Pages build](https://github.com/wcook04/plectis-atlas/actions/runs/38424773534).
-They reuse the actual output of `scripts/build_papers.py`, `site/assets/paper.css`
-and the shared `atlas.css` typography, fonts and theme control. No interface
-or paper content was reconstructed for the screenshot.
-
-To reproduce them, open
-`papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html`
-at the top of the page, at a 1440 × 900 CSS pixel viewport. Let the site’s fonts
-and mathematics finish loading. Capture each theme through the site’s own
-switch, keeping the same viewport and scroll position. The screenshot is an
-illustration of that revision, not a live status indicator. Review the files at
-full size, then the rendered README at laptop and phone widths; keep the text
-links and caption useful when the screenshot cannot be read.
-
-The map pair (`map-light.png` and `map-dark.png`) remains available as historical
-README imagery. It was captured on 12 October 2026 from the local `reader-v2`
-build at `d32c790`, with a 1440 × 790 CSS pixel viewport at device scale 1 and
-Family 017 under the pointer. At capture time that revision was not the public
-deployment. Do not recolour a screenshot to manufacture another theme.
+The old map pair (`map-light.png` and `map-dark.png`) remains historical imagery.
+It was captured on 12 October 2026 from the local `reader-v2` build at `d32c790`,
+with a 1440 × 790 CSS pixel viewport at device scale 1 and Family 017 under the
+pointer. At capture time that revision was not the public deployment. Do not
+recolour a screenshot to manufacture another theme.
