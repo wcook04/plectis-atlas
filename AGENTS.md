@@ -80,7 +80,7 @@ The core Python scripts use the standard library and need Python 3.10 or newer. 
 
 ## Writing
 
-Explanations follow `STYLE.md`. When you draft prose for a person, keep their own sentences where they wrote them, and write plainly: short declarative sentences, every term defined at first use, no slogans. The atlas's own documentation uses British spelling and avoids em dashes.
+Explanations and website copy follow `STYLE.md`, including its first-time-reader rule. Name what a person compared or a program verified, the result, and its limits; do not use an unexplained “check” as the verdict. Edit the source copy or template and inspect the generated page, preserving quoted material and mathematical meaning. When you draft prose for a person, keep their own sentences where they wrote them, and write plainly: short declarative sentences, every term defined at first use, no slogans. The atlas's own documentation uses British spelling and avoids em dashes.
 
 ## Repository organisation
 

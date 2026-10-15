@@ -101,8 +101,10 @@ def definition_only_statement(tmp: Path) -> list:
             fails.append(f"{rel}: configured definition is missing from the Lean snippet")
     page = (tmp / views[0][0]).read_text(encoding="utf-8")
     opening = page.split('id="h-lean-read"', 1)[1].split('<h3', 1)[0]
-    if "This configuration names no theorem" not in opening or "name and type only" not in opening:
+    if "verification settings name no theorem" not in opening or "name and type only" not in opening:
         fails.append("ElementaryPositivity: definition-only qualification missing beside the snippet")
+    if "Definition selected for comparison:" not in page or "Theorem selected for verification:" in page:
+        fails.append("ElementaryPositivity: definition-only target labelled as a theorem")
     family = (tmp / "families/169.html").read_text(encoding="utf-8")
     if family_page.W("compare.sorry") in family or "by its name and type only" not in family:
         fails.append("Family 169: definition-only snippet is described as a theorem")
@@ -204,13 +206,13 @@ def status_group_counts() -> list:
         line = family_page.status_runs(c)
         groups = {s for l in c.leans for s in l.get("accepted_current_sources") or []}
         if not groups:
-            ok = line.startswith("no outside group")
+            ok = line.startswith("no independent acceptance report")
         elif len(groups) == 1:
-            ok = line.startswith("one outside group ") and "groups" not in line
+            ok = line.startswith("one independent group ") and "groups" not in line
         else:
-            ok = "outside groups" in line and not line.startswith("one outside group")
+            ok = "independent groups" in line and not line.startswith("one independent group")
             if len(c.leans) == 1 or sum(1 for l in c.leans if l.get("accepted_current_sources")) == 1:
-                ok = ok and line.startswith(f"{NUMBER_WORDS.get(len(groups), len(groups))} outside groups ")
+                ok = ok and line.startswith(f"{NUMBER_WORDS.get(len(groups), len(groups))} independent groups ")
         if not ok:
             fails.append(f"{fid}: status line {line!r} for {len(groups)} accepting groups")
     return fails

@@ -5,7 +5,15 @@ This folder holds the page copy, settings, styles and browser code for
 [`scripts/`](../scripts/README.md) combine them with the checked data to produce
 the static website in `_build/`.
 
-Read the [design contract](../DESIGN.md) before changing a page.
+The [published website is agent-navigable](https://wcook04.github.io/plectis-atlas/agents.md).
+`build_universe.py` generates `llms.txt` and `agents.md` beside the map from the
+configured site URL and current packet generation. They document the existing
+map JSON, which remains available without running the browser interface.
+
+Read the [design contract](../DESIGN.md) and the
+[first-time-reader writing rule](../STYLE.md#write-the-website-for-a-first-time-reader)
+before changing a page. Explain what was compared, verified or rendered, by
+whom, and what the reported result establishes.
 [Quick preview](../docs/ARCHITECTURE.md#quick-preview-without-paper-sources)
 gives the local build commands.
 
@@ -14,6 +22,7 @@ gives the local build commands.
 | Page or feature | Copy | Styles and browser behaviour | Python renderer |
 |---|---|---|---|
 | Map and front page | [copy_universe.json](copy_universe.json) | [universe.css](assets/universe.css), [universe.js](assets/universe.js) | [build_universe.py](../scripts/build_universe.py) |
+| Agent entry and map traversal | `build_agent_navigation()` in [build_universe.py](../scripts/build_universe.py) | Static text; no browser code | [build_universe.py](../scripts/build_universe.py) |
 | Family pages | [copy_family.json](copy_family.json) | [family.css](assets/family.css), [family.js](assets/family.js) | [family_page.py](../scripts/family_page.py) |
 | Lean pages | [copy_lean.json](copy_lean.json) | [lean.css](assets/lean.css), [lean.js](assets/lean.js) | [build_site.py](../scripts/build_site.py), [lean_render.py](../scripts/lean_render.py) |
 | Full paper reading pages | `TXT` in [build_papers.py](../scripts/build_papers.py), plus shared [copy.json](copy.json) | [paper.css](assets/paper.css), [paper.js](assets/paper.js) | [build_papers.py](../scripts/build_papers.py) |

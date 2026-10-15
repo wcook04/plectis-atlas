@@ -1385,6 +1385,7 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 <title>{esc(full_title)}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{esc(canonical)}">
+<link rel="help" type="text/markdown" href="{root}agents.md" title="{esc(C('site.agents_link'))}">
 {robots}
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f8f0e2" media="(prefers-color-scheme: light)">
@@ -1470,6 +1471,7 @@ def footer(rel: str) -> str:
    <li><a href="{root}citations-within.html">{esc(C('citations_within.title'))}</a></li>
    <li><a href="{root}references-outside.html">{esc(C('references_outside.title'))}</a></li>
    <li><a href="{root}contribute.html">{esc(C('nav.contribute'))}</a></li>
+   <li><a href="{root}agents.md">{esc(C('site.agents_link'))}</a></li>
    <li><a class="ext" href="{esc(REPO)}" rel="noopener">{esc(C('site.repo_link'))}</a></li>
    <li><a class="ext" href="{esc(up)}/tree/{COMMIT}" rel="noopener">{esc(C('site.upstream_link'))}</a></li>
   </ul>
@@ -3485,8 +3487,10 @@ def build_statement(stmt):
     name_items = "".join(f'<span class="phead__thm"><code translate="no">{camel_breaks(n_)}</code> '
                          f'<button class="btn btn--quiet copy" type="button" data-copy-text="{esc(n_)}" aria-label="{esc(LW("page.copy_name") + " " + n_)}">{esc(LW("page.copy_name"))}</button></span>'
                          for n_ in thm_names)
+    target_kind = "definition" if definition_only else "theorem"
+    target_label = LW(f"page.{target_kind}_name" + ("s" if len(thm_names) != 1 else ""))
     subtitle = ((f'<p class="phead__sub"><span class="md-math">{esc(human_name)}</span></p>' if human_name and human_name != label else "")
-                + (f'<p class="phead__sub phead__thms"><span class="phead__thmk">{esc(LW("page.theorem_name" if len(thm_names) == 1 else "page.theorem_names"))}</span> {name_items}</p>' if thm_names
+                + (f'<p class="phead__sub phead__thms"><span class="phead__thmk">{esc(target_label)}</span> {name_items}</p>' if thm_names
                    else f'<p class="phead__sub"><code>{camel_breaks(sid)}</code></p>'))
     # The header carries the actions only; how the paper theorem is paired, and that
     # nobody has reviewed it, is said with the theorem below the Lean.
@@ -3517,6 +3521,7 @@ def build_statement(stmt):
 <header class="phead">
  <p class="phead__kicker">{esc(LW('page.kicker'))}</p>
  <h1 class="phead__title md-math">{esc(label)}</h1>
+ <p class="intro">{esc(LW('page.intro'))}</p>
  {subtitle}
  <p class="phead__where">{src_link}{map_link}<span class="phead__meta">{esc(" ".join(meta + [main_line]))}</span></p>
  {action_group}

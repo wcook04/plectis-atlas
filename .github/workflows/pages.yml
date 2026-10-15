@@ -34,6 +34,8 @@ jobs:
         run: python3 scripts/build_universe.py
       - name: Statement pages and reading pages link each other both ways
         run: python3 scripts/check_paper_links.py site/_build
+      - name: Agent routes and all map relationships resolve within the published site
+        run: python3 scripts/tests/test_agent_navigation.py --built site/_build
       # Share cards: the picture a family's link shows when someone posts it, in words and
       # typeset mathematics. A card that overflows or whose formulas fail is not rendered, and
       # that family keeps the generic picture; if the headless browser cannot be installed,

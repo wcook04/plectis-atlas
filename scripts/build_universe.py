@@ -23,6 +23,7 @@ Writes, after scripts/build_site.py has run (into the same --out, default site/_
 
     index.html                                    the map and the list, then the bands
     universe.html                                 a redirect to index.html, kept for old links
+    llms.txt, agents.md                           agent entry and map traversal guide
     site/_build/data/universe-data.json           the first screen: disciplines, families, citations
     site/_build/data/universe-parts.json          papers, results and Lean statements, loaded after it
     site/_build/data/universe-layout.json         where it is drawn
@@ -1401,6 +1402,123 @@ def packet_version(directory: Path) -> str:
     return digest.hexdigest()[:12]
 
 
+def build_agent_navigation(model, generation: str, version: str) -> dict[str, str]:
+    """Describe the existing map packets without duplicating or changing their schema.
+
+    These are ordinary static resources, never loaded by the browser application.
+    Absolute URLs retain config.json's project path when read away from the site.
+    """
+    base = S.BASE_URL
+    repo = S.REPO
+    packet = lambda name: f"{base}data/{name}?v={version}"
+    llms = f"""# Plectis Atlas
+
+> An independent reader's atlas to OpenAI's mathematics release. The website and its map can be navigated without JavaScript through static HTML and JSON.
+
+Read the navigation guide before interpreting map edges. Citation links are not proof dependencies; automatically proposed paper-to-Lean pairings remain unreviewed. A reported proof replay checks its formal statement, not its match to a paper. The original PDF remains the reference.
+
+## Start
+
+- [Agent navigation]({base}agents.md): packet fields, stable identifiers, traversal example and source limits.
+- [Map overview JSON]({packet('universe-data.json')}): all disciplines and families, directed citations, source contract and counts.
+- [Map parts JSON]({packet('universe-parts.json')}): all papers, displayed results and Lean statements in the map, joined by indices.
+- [Browse families]({base}explain.html): static HTML links to every family.
+- [Sources and credits]({base}sources.html): attributed outside readings and reported replays.
+- [Site sitemap]({base}sitemap.xml): published HTML reading routes.
+- [Repository]({repo}): source, build instructions, licences and contribution skills.
+"""
+    guide = f"""# Navigate Plectis Atlas as an agent
+
+The website is agent-navigable using HTTP GET requests. No browser, account, JavaScript execution or installation is needed to read the map. This guide describes the same packets the human map uses; it adds no data fetch to human page loads. `llms.txt` is an optional discovery convention, not an access requirement or a guarantee about any crawler.
+
+## Entry points
+
+- [Concise entry]({base}llms.txt)
+- [All families in static HTML]({base}explain.html)
+- [Lean statements]({base}statements.html)
+- [Sources and credits]({base}sources.html)
+- [Counts and their definitions]({base}numbers.html)
+- [Page sitemap]({base}sitemap.xml)
+- [Repository instructions]({repo}/blob/main/AGENTS.md) and [source architecture]({repo}/blob/main/docs/ARCHITECTURE.md)
+
+## Fetch the complete map
+
+Fetch these two JSON packets to obtain all the map's nodes and relationships. Layout coordinates are unnecessary for research.
+
+1. [Overview]({packet('universe-data.json')}): `disciplines`, `families`, `links`, `sources`, `counts`, `catalogue_url` and `contract`.
+2. [Parts]({packet('universe-parts.json')}): `papers`, `results` and `lean`.
+
+Both packets must have the same `generation_id`. This build uses `{generation}` from Statement Map, reading `openai/math` at `{S.COMMIT}`. Check `contract[0].upstream_commit` in the overview. The query version is a cache key for the built packet bytes, not an archived snapshot. A generation mismatch detects different backend exports; it does not detect every rendering-only deployment. On a mismatch, reload this guide and both packets. For reproducible archival work, pin a repository commit and retain the packets together. Array indices are local to that packet set; store an object's `id`, never its array position.
+
+The map contains {len(model['disciplines'])} disciplines, {len(model['families'])} families, {len(model['papers'])} papers, {len(model['results'])} displayed results and {len(model['lean'])} Lean statements. Displayed results include the headline selection and additional pairing targets; this is not every theorem-like environment in every paper. Follow each paper's page for its full text and conversion limits.
+
+## Nodes and edges
+
+Every node has a stable backend `id`: `d:` for a discipline, `f:` for a family, `p:` for a paper, `r:` for a displayed paper result, and `l:` for a Lean statement. Read names from `name`, `title`, `label` or the result's `kind` and `num`. A missing title or printed number remains unknown.
+
+All numeric references below are zero-based array indices in the two packets fetched together:
+
+| From | Relationship | Target |
+|---|---|---|
+| `disciplines[i].families` | contains | indices in `families` |
+| `families[i].d` | belongs to | index in `disciplines` |
+| `families[i].papers`, `.lean` | contains | indices in `papers`, `lean` |
+| `papers[i].f`, `.results` | belongs to family; contains results | index in `families`; indices in `results` |
+| `results[i].p`, `.f` | belongs to paper and family | indices in `papers`, `families` |
+| `results[i].lean` | paper-to-Lean pairing | indices in `lean` |
+| `lean[i].f`, `.results` | belongs to family; paired results | index in `families`; indices in `results` |
+| `families[i].cites` | cites another family | pairs `[family_index, citing_paper_pair_count]` |
+| `families[i].citedBy` | cited by another family | the reverse directed citation pairs |
+
+`links` records the same family citations compactly as `[a, b, a_to_b_count, b_to_a_count]`. Each positive count is a directed citation between those family indices, measured in citing pairs of papers. A citation is not a proof dependency. A zero count means no edge in that direction.
+
+Keep `lean[i].pairing` with a pairing edge. `candidate-pairing` is unreviewed. Keep `acc` as the attributed sources reporting accepted replays, not an Atlas verification claim. Read the family or Lean page for the precise evidence and limits.
+
+Resolve each non-null `href` relative to `{base}`, including its fragment. Some nodes can have a null `href`; use the parent family or the paper's `pdf` instead of inventing a URL. Open a map node with `{base}#o=` followed by its URL-encoded `id`. Readable page URLs are preferable when a client cannot execute JavaScript.
+
+## A small traversal
+
+This standard-library example fetches the existing map packets and follows a family's papers, Lean statements and outgoing citations. Replace `f:159` with another returned family ID.
+
+```python
+import json
+from urllib.parse import urljoin
+from urllib.request import urlopen
+
+base = {base!r}
+version = {version!r}
+
+def fetch(name):
+    with urlopen(urljoin(base, 'data/' + name + '?v=' + version), timeout=30) as response:
+        return json.load(response)
+
+overview = fetch('universe-data.json')
+parts = fetch('universe-parts.json')
+if overview['generation_id'] != parts['generation_id']:
+    raise RuntimeError('Deployment changed: reload agents.md and both packets')
+family = next(row for row in overview['families'] if row['id'] == 'f:159')
+print(family['id'], family['title'], urljoin(base, family['href']))
+for kind in ('papers', 'lean'):
+    for index in family[kind]:
+        node = parts[kind][index]
+        target = urljoin(base, node['href']) if node.get('href') else node.get('pdf')
+        print(kind, node['id'], target)
+for index, count in family['cites']:
+    target = overview['families'][index]
+    print('cites', target['id'], count, urljoin(base, target['href']))
+```
+
+For a selected family's extra wording, fetch `data/universe-detail-<d>.json` using its `d` index and check the generation. [Map search rows]({packet('universe-search.json')}) offer names and result labels without downloading the separate full-text search shards. The [backend export]({repo}/blob/main/backend/EXPORT.json) identifies the source receipts; [source indexes]({repo}/tree/main/data) contain the extracted text and source locations. Respect their source, version, attribution and licence.
+
+## Interpretation and contribution
+
+Atlas is independent of OpenAI. It presents source records and attributed outside readings. It does not establish new mathematical results or equate a successful formal proof replay with a paper-to-Lean match. Paper conversions can be partial; the original PDF is the reference. Preserve unknown, candidate, unreviewed, withdrawn and source-attributed states when reporting findings.
+
+Read [contribution instructions]({repo}/blob/main/CONTRIBUTING.md) before proposing changes. Signed contributions need the required human identity and review. An agent may report an unreviewed observation through the repository's dedicated form only when its operator and platform permit posting; reading this guide does not authorise a submission.
+"""
+    return {"llms.txt": llms, "agents.md": guide}
+
+
 def main():
     global OUT
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -1465,6 +1583,8 @@ def main():
     for name in OWN_ASSETS:
         shutil.copy(ASSETS / name, OUT / "assets" / name)
     v = packet_version(ddir)
+    for name, content in build_agent_navigation(model, gen, v).items():
+        (OUT / name).write_text(content, encoding="utf-8")
     extra = ('<link rel="stylesheet" href="assets/lean.css">\n'
              f'<link rel="stylesheet" href="assets/universe.css?v={asset_version()}">\n'
              f'<link rel="preload" href="data/universe-data.json?v={v}" as="fetch" crossorigin>\n'

@@ -153,6 +153,17 @@ the PDF remains the reference for the paper.
 
 ## Use the data
 
+The [published website is agent-navigable](https://wcook04.github.io/plectis-atlas/agents.md).
+`scripts/build_universe.py::build_agent_navigation` generates the static `llms.txt`
+entry and `agents.md` traversal guide alongside the existing map packets. The guide
+describes `data/universe-data.json` and `data/universe-parts.json`, including stable
+IDs, generation checks, all index relationships, directed citations, evidence limits
+and a runnable fetch example. It uses `site/config.json` for the complete project URL.
+Shared HTML links to the guide with an ordinary footer link and `rel=help`; no new
+script, preload, prefetch or dependency is introduced. The complete build and deploy
+run `python3 scripts/tests/test_agent_navigation.py --built site/_build` to check
+graph connectivity, source identity, generated routes and their local destinations.
+
 The files in [`data/`](../data/) are plain JSON. Baseline extraction and later
 rendering have different producers; neither replaces Statement Map's evidence
 records or number memberships in [`backend/`](../backend/).
