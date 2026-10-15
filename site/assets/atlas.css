@@ -22,6 +22,9 @@
 @font-face { font-family: "Plectis Serif Fallback"; src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif"); size-adjust: 105.63%; ascent-override: 72.14%; descent-override: 22.53%; line-gap-override: 23.67%; }
 @font-face { font-family: "Plectis Sans Fallback"; src: local("Arial"), local("ArialMT"), local("Liberation Sans"); size-adjust: 94.72%; ascent-override: 108.11%; descent-override: 42.23%; line-gap-override: 0%; }
 math { font-family: "Plectis MathML", math; }
+/* KaTeX paints its HTML tree. Its clipped, accessible MathML does not need a
+   second mathematical font; native MathML elsewhere keeps the font above. */
+.katex-mathml math { font-family: inherit; }
 
 :root {
   --page: #f8f0e2;

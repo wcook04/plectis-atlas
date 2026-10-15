@@ -32,7 +32,9 @@
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
     return m ? (+m[3]) + ' ' + MONTHS[+m[2] - 1] + ' ' + m[1] : String(iso || '');
   }
-  function fmtNum(n) { return typeof n === 'number' ? n.toLocaleString('en-GB') : String(n); }
+  // A locale formatter is expensive to construct; labels and count templates reuse it.
+  var numberFormat = new Intl.NumberFormat('en-GB');
+  function fmtNum(n) { return typeof n === 'number' ? numberFormat.format(n) : String(n); }
   function fill(template, vars) {
     return String(template).replace(/\{(\w+)\}/g, function (m, k) {
       return vars && vars[k] != null ? fmtNum(vars[k]) : m;
@@ -2568,7 +2570,7 @@
       var folded = !edited && !!(state && state.sf);
       searchIn.value = raw;
       // Exact result and Lean identifiers need the parts index, including on a
-      // direct visit to a saved search before the idle loader has run.
+      // direct visit before any family has been opened.
       (raw ? loadParts() : Promise.resolve()).then(function () {
         if (searchIn.value !== raw) return;
         return runSearch(!edited).then(function () {
@@ -2600,7 +2602,7 @@
         var AS = window.AtlasSearch;
         if (q !== searchShown.q) searchShown = { q: q, kind: '', all: false };
         var want = searchShown.all ? 100000 : 400;
-        return Promise.all([AS.query(raw, { statements: want }), AS.names ? AS.names() : null]).then(function (both) {
+        return Promise.all([AS.query(raw, { statements: want }), AS.names ? AS.names() : null, loadParts()]).then(function (both) {
           if (query !== q) return;
           var hits = both[0] || [], names = both[1];
           // One order with the search dialog (assets/atlas.js rankByName): disciplines,
@@ -2699,8 +2701,9 @@
           return matchList;
         }, function () {});
       }
-      return loadSearch().then(function (rows) {
+      return Promise.all([loadSearch(), loadParts()]).then(function (both) {
         if (query !== q) return;
+        var rows = both[0];
         var words = q.split(/\s+/).filter(Boolean);
         var found = [];
         rows.forEach(function (row) {
@@ -3065,7 +3068,9 @@
         ingest(both[0], both[1]);
         readFonts();
         if (document.fonts && document.fonts.load) {
-          Promise.all(['400 13px ', '600 13px ', 'italic 400 12px '].map(function (w) {
+          // The chart uses upright text. Italic faces load naturally when the reader
+          // opens content that uses them, rather than competing with the first view.
+          Promise.all(['400 13px ', '600 13px '].map(function (w) {
             return Promise.all([document.fonts.load(w + SERIF), document.fonts.load(w + SANS)]);
           })).catch(function () {});
         }
@@ -3093,10 +3098,9 @@
             select(key, { fly: false, fromHistory: true, quiet: true });
           }, function () {});
           start = null;
-        } else {
-          var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 400); };
-          idle(function () { loadParts().catch(function () {}); });
         }
+        // The release and discipline charts need only the first-screen packets.
+        // Selection and search load the parts when requested.
         sel = start;
         renderPanel();
         if (statusEl) statusEl.hidden = true;

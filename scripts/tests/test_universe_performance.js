@@ -246,10 +246,11 @@ async function loads() {
   const boot = source.slice(begin, finish);
   const waiting = new Promise(() => {});
   let validated = false;
+  const requestedFonts = [];
   const fonts = vm.createContext({
     both: [{}, {}], validate: () => { validated = true; }, ingest() {}, readFonts() {},
     SERIF: 'serif', SANS: 'sans', Promise, setTimeout() {},
-    document: { fonts: { load: () => waiting, ready: waiting } }
+    document: { fonts: { load: font => { requestedFonts.push(font); return waiting; }, ready: waiting } }
   });
   let ready = false;
   const readiness = vm.runInContext('(function () {' + boot + '\n})()', fonts);
@@ -257,6 +258,57 @@ async function loads() {
   for (let i = 0; i < 4; i++) await Promise.resolve();
   assert.equal(validated, true, 'baseline generation validation remains on readiness path');
   assert.equal(ready, true, 'map readiness does not depend on unresolved fonts');
+  assert.equal(requestedFonts.length, 4, 'only upright serif and sans chart faces are warmed');
+  assert.ok(requestedFonts.every(font => !font.includes('italic')), 'unused italic faces stay off the startup network');
+
+  // Execute the actual startup continuation and its idle work. The default
+  // release must not fetch the parts index; direct family links still do.
+  const readyStart = source.indexOf('        widthCache = {};', finish);
+  const readyEnd = source.indexOf('        if (document.fonts && document.fonts.addEventListener)', readyStart);
+  const startup = source.slice(readyStart, readyEnd);
+  for (const initial of [null, 'd:test', 'f:test']) {
+    let parts = 0;
+    const noop = () => {};
+    const state = vm.createContext({
+      widthCache: {}, weights: noop, W: 0, H: 0, readHash: () => initial,
+      window: { history: { state: null }, requestIdleCallback: fn => fn() },
+      setTimeout: fn => fn(), restoreViewPositions: noop, showView: noop, pendingBoard: null, pendingY: null,
+      obj: () => ({ kind: 'f' }), discOf: () => 0, shards: {}, failedShards: {},
+      loadShard: () => Promise.resolve(), loadParts: () => { parts++; return Promise.resolve(); },
+      select: noop, sel: null, renderPanel: noop, statusEl: { hidden: false },
+      root: { classList: { add: noop } }, resize: noop, chartTo: noop, restoreSearch: noop,
+      chart: {}, trail: [], paint: noop, lastPlan: null
+    });
+    vm.runInContext(startup, state);
+    assert.equal(parts, initial === 'f:test' ? 1 : 0, `${initial}: parts load only for a requested family`);
+  }
+
+  // A fresh typed search must load the object index alongside its query, so
+  // paper/result/Lean hits keep opening inside the map before any family visit.
+  const searchStart = source.indexOf('    function runSearch(restoring)');
+  const searchEnd = source.indexOf('    /* ---- Events', searchStart);
+  const searchBody = source.slice(searchStart, searchEnd);
+  for (const backend of [true, false]) {
+    let resolveParts, queries = 0, parts = 0, settled = false;
+    const pending = new Promise(resolve => { resolveParts = resolve; });
+    const state = vm.createContext({
+      searchIn: { value: 'ErdosReciprocal' }, query: '', searchFolded: false,
+      searchShown: { q: null }, rememberSearch() {},
+      resultsEl: { classList: { remove() {} }, querySelectorAll: () => [], innerHTML: '' },
+      window: { AtlasSearch: backend ? { query: () => { queries++; return Promise.resolve([]); } } : null },
+      loadSearch: () => { queries++; return Promise.resolve([]); },
+      loadParts: () => { parts++; return pending; },
+      Promise, T: key => key, fmtNum: String, escapeHtml: x => x, draw() {}
+    });
+    vm.runInContext(searchBody, state);
+    const result = state.runSearch().then(() => { settled = true; });
+    await Promise.resolve();
+    assert.equal(queries, 1, 'search starts without waiting for the object index');
+    assert.equal(parts, 1, 'typed search requests its object index');
+    assert.equal(settled, false, 'search waits for object ids before classifying navigation');
+    resolveParts(); await result;
+    assert.equal(settled, true);
+  }
 
   const selectStart = source.indexOf('    function select(key, opts)');
   const selectEnd = source.indexOf('      var o = key ? obj(key) : null;', selectStart);
@@ -282,3 +334,19 @@ async function loads() {
   console.log('universe loading: unresolved fonts do not block; clicked and direct families start detail + parts together');
 }
 Promise.all([loads(), boardShardCallbacks()]).catch(error => { console.error(error); process.exitCode = 1; });
+
+// Repeated count substitutions retain British formatting without constructing
+// a locale formatter for every count on every chart layout.
+{
+  const begin = source.indexOf('  var numberFormat =');
+  const end = source.indexOf('  function overlap(', begin);
+  let constructions = 0;
+  const state = vm.createContext({ Intl: { NumberFormat: function (locale) { constructions++; return new Intl.NumberFormat(locale); } } });
+  vm.runInContext(source.slice(begin, end), state);
+  for (const n of [0, 1, 372, 16077, 1234.5, -1000, Infinity, NaN]) {
+    for (let i = 0; i < 100; i++) assert.equal(state.fmtNum(n), n.toLocaleString('en-GB'));
+  }
+  assert.equal(constructions, 1, 'all numeric labels share one formatter');
+  assert.equal(state.fmtNum('Family'), 'Family');
+  console.log('universe counts: one shared formatter preserves en-GB output');
+}
