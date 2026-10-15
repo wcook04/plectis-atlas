@@ -93,7 +93,7 @@
    "other": "Lean file:"
   },
   "lean_heading": "The Lean statement",
-  "formal_heading": "Reports of verifying the Lean proof",
+  "formal_heading": "Reported Comparator runs",
   "readings_heading": "Do family {id}’s Lean statements express the advertised result?",
   "readings_intro": "These assessments compare all the family’s Lean statements with the whole result OpenAI describes in its catalogue. They do not assess this statement alone. Each group uses its own published rules.",
   "readings_link": "Read the complete assessments on the family page.",
@@ -178,7 +178,7 @@
   "when": "Reported {when}, {pin}.",
   "receipt": "Original verification report",
   "method": "How they ran it, in their words",
-  "reported": "Each group reports its own attempt to verify OpenAI’s proof with Comparator. Atlas has not repeated the attempts.",
+  "reported": "Each group reports its own Comparator run for this statement file. Atlas has not repeated the runs.",
   "none_recorded": "Atlas has no report of an independent group running Comparator for this statement.",
   "scope": "For a configured theorem, Comparator tests whether OpenAI’s proof proves the exact Lean statement. Some files instead configure definitions for comparison by name and type. Acceptance does not establish that the statement means the same thing as the paper’s theorem.",
   "their_term": "Their term: “{term}”."
