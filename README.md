@@ -1,23 +1,25 @@
 # Plectis Atlas
 
-An independent reader for [OpenAI’s mathematics release](https://github.com/openai/math). Every paper is in the browser, every Lean statement sits beside the theorem it states, and every outside check is credited to the people who ran it.
+Read the papers in [OpenAI’s mathematics release](https://github.com/openai/math), inspect their Lean statements, and compare what outside readers found. Plectis Atlas brings those sources together in an independent website, with names, links and the limits of each check attached.
 
-**[Open the atlas ↗](https://wcook04.github.io/plectis-atlas/)** &nbsp; [Browse the families](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [How it is built](docs/ARCHITECTURE.md)
+**[Read a paper ↗](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html)** &nbsp; [Explore the map](https://wcook04.github.io/plectis-atlas/) &nbsp; [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [Build it locally](#build-it-yourself)
 
-<a href="https://wcook04.github.io/plectis-atlas/">
+<a href="https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/map-dark.png">
-    <img src="docs/images/map-light.png" width="1440" alt="The Plectis Atlas map: the release’s seventeen disciplines as labelled regions, each holding its families as discs coloured by what two outside readers find the family’s Lean states, with a disc left open where the release has no Lean.">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/reader-dark.jpg">
+    <img src="docs/images/reader-light.jpg" width="1440" alt="The Atlas paper reader: Quasipolynomial Bounds for Arithmetic Progressions, with its typeset abstract and equation, links to the PDF and TeX source, and a route to the family’s Lean statements and outside readings.">
   </picture>
 </a>
 
-*The whole release on one map: seventeen disciplines, each family a disc coloured by what its Lean states. Choose a discipline to see its families by name.*
+*OpenAI’s paper, displayed in Atlas, with its original PDF and TeX source beside it. Follow its family link to the Lean statements and attributed outside readings. The PDF remains the reference.*
+
+The mathematics is OpenAI’s and the cited authors’ work. Outside readings and reported proof re-runs come from [MathVet](https://math.vet), [Carlos Toledo’s cert-machine](https://github.com/carlostoledo1891/cert-machine) and [Neal McBurnett’s Lean tooling](https://github.com/nealmcb/openai-math-lean-tooling). Atlas presents their records; it does not claim their checks as its own. [Sources and credits](https://wcook04.github.io/plectis-atlas/sources.html).
 
 <a id="what-this-adds"></a>
 
 ## Why it exists
 
-OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lean files. To judge any one result you need four things from different places: the theorem the paper states, the Lean statement meant to say the same thing, OpenAI’s note on how much of the theorem that Lean covers, and what outside groups found when they checked it. OpenAI groups related papers into **families**; the atlas puts those four things on one page for each of the 372 families, including the 130 without Lean, and puts the families on one map. You can read it without installing anything.
+OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lean files. To judge any one result you need four things from different places: the theorem the paper states, the Lean statement meant to say the same thing, OpenAI’s note on how much of the theorem that Lean covers, and what outside groups found when they checked it. OpenAI groups related papers into **families**; the atlas brings those sources onto each family’s page and shows how the families connect. Families without Lean remain visible. You can read it without installing anything.
 
 <a href="https://wcook04.github.io/plectis-atlas/#o=f%3A003">
   <picture>
@@ -34,7 +36,7 @@ OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lea
 |---|---|
 | [The map](https://wcook04.github.io/plectis-atlas/) | The release by discipline, then each discipline’s families by name. Open a family to see its papers, what each theorem states, and the Lean statement beside the theorem it states. Search for a theorem, a paper or a Lean name. |
 | [The reciprocal-sum family](https://wcook04.github.io/plectis-atlas/families/159.html) | The paper’s claim beside its linked Lean statement, OpenAI’s scope note, outside readings and reported re-runs with their receipts. |
-| [A paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) | All 719 current papers typeset from their TeX, with theorems, equations, cross-references and citations linked to where they point. Any conversion gap is listed on the page; the PDF stays the reference. |
+| [A paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) | A full reading page typeset from the paper’s TeX, with linked theorems, equations, cross-references and citations. Any conversion gap is listed on the page; the PDF stays the reference. |
 | [A Lean statement](https://wcook04.github.io/plectis-atlas/statements/ErdosReciprocal.html) | The whole challenge file with every name linked to its definition, the reported re-runs, and the paper theorem it is the candidate statement of. |
 | [Sources and outside readings](https://wcook04.github.io/plectis-atlas/sources.html) | Who checked what, in their own words, with links to their records. |
 
@@ -155,17 +157,23 @@ Git candidates, including staged additions, while ignoring generated website out
 
 The site is static: Python builds it from a pinned commit of OpenAI’s release and a checked-in export from **Statement Map**, the separate backend that joins papers, Lean statements, citations and outside reports. Its [export is included here](backend/EXPORT.json), so you can rebuild the site without running the backend. The site builders check data integrity and page rendering; they do not run Lean or Comparator.
 
-Papers are typeset in the browser with KaTeX, and the build checks every one of their 1,269,365 formulas with the same KaTeX version the site loads. There is no server, no account and no tracking.
+Papers are typeset in the browser with KaTeX. The build checks formula conversion with the same KaTeX version the site loads; conversion acceptance is separate from checking the mathematics. Reading the published site needs no installation or account.
+
+For a complete local copy, install **Python 3.10 or newer, Git and Node.js**. The core scripts use Python’s standard library, and KaTeX is included; there is no `pip install` or `npm install` step. The source-fetch step needs a network connection and creates a sibling `openai-math-upstream` checkout.
 
 ```sh
-git clone https://github.com/wcook04/plectis-atlas && cd plectis-atlas
-python3 scripts/reader.py && sh scripts/fetch_upstream.sh
-python3 scripts/build_site.py && python3 scripts/build_papers.py && python3 scripts/build_universe.py
+git clone https://github.com/wcook04/plectis-atlas
+cd plectis-atlas
+python3 scripts/reader.py
+sh scripts/fetch_upstream.sh
+python3 scripts/build_site.py
+python3 scripts/build_papers.py --jobs 2
+python3 scripts/build_universe.py
 python3 scripts/check_paper_links.py site/_build
-python3 -m http.server -d site/_build   # http://localhost:8000
+python3 -m http.server -d site/_build
 ```
 
-The core builders need Python 3.10 or newer; Node checks the paper formulas with the included KaTeX. For layout and copy work there is a [quick preview without the paper sources](docs/ARCHITECTURE.md#quick-preview-without-paper-sources); the [complete build](docs/ARCHITECTURE.md#rebuilding-the-website) gives the full order and the tests.
+Open [localhost:8000](http://localhost:8000). Keep that build order: `build_site.py` clears its output before the paper reader adds its pages. To work on copy or layout without downloading paper sources, use the [quick preview](docs/ARCHITECTURE.md#quick-preview-without-paper-sources). The [architecture guide](docs/ARCHITECTURE.md) explains the data boundaries, metadata refresh and checks.
 
 ## For producers of formal mathematics
 
@@ -195,11 +203,17 @@ Henry Cohn’s [essay on the technical debt of AI-generated mathematics](https:/
 
 ## Videos and related projects
 
-**Atlas walkthrough:** not yet published. The [project films](https://wcook04.github.io/plectis/#videos) cover the separate Erdős research programme and its working environment.
+| Film | What it covers | Publication |
+| --- | --- | --- |
+| Introduction | Will’s overview of tools for inspecting work produced with AI agents, including CodeMap, the mathematics papers, Atlas, Demo Take and Safety Core. | Coming soon |
+| Atlas walkthrough | Search for the result about π and the Flint Hills series, compare MathVet’s and Carlos Toledo’s reasons for different coverage labels, follow the original reports, and see how to offer a correction or explanation. | Coming soon |
+
+These are forthcoming recordings. Published links will appear on the [project website’s video page](https://wcook04.github.io/plectis/#videos).
 
 | Project | What to find there |
 | --- | --- |
 | [Plectis Erdős](https://github.com/wcook04/plectis-erdos) | Original research on eight Erdős problems: papers, Lean proofs, experiments and open questions. [Research website](https://wcook04.github.io/plectis/maths/). |
+| [Plectis Erdős Lean](https://github.com/wcook04/plectis-erdos-lean) | Lean source accompanying the Erdős research. The papers and current research claims live in Plectis Erdős. |
 | [Plectis toolkit](https://github.com/wcook04/plectis) | Python tools and worked examples for inspecting AI-assisted research. [Component map](https://wcook04.github.io/plectis/docs/system-map.html). |
 | [Safety Core](https://github.com/wcook04/safety-core) | A small, adaptable rulebook, checks and a visual rule map for coding agents. |
 
