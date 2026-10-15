@@ -103,7 +103,7 @@ cd plectis-atlas
 python3 scripts/reader.py               # validates the pinned backend packets
 sh scripts/fetch_upstream.sh            # sparse checkout of openai/math at the pinned commit, without PDFs
 python3 scripts/build_site.py           # writes site/_build/
-python3 scripts/build_papers.py         # writes each paper's full reading page into site/_build/papers/
+python3 scripts/build_papers.py --jobs 2 # writes each paper's full reading page into site/_build/papers/
 python3 scripts/build_universe.py       # writes the map, site/_build/index.html, and its data
 python3 scripts/check_paper_links.py site/_build
 python3 -m http.server -d site/_build   # then open http://localhost:8000
@@ -260,25 +260,30 @@ also apply to the canonical [`improve-the-atlas` skill](../skills/improve-the-at
 
 ### README preview images
 
-`docs/images/map-light.png` and `docs/images/map-dark.png` are real browser captures of the
-same map state. They are displayed by the README's `<picture>` element and
-both link to the website. Keep these stable paths when refreshing them.
+The README opens with `docs/images/reader-light.jpg` and
+`docs/images/reader-dark.jpg`: real browser captures of the paper reader for
+*Quasipolynomial Bounds for Arithmetic Progressions*. Both link to that paper’s
+public reading page. The family board remains a second preview, using
+`family-light.png` and `family-dark.png`.
 
-The current pair was captured on 12 October 2026 from the local `reader-v2`
-build, matching the round-three map design. The source checkout was at
-`d32c790`; the local build was served from `site/_build/`. At capture time this
-revision was not the public deployment. The images show Family 017 under the
-pointer and its attributed disagreement, with no selection committed.
+The reader captures were taken on 15 October 2026 from the public deployment
+of Atlas commit `4ac8e9f09057cd0a1c311df02bca0520839ae616`, verified against
+[the successful Pages build](https://github.com/wcook04/plectis-atlas/actions/runs/38424773534).
+They reuse the actual output of `scripts/build_papers.py`, `site/assets/paper.css`
+and the shared `atlas.css` typography, fonts and theme control. No interface
+or paper content was reconstructed for the screenshot.
 
-To reproduce the framing, serve the intended build and use a 1440 × 790 CSS
-pixel viewport at device scale 1. Wait for fonts and the map to finish loading,
-then point to the Family 017 disc (979, 197 in this framing). Check that the
-hover card names that family. Capture once in each colour scheme, with the
-same viewport and pointer. Do not recolour one screenshot to make the other.
-A change to the layout may move the disc; verify the family before capture.
+To reproduce them, open
+`papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html`
+at the top of the page, at a 1440 × 900 CSS pixel viewport. Let the site’s fonts
+and mathematics finish loading. Capture each theme through the site’s own
+switch, keeping the same viewport and scroll position. The screenshot is an
+illustration of that revision, not a live status indicator. Review the files at
+full size, then the rendered README at laptop and phone widths; keep the text
+links and caption useful when the screenshot cannot be read.
 
-Check both images in the rendered README at laptop and phone widths. The map
-is a preview: keep the website link and description as text for readers who
-cannot read the image. Update the date and source revision here when the
-images change; screenshots are illustrations of that revision, not live
-status indicators.
+The map pair (`map-light.png` and `map-dark.png`) remains available as historical
+README imagery. It was captured on 12 October 2026 from the local `reader-v2`
+build at `d32c790`, with a 1440 × 790 CSS pixel viewport at device scale 1 and
+Family 017 under the pointer. At capture time that revision was not the public
+deployment. Do not recolour a screenshot to manufacture another theme.
