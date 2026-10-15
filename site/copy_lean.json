@@ -35,7 +35,7 @@
    "many": "It reaches {n} of the file’s {total} other declarations; with the theorem itself they span {lines} lines."
   },
   "intro_holes": "The verification settings name no theorem. Comparator instead tests whether OpenAI’s library defines {names} with the types written here. The list below follows names used by those definitions; each appears after the names it uses.",
-  "holes_note": "For a definition marked “name and type only”, Comparator does not compare the definition’s body with the one here. It verifies the proof using the definition in OpenAI’s library. Follow the library link to compare the two definitions.",
+  "holes_note": "For a definition marked “name and type only”, Comparator does not compare the definition’s body with the one here. When a theorem is configured, it verifies the proof using the definition in OpenAI’s library. Follow the library link to compare the two definitions.",
   "summary_all": {
    "one": "It reaches the file’s only other declaration; with the theorem itself they span {lines} lines.",
    "many": "It reaches all {n} other declarations of the file; with the theorem itself they span {lines} lines."
