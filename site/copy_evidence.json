@@ -45,9 +45,9 @@
  },
  "reruns": {
   "none": "Atlas has no report of an independent group using Comparator to verify OpenAI’s proof of this Lean statement at the version shown here.",
-  "one": "One independent group reports that Comparator accepted OpenAI’s proof of this Lean statement: {names}.",
-  "many": "{n} independent groups report that Comparator accepted OpenAI’s proof of this Lean statement: {names}.",
-  "what_it_checks": "Comparator tests whether OpenAI’s separate proof proves this Lean statement using only the allowed axioms. Acceptance does not establish that the statement means the same thing as the paper’s theorem.",
+  "one": "One independent group reports that Comparator accepted a run for this Lean statement file: {names}.",
+  "many": "{n} independent groups report that Comparator accepted runs for this Lean statement file: {names}.",
+  "what_it_checks": "For a configured theorem, Comparator tests whether OpenAI’s proof proves the Lean statement using only the allowed axioms. Some files configure definitions only, which Comparator compares by name and type. Acceptance does not establish that a Lean statement means the same thing as the paper’s theorem.",
   "names_joiner": "; ",
   "source_term": "{name} records it as “{term}”."
  },

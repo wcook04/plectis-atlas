@@ -89,7 +89,7 @@
   "family_number": "Family {id}.",
   "also_in": "Also listed under {families}.",
   "source_role": {
-   "challenge": "Challenge file:",
+   "challenge": "Lean statement file:",
    "other": "Lean file:"
   },
   "lean_heading": "The Lean statement",
@@ -180,7 +180,7 @@
   "method": "How they ran it, in their words",
   "reported": "Each group reports its own attempt to verify OpenAI’s proof with Comparator. Atlas has not repeated the attempts.",
   "none_recorded": "Atlas has no report of an independent group running Comparator for this statement.",
-  "scope": "Comparator tests whether OpenAI’s proof proves this exact Lean statement. Acceptance does not establish that the statement means the same thing as the paper’s theorem.",
+  "scope": "For a configured theorem, Comparator tests whether OpenAI’s proof proves the exact Lean statement. Some files instead configure definitions for comparison by name and type. Acceptance does not establish that the statement means the same thing as the paper’s theorem.",
   "their_term": "Their term: “{term}”."
  },
  "readings": {
@@ -191,8 +191,8 @@
  },
  "card": {
   "family": "Family {id}:",
-  "reruns_one": "One independent group reports that Comparator accepted the proof at the release version shown here.",
-  "reruns_many": "{n} independent groups report that Comparator accepted the proof at the release version shown here."
+  "reruns_one": "One independent group reports that Comparator accepted a run for this file at the release version shown here.",
+  "reruns_many": "{n} independent groups report that Comparator accepted runs for this file at the release version shown here."
  },
  "defs": {
   "show_rest": {
@@ -203,7 +203,7 @@
  "table": {
   "lede": "Lean is a language for mathematical statements and proofs that a computer can verify. The release supplies {lean} statement files, listing {main} as main results. Each row links a Lean statement to its possible paper counterpart and shows independent assessments and reports of proof verification.",
   "list_heading": "Every Lean statement",
-  "caption": "Lean statements, possible paper matches, independent assessments of each family and reports that Comparator accepted the proofs",
+  "caption": "Lean statements, possible paper matches, independent assessments of each family and reports of accepted Comparator runs",
   "col_statement": "Lean statement",
   "col_result": "Family",
   "col_discipline": "Discipline",

@@ -67,8 +67,8 @@
   "no_lean": "The release contains no Lean statement for this family. Its papers and any independent reports are still available here.",
   "lean_one": "One Lean statement.",
   "lean_many": "{n} Lean statements.",
-  "reruns_some": "Independent groups report that Comparator, a proof-verification program, accepted OpenAI’s proofs for {k} of these {n} Lean statements at the version shown here.",
-  "reruns_some_one": "One independent group reports that Comparator, a proof-verification program, accepted OpenAI’s proofs for {k} of these {n} Lean statements at the version shown here."
+  "reruns_some": "Independent groups report that Comparator, a proof-verification program, accepted runs for {k} of these {n} Lean statement files at the version shown here.",
+  "reruns_some_one": "One independent group reports that Comparator, a proof-verification program, accepted runs for {k} of these {n} Lean statement files at the version shown here."
  },
  "switch": {
   "label": "Show",
@@ -207,7 +207,7 @@
   "paper_heading_declared": "The paper theorem OpenAI links to this statement",
   "paper_heading_none": "Paper theorem",
   "runs_role": "Reported proof verification",
-  "runs_scope": "Comparator tests whether OpenAI’s proof proves this exact Lean statement. Acceptance does not establish that the statement means the same thing as the paper’s theorem.",
+  "runs_scope": "For a configured theorem, Comparator tests whether OpenAI’s proof proves the exact Lean statement. Some files instead configure definitions for comparison by name and type. Acceptance does not establish that a statement means the same thing as the paper’s theorem.",
   "challenge_note": "This file gives the Lean statement with sorry in place of a proof. OpenAI supplies the proof in a separate file; Comparator tests that proof against the statement here.",
   "run_not_current": "at an earlier version of the release",
   "why": "Why this match is shown",

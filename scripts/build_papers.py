@@ -143,7 +143,7 @@ TXT = {
     },
     "family_n": "family {n}",
     "headline_note": "Of the papers’ main statements, this one shares the most words with OpenAI’s description of {families}. Atlas therefore selects it as a possible match to that description, with no recorded review confirming the choice.",
-    "lean_proof": "Reports of Comparator verifying OpenAI’s proof against the Lean statement:",
+    "lean_proof": "Reports of running Comparator against this Lean statement:",
     "lean_runs_n": "{n} independent groups report acceptance",
     "lean_runs_1": "one independent group reports acceptance",
     "lean_runs_0": "no independent run recorded",

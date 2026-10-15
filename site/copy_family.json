@@ -51,14 +51,14 @@
   "formal_some": "in the release; {runs}.",
   "lean_one": "one Lean statement",
   "lean_many": "{n} Lean statements",
-  "runs_it_by_one": "one independent group reports that Comparator accepted OpenAI’s proof of it at the version shown here",
-  "runs_it_by_many": "{g} independent groups report that Comparator accepted OpenAI’s proof of it at the version shown here",
-  "runs_one_by_one": "one independent group reports that Comparator accepted OpenAI’s proof of one statement at the version shown here",
-  "runs_one_by_many": "{g} independent groups report that Comparator accepted OpenAI’s proof of one statement at the version shown here",
-  "runs_all_by_one": "one independent group reports that Comparator accepted OpenAI’s proofs of all of them at the version shown here",
-  "runs_all_by_many": "independent groups report that Comparator accepted OpenAI’s proofs of all of them at the version shown here",
-  "runs_some_by_one": "one independent group reports that Comparator accepted OpenAI’s proofs of {k} of them at the version shown here",
-  "runs_some_by_many": "independent groups report that Comparator accepted OpenAI’s proofs of {k} of them at the version shown here",
+  "runs_it_by_one": "one independent group reports that Comparator accepted a run for this file at the version shown here",
+  "runs_it_by_many": "{g} independent groups report that Comparator accepted runs for this file at the version shown here",
+  "runs_one_by_one": "one independent group reports that Comparator accepted a run for one statement file at the version shown here",
+  "runs_one_by_many": "{g} independent groups report that Comparator accepted runs for one statement file at the version shown here",
+  "runs_all_by_one": "one independent group reports that Comparator accepted runs for all these files at the version shown here",
+  "runs_all_by_many": "independent groups report that Comparator accepted runs for all these files at the version shown here",
+  "runs_some_by_one": "one independent group reports that Comparator accepted runs for {k} of these files at the version shown here",
+  "runs_some_by_many": "independent groups report that Comparator accepted runs for {k} of these files at the version shown here",
   "runs_none": "no independent acceptance report is recorded for the version shown here",
   "readable_papers_one": "One current paper, {reading}.",
   "readable_papers_many": "{n} current papers, {reading}.",
@@ -169,7 +169,7 @@
   "row_cited": "Its source cites {label} in {paper}; the match is not reviewed.",
   "row_declared": "OpenAI links it to {label} in {paper}; no review of whether the statements mean the same thing is recorded.",
   "row_none": "No paper theorem is paired with it.",
-  "comparator_once": "The [[comparator|Comparator]] program tests whether OpenAI’s separate proof proves the exact Lean statement in the [[challenge|statement file]], using only the allowed axioms. A successful run does not establish that the formal statement means the same thing as the paper’s theorem. That is the separate comparison reported below."
+  "comparator_once": "For a configured theorem, the [[comparator|Comparator]] program tests whether OpenAI’s separate proof proves the exact Lean statement using only the allowed axioms. Some [[challenge|statement files]] instead configure definitions for comparison by name and type. Acceptance does not establish that a formal statement means the same thing as the paper’s theorem."
  },
  "checked": {
   "heading": "Independent comparisons and proof-verification reports"
@@ -209,7 +209,7 @@
  },
  "reruns": {
   "heading": "Who ran the proof-verification program?",
-  "intro": "These groups report running Comparator to test OpenAI’s proofs against the exact Lean statements. Each row is the named group’s report. Atlas has not repeated the runs.",
+  "intro": "These groups report running Comparator with the release’s Lean statement files. For a configured theorem, it verifies OpenAI’s separate proof against the exact statement; some files instead configure definitions for comparison by name and type. Each row is the named group’s report. Atlas has not repeated the runs.",
   "account": "Their account",
   "recorded": "Recorded",
   "none": "Atlas has no report of an independent group running Comparator for this Lean statement.",
