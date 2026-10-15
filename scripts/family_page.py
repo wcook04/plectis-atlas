@@ -707,6 +707,7 @@ def head_html(c: Ctx) -> str:
     lead, more = cat, ""
     quote = (f'<figure class="fx-quote" id="h-desc"><figcaption class="fx-quote__src">{W("head.quote_credit", link=catalogue_link(c))}</figcaption>'
              f'<blockquote class="fx-quote__q"><p class="tex-auto">{S.glue(S.rich(curly_tex(lead), "", root, link_results=True))}</p>{more}</blockquote></figure>')
+    context = f'<p class="fx-fact">{esc(W("head.context"))}</p>' if c.ev.has_lean else ""
     extra = [verdict_line(c), papers_line(c)]
     erd = S.sourced(f, "erdos_problems")
     if erd and erd.get("value"):
@@ -722,7 +723,7 @@ def head_html(c: Ctx) -> str:
  <div class="fx-bar">{trail}{tools}</div>
  {S.sibling_nav("family", S.family_siblings(c.num, root), discipline=disc)}
  <h1 class="fx-title{' fx-title--long' if len(title_plain) > 64 else ''}"><span class="tex-auto">{S.rich(curly_tex(f["title"]))}</span></h1>
- {quote}{facts}
+ {quote}{context}{facts}
 </header>"""
 
 

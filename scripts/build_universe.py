@@ -1438,7 +1438,7 @@ The website is agent-navigable using HTTP GET requests. No browser, account, Jav
 - [Lean statements]({base}statements.html)
 - [Sources and credits]({base}sources.html)
 - [Counts and their definitions]({base}numbers.html)
-- [HTML sitemap]({base}sitemap.xml)
+- [Page sitemap]({base}sitemap.xml)
 - [Repository instructions]({repo}/blob/main/AGENTS.md) and [source architecture]({repo}/blob/main/docs/ARCHITECTURE.md)
 
 ## Fetch the complete map

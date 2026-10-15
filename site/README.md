@@ -10,7 +10,10 @@ The [published website is agent-navigable](https://wcook04.github.io/plectis-atl
 configured site URL and current packet generation. They document the existing
 map JSON, which remains available without running the browser interface.
 
-Read the [design contract](../DESIGN.md) before changing a page.
+Read the [design contract](../DESIGN.md) and the
+[first-time-reader writing rule](../STYLE.md#write-the-website-for-a-first-time-reader)
+before changing a page. Explain what was compared, verified or rendered, by
+whom, and what the reported result establishes.
 [Quick preview](../docs/ARCHITECTURE.md#quick-preview-without-paper-sources)
 gives the local build commands.
 
