@@ -42,7 +42,7 @@ def overview_block() -> str:
         "|---|---|",
         f"| **{number_text(r, 'families')} result families** across {number_text(r, 'disciplines')} disciplines | [Browse by subject]({base}explain.html) |",
         f"| **{number_text(r, 'manuscripts_current')} current manuscripts** | [Read the papers through their families]({base}explain.html) |",
-        f"| **{number_text(r, 'statements_lean')} Lean challenge files** | [Inspect the formal statements]({base}statements.html) |",
+        f"| **{number_text(r, 'statements_lean')} Lean statement files** | [Inspect the formal statements]({base}statements.html) |",
         f"| **{number_text(r, 'external_citations')} resolved references** to work outside the collection | [Follow the citations]({base}references-outside.html) |",
     ])
 
@@ -62,12 +62,12 @@ def numbers_block(s: dict) -> str:
     rows = [
         f"- **{v('families')} result families** in {v('disciplines')} disciplines, from **{v('manuscripts_current')} current manuscripts** "
         f"({v('manuscripts_withdrawn')} more were withdrawn and {v('manuscripts_previous_editions')} earlier editions remain in the collection).",
-        f"- **{v('statements_lean')} Comparator challenge files**, {v('statements_lean_main_results')} of them named in OpenAI's list of main results "
-        f"({v('main_result_declarations')} declarations). {v('families_with_lean')} families have a Lean scope note linking at least one challenge file, "
+        f"- **{v('statements_lean')} Lean statement files for Comparator**, {v('statements_lean_main_results')} of them named in OpenAI's list of main results "
+        f"({v('main_result_declarations')} entries). {v('families_with_lean')} families have an OpenAI note linking at least one statement file and explaining what it expresses, "
         f"and those notes name {v('manuscripts_with_lean')} current manuscripts as accompanying papers.",
-        f"- **{v('lean_statements_pure_mathlib')} challenge files** import only Mathlib and add no local vocabulary. The median file adds "
-        f"{v('lean_vocabulary_median')} local vocabulary declarations (definitions, structures, instances, notation and similar), and the largest "
-        f"({biggest}) adds {v('lean_vocabulary_max')}. Each one is part of what the statement means, so a reader checks it against the paper.",
+        f"- **{v('lean_statements_pure_mathlib')} statement files** use only Mathlib, Lean's mathematical library, and add no local definitions or notation. The median file adds "
+        f"{v('lean_vocabulary_median')} local declarations (definitions, structures, instances, notation and similar), and the largest "
+        f"({biggest}) adds {v('lean_vocabulary_max')}. These determine what the formal statement means, so a comparison with the paper must include them.",
         f"- **{v('manuscripts_citing_collection')} manuscripts** cite other manuscripts in the collection ({v('internal_citation_edges')} citation links in "
         f"the current extraction; the Atlas baseline inventory counts {v('atlas_baseline_internal_citation_edges')}). "
         f"{v('manuscripts_citing_unformalised_collection_results')} of them cite at least one manuscript without associated Lean.",
@@ -75,12 +75,12 @@ def numbers_block(s: dict) -> str:
         f"(by DOI, then arXiv identifier, then title; the grouping is unaudited).",
         f"- The TeX sources of the current manuscripts contain {v('paper_environments_theorem')} theorem, {v('paper_environments_proposition')} proposition, "
         f"{v('paper_environments_corollary')} corollary and {v('paper_environments_lemma')} lemma environments, repeated statements included.",
-        f"- **Draft scope reading.** Of {v('scope_statements_classified')} challenge files, an AI agent drafted {v('scope_class_headline')} as stating a paper's "
-        f"headline theorem, {v('scope_class_headline-part')} part of one, {v('scope_class_consequence')} a consequence, {v('scope_class_weaker')} a weaker form "
+        f"- **AI-drafted comparisons.** Of {v('scope_statements_classified')} statement files, an AI agent classified {v('scope_class_headline')} as stating a paper's "
+        f"theorem, {v('scope_class_headline-part')} part of one, {v('scope_class_consequence')} a consequence, {v('scope_class_weaker')} a weaker form "
         f"and {v('scope_class_supporting')} a supporting result; for {v('scope_class_unclear')} OpenAI's note leaves it unclear. "
-        "The agent classified each file from OpenAI's scope note, quoting the note; no person has reviewed it.",
-        "- **Outside readers.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine) "
-        "each read every family's Lean against its headline, independently of OpenAI and of each other. Their findings, in their own terms, "
+        "The agent classified each file from OpenAI's note, quoting the note. No human review of these classifications is recorded.",
+        "- **Independent assessments.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine) "
+        "each assessed whether every family's Lean statements express the result OpenAI advertises, independently of OpenAI and of each other. Their findings, in their own terms, "
         "are on each family page and in the Families list.",
     ]
     try:
@@ -92,10 +92,10 @@ def numbers_block(s: dict) -> str:
         rest = ps.get("partial", 0)
         rows.append(
             f"- **Every paper in the browser.** {n(ps['accepted'])} of the {n(ps['papers'])} current manuscripts have a full reading page made from "
-            f"their TeX, with every formula, cross-reference, citation and theorem anchor checked (figures are shown as placeholders); "
+            f"their TeX, with formulas that KaTeX can typeset and links that resolve to their references, citations and theorems (figures are shown as placeholders); "
             f"the other {n(rest)} have a reading page with a banner listing what did not convert"
             + (f", and {n(ps['unavailable'])} have none" if ps.get("unavailable") else "")
-            + ". Formulas are checked with the KaTeX version the site loads. The PDF stays the reference (`data/paper_acceptance.json`).")
+            + ". These tests validate the conversion, not the mathematics. They use the same KaTeX version as the site. The PDF stays the reference (`data/paper_acceptance.json`).")
     rows += [
         "",
         f"Counted by Statement Map from [openai/math at `{r.pin[:12]}`](https://github.com/openai/math/tree/{r.pin}), generation "
@@ -191,10 +191,11 @@ def checks_block(s: dict) -> str:
     ra = s["readers_agreement"]
     agree, dis = ra["agree-full"] + ra["agree-less"], ra["disagree"]
     return (
-        f"{WORDS.get(k, str(k))} outside groups report re-running OpenAI’s proofs through [Comparator](https://github.com/leanprover/comparator) "
-        f"on the pinned release: {some:,} of the {len(accepted):,} challenge files were accepted by at least one of them, and {every:,} by all {WORDS.get(k, str(k)).lower()}. "
+        f"{WORDS.get(k, str(k))} independent groups report running [Comparator](https://github.com/leanprover/comparator) "
+        f"on the recorded release version: runs for {some:,} of the {len(accepted):,} statement files were accepted by at least one group, and {every:,} by all {WORDS.get(k, str(k)).lower()}. "
+        "Comparator verifies the proof of a configured theorem; for files that configure only definitions, it compares their names and types. Acceptance does not establish that a statement means the same thing as the paper’s theorem. "
         "Two of them, [MathVet](https://math.vet) and Carlos Toledo’s [cert-machine](https://github.com/carlostoledo1891/cert-machine), "
-        "also read every family’s Lean against the paper’s headline result, independently of each other. "
+        "also assessed whether every family’s Lean statements express the result OpenAI advertises, independently of each other. "
         f"They agree on {agree:,} of the {agree + dis:,} families both read and disagree on {dis:,}; each family page shows both readings."
     )
 
@@ -214,6 +215,10 @@ def data_guide() -> str:
 These JSON files support the Atlas's source browsing and paper reading pages.
 The [dataset reference](../docs/ARCHITECTURE.md#use-the-data) explains their
 fields, producers and limits.
+
+The [website and map are agent-navigable](https://wcook04.github.io/plectis-atlas/agents.md).
+Start with [llms.txt](https://wcook04.github.io/plectis-atlas/llms.txt) for public
+entry points and instructions for traversing the existing map JSON.
 
 - `families.json`, `manuscripts.json` and `statements.json` index the pinned release.
 - `graph.json` and `works.json` record citations within and outside it.

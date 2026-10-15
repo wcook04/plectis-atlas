@@ -2594,9 +2594,12 @@ def comparator_box_html(stmt):
         holes_p = ctext(C("statement.comparator_box_holes", n=len(holes), names=hl))
     else:
         holes_p = esc(C("statement.comparator_box_noholes"))
+    acceptance_key = ("statement.comparator_box_definition_only"
+                      if holes and not stmt["comparator"]["theorem_names"]
+                      else "statement.comparator_box_does")
     axioms = ", ".join(f"<code>{esc(a)}</code>" for a in stmt["comparator"]["permitted_axioms"]) or esc(C("statements.none"))
     return (f'<div class="note"><p class="note__h">{esc(C("statement.comparator_box_heading"))}</p>'
-            f'<p>{ctext(C("statement.comparator_box_does"))}</p><p>{holes_p}</p>'
+            f'<p>{ctext(C(acceptance_key))}</p><p>{holes_p}</p>'
             f'<p>{esc(C("statement.comparator_box_axioms"))} {axioms}</p>'
             f'<p>{ctext(C("statement.comparator_box_not"))}</p></div>')
 

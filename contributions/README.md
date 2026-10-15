@@ -2,6 +2,8 @@
 
 Everything people add to the atlas lives in this folder, one file per contribution. The site reads these files and credits each one by name on the pages it touches. `python3 scripts/check_contributions.py` checks file structure and available source identifiers. People check mathematical content and authenticate reviews.
 
+The [website and map are agent-navigable](https://wcook04.github.io/plectis-atlas/agents.md). The guide explains how to find the relevant family, paper or Lean statement through ordinary links and the map's existing JSON.
+
 Start from a template in `_templates/`. How to do each kind of work is in `CONTRIBUTING.md` and the skills in `skills/`.
 
 ```text

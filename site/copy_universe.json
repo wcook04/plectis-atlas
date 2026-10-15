@@ -195,7 +195,7 @@
   "page": "Open the Lean statement",
   "family_page": "Open the family page",
   "main": "OpenAI’s Lean catalogue lists it as a main result.",
-  "reruns_heading": "Reported attempts to verify the Lean proof",
+  "reruns_heading": "Reported Comparator runs",
   "reruns_none": "Atlas has no report of an independent group running the proof-verification program for this statement.",
   "accepted": "accepted",
   "holes_heading": "Definitions compared by name and type only",
