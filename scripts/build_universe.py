@@ -1330,8 +1330,8 @@ def page_body(M, gen, data_version=None) -> str:
    <p class="u-cap" data-u-cap>{esc(U('chart.release_cap', families=len(M.data['families']), disciplines=len(M.data['disciplines'])))}</p>
   </div>
   <div class="u-mapkey" id="u-mapkey" data-u-mapkey-panel hidden></div>
-  <p class="u-status" data-u-status>{esc(U('status.loading'))}</p>
  </div>
+ <p class="u-status" data-u-status role="status">{esc(U('status.loading'))}</p>
  <script type="application/json" id="universe-copy">{copy_json}</script>
 </div>
 <section class="u-band u-band--index" id="catalogue" aria-labelledby="h-index" tabindex="-1">

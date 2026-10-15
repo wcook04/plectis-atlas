@@ -100,6 +100,7 @@
 main.u-main { padding: 0; max-width: none; }
 .u-explorer {
   --u-gutter: max(24px, calc((100vw - 1600px) / 2));
+  position: relative;
   display: grid;
   grid-template-columns: calc(var(--u-panel-w) + var(--u-gutter) - 20px) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
@@ -316,7 +317,7 @@ main.u-main { padding: 0; max-width: none; }
 .u-tool:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 1px; }
 .u-tool svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
 .u-help { position: absolute; left: 14px; bottom: 10px; margin: 0; max-width: min(560px, calc(100% - 80px)); font: 400 var(--fs-micro)/1.4 var(--sans); color: var(--muted); pointer-events: none; }
-.u-status { position: absolute; inset: 0; pointer-events: none; display: grid; place-items: center; margin: 0; font: 400 var(--fs-meta)/1.4 var(--sans); color: var(--muted); }
+.u-status { position: absolute; inset: 0 0 0 calc(var(--u-panel-w) + var(--u-gutter) - 20px); pointer-events: none; display: grid; place-items: center; margin: 0; font: 400 var(--fs-meta)/1.4 var(--sans); color: var(--muted); }
 .u-status[hidden] { display: none; }
 .u-switch { display: none; }
 
@@ -333,6 +334,9 @@ main.u-main { padding: 0; max-width: none; }
   .u-panel__head { padding: 12px 16px; }
   .u-panel__body { overflow: visible; padding: 4px 16px 28px; }
   .u-stage { height: 72vh; height: 72svh; }
+  /* The same status stays visible while List hides the map, including when
+     the chosen family is far down the list. One live region serves both views. */
+  .u-status { position: fixed; inset: auto 16px 16px; z-index: 4; padding: 12px 16px; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-sm); text-align: center; }
   [data-universe][data-view="list"] .u-stage { display: none; }
   [data-universe][data-view="map"] .u-panel { display: block; }
   [data-universe][data-view="map"] .u-panel__body,
