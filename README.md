@@ -2,16 +2,16 @@
 
 Read the papers in [OpenAI’s mathematics release](https://github.com/openai/math), inspect their Lean statements, and compare what outside readers found. Plectis Atlas brings those sources together in an independent website, with names, links and the limits of each check attached.
 
-**[Read a paper ↗](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html)** &nbsp; [Explore the map](https://wcook04.github.io/plectis-atlas/) &nbsp; [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [Build it locally](#build-it-yourself)
+**[Explore the map ↗](https://wcook04.github.io/plectis-atlas/)** &nbsp; [Read a paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) &nbsp; [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [Build it locally](#build-it-yourself)
 
-<a href="https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html">
+<a href="https://wcook04.github.io/plectis-atlas/">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/images/reader-dark.jpg">
-    <img src="docs/images/reader-light.jpg" width="1440" alt="The Atlas paper reader: Quasipolynomial Bounds for Arithmetic Progressions, with its typeset abstract and equation, links to the PDF and TeX source, and a route to the family’s Lean statements and outside readings.">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/overview-dark.png">
+    <img src="docs/images/overview-light.png" width="1440" alt="The full Atlas release map: disciplines contain their families, coloured by outside readings of the Lean’s scope, with the release summary and colour key beside them.">
   </picture>
 </a>
 
-*OpenAI’s paper, displayed in Atlas, with its original PDF and TeX source beside it. Follow its family link to the Lean statements and attributed outside readings. The PDF remains the reference.*
+*OpenAI’s release, grouped by discipline. Each dot is a family. Colours show agreement or disagreement between MathVet and cert-machine about the Lean’s scope; outlines mark families without Lean.*
 
 The mathematics is OpenAI’s and the cited authors’ work. Outside readings and reported proof re-runs come from [MathVet](https://math.vet), [Carlos Toledo’s cert-machine](https://github.com/carlostoledo1891/cert-machine) and [Neal McBurnett’s Lean tooling](https://github.com/nealmcb/openai-math-lean-tooling). Atlas presents their records; it does not claim their checks as its own. [Sources and credits](https://wcook04.github.io/plectis-atlas/sources.html).
 
@@ -39,6 +39,15 @@ OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lea
 | [A paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) | A full reading page typeset from the paper’s TeX, with linked theorems, equations, cross-references and citations. Any conversion gap is listed on the page; the PDF stays the reference. |
 | [A Lean statement](https://wcook04.github.io/plectis-atlas/statements/ErdosReciprocal.html) | The whole challenge file with every name linked to its definition, the reported re-runs, and the paper theorem it is the candidate statement of. |
 | [Sources and outside readings](https://wcook04.github.io/plectis-atlas/sources.html) | Who checked what, in their own words, with links to their records. |
+
+<a href="https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/reader-dark.jpg">
+    <img src="docs/images/reader-light.jpg" width="1440" alt="The Atlas paper reader: Quasipolynomial Bounds for Arithmetic Progressions, with its typeset abstract and equation, links to the PDF and TeX source, and a route to the family’s Lean statements and outside readings.">
+  </picture>
+</a>
+
+*OpenAI’s paper, displayed in Atlas, with its original PDF and TeX source beside it. Follow its family link to the Lean statements and attributed outside readings. The PDF remains the reference.*
 
 <!-- checks:start -->
 Three outside groups report re-running OpenAI’s proofs through [Comparator](https://github.com/leanprover/comparator) on the pinned release: 409 of the 416 challenge files were accepted by at least one of them, and 179 by all three. Two of them, [MathVet](https://math.vet) and Carlos Toledo’s [cert-machine](https://github.com/carlostoledo1891/cert-machine), also read every family’s Lean against the paper’s headline result, independently of each other. They agree on 220 of the 242 families both read and disagree on 22; each family page shows both readings.
