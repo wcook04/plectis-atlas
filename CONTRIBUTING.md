@@ -16,6 +16,14 @@ For a first visit, give one passage about fifteen minutes. If you cannot settle 
 
 A maintainer checks the note and either incorporates it, asks a specific question, or explains why it does not help. An incorporated note links to its source issue and credits its contributor beside the changed explanation or reference. Submission history stays visible.
 
+### Unreviewed observations from agents
+
+An agent may file one bounded [agent observation](https://github.com/wcook04/plectis-atlas/issues/new?template=agent-observation.yml) under a disclosed public account when its operator and platform permit it. This route is for source, rendering, navigation or reproduction observations. It does not require a person to pretend they read or signed the report. The issue title and form mark it **unreviewed**; an issue is not a mathematical verdict, an accepted contribution file or a reviewed site claim.
+
+Give exact links to the public source and the Atlas page or public entry, their revisions, what you expected, what you observed, what you actually checked, and what remains uncertain. Name the agent and posting account; name an operator only with their permission, and say whether they reviewed anything. Do not include secrets, private logs or instructions that fetch and execute remote code. One source-linked observation is more useful than a batch of generated claims.
+
+The issue keeps the agent account and its exact feedback visible. If a maintainer checks and incorporates a correction, the changed page or record can link back to the report and credit that agent account for the observation. That credit does not attribute upstream mathematics or a proof check to the agent, imply endorsement, or make the agent an author or reviewer of a signed contribution. Mathematical comparisons, explanations and replay receipts still use the person-confirmed paths and review rules below.
+
 ## Choose a larger task when it fits
 
 | Task | Scope | Guide and destination |
@@ -43,11 +51,11 @@ An older contribution remains attached to its recorded version. A new upstream r
 
 ## Responsibility and AI assistance
 
-Agents can help locate sources, draft private notes, check examples and run tools. Read and understand the content you submit, open the cited sources, and disclose which tools did what in `ai_assistance`. Write public discussion and review replies in your own words. Explain the reasoning for a mathematical judgement yourself.
+Agents can help locate sources, draft private notes, check examples and run tools. For signed contributions, read and understand the content you submit, open the cited sources, and disclose which tools did what in `ai_assistance`. Write public discussion and review replies in your own words. Explain the reasoning for a mathematical judgement yourself.
 
-An agent must leave an unsigned draft private when a person has not confirmed it. It must list missing sources and unchecked steps visibly. It must never invent an author, a reviewer, expertise, a verdict or a successful run. Templates initially say `none`; replace this whenever any AI assistance occurred.
+An agent must leave an unsigned draft of a signed contribution private when a person has not confirmed it. It must list missing sources and unchecked steps visibly. It must never invent an author, a reviewer, expertise, a verdict or a successful run. Templates initially say `none`; replace this whenever any AI assistance occurred. An agent's own unreviewed observation follows the separate issue route above.
 
-Keep AI drafts private until you can support the proposed contribution. Human-authored prose with visibly marked, disclosed tool-drafted passages is permitted. The author must still understand and answer for that passage. Source-specific uncertainty belongs in the submitted note; it must not be hidden in an HTML comment.
+Keep AI drafts of signed contributions private until you can support the proposed contribution. Human-authored prose with visibly marked, disclosed tool-drafted passages is permitted. The author must still understand and answer for that passage. Source-specific uncertainty belongs in the submitted note; it must not be hidden in an HTML comment.
 
 New contributors should keep one substantive item awaiting review at a time. A maintainer can agree to a small batch after seeing a useful example. Corrective reports about an existing contribution can always be raised. Do not submit generated bulk explanations or send agents to other communities to solicit reviews.
 

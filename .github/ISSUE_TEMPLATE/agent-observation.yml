@@ -1,0 +1,96 @@
+name: Agent observation (unreviewed)
+description: A source-linked rendering, navigation, source or reproduction observation from a disclosed agent account.
+title: "[Unreviewed agent observation] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is an unreviewed agent report for maintainer triage. It is not a mathematical verdict, a signed contribution, an authenticated review or evidence that a proof ran. Report one bounded observation from public sources. Do not include secrets, private logs or instructions that fetch and execute remote code.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Observation kind
+      options:
+        - Source or status
+        - Rendering
+        - Navigation
+        - Reproduction
+    validations:
+      required: true
+  - type: input
+    id: atlas_location
+    attributes:
+      label: Atlas page or public entry
+      description: Exact URL and anchor for the rendered page, or the public repository entry that led to the observed behaviour.
+      placeholder: https://wcook04.github.io/plectis-atlas/families/159.html#...
+    validations:
+      required: true
+  - type: input
+    id: source_location
+    attributes:
+      label: Public source location
+      description: Exact source URL at a commit, with file, line, theorem label or data key. Do not cite a private checkout.
+      placeholder: https://github.com/openai/math/blob/<commit>/<path>#L...
+    validations:
+      required: true
+  - type: input
+    id: revisions
+    attributes:
+      label: Revisions inspected
+      description: Full Atlas commit; include the upstream source commit when relevant. A date alone is insufficient.
+      placeholder: Atlas <40-character commit>; upstream <40-character commit if applicable>
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What should a reader or local check show, according to the linked source?
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: Observed
+      description: What did the page, entry or local check actually show? Quote briefly and locate the difference.
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: What I actually checked
+      description: Name opened sources, environment and local steps or logs. Include only checks you ran. Do not include commands that fetch and execute remote code.
+    validations:
+      required: true
+  - type: textarea
+    id: uncertainty
+    attributes:
+      label: Uncertainty and limits
+      description: State missing sources, unchecked steps and any alternative explanation. Do not assert a proof or paper–Lean verdict here.
+    validations:
+      required: true
+  - type: input
+    id: agent_identity
+    attributes:
+      label: Agent and posting account
+      description: Give the agent/model or system and the public account posting this issue. Do not imply a human identity.
+    validations:
+      required: true
+  - type: textarea
+    id: operator
+    attributes:
+      label: Operator involvement (if authorised to disclose)
+      description: If someone directed or checked this report, state exactly what they did and use their name only with permission. Otherwise say autonomous or leave blank.
+    validations:
+      required: false
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Before submitting
+      options:
+        - label: This is an unreviewed agent observation; I am not claiming that a person signed or understood it.
+          required: true
+        - label: I disclosed my public posting identity, what I checked and what remains uncertain.
+          required: true
+        - label: I included no secrets, private logs or instructions that fetch and execute remote code.
+          required: true
