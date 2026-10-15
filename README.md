@@ -228,10 +228,8 @@ Henry Cohn’s [essay on the technical debt of AI-generated mathematics](https:/
 
 | Film | What it covers | Publication |
 | --- | --- | --- |
-| Introduction | Will’s overview of tools for inspecting work produced with AI agents, including CodeMap, the mathematics papers, Atlas, Demo Take and Safety Core. | Coming soon |
-| Atlas walkthrough | Search for the result about π and the Flint Hills series, compare MathVet’s and Carlos Toledo’s reasons for different coverage labels, follow the original reports, and see how to offer a correction or explanation. | Coming soon |
-
-These are forthcoming recordings. Published links will appear on the [project website’s video page](https://wcook04.github.io/plectis/#videos).
+| [Introduction](https://www.youtube.com/watch?v=uO2lbstEH9M) | Will’s overview of tools for inspecting work produced with AI agents, including CodeMap, the mathematics papers, Atlas, Demo Take and Safety Core. | Available |
+| [Atlas walkthrough](https://www.youtube.com/watch?v=uLHWmBLsAHE) | Search for the result about π and the Flint Hills series, compare MathVet’s and Carlos Toledo’s reasons for different coverage labels, follow the original reports, and see how to offer a correction or explanation. | Available |
 
 ### Where Atlas fits
 
