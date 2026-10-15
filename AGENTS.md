@@ -85,3 +85,8 @@ Explanations and website copy follow `STYLE.md`, including its first-time-reader
 ## Repository organisation
 
 Keep builders and their shared modules in `scripts/`, regression suites in `scripts/tests/`, and documentation screenshots in `docs/images/`. Follow `docs/ARCHITECTURE.md` before moving sources. Run `python3 scripts/check_repository_structure.py` and its regression suite after a structural change; update callers, links and the canonical skills, then regenerate skill mirrors. Generated data, backend exports and website output retain their existing owners.
+
+For tree changes, new file families or file placement, read
+[repository-organization](skills/repository-organization/SKILL.md) and the
+[local directory roles](docs/repository_layout.json). Preserve source owners and
+public interfaces; run the layout gate on the worktree and on staged contents.

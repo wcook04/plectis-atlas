@@ -253,3 +253,23 @@ Plectis Atlas is independent of OpenAI and is not affiliated with or endorsed by
 ## Author
 
 Made by [Will Cook](https://wcook04.github.io/plectis/). The atlas grew out of the paper-to-Lean records built for [Plectis’s research on eight Erdős problems](https://wcook04.github.io/plectis/maths/). The results it shows belong to their authors. To cite the atlas, use [`CITATION.cff`](CITATION.cff). Cite the original paper or outside report as well when relying on its result; the Atlas citation does not replace those credits.
+
+## Maintaining the tree
+
+The [directory role policy](docs/repository_layout.json) preserves root interfaces,
+source homes and documented compatibility exceptions. The
+[organisation skill](skills/repository-organization/SKILL.md) explains changes;
+CI checks placements and required agent/validation routes. From the repository root:
+
+```sh
+python3 skills/repository-organization/scripts/check_layout.py
+python3 skills/repository-organization/scripts/test_check_layout.py
+```
+
+After staging owned changes, add `--index` to the first command to check the staged
+policy and staged route contents. Ignored build outputs are outside this inventory.
+
+Custom folders are welcome: declare their purpose in `docs/repository_layout.json`.
+Undeclared folders produce a warning; declared placement rules still apply.
+See the [organisation workflow](skills/repository-organization/SKILL.md) for adding
+folders and generalising useful local lessons.

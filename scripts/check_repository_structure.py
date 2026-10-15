@@ -5,6 +5,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
 ROOT_FILES = {
+    'Makefile',
     '.gitattributes', '.gitignore', 'AGENTS.md', 'ALIGNMENT.md', 'CITATION.cff',
     'CLAUDE.md', 'CODE_OF_CONDUCT.md', 'CONTRIBUTING.md', 'DESIGN.md', 'LICENSE',
     'NOTICE', 'README.md', 'SECURITY.md', 'STYLE.md', 'upstream.json',
@@ -23,6 +24,9 @@ def candidates(root: Path) -> set[str]:
 def check(paths: set[str]) -> list[str]:
     errors = [f'{p}: required source is missing' for p in sorted(REQUIRED - paths)]
     for name in sorted(paths):
+        if name in {directory + '/repository-organization/scripts/test_check_layout.py' for directory in ('skills', '.agents/skills', '.claude/skills')}:
+            continue  # Portable skill fixtures, including builder-owned mirrors.
+
         p = PurePosixPath(name)
         if len(p.parts) == 1 and name not in ROOT_FILES:
             errors.append(f'{name}: root is for public entry files and repository configuration')
