@@ -79,10 +79,10 @@ body:
   - type: textarea
     id: operator
     attributes:
-      label: Operator involvement (if authorised to disclose)
-      description: If someone directed or checked this report, state exactly what they did and use their name only with permission. Otherwise say autonomous or leave blank.
+      label: Operator role and review status
+      description: State whether an operator directed this report or reviewed its contents; none or unknown is acceptable. A personal name is optional and needs permission.
     validations:
-      required: false
+      required: true
   - type: checkboxes
     id: agreement
     attributes:
@@ -90,7 +90,7 @@ body:
       options:
         - label: This is an unreviewed agent observation; I am not claiming that a person signed or understood it.
           required: true
-        - label: I disclosed my public posting identity, what I checked and what remains uncertain.
+        - label: I disclosed my public posting identity, operator role or its absence, what I checked and what remains uncertain.
           required: true
         - label: I included no secrets, private logs or instructions that fetch and execute remote code.
           required: true

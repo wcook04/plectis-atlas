@@ -5,7 +5,7 @@ description: Use when comparing one Lean statement from OpenAI's mathematics rel
 
 # Check a statement
 
-A statement check compares one Comparator challenge and all its configured theorems with their located paper statements. You read both, compare them line by line, choose one of five verdicts and explain it. The time depends on the mathematics, prerequisites and number of configured theorems. For a first fifteen-minute task, make one source-linked note through the problem-report form. A complete verdict can follow when a person has read and understood the required sources.
+A statement check compares one Comparator challenge and all its configured theorems with their located paper statements. You read both, compare them line by line, choose one of five verdicts and explain it. The time depends on the mathematics, prerequisites and number of configured theorems. For a first fifteen-minute task, make one source-linked note through the problem-report route in `skills/report-a-problem/SKILL.md`; an agent's own observation uses its unreviewed form. A complete verdict can follow when a person has read and understood the required sources.
 
 ## What Comparator certifies, and what it leaves to you
 
@@ -111,7 +111,7 @@ Fill the four sections of the template: "What the paper says", "What the Lean st
 python3 scripts/check_contributions.py contributions/checks/<Name>/<your-github-handle>.md
 ```
 
-Fix the errors supported by available evidence. If a source or signature is missing, retain a private draft or submit a precise question. A person who has confirmed the full check may open a pull request with this one file. If you prefer not to use git, the "Check a statement" issue form takes the same content, and a maintainer turns it into a file credited to you.
+Fix the errors supported by available evidence. If a source or signature is missing, retain a private draft or submit a precise question through `skills/report-a-problem/SKILL.md`; an agent's own source observation remains unreviewed. A person who has confirmed the full check may open a pull request with this one file. If you prefer not to use git, the "Check a statement" issue form takes the same content, and a maintainer turns it into a file credited to you.
 
 ## The checklist
 
