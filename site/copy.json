@@ -493,7 +493,7 @@
   "comparator_box_heading": "What an accepted Comparator run would establish",
   "comparator_box_does": "If [[comparator|Comparator]] is run under this configuration and accepts, the solution proves the configured theorem using only the [[axioms|allowed axioms]], and the [[kernel|Lean kernel]] accepts every step.",
   "comparator_box_definition_only": "This configuration names no theorem to prove. An accepted [[comparator|Comparator]] run compares the selected definitions by name and type; it does not verify a theorem proof.",
-  "comparator_box_holes": "This configuration lists {n} [[holes|definition holes]]: {names}. Comparator compares these by name and type only; their bodies come from the solution.",
+  "comparator_box_holes": "[[holes|Definitions compared by name and type only]] ({n}): {names}. Their bodies come from OpenAI’s solution library.",
   "comparator_box_noholes": "This configuration lists no definition holes, so every definition the statement uses is compared as it is written in this file.",
   "comparator_box_axioms": "Allowed axioms:",
   "comparator_box_not": "Acceptance leaves open whether the Lean statement means the same thing as the paper’s theorem, whether the paper’s other claims are correct, and whether the result is new. Those questions require comparing the definitions and statements, reviewing the paper’s arguments, and reading the earlier literature."
