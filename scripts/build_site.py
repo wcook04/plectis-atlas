@@ -1385,6 +1385,7 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 <title>{esc(full_title)}</title>
 <meta name="description" content="{desc}">
 <link rel="canonical" href="{esc(canonical)}">
+<link rel="help" type="text/markdown" href="{root}agents.md" title="{esc(C('site.agents_link'))}">
 {robots}
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#f8f0e2" media="(prefers-color-scheme: light)">
@@ -1470,6 +1471,7 @@ def footer(rel: str) -> str:
    <li><a href="{root}citations-within.html">{esc(C('citations_within.title'))}</a></li>
    <li><a href="{root}references-outside.html">{esc(C('references_outside.title'))}</a></li>
    <li><a href="{root}contribute.html">{esc(C('nav.contribute'))}</a></li>
+   <li><a href="{root}agents.md">{esc(C('site.agents_link'))}</a></li>
    <li><a class="ext" href="{esc(REPO)}" rel="noopener">{esc(C('site.repo_link'))}</a></li>
    <li><a class="ext" href="{esc(up)}/tree/{COMMIT}" rel="noopener">{esc(C('site.upstream_link'))}</a></li>
   </ul>

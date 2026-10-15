@@ -134,6 +134,17 @@ OpenAI's scope note for this family:
 
 A successful proof check establishes the formal statement it checked. Whether that statement matches the paper is a separate judgement. Re-runs and readings are credited to the people who report them. Pairings the atlas proposed automatically, and scope readings an AI agent drafted, are labelled as such until a person reviews them. For a paper’s reading page, the PDF stays the reference.
 
+## Read the website as an agent
+
+The [website and map are agent-navigable](https://wcook04.github.io/plectis-atlas/agents.md). Start with [llms.txt](https://wcook04.github.io/plectis-atlas/llms.txt), then fetch the map's [overview](https://wcook04.github.io/plectis-atlas/data/universe-data.json) and [parts](https://wcook04.github.io/plectis-atlas/data/universe-parts.json) JSON. They expose every map node and its relationships, with stable source IDs, page links and a shared generation. The guide explains the index joins and includes a runnable Python traversal.
+
+```sh
+curl --fail --location https://wcook04.github.io/plectis-atlas/llms.txt
+curl --fail --location https://wcook04.github.io/plectis-atlas/agents.md
+```
+
+No browser or JavaScript is needed. These static text routes reuse the map's existing exports and add no data request to a human page load. Preserve the source pin and evidence labels: citations are not proof dependencies, and candidate paper-to-Lean pairings remain unreviewed.
+
 ## Contribute
 
 Pick a passage you are reading and say what is wrong, unclear or missing, with its location and what you checked. You can [open a note](https://github.com/wcook04/plectis-atlas/issues/new?template=report-a-problem.yml) from the browser. Accepted contributions are credited beside the work they improve.

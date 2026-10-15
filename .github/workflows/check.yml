@@ -79,4 +79,6 @@ jobs:
         run: |
           sh scripts/fetch_upstream.sh
           python3 scripts/build_papers.py --jobs 2
+          python3 scripts/build_universe.py
           python3 scripts/check_paper_links.py site/_build
+          python3 scripts/tests/test_agent_navigation.py --built site/_build

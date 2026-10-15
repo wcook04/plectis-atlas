@@ -5,6 +5,7 @@ These guides explain how to contribute to it and work on the repository.
 
 | I want to | Read |
 |---|---|
+| Navigate the website or map as an agent | [Agent navigation and JSON traversal](https://wcook04.github.io/plectis-atlas/agents.md), starting with [llms.txt](https://wcook04.github.io/plectis-atlas/llms.txt) |
 | Suggest a correction or explanation | [Contributing](../CONTRIBUTING.md) |
 | Cite the Atlas or check source credit | [Sources, credit and citation](ATTRIBUTION.md) |
 | Write a contribution file | [Formats and templates](../contributions/README.md) |

@@ -10,7 +10,8 @@
   "repo_link": "This atlas on GitHub",
   "upstream_link": "The release at the pinned commit",
   "citation_title": "Plectis Atlas: OpenAI's mathematics release, read and checked",
-  "notices_link": "Credits and licence notices"
+  "notices_link": "Credits and licence notices",
+  "agents_link": "Agent navigation"
  },
  "nav": {
   "atlas": "Atlas",

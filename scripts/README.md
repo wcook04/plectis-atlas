@@ -8,6 +8,8 @@ uses Playwright and Chromium.
 For a first build, follow the [quick preview](../docs/ARCHITECTURE.md#quick-preview-without-paper-sources)
 or [complete website build](../docs/ARCHITECTURE.md#rebuilding-the-website).
 That guide owns the order of the commands and the paper-metadata refresh rule.
+The [published site is agent-navigable](https://wcook04.github.io/plectis-atlas/agents.md)
+through the same static map packets built here.
 
 ## Build and render
 
@@ -17,7 +19,7 @@ That guide owns the order of the commands and the paper-metadata refresh rule.
 | [build_site.py](build_site.py) | Builds family and Lean pages, lists, search and shared assets. Clears its output directory first. |
 | [family_page.py](family_page.py) | Renders family pages for the site builder. |
 | [build_papers.py](build_papers.py) | Converts the paper sources into full reading pages and writes their rendering metadata. |
-| [build_universe.py](build_universe.py) | Builds the release map and replaces the front page after the site build. |
+| [build_universe.py](build_universe.py) | Builds the release map, its existing JSON exports and agent navigation (`llms.txt`, `agents.md`); replaces the front page after the site build. |
 | [lean_render.py](lean_render.py) | Renders Lean source for the page builders. |
 | [cards.py](cards.py) | Renders share images. |
 | [sync_readme.py](sync_readme.py) | Refreshes the root README's computed blocks and the data folder's generated guide. |
@@ -59,6 +61,7 @@ python3 scripts/tests/test_family_page.py
 |---|---|
 | Packet reading, hashes or evidence records | [test_reader.py](tests/test_reader.py) |
 | Search normalisation and result links | [test_search.py](tests/test_search.py), with Node installed |
+| Agent entry, map relationships and project-path URLs | [test_agent_navigation.py](tests/test_agent_navigation.py); add `--built site/_build` after the complete build |
 | Source extraction | [test_build_data.py](tests/test_build_data.py) |
 | Paper rendering | [test_build_papers.py](tests/test_build_papers.py) |
 | Family layouts and statement snippets | [test_family_page.py](tests/test_family_page.py) |
