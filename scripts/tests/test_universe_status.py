@@ -43,6 +43,27 @@ def main() -> None:
             except Exception:
                 browser = playwright.chromium.launch()
             try:
+                # The relocated status must follow the site's .js convention:
+                # without scripts, the native family list is the complete UI.
+                context = browser.new_context(viewport={'width': 390, 'height': 664}, java_script_enabled=False)
+                try:
+                    page = context.new_page()
+                    page.goto(f'http://127.0.0.1:{server.server_port}/', wait_until='load')
+                    assert page.locator('html.js').count() == 0
+                    assert not page.locator('[data-u-status]').is_visible(), 'no permanent loading overlay without JavaScript'
+                    assert not page.locator('[data-u-stage]').is_visible()
+                    families = page.locator('.u-index__fams a')
+                    assert families.count() > 0, 'the native family list remains available'
+                    families.first.scroll_into_view_if_needed()
+                    assert families.first.is_visible()
+                    if args.shots:
+                        page.screenshot(path=str(args.shots / 'status-nojs-390.png'))
+                    target = families.first.get_attribute('href')
+                    families.first.click()
+                    assert page.url.endswith('/' + target), 'native family links still navigate without scripts'
+                    print('PASS 390px no JavaScript: loading status hidden; native family link opens', flush=True)
+                finally:
+                    context.close()
                 for width, height, scheme in [(390, 664, 'light'), (390, 664, 'dark'), (1440, 790, 'light')]:
                     context = browser.new_context(viewport={'width': width, 'height': height}, color_scheme=scheme)
                     try:

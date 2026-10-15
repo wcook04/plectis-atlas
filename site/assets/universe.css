@@ -492,7 +492,7 @@ main.u-main { padding: 0; max-width: none; }
    down, and one line points to the list of every family below. */
 .u-nojs { display: none; }
 html:not(.js) .u-nojs { display: block; font: 400 var(--fs-meta)/1.5 var(--sans); color: var(--ink-soft); }
-html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
+html:not(.js) .u-stage, html:not(.js) .u-switch, html:not(.js) .u-status { display: none; }
 
 /* ---- The family board -------------------------------------------------------- */
 /* Inside a family the map is a board of cards, read left to right: the families whose
