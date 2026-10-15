@@ -222,12 +222,16 @@ Henry Cohn’s [essay on the technical debt of AI-generated mathematics](https:/
 
 These are forthcoming recordings. Published links will appear on the [project website’s video page](https://wcook04.github.io/plectis/#videos).
 
-| Project | What to find there |
+### Where Atlas fits
+
+Plectis is Will Cook’s programme of research and software built with AI agents. The aim is to make the resulting work understandable enough for other people to inspect, question and build on. Atlas applies that approach to other authors’ mathematics, keeping the original papers and outside assessments attributed.
+
+| Related project | Why follow it |
 | --- | --- |
-| [Plectis Erdős](https://github.com/wcook04/plectis-erdos) | Original research on eight Erdős problems: papers, Lean proofs, experiments and open questions. [Research website](https://wcook04.github.io/plectis/maths/). |
-| [Plectis Erdős Lean](https://github.com/wcook04/plectis-erdos-lean) | Lean source accompanying the Erdős research. The papers and current research claims live in Plectis Erdős. |
-| [Plectis toolkit](https://github.com/wcook04/plectis) | Python tools and worked examples for inspecting AI-assisted research. [Component map](https://wcook04.github.io/plectis/docs/system-map.html). |
-| [Safety Core](https://github.com/wcook04/safety-core) | A small, adaptable rulebook, checks and a visual rule map for coding agents. |
+| [Plectis Erdős](https://github.com/wcook04/plectis-erdos) · [research website](https://wcook04.github.io/plectis/maths/) | The original eight-problem research corpus whose paper-to-Lean records informed Atlas. |
+| [Plectis Erdős Lean](https://github.com/wcook04/plectis-erdos-lean) | Lean proofs and Comparator checks for selected results from that corpus. |
+
+Explore the [research corpus](https://github.com/wcook04/plectis-erdos) and the [Plectis website](https://wcook04.github.io/plectis/).
 
 ## Licences and independence
 
