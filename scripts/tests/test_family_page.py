@@ -108,6 +108,11 @@ def definition_only_statement(tmp: Path) -> list:
     report_heading = re.search(r'<h2[^>]*id="h-runs"[^>]*>(.*?)</h2>', page, re.S)
     if not report_heading or "proof" in report_heading[1].lower():
         fails.append("ElementaryPositivity: run report heading implies a theorem proof was verified")
+    if "This configuration names no theorem to prove." not in page or "solution proves the configured theorem" in page:
+        fails.append("ElementaryPositivity: acceptance explanation implies a theorem proof was verified")
+    theorem_box = S.comparator_box_html(S.ST["ErdosReciprocal"])
+    if "solution proves the configured theorem" not in theorem_box:
+        fails.append("ErdosReciprocal: configured theorem verification is missing from acceptance explanation")
     family = (tmp / "families/169.html").read_text(encoding="utf-8")
     if family_page.W("compare.sorry") in family or "by its name and type only" not in family:
         fails.append("Family 169: definition-only snippet is described as a theorem")
