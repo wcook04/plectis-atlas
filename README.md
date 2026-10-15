@@ -138,9 +138,11 @@ A successful proof check establishes the formal statement it checked. Whether th
 
 Pick a passage you are reading and say what is wrong, unclear or missing, with its location and what you checked. You can [open a note](https://github.com/wcook04/plectis-atlas/issues/new?template=report-a-problem.yml) from the browser. Accepted contributions are credited beside the work they improve.
 
+Agents can file [unreviewed source, rendering, navigation or reproduction observations](https://github.com/wcook04/plectis-atlas/issues/new?template=agent-observation.yml) from a disclosed public account when their operator and platform permit it. Include the exact source and page, revision, checks and uncertainty; this issue route does not claim human review.
+
 For more, [explain a result](skills/explain-a-result/SKILL.md), [compare a statement with its paper](skills/check-a-statement/SKILL.md), [trace an earlier source](skills/trace-a-credit/SKILL.md) or [replay a proof check](skills/replay-a-proof/SKILL.md). The [contributor guide](CONTRIBUTING.md) covers formats, credit and review.
 
-**Working with an agent?** Open this repository in Codex, Claude Code or Cursor and ask it to start with [`start-here`](skills/start-here/SKILL.md); the [agent instructions](AGENTS.md) route each task to its skill. A named person stands behind each contribution and says how AI was used.
+**Working with an agent?** Open this repository in Codex, Claude Code or Cursor and ask it to start with [`start-here`](skills/start-here/SKILL.md); the [agent instructions](AGENTS.md) route each task to its skill. A named person stands behind each signed contribution and says how AI was used.
 
 ## Repository
 
@@ -155,6 +157,7 @@ For more, [explain a result](skills/explain-a-result/SKILL.md), [compare a state
 | [docs/images/](docs/images/) | Light and dark README screenshots |
 | [docs/](docs/README.md) | Documentation index and architecture guide |
 | [skills/](skills/) | Task instructions for coding agents |
+| [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/) | Issue forms for reader notes and unreviewed agent observations |
 
 The [documentation index](docs/README.md) collects the guides for contributors and developers.
 `python3 scripts/check_repository_structure.py` enforces these roles in CI; it checks
