@@ -15,6 +15,11 @@ Tests import their owners from `scripts/`; shared production modules stay there.
 Placement rules and Git index behaviour are tested by
 [test_repository_structure.py](test_repository_structure.py).
 
+The [website and map are agent-navigable](https://wcook04.github.io/plectis-atlas/agents.md).
+[test_agent_navigation.py](test_agent_navigation.py) validates the guide, its runnable
+example and the map's relationships; pass `--built <output-directory>` after the
+site and map builds to include generated pages and public entry points.
+
 The optional browser regression for deferred family feedback holds and fails the
 parts request, then retries it in phone List and Map views and on desktop:
 
