@@ -1,6 +1,6 @@
 # Plectis Atlas
 
-Read the papers in [OpenAI’s mathematics release](https://github.com/openai/math), inspect their Lean statements, and compare what outside readers found. Plectis Atlas brings those sources together in an independent website, with names, links and the limits of each check attached.
+Read the papers in [OpenAI’s mathematics release](https://github.com/openai/math), compare their theorems with statements written in Lean, and read independent assessments. Lean is software for writing mathematical statements and verifying proofs. Plectis Atlas brings these sources together in an independent website, naming who compared the statements or ran a proof-verification program and what their reports establish.
 
 **[Explore the map ↗](https://wcook04.github.io/plectis-atlas/)** &nbsp; [Read a paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) &nbsp; [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [Build it locally](#build-it-yourself)
 
@@ -11,15 +11,15 @@ Read the papers in [OpenAI’s mathematics release](https://github.com/openai/ma
   </picture>
 </a>
 
-*OpenAI’s release, grouped by discipline. Each dot is a family. Colours show agreement or disagreement between MathVet and cert-machine about the Lean’s scope; outlines mark families without Lean.*
+*OpenAI’s release, grouped by discipline. Each dot is a “family”, OpenAI’s group of related papers. Colours show whether MathVet and cert-machine agree that the Lean statements express the advertised result. Outlines mark families with no Lean statement.*
 
-The mathematics is OpenAI’s and the cited authors’ work. Outside readings and reported proof re-runs come from [MathVet](https://math.vet), [Carlos Toledo’s cert-machine](https://github.com/carlostoledo1891/cert-machine) and [Neal McBurnett’s Lean tooling](https://github.com/nealmcb/openai-math-lean-tooling). Atlas presents their records; it does not claim their checks as its own. [Sources and credits](https://wcook04.github.io/plectis-atlas/sources.html).
+The mathematics is OpenAI’s and the cited authors’ work. Independent assessments and reports of proof verification come from [MathVet](https://math.vet), [Carlos Toledo’s cert-machine](https://github.com/carlostoledo1891/cert-machine) and [Neal McBurnett’s Lean tooling](https://github.com/nealmcb/openai-math-lean-tooling). Atlas links their reports and has not repeated their work. [Sources and credits](https://wcook04.github.io/plectis-atlas/sources.html).
 
 <a id="what-this-adds"></a>
 
 ## Why it exists
 
-OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lean files. To judge any one result you need four things from different places: the theorem the paper states, the Lean statement meant to say the same thing, OpenAI’s note on how much of the theorem that Lean covers, and what outside groups found when they checked it. OpenAI groups related papers into **families**; the atlas brings those sources onto each family’s page and shows how the families connect. Families without Lean remain visible. You can read it without installing anything.
+OpenAI’s release contains PDFs, their TeX typesetting source, a catalogue and Lean files. The relevant information is spread across them: the paper’s theorem, a possible Lean counterpart, OpenAI’s note on what the Lean statement expresses, and independent assessments or proof-verification reports. Atlas brings those sources onto each family’s page and links the papers that cite one another. Families without Lean remain visible. You can read the website without installing anything.
 
 <a href="https://wcook04.github.io/plectis-atlas/#o=f%3A003">
   <picture>
@@ -28,17 +28,17 @@ OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lea
   </picture>
 </a>
 
-*Inside a family: each paper’s theorems with what they state, and the Lean statement beside the theorem it states. A dashed line is a pairing nobody has reviewed yet.*
+*Inside a family: the paper’s theorems beside possible Lean counterparts. A dashed line is a match selected from shared wording, with no recorded review of whether the statements mean the same thing.*
 
 ## What you can do
 
 | Start here | What you get |
 |---|---|
-| [The map](https://wcook04.github.io/plectis-atlas/) | The release by discipline, then each discipline’s families by name. Open a family to see its papers, what each theorem states, and the Lean statement beside the theorem it states. Search for a theorem, a paper or a Lean name. |
-| [The reciprocal-sum family](https://wcook04.github.io/plectis-atlas/families/159.html) | The paper’s claim beside its linked Lean statement, OpenAI’s scope note, outside readings and reported re-runs with their receipts. |
+| [The map](https://wcook04.github.io/plectis-atlas/) | Browse disciplines and families, search for a theorem or paper, and follow citations. Each family shows its papers and possible matches between paper theorems and Lean statements. |
+| [The reciprocal-sum family](https://wcook04.github.io/plectis-atlas/families/159.html) | The paper’s claim beside its linked Lean statement, OpenAI’s note on what that statement expresses, independent assessments and original proof-verification reports. |
 | [A paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) | A full reading page typeset from the paper’s TeX, with linked theorems, equations, cross-references and citations. Any conversion gap is listed on the page; the PDF stays the reference. |
-| [A Lean statement](https://wcook04.github.io/plectis-atlas/statements/ErdosReciprocal.html) | The whole challenge file with every name linked to its definition, the reported re-runs, and the paper theorem it is the candidate statement of. |
-| [Sources and outside readings](https://wcook04.github.io/plectis-atlas/sources.html) | Who checked what, in their own words, with links to their records. |
+| [A Lean statement](https://wcook04.github.io/plectis-atlas/statements/ErdosReciprocal.html) | The complete statement file, links to definitions that Atlas can identify, proof-verification reports and possible paper matches. |
+| [Sources and independent assessments](https://wcook04.github.io/plectis-atlas/sources.html) | Who compared the statements, verified proofs or calculated finite claims, with links to the original reports. |
 
 <a href="https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html">
   <picture>
@@ -50,7 +50,7 @@ OpenAI’s release is a Git repository of PDFs, TeX sources, a catalogue and Lea
 *OpenAI’s paper, displayed in Atlas, with its original PDF and TeX source beside it. Follow its family link to the Lean statements and attributed outside readings. The PDF remains the reference.*
 
 <!-- checks:start -->
-Three outside groups report re-running OpenAI’s proofs through [Comparator](https://github.com/leanprover/comparator) on the pinned release: 409 of the 416 challenge files were accepted by at least one of them, and 179 by all three. Two of them, [MathVet](https://math.vet) and Carlos Toledo’s [cert-machine](https://github.com/carlostoledo1891/cert-machine), also read every family’s Lean against the paper’s headline result, independently of each other. They agree on 220 of the 242 families both read and disagree on 22; each family page shows both readings.
+Three independent groups report running [Comparator](https://github.com/leanprover/comparator) on the recorded release version: runs for 409 of the 416 statement files were accepted by at least one group, and 179 by all three. Comparator verifies the proof of a configured theorem; for files that configure only definitions, it compares their names and types. Acceptance does not establish that a statement means the same thing as the paper’s theorem. Two of them, [MathVet](https://math.vet) and Carlos Toledo’s [cert-machine](https://github.com/carlostoledo1891/cert-machine), also assessed whether every family’s Lean statements express the result OpenAI advertises, independently of each other. They agree on 220 of the 242 families both read and disagree on 22; each family page shows both readings.
 <!-- checks:end -->
 
 ## The release in numbers
@@ -60,7 +60,7 @@ Three outside groups report re-running OpenAI’s proofs through [Comparator](ht
 |---|---|
 | **372 result families** across 17 disciplines | [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) |
 | **719 current manuscripts** | [Read the papers through their families](https://wcook04.github.io/plectis-atlas/explain.html) |
-| **416 Lean challenge files** | [Inspect the formal statements](https://wcook04.github.io/plectis-atlas/statements.html) |
+| **416 Lean statement files** | [Inspect the formal statements](https://wcook04.github.io/plectis-atlas/statements.html) |
 | **16,077 resolved references** to work outside the collection | [Follow the citations](https://wcook04.github.io/plectis-atlas/references-outside.html) |
 <!-- overview:end -->
 
@@ -71,14 +71,14 @@ All counts describe the release at the commit in [`upstream.json`](upstream.json
 
 <!-- numbers:start -->
 - **372 result families** in 17 disciplines, from **719 current manuscripts** (3 more were withdrawn and 27 earlier editions remain in the collection).
-- **416 Comparator challenge files**, 189 of them named in OpenAI's list of main results (200 declarations). 242 families have a Lean scope note linking at least one challenge file, and those notes name 339 current manuscripts as accompanying papers.
-- **10 challenge files** import only Mathlib and add no local vocabulary. The median file adds 13 local vocabulary declarations (definitions, structures, instances, notation and similar), and the largest (EditApproximation) adds 1,212. Each one is part of what the statement means, so a reader checks it against the paper.
+- **416 Lean statement files for Comparator**, 189 of them named in OpenAI's list of main results (200 entries). 242 families have an OpenAI note linking at least one statement file and explaining what it expresses, and those notes name 339 current manuscripts as accompanying papers.
+- **10 statement files** use only Mathlib, Lean's mathematical library, and add no local definitions or notation. The median file adds 13 local declarations (definitions, structures, instances, notation and similar), and the largest (EditApproximation) adds 1,212. These determine what the formal statement means, so a comparison with the paper must include them.
 - **386 manuscripts** cite other manuscripts in the collection (586 citation links in the current extraction; the Atlas baseline inventory counts 579). 217 of them cite at least one manuscript without associated Lean.
 - **16,077 resolved references** to work outside the collection, which group automatically into 11,019 works (by DOI, then arXiv identifier, then title; the grouping is unaudited).
 - The TeX sources of the current manuscripts contain 2,255 theorem, 4,745 proposition, 1,267 corollary and 12,397 lemma environments, repeated statements included.
-- **Draft scope reading.** Of 416 challenge files, an AI agent drafted 307 as stating a paper's headline theorem, 21 part of one, 28 a consequence, 24 a weaker form and 35 a supporting result; for 1 OpenAI's note leaves it unclear. The agent classified each file from OpenAI's scope note, quoting the note; no person has reviewed it.
-- **Outside readers.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine) each read every family's Lean against its headline, independently of OpenAI and of each other. Their findings, in their own terms, are on each family page and in the Families list.
-- **Every paper in the browser.** 696 of the 719 current manuscripts have a full reading page made from their TeX, with every formula, cross-reference, citation and theorem anchor checked (figures are shown as placeholders); the other 23 have a reading page with a banner listing what did not convert. Formulas are checked with the KaTeX version the site loads. The PDF stays the reference (`data/paper_acceptance.json`).
+- **AI-drafted comparisons.** Of 416 statement files, an AI agent classified 307 as stating a paper's theorem, 21 part of one, 28 a consequence, 24 a weaker form and 35 a supporting result; for 1 OpenAI's note leaves it unclear. The agent classified each file from OpenAI's note, quoting the note. No human review of these classifications is recorded.
+- **Independent assessments.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine) each assessed whether every family's Lean statements express the result OpenAI advertises, independently of OpenAI and of each other. Their findings, in their own terms, are on each family page and in the Families list.
+- **Every paper in the browser.** 696 of the 719 current manuscripts have a full reading page made from their TeX, with formulas that KaTeX can typeset and links that resolve to their references, citations and theorems (figures are shown as placeholders); the other 23 have a reading page with a banner listing what did not convert. These tests validate the conversion, not the mathematics. They use the same KaTeX version as the site. The PDF stays the reference (`data/paper_acceptance.json`).
 
 Counted by Statement Map from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb), generation `e44fe048bf34`. The unit, rule, state and credit behind each number, and its members, are on the site's Numbers page.
 <!-- numbers:end -->

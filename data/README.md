@@ -5,6 +5,10 @@ These JSON files support the Atlas's source browsing and paper reading pages.
 The [dataset reference](../docs/ARCHITECTURE.md#use-the-data) explains their
 fields, producers and limits.
 
+The [website and map are agent-navigable](https://wcook04.github.io/plectis-atlas/agents.md).
+Start with [llms.txt](https://wcook04.github.io/plectis-atlas/llms.txt) for public
+entry points and instructions for traversing the existing map JSON.
+
 - `families.json`, `manuscripts.json` and `statements.json` index the pinned release.
 - `graph.json` and `works.json` record citations within and outside it.
 - `summary.json` contains baseline extraction counts. The website's evidence
