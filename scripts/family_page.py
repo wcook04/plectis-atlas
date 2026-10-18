@@ -1248,7 +1248,32 @@ def comparison_html(c: Ctx) -> str:
     return (f'<section class="fx-sec" id="compare" aria-labelledby="compare-h" data-cmp-host>{alias}'
             f'<h2 class="fx-h2" id="compare-h">{esc(heading)}</h2><p class="fx-intro">{esc(intro)}</p>'
             f'<p class="fx-intro fx-intro--comparator">{S.ctext(W("compare.comparator_once"))}</p>'
-            f'{idx}<div class="fx-cmps">{cmps}</div>{CMP_HASH_SCRIPT if n > 1 else ""}{formulations_html(c)}</section>')
+            f'{source_notes_html(c)}{idx}<div class="fx-cmps">{cmps}</div>{CMP_HASH_SCRIPT if n > 1 else ""}{formulations_html(c)}</section>')
+
+
+def source_notes_html(c: Ctx) -> str:
+    """Show attributed Atlas source observations beside the selected-check comparison.
+
+    These are imported observations, not inferred extra checks or a theorem inventory.
+    Retain the same dated text and pinned links printed with the original report.
+    """
+    notes, seen = [], set()
+    for card in c.doc.get("independent_check_cards") or []:
+        note = (card.get("value") or {}).get("atlas_source_note") or {}
+        if not note.get("text"):
+            continue
+        key = json.dumps(note, sort_keys=True)
+        if key in seen:
+            continue
+        seen.add(key)
+        links = " · ".join(f'<a class="ext" href="{esc(x["url"])}" rel="noopener">{esc(x["label"])}</a>'
+                           for x in note.get("links") or [])
+        notes.append(f'<p class="fx-prose"><strong>{esc(W("checks.atlas_source_note", date=note.get("inspected") or ""))}.</strong> '
+                     f'{code_spans(note["text"])}</p>' + (f'<p class="fx-prose">{links}</p>' if links else ""))
+    if not notes:
+        return ""
+    return (f'<div class="fx-forms-wrap" id="h-source-notes"><h3 class="fx-h3">{esc(W("compare.source_notes_heading"))}</h3>'
+            + "".join(notes) + '</div>')
 
 
 # Before the first paint, a link to one comparison (families/003.html#lean-SiegelZeros, or

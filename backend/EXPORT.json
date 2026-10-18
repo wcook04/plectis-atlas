@@ -2,20 +2,20 @@
  "_note": "What backend/ holds and where it came from. scripts/reader.py checks these four files against their hashes, every packet under web/ against the manifest, and the schema, release, pin and generation of each packet, before a page uses it.",
  "schema": "plectis-atlas-backend-export/2",
  "backend": "Statement Map, by Will Cook (not yet published)",
- "backend_commit": "67e96aef1d2c190b3b5375cfc30b1ec393d867a8",
+ "backend_commit": "40d540deb98202697c0575388e0f0bf0a305f8d4",
  "acceptance_receipt": {
   "file": "reader-v6-attribution-acceptance.json",
-  "tested_commit": "0b445d5dd3264f01a79511eb885961c6ead38f6e",
+  "tested_commit": "4167dbc1efae2815607905760f51bb31e5594b3a",
   "exporter": "reader-projection/6",
-  "sha256": "sha256:dd59201ab9797d3c0af8e1f407135512e1ffe87d65de926fea3acd85f56f30d3"
+  "sha256": "sha256:4f17ece35e6d047172c950197e27387bfec60b62e223830e75fc457dd7fdb126"
  },
  "release_id": "openai-math",
  "pin": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
- "generation_id": "sha256:e44fe048bf34d4e55b76af0e42f931ce1121c5c189edf0e8cd6061a5902b3e47",
+ "generation_id": "sha256:5a03758bbca39920a550b1c239dc979d39e0f6a37e43cadc614dc3fc932c29ee",
  "reader_schema": "statement-map-web/2",
  "packets": {
   "count": 1675,
-  "bytes": 79543430,
+  "bytes": 79544360,
   "kinds": [
    "family-reader",
    "number-members",
@@ -31,7 +31,7 @@
  "files": {
   "catalog.json": {
    "bytes": 1838,
-   "sha256": "sha256:df4d36b7f5041121eaf4adfbfcebd233931010f800e312a02ad74060daf2623a"
+   "sha256": "sha256:213196877ef6a4f3c590fca4c890fd5305337899fe1e2d668f9b41a0deca5462"
   },
   "NOTICE.md": {
    "bytes": 5565,
@@ -39,11 +39,11 @@
   },
   "openai-math/targets.json": {
    "bytes": 2738689,
-   "sha256": "sha256:c5bb52e4daa010e26cd97b9a8bbffe40c0f6725a7de9d848681077c6f98b28b4"
+   "sha256": "sha256:7d1c40282464b5ac501ae3f3fd328f02aaf8ed4cbecd8f47a84c9486ea9955c5"
   },
   "openai-math/web/manifest.json": {
    "bytes": 657119,
-   "sha256": "sha256:923371ce3e15cca577097eb62d0d45eef1374bdc22b65e0898af34316c208a77"
+   "sha256": "sha256:cbf98dfee9fb1f25cc70e57c9cbb3cd430dd1184b9884a611d19f3aa21662991"
   }
  }
 }

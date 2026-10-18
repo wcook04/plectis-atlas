@@ -354,7 +354,7 @@
   },
   "support_heading": "What the release’s Lean states",
   "support_subnote": "The release’s Lean is paired with this theorem, not with the headline above. The outside readers’ verdicts are below.",
-  "support_claim_note": "The headline theorem of the first paper OpenAI lists for this family, as that paper states it. No Lean statement in the release is paired with it.",
+  "support_claim_note": "The headline theorem of the first paper OpenAI lists for this family, as that paper states it. Atlas has no recorded pairing between it and a selected Lean statement.",
   "bench_heading_support": "The theorem, and what the release’s Lean states",
   "paper_fold_1": "Abstract and the statement it opens with",
   "refs_none_in": "The atlas found no outside references in {title}.",

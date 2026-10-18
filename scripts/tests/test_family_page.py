@@ -108,6 +108,19 @@ def attributed_source_note() -> list:
                 fails.append(f"017 {where}: pinned source link lost")
     if family_page.W("compare.heading_one") != "One selected Lean statement for checking":
         fails.append("017: selected-check count is described as all Lean statements")
+    comparison = family_page.comparison_html(c)
+    plain_comparison = unescape(re.sub(r"<[^>]*>", "", comparison))
+    if "flint_hills_summable" not in plain_comparison or "outside that selected check" not in plain_comparison:
+        fails.append("017: additional source theorem and selected-check limit absent beside comparison")
+    for link in value["atlas_source_note"]["links"]:
+        if link["url"] not in comparison:
+            fails.append("017: pinned source route absent beside comparison")
+    if family_page.source_notes_html(family_page.Ctx(S, S.FAM["001"])):
+        fails.append("001: source observation invented where no source note is recorded")
+    if "in the release" in family_page.W("status.formal_some", runs="reported result"):
+        fails.append("017: selected-check count claims to count the release")
+    if "selected Lean statement" not in family_page.W("claim.no_lean_paired"):
+        fails.append("017: missing pairing is described as absence of any Lean theorem")
     return fails
 
 
