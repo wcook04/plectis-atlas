@@ -1242,8 +1242,17 @@ def other_checks_html(c: Ctx) -> str:
             if plain.count(ident) > 1 and v.get("id"):
                 sub = (sub + " " if sub else "") + esc(W("checks.report_id", id=v["id"]))
                 ident = f"{ident} ({W('checks.report_id', id=v['id'])})"
+            # Atlas observations stay outside the original report's attributed words.
+            source_note = v.get("atlas_source_note") or {}
+            source_note_html = code_spans(source_note.get("text") or "")
+            if source_note_html:
+                links = " · ".join(f'<a class="ext" href="{esc(x["url"])}" rel="noopener">{esc(x["label"])}</a>'
+                                   for x in source_note.get("links") or [])
+                source_note_html += (" " + links) if links else ""
+            source_note_label = W("checks.atlas_source_note", date=source_note.get("inspected") or "")
             rows = [(W("checks.verdict"), f"“{esc(verdict)}”" if verdict else ""), (W("checks.certifies"), code_spans(what)),
                     (W("checks.relation"), covers_html),
+                    (source_note_label, source_note_html),
                     (W("checks.detail"), "" if whole else code_spans(v.get("detail") or "")),
                     (W("inspect.version"), f'<code translate="no">{esc((credit.get("pin") or "")[:7])}</code>' if credit.get("pin") else "")]
             c.tpls[tid] = record(W("inspect.kind_card"), ident_html, rows, [(W("inspect.link"), v.get("url") or credit.get("url"))],
@@ -1261,7 +1270,9 @@ def other_checks_html(c: Ctx) -> str:
             # apart, so they are set in the reading ink and size; the outcome's plain gloss, the
             # same on every record of a state, is quieter.
             fields = [(W("checks.who"), esc(who), ""), (W("checks.method_label"), esc(method), ""), (W("checks.verdict"), outcome, ""),
-                      (W("checks.relation"), covers_html, "fx-fields__scope"), (W("checks.receipt"), f'{report} {details}', "")]
+                      (W("checks.relation"), covers_html, "fx-fields__scope"),
+                      (source_note_label, source_note_html, "fx-fields__scope"),
+                      (W("checks.receipt"), f'{report} {details}', "")]
             dl = "".join(f'<div><dt>{esc(k)}</dt><dd{f" class={chr(34)}{cl}{chr(34)}" if cl else ""}>{val}</dd></div>' for k, val, cl in fields if val)
             items.append(f'<li class="fx-card"><p class="fx-card__id">{ident_html}</p>'
                          + (f'<p class="fx-card__sub">{sub}</p>' if sub else "")

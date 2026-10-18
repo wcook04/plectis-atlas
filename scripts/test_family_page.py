@@ -9,6 +9,8 @@ exact fingerprint. Standard library only: python3 scripts/test_family_page.py
 from __future__ import annotations
 
 import re
+import copy
+import json
 import sys
 import tempfile
 from collections import Counter
@@ -70,10 +72,37 @@ def main() -> int:
     fails += tied_order()
     fails += definition_only_statement(tmp)
     fails += complete_theorem_snippets(tmp)
+    fails += attributed_source_note()
     for f in fails:
         print("FAIL", f)
     print(f"family page: {len(SPECIMENS)} specimens, {len(fails)} failures")
     return 1 if fails else 0
+
+
+def attributed_source_note() -> list:
+    """A later source inspection must not overwrite or impersonate an outside report."""
+    c = family_page.Ctx(S, S.FAM["017"])
+    c.doc = copy.deepcopy(c.doc)
+    card = next(x for x in c.doc["independent_check_cards"] if x["source"] == "hol-cards")
+    source = json.loads((Path(__file__).resolve().parent.parent / "curated/sources/hol-cards.json").read_text())
+    value = source["families"]["017"]["hol_checks"][0]
+    original_relation = card["value"]["relation"]
+    card["value"] = value
+    html = family_page.other_checks_html(c)
+    record = "".join(c.tpls.values())
+    fails = []
+    for where, rendered in (("page", html), ("inspection", record)):
+        plain = unescape(re.sub(r"<[^>]*>", "", rendered))
+        for text in (original_relation, "Atlas source inspection (2026-10-18)",
+                     "flint_hills_summable", "not a new proof replay or mathematical review"):
+            if text not in plain:
+                fails.append(f"017 {where}: source note or original report lost: {text}")
+        for link in value["atlas_source_note"]["links"]:
+            if link["url"] not in rendered:
+                fails.append(f"017 {where}: pinned source link lost")
+    if family_page.W("compare.heading_one") != "One selected Lean statement for checking":
+        fails.append("017: selected-check count is described as all Lean statements")
+    return fails
 
 
 def definition_only_statement(tmp: Path) -> list:

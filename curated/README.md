@@ -61,3 +61,18 @@ Without `--upstream` the checker uses `$OPENAI_MATH_UPSTREAM`, then `../openai-m
 ## Quotations and licence
 
 The quotations in `scope_quote` and the statement labels are copied from openai/math, which is copyright OpenAI and published under the Apache License 2.0; see `../NOTICE`. The atlas is independent of OpenAI and not affiliated with it.
+
+## Atlas source notes on outside reports
+
+An outside check card may retain a historical coverage description that needs
+qualification against the Atlas source pin. Keep the original report's words
+and version intact. An optional `atlas_source_note` within that card records
+Atlas's separate `text`, `inspected` date, exact `source_pin` and labelled source
+`links`. It must disclose AI assistance when applicable and must not imply a
+new proof replay or human mathematical review. Family pages show this note
+separately from the attributed report, including in its inspection record.
+
+Change the curated input, regenerate the baseline data, capture the committed
+Atlas revision in Statement Map, build and validate its reader export, then
+re-vendor that export. A frontend-only change to an imported packet would break
+its provenance and hashes.

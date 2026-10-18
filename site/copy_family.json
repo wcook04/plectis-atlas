@@ -132,8 +132,8 @@
   "nolean": "The release has no Lean statement for this family. Its papers can still be read and checked by hand, and anyone can offer a formal statement.",
   "runs_link": "Who re-ran it",
   "sorry": "The challenge file states the theorem with <code>sorry</code> in place of its proof; the release’s solution file supplies the proof, and that is what a re-run checks.",
-  "heading_one": "One Lean statement in this family",
-  "heading_many": "{n} Lean statements in this family",
+  "heading_one": "One selected Lean statement for checking",
+  "heading_many": "{n} selected Lean statements for checking",
   "intro_one": "The paper theorem the release’s Lean statement is paired with, beside it, with how the two were joined.",
   "row_candidate": "Possible Lean counterpart of {label} in {paper}, found from shared wording; not reviewed.",
   "row_cited": "Its source cites {label} in {paper}; the match is not reviewed.",
@@ -247,7 +247,8 @@
    "reported-supporting-check": "a proof card checks a supporting fact",
    "reported-undecided": "the check did not reach a verdict, which says nothing against the result",
    "source-data-unavailable": "the check needs data the source does not provide"
-  }
+  },
+  "atlas_source_note": "Atlas source inspection ({date})"
  },
  "left": {
   "heading": "What is left to check",
