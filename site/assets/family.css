@@ -20,7 +20,7 @@
 @media (min-width: 1240px) { .fx { --fx-col: 52rem; --fx-rail: 232px; --fx-gap: 48px; } }
 @media (min-width: 1700px) { .fx { --fx-col: 68rem; --fx-rail: 260px; --fx-gap: 56px; } }
 .fx-head > :not(.fx-bar) { max-width: var(--fx-col); }
-.fx-head > .fx-bar { max-width: calc(var(--fx-col) + var(--fx-gap) + var(--fx-rail)); }
+.fx-head > .fx-bar, .fx-head > .sib { max-width: calc(var(--fx-col) + var(--fx-gap) + var(--fx-rail)); }
 .fx-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 24px; margin-bottom: 16px; }
 .fx-bar .trail { margin: 0; }
 .fx-tools { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; }
@@ -119,9 +119,6 @@
 .fx-st__alt a:hover { color: var(--ink); }
 .fx-st__altk { font-weight: 600; white-space: nowrap; }
 .fx-cand { max-width: 80ch; margin: 12px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
-.fx-cand-idx { max-width: 72ch; margin: -6px 0 16px; font-size: var(--fs-meta); line-height: 1.55; color: var(--ink-soft); text-wrap: pretty; }
-.fx-cand-idx a { color: var(--ink-soft); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; text-decoration-color: color-mix(in oklab, currentColor 40%, transparent); }
-.fx-cand-idx a:hover { color: var(--ink); }
 /* The rail's record of a possible match carries the paper and date under its number, in
    the same heading group (two papers can each have a Theorem 1.1). */
 .ins-rec__title:has(+ .ins-rec__sub) { margin-bottom: 1px; }
@@ -421,3 +418,11 @@
 @media (prefers-reduced-motion: reduce) {
   .fx-st, .fx-card, .fx-alt, .fx-find, .fx-draft__i, .fx-rt tbody tr, .fx-idx__i, .fx-left__i, .fx-toc li a, .fx-idx__mark { transition: none; }
 }
+
+/* A note under a Lean statement keeps a reading measure (about 75 characters) however
+   wide the column is. */
+.fx-lean__note { max-width: 75ch; }
+
+/* An unresolved headline: after the statements the papers print, one line of information
+   on how they were chosen and where the open task is listed. */
+.fx-cand--note { margin: 2px 0 18px; max-width: 75ch; }

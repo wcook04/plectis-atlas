@@ -1,463 +1,20 @@
-/* The release universe: every family of OpenAI's mathematics release as a small
-   map of its own, set in its discipline's sector of one wheel, the citations
-   between families woven through the middle; a family opens into its own map,
-   and a result into its plate and panel.
+/* The front door's map of OpenAI's mathematics release, drawn as an illustrated chart:
+   the seventeen disciplines as labelled regions holding their families, a discipline
+   as its families' discs with their titles written inside, and a family as a board of
+   cards (its papers, each result's statement, the Lean statements paired with them, the
+   families it cites and is cited by). Every object a reader can act on is big enough to
+   read and carries its name; distance means only grouping.
 
-   Ported from Will Cook's ai_workflow at commit 4b1ebab611 (copied and adapted;
-   nothing is imported across repositories):
-   - Loom, the fibre geometry of the system map:
-     sites/microcosm/assets/system-map.js, l.80-117 and l.237-623 (helpers,
-     resample and pointAt, polar curves, bundle, taper, fibreStroke and its
-     edge cutting), copied verbatim below; the weave is left out.
-   - The camera, flight path, zoom about the pointer with page-scroll handoff,
-     name plates placed in the least covered of six spots, the way round words
-     (shortestWay), the drill trail with exact Back, #o= deep links, reduced
-     motion and the Oklab colour mixing of the Plectis universe map:
-     tools/meta/dissemination/maths_site_assets/universe.js (mount l.288,
-     cameraTo l.1607, flightPath l.1661, namePlate l.3133, shortestWay l.4028,
-     zoomAt l.7323, the wheel handler l.7230, stepBack l.5998).
-   - Focus tiers by hop distance from Zenith's universalGraphDistanceTier.ts
-     (system/server/ui/src/components/graph/).
-   - The rules of sites/microcosm/SOURCE_CONTRACT.md ("Map data contracts",
-     "Universe map"): data apart from geometry under one generation id; labels
-     never cover marks; a click selects and never leaves the page; Esc retraces
-     the trail; colour belongs to evidence; one flat ground.
-   Plectis meanings (Comparator and Palomar, the eight problems) are left out.
-   No libraries. */
+   History: the first version was ported from Will Cook's ai_workflow at commit
+   4b1ebab611 (the Plectis universe map's wheel, Loom fibres and camera); on 12 October
+   2026 the wheel and camera gave way to this chart, after the to-scale drawing proved
+   too small to read. Kept from that port: the drill trail with exact Back, #o= deep
+   links, reduced motion and the Oklab colour mixing. The rules of
+   sites/microcosm/SOURCE_CONTRACT.md still hold: data apart from geometry under one
+   generation id; a click selects and never leaves the page; Esc retraces the trail;
+   colour belongs to evidence; one flat ground. No libraries. */
 (function () {
   'use strict';
-
-  var Loom = (function () {
-    'use strict';
-    /* ---- Small helpers ------------------------------------------------------ */
-    var TAU = Math.PI * 2;
-    function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v; }
-    function norm(a) { a %= TAU; return a < 0 ? a + TAU : a; }
-    // The signed shorter turn from angle a to angle b.
-    function turn(a, b) { var d = norm(b - a); return d > Math.PI ? d - TAU : d; }
-    function circMean(angles, weights) {
-      var x = 0, y = 0;
-      for (var i = 0; i < angles.length; i++) {
-        var w = weights ? weights[i] : 1;
-        x += w * Math.cos(angles[i]);
-        y += w * Math.sin(angles[i]);
-      }
-      return Math.sqrt(x * x + y * y) < 1e-9 ? (angles.length ? angles[0] : 0) : Math.atan2(y, x);
-    }
-    function smooth01(t) { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); }
-    function nf(v) { return String(Math.round(v * 100) / 100); }
-    function now() { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); }
-    // A small deterministic generator (mulberry32), so every order is the
-    // same picture on every visit.
-    function rng(seed) {
-      var s = seed >>> 0;
-      return function () {
-        s = (s + 0x6D2B79F5) >>> 0;
-        var t = s;
-        t = Math.imul(t ^ (t >>> 15), t | 1);
-        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-      };
-    }
-    function polarXY(cx, cy, list) {
-      var out = new Array(list.length);
-      for (var i = 0; i < list.length; i++) {
-        out[i] = [cx + list[i][1] * Math.cos(list[i][0]), cy + list[i][1] * Math.sin(list[i][0])];
-      }
-      return out;
-    }
-
-    function measure(pts) {
-      var c = new Float64Array(pts.length);
-      for (var i = 1; i < pts.length; i++) c[i] = c[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
-      return c;
-    }
-
-    /* resample(pts, step) -> { p: [[x, y], ...], len, step }
-       The polyline at even spacing (the last point exact), the spacing as
-       near `step` as divides the length. */
-    function resample(pts, step) {
-      var cum = measure(pts), len = cum[cum.length - 1];
-      var k = Math.max(1, Math.round(len / step)), h = len / k, out = [pts[0].slice()], j = 1;
-      for (var i = 1; i < k; i++) {
-        var s = i * h;
-        while (j < pts.length - 1 && cum[j] < s) j++;
-        var seg = cum[j] - cum[j - 1], t = seg > 0 ? (s - cum[j - 1]) / seg : 0;
-        out.push([pts[j - 1][0] + (pts[j][0] - pts[j - 1][0]) * t, pts[j - 1][1] + (pts[j][1] - pts[j - 1][1]) * t]);
-      }
-      out.push(pts[pts.length - 1].slice());
-      return { p: out, len: len, step: h };
-    }
-
-    /* pointAt(pts, s) -> { x, y, tx, ty }: the point at arc length s and the
-       unit direction of travel there. */
-    function pointAt(pts, s, cum) {
-      cum = cum || measure(pts);
-      var n = pts.length, lo = 1, hi = n - 1;
-      s = clamp(s, 0, cum[n - 1]);
-      while (lo < hi) { var mid = (lo + hi) >> 1; if (cum[mid] < s) lo = mid + 1; else hi = mid; }
-      var a = pts[lo - 1], b = pts[lo], seg = cum[lo] - cum[lo - 1] || 1, t = (s - cum[lo - 1]) / seg;
-      return { x: a[0] + (b[0] - a[0]) * t, y: a[1] + (b[1] - a[1]) * t, tx: (b[0] - a[0]) / seg, ty: (b[1] - a[1]) / seg };
-    }
-
-    /* lineD(pts) -> path data for a polyline, straight segments. */
-    function lineD(pts) {
-      if (!pts.length) return '';
-      var d = 'M' + nf(pts[0][0]) + ' ' + nf(pts[0][1]);
-      for (var i = 1; i < pts.length; i++) d += 'L' + nf(pts[i][0]) + ' ' + nf(pts[i][1]);
-      return d;
-    }
-
-    /* ---- Curves in polar form -------------------------------------------------- */
-    /* Every line inside the ring is shaped in polar coordinates, then set on the
-       page: a curve whose control points keep their angle at an end leaves and
-       lands along the radius, and a curve whose control radii all stay above r
-       never comes nearer the centre than r. */
-
-    // A cubic Bézier in polar form, sampled about every `px` pixels.
-    function polarBezier(c0, c1, c2, c3, px, out, skipFirst) {
-      out = out || [];
-      var rm = (c0[1] + c3[1]) / 2;
-      var span = Math.abs(c1[0] - c0[0]) * c0[1] + Math.abs(c2[0] - c1[0]) * rm + Math.abs(c3[0] - c2[0]) * c3[1] +
-        Math.abs(c1[1] - c0[1]) + Math.abs(c2[1] - c1[1]) + Math.abs(c3[1] - c2[1]);
-      var k = clamp(Math.ceil(span / (px || 3)), 3, 160);
-      for (var j = skipFirst ? 1 : 0; j <= k; j++) {
-        var t = j / k, u = 1 - t, b0 = u * u * u, b1 = 3 * u * u * t, b2 = 3 * u * t * t, b3 = t * t * t;
-        out.push([b0 * c0[0] + b1 * c1[0] + b2 * c2[0] + b3 * c3[0], b0 * c0[1] + b1 * c1[1] + b2 * c2[1] + b3 * c3[1]]);
-      }
-      return out;
-    }
-
-    /* polarSpline(ctrl, beta, px) -> polar points
-       A clamped uniform cubic B-spline through polar control points (angles
-       unwrapped), straightened by `beta` as in Holten's hierarchical edge
-       bundling: each inner control point is drawn toward the even run between
-       the two ends by (1 - beta). In polar form that run is the arc at the
-       ends' radius, so a weaker bundle rides nearer the rim. beta 1 keeps the
-       control polygon; 0 is the plain arc. */
-    function polarSpline(ctrl, beta, px) {
-      var n = ctrl.length - 1, P = new Array(n + 1);
-      for (var i = 0; i <= n; i++) {
-        var c = ctrl[i];
-        if (i === 0 || i === n || !(beta < 1)) { P[i] = c; continue; }
-        var t = i / n;
-        P[i] = [beta * c[0] + (1 - beta) * (ctrl[0][0] + t * (ctrl[n][0] - ctrl[0][0])),
-                beta * c[1] + (1 - beta) * (ctrl[0][1] + t * (ctrl[n][1] - ctrl[0][1]))];
-      }
-      var Q = [P[0], P[0]].concat(P, [P[n], P[n]]), out = [];
-      for (var s = 0; s + 3 < Q.length; s++) {
-        var p0 = Q[s], p1 = Q[s + 1], p2 = Q[s + 2], p3 = Q[s + 3];
-        var span = Math.abs(p2[0] - p1[0]) * (p1[1] + p2[1]) / 2 + Math.abs(p2[1] - p1[1]);
-        var k = clamp(Math.ceil(span / (px || 3)), 1, 80);
-        for (var j = s === 0 ? 0 : 1; j <= k; j++) {
-          var u = j / k, u2 = u * u, u3 = u2 * u, v = 1 - u;
-          var b0 = v * v * v / 6, b1 = (3 * u3 - 6 * u2 + 4) / 6, b2 = (-3 * u3 + 3 * u2 + 3 * u + 1) / 6, b3 = u3 / 6;
-          out.push([b0 * p0[0] + b1 * p1[0] + b2 * p2[0] + b3 * p3[0], b0 * p0[1] + b1 * p1[1] + b2 * p2[1] + b3 * p3[1]]);
-        }
-      }
-      return out;
-    }
-
-    /* ---- Fibre routes ---------------------------------------------------------- */
-
-    /* bundle(spec) -> [{ pts, polar, local, pair, lane }] in the order of spec.links
-       Radial hierarchical edge bundling for a ring of components in families.
-       spec = {
-         cx, cy          the ring's centre
-         R               the radius the component marks sit on
-         at              each component's angle
-         group           each component's family index
-         hub             each family's hub angle (its sector's middle)
-         links           [[from, to], ...] component indices
-         rimR            where a route leaves its mark              (R - 9)
-         hubR            the family hubs' ring                       (0.79 R)
-         lanes           [deepest, shallowest] travel radii          ([0.57 R, 0.73 R])
-         beta            Holten's bundling strength                  (0.85)
-         leave           how far a route runs radially first         (0.05 R)
-         shape           'swoop' (default) or 'lanes' (see below)
-         swoopGain       depth of a swoop per radian travelled, px   ((hubR - lanes[0]) / pi)
-         fibrePitch      gap between fibres of one pair, px          (0.9)
-         localGain       depth of a family's own arc per radian, x R (0.2)
-         localDepth      [shallowest, deepest] family arc, px        ([7, 0.17 R])
-         px              sampling step, px                           (3)
-       }
-       A link between families runs from its mark straight in, through its
-       family's hub, the shorter way round to the other family's hub, and out
-       to the far mark, never through the centre: every control point stays
-       at or outside lanes[0], and the spline is drawn in polar form, so it
-       cannot come nearer. 'swoop' dips from hub to hub, deepest at the middle
-       and the deeper the further it travels, like nested arcs of an arc
-       diagram: pairs leaving a hub the same way share their first stretch
-       and then part, which is what makes a bundle read as a rope. 'lanes'
-       gives each family pair its own concentric lane instead (the shortest
-       stretches shallowest), for a ruled look. The fibres of one pair lie
-       side by side, the one reaching widest the deepest, so they do not
-       cross one another. A link inside one family is a U just inside the rim
-       whose depth grows with the angle it spans; a pair of links both ways
-       between two components draws as two, the second a little deeper.
-       `pair` (the family-pair index, -1 for a link inside one family) is the
-       natural bundle key for the weave. */
-    function bundle(spec) {
-      var R = spec.R, cx = spec.cx, cy = spec.cy;
-      var rimR = spec.rimR || R - 9, hubR = spec.hubR || 0.79 * R;
-      var lanes = spec.lanes || [0.57 * R, 0.73 * R], beta = spec.beta == null ? 0.85 : spec.beta;
-      var leave = spec.leave || 0.05 * R, pitch = spec.fibrePitch == null ? 0.9 : spec.fibrePitch;
-      var gain = spec.localGain == null ? 0.2 : spec.localGain, ldep = spec.localDepth || [7, 0.17 * R];
-      var px = spec.px || 3, shape = spec.shape || 'swoop';
-      var swoop = spec.swoopGain == null ? (hubR - lanes[0]) / Math.PI : spec.swoopGain;
-      var at = spec.at, group = spec.group, hub = spec.hub, links = spec.links;
-      // The pairs of families with links between them, each travelling the
-      // shorter way between its hubs.
-      var pairAt = Object.create(null), pairs = [];
-      links.forEach(function (l, k) {
-        var ga = group[l[0]], gb = group[l[1]];
-        if (ga === gb) return;
-        var lo = Math.min(ga, gb), hi = Math.max(ga, gb), key = lo + '-' + hi;
-        if (pairAt[key] === undefined) {
-          var t = turn(hub[lo], hub[hi]);
-          pairAt[key] = pairs.length;
-          pairs.push({ lo: lo, hi: hi, travel: t, s: t >= 0 ? norm(hub[lo]) : norm(hub[hi]), len: Math.abs(t), members: [] });
-        }
-        pairs[pairAt[key]].members.push(k);
-      });
-      // Lanes: the shortest stretches shallowest; a pair takes the shallowest
-      // lane no overlapping shorter pair holds.
-      function within(a, p) { var d = norm(a - p.s); return d <= p.len + 1e-6; }
-      function overlaps(p, q) { return within(p.s, q) || within(q.s, p) || within(p.s + p.len, q) || within(q.s + q.len, p); }
-      var byLen = pairs.slice().sort(function (p, q) { return p.len - q.len || p.lo - q.lo || p.hi - q.hi; });
-      byLen.forEach(function (p, i) {
-        var used = Object.create(null);
-        for (var j = 0; j < i; j++) if (overlaps(p, byLen[j])) used[byLen[j].lane] = true;
-        var lane = 0;
-        while (used[lane]) lane++;
-        p.lane = lane;
-      });
-      var nLanes = 1 + pairs.reduce(function (m, p) { return Math.max(m, p.lane); }, 0);
-      var laneGap = nLanes > 1 ? Math.min(14, (lanes[1] - lanes[0]) / (nLanes - 1)) : 0;
-      pairs.forEach(function (p) { p.r = lanes[1] - p.lane * laneGap; });
-      // Fibres side by side in their band: the one reaching widest deepest.
-      var offset = Object.create(null);
-      pairs.forEach(function (p) {
-        var reach = p.members.map(function (k) {
-          var l = links[k], from = group[l[0]] === p.lo ? l[0] : l[1], to = from === l[0] ? l[1] : l[0];
-          var dir = p.travel >= 0 ? 1 : -1;
-          // How far outside the hubs the two ends sit, along the travel.
-          var w = -dir * turn(hub[p.lo], at[from]) + dir * turn(hub[p.hi], at[to]);
-          return { k: k, w: w };
-        }).sort(function (x, y) { return y.w - x.w || x.k - y.k; });
-        var m = reach.length;
-        reach.forEach(function (x, j) { offset[x.k] = (j - (m - 1) / 2) * pitch; });
-      });
-      return links.map(function (l, k) {
-        var a = l[0], b = l[1], ga = group[a], gb = group[b];
-        if (ga === gb) {
-          var sw = turn(at[a], at[b]);
-          // Both directions of a pair of links stay visible: the second a
-          // little deeper.
-          var twin = 0;
-          for (var j = 0; j < k; j++) if (links[j][0] === b && links[j][1] === a) twin = 1;
-          var h = clamp(gain * Math.abs(sw) * R, ldep[0], ldep[1]) + twin * 2.2;
-          var e = 4 / 3 * h;
-          var pol = polarBezier([at[a], rimR], [at[a], rimR - e], [at[a] + sw, rimR - e], [at[a] + sw, rimR], px);
-          return { pts: polarXY(cx, cy, pol), polar: pol, local: true, pair: -1, lane: -1 };
-        }
-        var p = pairs[pairAt[Math.min(ga, gb) + '-' + Math.max(ga, gb)]];
-        var dir = ga === p.lo ? (p.travel >= 0 ? 1 : -1) : (p.travel >= 0 ? -1 : 1);
-        var hA = hub[ga], travel = ga === p.lo ? p.travel : -p.travel;
-        var A0 = hA + turn(hA, at[a]), hB = hA + travel, B1 = hB + turn(hub[gb], at[b]);
-        var ctrl = [[A0, rimR], [A0, rimR - leave], [hA, hubR]];
-        if (shape === 'lanes') {
-          // Concentric lanes: the pair's own ring, entered and left near the hubs.
-          var rl = p.r + offset[k];
-          var lead = Math.min(0.09, Math.abs(travel) * 0.18) * dir;
-          var span = travel - 2 * lead, steps = Math.max(1, Math.ceil(Math.abs(span) / 0.32));
-          for (var s = 0; s <= steps; s++) ctrl.push([hA + lead + span * s / steps, rl]);
-        } else {
-          // A swoop: down from the hub and back up to the other, deepest at
-          // the middle and deeper the further it travels, like nested arcs of
-          // an arc diagram; pairs that leave a hub the same way share their
-          // first stretch, then part.
-          var depth = Math.min(hubR - lanes[0], swoop * Math.abs(travel)) + offset[k];
-          [0.2, 0.4, 0.5, 0.6, 0.8].forEach(function (t) {
-            ctrl.push([hA + travel * t, hubR - depth * Math.sin(Math.PI * t)]);
-          });
-        }
-        ctrl.push([hB, hubR], [B1, rimR - leave], [B1, rimR]);
-        var pol2 = polarSpline(ctrl, beta, px);
-        return { pts: polarXY(cx, cy, pol2), polar: pol2, local: false, pair: pairs.indexOf(p), lane: p.lane };
-      });
-    }
-
-    /* taper(profile) -> function (s, len) -> width in px
-       profile = {
-         start   width where the fibre leaves its component   (0.3)
-         body    width in the bundle                          (1.3)
-         end     width where it reaches the far component     (0.65)
-         rise    px over which it grows from start to body    (34)
-         fall    px over which it narrows to its end          (26)
-         swell   extra fraction of body at the middle         (0.18)
-       }
-       Thin where it leaves, fuller in the bundle, parting at the far end; the
-       two ends differ, so the drawing carries direction without arrowheads. */
-    function taper(p) {
-      p = p || {};
-      var w0 = p.start == null ? 0.3 : p.start, wb = p.body == null ? 1.3 : p.body, w1 = p.end == null ? 0.65 : p.end;
-      var rise = p.rise || 34, fall = p.fall || 26, swell = p.swell == null ? 0.18 : p.swell;
-      return function (s, len) {
-        var r = Math.min(rise, 0.42 * len), f = Math.min(fall, 0.4 * len);
-        var w = wb + (w0 - wb) * (1 - smooth01(s / r)) + (w1 - wb) * (1 - smooth01((len - s) / f));
-        var t = len > 0 ? s / len : 0, bump = Math.sin(Math.PI * t);
-        return Math.max(0.08, w + wb * swell * bump * bump);
-      };
-    }
-
-    /* fibreStroke(pts, opts) -> path data: the route as filled outlines
-       pts     the route's centre line (a polyline)
-       opts = {
-         width     a number, or function (s, len) -> px (see taper)
-         cuts      the gaps from weave(), for this route   ([])
-         step      sampling step along the route, px        (2.2)
-         minPiece  shortest piece kept between two gaps, px (2.4)
-       }
-       Fill it, never stroke it. Each gap from the weave is cut parallel to the
-       line passing over, at a constant clearance from it, so the ends of the
-       line beneath are clean and the gap reads as the same width at every
-       angle. Pieces left shorter than minPiece are dropped rather than drawn
-       as specks. */
-    function fibreStroke(pts, opts) {
-      opts = opts || {};
-      if (!pts || pts.length < 2) return '';
-      var rs = resample(pts, opts.step || 2.2), P = rs.p, n = P.length, len = rs.len, h = rs.step;
-      var wf = typeof opts.width === 'function' ? opts.width : (function (c) { return function () { return c; }; })(opts.width || 1);
-      var Lx = new Float64Array(n), Ly = new Float64Array(n), Rx = new Float64Array(n), Ry = new Float64Array(n);
-      for (var i = 0; i < n; i++) {
-        var a = P[Math.max(0, i - 1)], b = P[Math.min(n - 1, i + 1)];
-        var tx = b[0] - a[0], ty = b[1] - a[1], tl = Math.hypot(tx, ty) || 1;
-        var nx = -ty / tl, ny = tx / tl, w = wf(i * h, len) / 2;
-        Lx[i] = P[i][0] + nx * w; Ly[i] = P[i][1] + ny * w;
-        Rx[i] = P[i][0] - nx * w; Ry[i] = P[i][1] - ny * w;
-      }
-      var gaps = edgeGaps(opts.cuts || [], P, h, Lx, Ly, Rx, Ry, wf, len);
-      var minPiece = (opts.minPiece == null ? 2.4 : opts.minPiece) / h;
-      // The pieces between the gaps, on both edges at once.
-      var pieces = [], fromL = 0, fromR = 0;
-      gaps.forEach(function (g) {
-        pieces.push([fromL, g.inL, fromR, g.inR]);
-        fromL = g.outL; fromR = g.outR;
-      });
-      pieces.push([fromL, n - 1, fromR, n - 1]);
-      var keepL = edgeKeep(Lx, Ly, 0.1), keepR = edgeKeep(Rx, Ry, 0.1);
-      var d = '';
-      pieces.forEach(function (pc) {
-        if (pc[1] - pc[0] < minPiece || pc[3] - pc[2] < minPiece) return;
-        d += 'M' + edgeRun(Lx, Ly, pc[0], pc[1], false, keepL) + 'L' + edgeRun(Rx, Ry, pc[2], pc[3], true, keepR) + 'Z';
-      });
-      return d;
-    }
-    /* The samples of an edge worth writing: where the edge runs straight to
-       within `tol` px, the samples between the ends of the run add nothing
-       to the picture and only lengthen the path the browser parses and
-       fills. A sample is kept wherever leaving it out would move any sample
-       since the last one kept further than tol from the chord. */
-    function edgeKeep(X, Y, tol) {
-      var n = X.length, keep = new Uint8Array(n);
-      if (n < 3) { keep.fill(1); return keep; }
-      keep[0] = 1; keep[n - 1] = 1;
-      var a = 0;
-      for (var i = 2; i < n; i++) {
-        var dx = X[i] - X[a], dy = Y[i] - Y[a], L = Math.sqrt(dx * dx + dy * dy);
-        if (i - a > 48) { keep[i - 1] = 1; a = i - 1; continue; }
-        if (L < 1e-9) continue;
-        for (var j = a + 1; j < i; j++) {
-          if (Math.abs((X[j] - X[a]) * dy - (Y[j] - Y[a]) * dx) / L > tol) { keep[i - 1] = 1; a = i - 1; break; }
-        }
-      }
-      return keep;
-    }
-    /* coarse(pts, tol) -> the same polyline with the points that lie within
-       tol px of a straight run left out, kept on the array so it is made
-       once. The weave finds its crossings on these: a crossing moves by
-       well under half a pixel, and the search, which tests segments
-       against segments, has a fifth as many to test. */
-    function coarse(pts, tol) {
-      if (pts.__coarse) return pts.__coarse;
-      var n = pts.length;
-      if (n < 4) return (pts.__coarse = pts);
-      var X = new Float64Array(n), Y = new Float64Array(n);
-      for (var i = 0; i < n; i++) { X[i] = pts[i][0]; Y[i] = pts[i][1]; }
-      var keep = edgeKeep(X, Y, tol || 0.15), out = [];
-      for (var k = 0; k < n; k++) if (keep[k]) out.push(pts[k]);
-      try { Object.defineProperty(pts, '__coarse', { value: out, enumerable: false }); } catch (e) {}
-      return out;
-    }
-    // The points of one edge between two fractional sample indices, as
-    // "x y L x y ..." (reversed if asked), the samples between kept ones
-    // left out.
-    function edgeRun(X, Y, from, to, reverse, keep) {
-      var list = [];
-      function at(f) { var i = Math.min(X.length - 2, Math.floor(f)), t = f - i; return nf(X[i] + (X[i + 1] - X[i]) * t) + ' ' + nf(Y[i] + (Y[i + 1] - Y[i]) * t); }
-      list.push(at(from));
-      for (var i = Math.floor(from) + 1; i < to; i++) if (!keep || keep[i]) list.push(nf(X[i]) + ' ' + nf(Y[i]));
-      list.push(at(Math.min(to, X.length - 1)));
-      if (reverse) list.reverse();
-      return list.join('L');
-    }
-    // Where each edge of an outline enters and leaves the clear band either
-    // side of the line passing over, merged where two gaps meet.
-    function edgeGaps(cuts, P, h, Lx, Ly, Rx, Ry, wf, len) {
-      var n = P.length, out = [];
-      cuts.slice().sort(function (p, q) { return p.s - q.s; }).forEach(function (c) {
-        var ic = c.s / h, wu = wf(c.s, len);
-        var sin = Math.max(0.2, c.sin || 1), reach = (c.h + wu) / sin + 3 * h;
-        var lo = Math.max(0, Math.floor(ic - reach / h)), hi = Math.min(n - 1, Math.ceil(ic + reach / h));
-        var gl = band(Lx, Ly, c, lo, hi, ic), gr = band(Rx, Ry, c, lo, hi, ic);
-        if (!gl || !gr) {
-          // The edge never meets the over line near here (a very short or
-          // very wide piece): cut square instead.
-          var half = (c.h + wu / 2 * Math.abs(c.cos || 0)) / sin / h;
-          gl = gr = [Math.max(0, ic - half), Math.min(n - 1, ic + half)];
-        }
-        out.push({ inL: gl[0], outL: gl[1], inR: gr[0], outR: gr[1] });
-      });
-      // Merge overlapping gaps.
-      var merged = [];
-      out.forEach(function (g) {
-        var m = merged[merged.length - 1];
-        if (m && (g.inL <= m.outL || g.inR <= m.outR)) {
-          m.outL = Math.max(m.outL, g.outL); m.outR = Math.max(m.outR, g.outR);
-          m.inL = Math.min(m.inL, g.inL); m.inR = Math.min(m.inR, g.inR);
-        } else merged.push(g);
-      });
-      return merged;
-    }
-    // On one edge, the stretch around sample ic whose signed distance from the
-    // over line is under the clearance.
-    function band(X, Y, c, lo, hi, ic) {
-      function dist(i) { return (X[i] - c.x) * c.nx + (Y[i] - c.y) * c.ny; }
-      // The sign change nearest the crossing.
-      var best = -1, bd = Infinity;
-      for (var i = lo; i < hi; i++) {
-        var d0 = dist(i), d1 = dist(i + 1);
-        if ((d0 <= 0 && d1 >= 0) || (d0 >= 0 && d1 <= 0)) { var dd = Math.abs(i + 0.5 - ic); if (dd < bd) { bd = dd; best = i; } }
-      }
-      if (best < 0) return null;
-      var H = c.h, k = best, entry, exit;
-      while (k >= lo && Math.abs(dist(k)) < H) k--;
-      if (k < lo) entry = lo;
-      else { var a = dist(k), b = dist(k + 1), tgt = a > 0 ? H : -H; entry = k + (a - tgt) / ((a - b) || 1); }
-      k = best + 1;
-      while (k <= hi && Math.abs(dist(k)) < H) k++;
-      if (k > hi) exit = hi;
-      else { var a2 = dist(k - 1), b2 = dist(k), tgt2 = b2 > 0 ? H : -H; exit = k - 1 + (a2 - tgt2) / ((a2 - b2) || 1); }
-      return [clamp(entry, 0, X.length - 1), clamp(exit, 0, X.length - 1)];
-    }
-
-
-    return {
-      bundle: bundle, taper: taper, fibreStroke: fibreStroke, polarXY: polarXY, polarBezier: polarBezier,
-      measure: measure, resample: resample, pointAt: pointAt, turn: turn, norm: norm, circMean: circMean
-    };
-  })();
 
   /* ---- Small helpers --------------------------------------------------- */
   var TAU = Math.PI * 2;
@@ -475,15 +32,13 @@
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
     return m ? (+m[3]) + ' ' + MONTHS[+m[2] - 1] + ' ' + m[1] : String(iso || '');
   }
-  function fmtNum(n) { return typeof n === 'number' ? n.toLocaleString('en-GB') : String(n); }
+  // A locale formatter is expensive to construct; labels and count templates reuse it.
+  var numberFormat = new Intl.NumberFormat('en-GB');
+  function fmtNum(n) { return typeof n === 'number' ? numberFormat.format(n) : String(n); }
   function fill(template, vars) {
     return String(template).replace(/\{(\w+)\}/g, function (m, k) {
       return vars && vars[k] != null ? fmtNum(vars[k]) : m;
     });
-  }
-  function boxesMeet(a, b, grace) {
-    grace = grace || 0;
-    return a.x0 < b.x1 - grace && a.x1 > b.x0 + grace && a.y0 < b.y1 - grace && a.y1 > b.y0 + grace;
   }
   function overlap(a, b) {
     var dx = Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0), dy = Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0);
@@ -591,14 +146,13 @@
     var panelBody = root.querySelector('[data-u-scroll]');
     var viewEl = root.querySelector('[data-u-view]');
     var trailEl = root.querySelector('[data-u-trail]');
+    var stepEl = root.querySelector('[data-u-step]');
     var titleEl = root.querySelector('#u-title');
     var listSec = root.querySelector('.u-listsec');
     var resultsEl = root.querySelector('[data-u-results]');
     var searchIn = root.querySelector('[data-u-search]');
     var statusEl = root.querySelector('[data-u-status]');
     var liveEl = root.querySelector('[data-u-live]');
-    var helpEl = root.querySelector('[data-u-help]');
-    var toolsEl = root.querySelector('.u-tools');
     var legendEl = root.querySelector('[data-u-legend]');
     var restViewHtml = viewEl ? viewEl.innerHTML : '';
     // The phone layout: the list and the map take turns under the switch.
@@ -612,24 +166,18 @@
     /* ---- State ------------------------------------------------------------ */
     var D = null, L = null;           // data and layout
     var fams = [], objects = [], byKey = {};
-    var view = { k: 1, tx: 0, ty: 0 }, fitK = 1, viewFitted = true;
     var W = 0, H = 0, dpr = 1;
     var sel = null;                   // selected object key
     var hover = null;                 // hovered object key
-    var trail = [];                   // [{ key, before }]
-    var cameraFrame = 0, cameraGoal = null, moving = false;
+    var trail = [];                   // [{ key, prev }]
     var palette = {};
     var query = '', matches = null, matchFam = null, searchRows = null, searchLoading = null;
     var shards = {}, shardLoading = {};
-    var hitTargets = [];              // labels that can be clicked: { box, key }
     var drawPending = false;
     var pin = -1;                     // the other end of the pair the reader shows (a Lean or result index)
-    var lastPlan = null;
-    // Motion (DESIGN.md "Motion and hover"). Pointing previews: the families' step back
-    // eases over EMPH_MS and the pointed disc grows a tenth. Selecting commits: once the
-    // camera settles, one ring widens and fades round the chosen object (RING_MS).
-    var EMPH_MS = 150, RING_MS = 700, RING_GROW = 16, HOVER_GROW = 1.1;
-    var emph = { shown: null, grow: null, from: null, gFrom: null, to: null, gTo: null, start: 0 };
+    // Motion (DESIGN.md "Motion and hover"). Pointing previews; selecting commits: when the
+    // chart settles on a chosen discipline, one ring widens and fades round it (RING_MS).
+    var RING_MS = 700, RING_GROW = 16;
     var ring = null, ringWanted = null;
     var hoverVia = '';                // what set the hover: 'map', 'touch', 'list' or 'focus'
     function nowMs() { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); }
@@ -708,6 +256,7 @@
         p.tone[t] = c;
         p.tone[t + 'Wash'] = mixOklab(c, p.ground, t === 'none' ? 0.62 : 0.78, groundRGB);
         p.tone[t + 'Edge'] = get('--u-e-' + t, c);
+        p.tone[t + 'Tint'] = mixOklab(c, p.ground, t === 'none' ? 0.85 : 0.64, groundRGB);
       });
       p.structFaint = mixOklab(p.struct, p.ground, 0.45, groundRGB);
       p.groundRGB = groundRGB;
@@ -715,8 +264,8 @@
     }
 
     /* ---- Data ------------------------------------------------------------ */
-    function fetchJson(url) {
-      return fetch(url, { credentials: 'same-origin' }).then(function (r) {
+    function fetchJson(url, cache) {
+      return fetch(url, { credentials: 'same-origin', cache: cache || 'default' }).then(function (r) {
         if (!r.ok) throw new Error(url + ': ' + r.status);
         return r.json();
       });
@@ -749,14 +298,13 @@
         fams[row[0]].hop[row[1]] = 1;
         fams[row[1]].hop[row[0]] = 1;
       });
-      buildFibres();
     }
     // The papers, results and Lean statements inside the families, loaded after the
     // first screen is drawn; a family opens once they are in.
-    var partsReady = false, partsPromise = null;
+    var partsReady = false, partsPromise = null, partsFailed = false;
     function loadParts() {
       if (partsPromise) return partsPromise;
-      partsPromise = fetchJson(root.getAttribute('data-universe-parts')).then(function (pt) {
+      partsPromise = fetchJson(root.getAttribute('data-universe-parts'), partsFailed ? 'reload' : 'default').then(function (pt) {
         if (pt.generation_id !== D.generation_id) throw new Error('parts from another build');
         var finite = function (v) { return typeof v === 'number' && isFinite(v); };
         if (L.results.length !== pt.results.length || L.lean.length !== pt.lean.length || L.papers.length !== pt.papers.length) {
@@ -770,6 +318,10 @@
         D.lean.forEach(function (l, i) { addObj(l.id, 'l', i); });
         partsReady = true;
         draw();
+      }).catch(function (error) {
+        partsFailed = true;
+        partsPromise = null;
+        throw error;
       });
       return partsPromise;
     }
@@ -802,280 +354,270 @@
       if (r.num) return r.num;
       return r.nn ? T('result.unnumbered_label', { kind: r.kind }) : r.kind;
     }
-    function resultPos(ri) {
-      var r = D.results[ri], f = fams[r.f], p = L.results[ri];
-      return [f.x + p[0] * f.r, f.y + p[1] * f.r];
-    }
-    function leanPos(li) {
-      var l = D.lean[li], f = fams[l.f], p = L.lean[li];
-      return [f.x + p[0] * f.r, f.y + p[1] * f.r];
-    }
-    function objPos(o) {
-      if (o.kind === 'r') return resultPos(o.i);
-      if (o.kind === 'l') return leanPos(o.i);
-      if (o.kind === 'f') return [fams[o.i].x, fams[o.i].y];
-      if (o.kind === 'p') {
-        var p = D.papers[o.i], f = fams[p.f], ring = L.papers[o.i];
-        var a = ring[4] - ring[3] >= TAU - 1e-3 ? -Math.PI / 2 : (ring[3] + ring[4]) / 2;
-        return [f.x + ring[2] * f.r * Math.cos(a), f.y + ring[2] * f.r * Math.sin(a)];
-      }
-      return [0, 0];
-    }
-
-    /* ---- The Loom: citations between families, bundled through discipline hubs */
-    var fibres = [];        // { from, to, w, pts }
-    var fibreCache = {};    // zoom bucket -> { rest: [Path2D], lit: {} }
-    function buildFibres() {
-      var wheel = L.wheel, rIn = wheel.rIn;
-      var links = [];
-      D.links.forEach(function (row) {
-        if (row[2]) links.push({ from: row[0], to: row[1], w: row[2] });
-        if (row[3]) links.push({ from: row[1], to: row[0], w: row[3] });
-      });
-      var routes = links.length ? Loom.bundle({
-        cx: 0, cy: 0, R: rIn, at: fams.map(function (f) { return f.a; }), group: fams.map(function (f) { return f.d; }),
-        hub: wheel.sectors.map(function (s) { return s[2]; }), links: links.map(function (l) { return [l.from, l.to]; }),
-        rimR: rIn - 0.6, hubR: 0.8 * rIn, lanes: [0.36 * rIn, 0.66 * rIn], beta: 0.85, leave: 0.04 * rIn,
-        fibrePitch: 0.5, localGain: 0.22, localDepth: [1.5, 0.2 * rIn], px: 0.6, shape: 'swoop'
-      }) : [];
-      fibres = links.map(function (l, k) { return { from: l.from, to: l.to, w: l.w, pts: routes[k].pts }; });
-    }
-    function fibreSet(k) {
-      var bucket = Math.pow(2, Math.round(Math.log(k) / Math.LN2 * 4) / 4);
-      var c = fibreCache[bucket];
-      if (c) return c;
-      var s = 1 / bucket;
-      c = fibreCache[bucket] = { k: bucket, lit: {} };
-      return c;
-    }
-    function litFibre(c, k) {
-      if (c.lit[k]) return c.lit[k];
-      var s = 1 / c.k, f = fibres[k], g = Math.sqrt(f.w);
-      var tp = Loom.taper({ start: 0.6 * s, body: (1.6 + 0.5 * g) * s, end: 1.2 * s * Math.max(1, g * 0.7), rise: 30 * s, fall: 22 * s, swell: 0.18 });
-      return (c.lit[k] = new Path2D(Loom.fibreStroke(f.pts, { width: tp, step: 2 * s, minPiece: 2 * s })));
-    }
-
-    /* ---- Canvas size ---------------------------------------------------- */
-    function chromeBoxes() {
-      var out = [], sr = canvas.getBoundingClientRect();
-      [toolsEl, helpEl, legendEl, root.querySelector('[data-u-mapkey]'), root.querySelector('[data-u-mapkey-panel]')].forEach(function (el) {
-        if (!el || el.hidden || !el.offsetParent) return;
-        var b = el.getBoundingClientRect();
-        if (b.width && b.height) out.push({ x0: b.left - sr.left - 6, x1: b.right - sr.left + 6, y0: b.top - sr.top - 6, y1: b.bottom - sr.top + 6 });
-      });
-      return out;
-    }
-    var chrome = [];
-    function resize() {
-      var rect = canvas.getBoundingClientRect();
-      if (!rect.width || !rect.height) return false; // List view hides the canvas.
-      var hadSize = W > 1 && H > 1;
-      var w = Math.max(1, Math.round(rect.width)), h = Math.max(1, Math.round(rect.height));
-      var d = window.devicePixelRatio || 1;
-      if (w === W && h === H && d === dpr) return false;
-      var cx = W ? (W / 2 - view.tx) / view.k : 0, cy = H ? (H / 2 - view.ty) / view.k : 0;
-      W = w; H = h; dpr = d;
-      canvas.width = Math.round(w * d); canvas.height = Math.round(h * d);
-      chrome = chromeBoxes();
-      if (!D) return true;
-      computeFit();
-      if (viewFitted) setView(fitView());
-      else if (!hadSize) setView(frameFor(sel ? obj(sel) : null));
-      else { view.tx = W / 2 - cx * view.k; view.ty = H / 2 - cy * view.k; }
-      return true;
-    }
-
-    /* ---- Discipline names round the wheel --------------------------------- */
-    // Each discipline named on the drawing in words, with its plain counts
-    // ("31 families, 24 with Lean"), as the Plectis map names each problem.
-    var DISC_FONT = '600 15px ' + SERIF, DISC_COUNT_FONT = '400 13px ' + SANS, DISC_LEAD = 18;
+    // A discipline's plain counts ("31 families, 24 with Lean").
     function discCounts(d) {
       var n = d.families.length, k = d.withLean || 0;
       return T(k === 0 ? 'counts.disc_none' : k === n ? 'counts.disc_all' : 'counts.disc_some', { n: n, k: k });
     }
-    function discLabelText(di) {
-      var d = D.disciplines[di];
-      var lines = fitLines(d.name, DISC_FONT, 196, 1) || balancedLines(d.name, 2, DISC_FONT);
-      var countLine = discCounts(d);
-      var w = Math.max(lines.width, textWidth(countLine, DISC_COUNT_FONT));
-      return { lines: lines.lines, count: countLine, w: w, h: lines.lines.length * DISC_LEAD + 17 };
-    }
-    var discText = [], compactLabels = false;
-    // Where the names stand for a view: each beside its sector, hugging the
-    // wheel, set one above another on its side so none covers another.
-    function placeDiscLabels(v, skip) {
-      var sectors = L.wheel.sectors, cx = v.tx, cy = v.ty, k = v.k;
-      var hull = L.wheel.rOut * k + 12;
-      var sides = { '1': [], '-1': [] };
-      sectors.forEach(function (s, di) {
-        if (skip && skip(di)) return;
-        var mid = s[2], ro = s[3] * k + 4;
-        var ax = cx + ro * Math.cos(mid), ay = cy + ro * Math.sin(mid);
-        var side = Math.cos(mid) >= 0 ? 1 : -1;
-        var t = discText[di];
-        if (!t) return;
-        sides[side].push({ di: di, ax: ax, ay: ay, side: side, w: t.w, h: t.h, y: ay - t.h / 2, mid: mid });
-      });
-      var out = [];
-      [1, -1].forEach(function (side) {
-        var list = sides[side].sort(function (a, b) { return a.ay - b.ay; });
-        // Down then up, so the stack keeps its order and stays near its anchors.
-        for (var i = 1; i < list.length; i++) list[i].y = Math.max(list[i].y, list[i - 1].y + list[i - 1].h + 6);
-        for (var j = list.length - 2; j >= 0; j--) list[j].y = Math.min(list[j].y, list[j + 1].y - list[j].h - 6);
-        list.forEach(function (q) {
-          var near = q.y > cy ? q.y : q.y + q.h < cy ? q.y + q.h : cy;
-          var dy = Math.abs(near - cy);
-          var reach = dy < hull ? Math.sqrt(hull * hull - dy * dy) : 0;
-          var x = side > 0 ? Math.max(cx + reach + 8, q.ax + 10) : Math.min(cx - reach - 8, q.ax - 10);
-          q.x0 = side > 0 ? x : x - q.w;
-          q.x1 = q.x0 + q.w;
-          q.y0 = q.y; q.y1 = q.y + q.h;
-          out.push(q);
+    /* ---- The chart ------------------------------------------------------------
+       The release and a discipline are drawn as an illustrated chart, never to scale:
+       everything a reader can act on is big enough to read and carries its name, the
+       stage is used, and distance means nothing but grouping. The release is its
+       seventeen disciplines as labelled regions packed to fill the stage, each holding
+       its families as discs in their evidence colour; the discipline is the thing to
+       choose there. A discipline is its families as large discs packed to fill the
+       stage, each with its title written inside. A family opens as a board of cards
+       (syncBoard). Layouts are computed for the stage's own size; when the level
+       changes, each disc moves from where it was to where it goes (CHART_MS). */
+    var chart = { shown: null, from: null, to: null, start: 0, ms: 0, level: '', di: -1, fi: -1 };
+    var layoutCache = {}, labelCache = {};
+    var CHART_MS = 280;
+    var capEl = root.querySelector('[data-u-cap]'), barEl = root.querySelector('[data-u-bar]');
+    function chromeBoxes() {
+      var out = [], sr = canvas.getBoundingClientRect();
+      [barEl, root.querySelector('[data-u-mapkey-panel]')].forEach(function (el) {
+        if (!el || el.hidden || !el.offsetParent) return;
+        Array.prototype.forEach.call(el === barEl ? el.children : [el], function (c) {
+          if (c.hidden || !c.offsetParent) return;
+          var b = c.getBoundingClientRect();
+          if (b.width && b.height) out.push({ x0: b.left - sr.left - 6, x1: b.right - sr.left + 6, y0: b.top - sr.top - 6, y1: b.bottom - sr.top + 6 });
         });
       });
       return out;
     }
-    function labelsInside(list, pad) {
-      return list.every(function (q) {
-        if (q.x0 < pad || q.x1 > W - pad || q.y0 < pad || q.y1 > H - pad) return false;
-        return !chrome.some(function (c) { return boxesMeet(q, c, 0); });
-      });
+    var chrome = [];
+    // The band the bar (Map key and the caption) takes at the top of the stage.
+    function topBand() {
+      if (!barEl || !barEl.offsetParent) return 12;
+      var sr = canvas.getBoundingClientRect(), b = barEl.getBoundingClientRect();
+      return Math.max(12, Math.round(b.bottom - sr.top + 10));
     }
-    function computeFit() {
-      discText = D.disciplines.map(function (d, di) { return discLabelText(di); });
-      var rOut = L.wheel.rOut;
-      var k0 = Math.min(W, H) / (2 * rOut) * 0.98, k = k0, fits = false;
-      for (var it = 0; it < 60; it++) {
-        var v = { k: k, tx: W / 2, ty: H / 2 };
-        if (labelsInside(placeDiscLabels(v), 10)) { fits = true; break; }
-        k *= 0.97;
-      }
-      // A canvas too narrow to set the names beside the wheel (a phone's Map
-      // view) gives the wheel the room; the names stand in the list and on plates.
-      compactLabels = !fits || k < k0 * 0.55;
-      fitK = compactLabels ? k0 * 0.94 : k;
+    function resize() {
+      var rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return false; // the list hides the canvas on a phone
+      var w = Math.max(1, Math.round(rect.width)), h = Math.max(1, Math.round(rect.height));
+      var d = Math.min(2, window.devicePixelRatio || 1);
+      if (w === W && h === H && d === dpr) return false;
+      W = w; H = h; dpr = d;
+      // Old viewport layouts and measurements have no further use. In particular,
+      // repeated resizing must not retain thousands of obsolete label variants.
+      layoutCache = {}; labelCache = {}; widthCache = {};
+      canvas.width = Math.round(w * d); canvas.height = Math.round(h * d);
+      chrome = chromeBoxes();
+      if (D) chartTo(false);
+      return true;
     }
-    function fitView() { return { k: fitK, tx: W / 2, ty: H / 2 }; }
-    function setView(v) { view.k = v.k; view.tx = v.tx; view.ty = v.ty; }
 
-    /* ---- Camera (the Plectis universe's flight) ---------------------------- */
-    function viewNow() { return { k: view.k, tx: view.tx, ty: view.ty, fitted: viewFitted }; }
-    var RHO = 1.4;
-    function flightPath(from, to, span) {
-      var w0 = span / from.k, w1 = span / to.k;
-      var dx = to.cx - from.cx, dy = to.cy - from.cy, d2 = dx * dx + dy * dy, u1 = Math.sqrt(d2);
-      if (!(u1 > Math.min(w0, w1) * 0.9) || from.k <= fitK * 1.25 || to.k <= fitK * 1.25) return null;
-      var rho2 = RHO * RHO, rho4 = rho2 * rho2;
-      var b0 = (w1 * w1 - w0 * w0 + rho4 * d2) / (2 * w0 * rho2 * u1);
-      var b1 = (w1 * w1 - w0 * w0 - rho4 * d2) / (2 * w1 * rho2 * u1);
-      var r0 = Math.log(Math.sqrt(b0 * b0 + 1) - b0), r1 = Math.log(Math.sqrt(b1 * b1 + 1) - b1);
-      var S = (r1 - r0) / RHO;
-      if (!isFinite(S) || S <= 0) return null;
-      var cosh = function (x) { return (Math.exp(x) + Math.exp(-x)) / 2; };
-      var sinh = function (x) { return (Math.exp(x) - Math.exp(-x)) / 2; };
-      var tanh = function (x) { var e2 = Math.exp(2 * x); return (e2 - 1) / (e2 + 1); };
-      var c0 = cosh(r0);
-      return {
-        ms: S * 1000 * RHO / Math.SQRT2 * 0.62,
-        at: function (t) {
-          var s = t * S;
-          var u = w0 / rho2 * (c0 * tanh(RHO * s + r0) - sinh(r0));
-          var wide = w0 * c0 / cosh(RHO * s + r0);
-          if (t >= 1) return [to.cx, to.cy, to.k];
-          return [from.cx + u * dx / u1, from.cy + u * dy / u1, span / wide];
-        }
-      };
+    /* ---- Layouts ---------------------------------------------------------------- */
+    // A family's weight among its peers (0 to 1): how many results and Lean statements it
+    // shows, compressed, so a large family reads larger without dwarfing a small one.
+    var famWeight = [];
+    function weights() {
+      var lo = Infinity, hi = -Infinity;
+      fams.forEach(function (f) { lo = Math.min(lo, f.r); hi = Math.max(hi, f.r); });
+      famWeight = fams.map(function (f) { return hi > lo ? (f.r - lo) / (hi - lo) : 0.5; });
     }
-    function cameraTo(target, fitted, delay) {
-      if (cameraFrame) cancelAnimationFrame(cameraFrame);
-      cameraFrame = 0;
-      var finish = function () {
-        cameraGoal = null; moving = false;
-        setView(target);
-        viewFitted = !!fitted;
-        settleRing();
+    function regionLabel(di, R) {
+      var d = D.disciplines[di];
+      var size = clamp(R * 0.125, 13, 22), sub = clamp(size * 0.7, 11.5, 15);
+      var nf = '600 ' + size.toFixed(1) + 'px ' + SERIF, cf = '400 ' + sub.toFixed(1) + 'px ' + SANS;
+      var t = fitLines(d.name, nf, R * 1.45, 1) || fitLines(d.name, nf, R * 1.45, 2) || balancedLines(d.name, 2, nf);
+      var count = discCounts(d), lead = size * 1.16;
+      var c = fitLines(count, cf, R * 1.5, 1) || fitLines(count, cf, R * 1.5, 2) || balancedLines(count, 2, cf);
+      return { lines: t.lines, nf: nf, cf: cf, lead: lead, count: c.lines, sub: sub,
+               h: t.lines.length * lead + c.lines.length * sub * 1.3 + sub * 0.1, w: Math.max(t.width, c.width) };
+    }
+    // Points of a hexagonal lattice of spacing d inside a circle, below a top line.
+    function latticeIn(cx, cy, R, top, d) {
+      var pts = [], row = 0, r = R - d / 2;
+      for (var y = Math.max(top + d / 2, cy - r); y <= cy + r + 1e-6; y += d * 0.866, row++) {
+        var half = Math.sqrt(Math.max(0, r * r - (y - cy) * (y - cy))), off = row % 2 ? d / 2 : 0;
+        for (var k = -Math.ceil(half / d) - 1; k <= Math.ceil(half / d) + 1; k++) {
+          var x = cx + k * d + off;
+          if (Math.abs(x - cx) <= half + 1e-6) pts.push([x, y]);
+        }
+      }
+      return pts;
+    }
+    // Seventeen circles, each as large as its families and name need, relaxed apart inside
+    // the stage below its bar, then scaled up to the largest size that still fits.
+    function packRegions(top) {
+      var n = D.disciplines.length, pad = 8, gap = clamp(Math.min(W, H) * 0.012, 6, 14);
+      var rho = D.disciplines.map(function (d) { return Math.sqrt(d.families.length + 16); });
+      var Hh = H - top - pad, cols = Math.max(1, Math.round(Math.sqrt(n * W / Math.max(1, Hh)))), rows = Math.ceil(n / cols);
+      var init = function () {
+        return rho.map(function (r, k) {
+          var row = Math.floor(k / cols), cnt = row < rows - 1 ? cols : n - cols * (rows - 1), c = k - row * cols;
+          return { x: (c + 0.5) * W / cnt + (row % 2 ? 4 : -4), y: top + (row + 0.5) * Hh / rows };
+        });
+      };
+      var run = function (s) {
+        var P = init(), R = rho.map(function (r) { return r * s; }), worst = 0;
+        for (var it = 0; it < 420; it++) {
+          // A gentle pull to the middle closes the gaps, then lets go so the last steps only part.
+          var pull = it < 300 ? 0.004 : 0;
+          for (var i = 0; i < n; i++) for (var j = i + 1; j < n; j++) {
+            var dx = P[j].x - P[i].x, dy = P[j].y - P[i].y, dist = Math.hypot(dx, dy), need = R[i] + R[j] + gap;
+            if (dist >= need) continue;
+            if (dist < 1e-3) { dx = 1; dy = 0; dist = 1; }
+            var m = (need - dist) / 2, ux = dx / dist, uy = dy / dist;
+            P[i].x -= ux * m; P[i].y -= uy * m; P[j].x += ux * m; P[j].y += uy * m;
+          }
+          for (var q = 0; q < n; q++) {
+            P[q].x += (W / 2 - P[q].x) * pull; P[q].y += (top + Hh / 2 - P[q].y) * pull;
+            P[q].x = clamp(P[q].x, pad + R[q], W - pad - R[q]);
+            P[q].y = clamp(P[q].y, top + R[q], H - pad - R[q]);
+          }
+        }
+        for (var a = 0; a < n; a++) for (var b = a + 1; b < n; b++) worst = Math.max(worst, R[a] + R[b] + gap - Math.hypot(P[b].x - P[a].x, P[b].y - P[a].y));
+        return { P: P, R: R, worst: worst };
+      };
+      var area = rho.reduce(function (a, r) { return a + Math.PI * r * r; }, 0);
+      var lo = 0, hi = Math.sqrt(W * Hh / area), best = run(hi * 0.5);
+      for (var step = 0; step < 14; step++) {
+        var mid = (lo + hi) / 2, got = run(mid);
+        if (got.worst < 1.5) { lo = mid; best = got; } else hi = mid;
+      }
+      return best;
+    }
+    function releaseLayout() {
+      var top = topBand(), key = 'r|' + W + 'x' + H + '|' + top;
+      if (layoutCache[key]) return layoutCache[key];
+      var pk = packRegions(top);
+      var nodes = new Array(fams.length), regions = [];
+      D.disciplines.forEach(function (d, di) {
+        var cx = pk.P[di].x, cy = pk.P[di].y, R = pk.R[di];
+        var lab = regionLabel(di, R);
+        // The name stands in the region's top cap, where the circle is wide enough for it.
+        var halfW = lab.w / 2 + 8, dy = Math.sqrt(Math.max(0, R * R - halfW * halfW));
+        var ly = Math.max(cy - dy + 2, cy - R + R * 0.1);
+        var below = ly + lab.h + Math.max(4, R * 0.04);
+        var list = d.families, need = list.length, cR = R - Math.max(3, R * 0.04);
+        var dLo = 2, dHi = cR, pts = null;
+        for (var it = 0; it < 24; it++) {
+          var dm = (dLo + dHi) / 2, p = latticeIn(cx, cy, cR, below, dm);
+          if (p.length >= need) { dLo = dm; pts = p; } else dHi = dm;
+        }
+        if (!pts) pts = latticeIn(cx, cy, cR, below, dLo);
+        var ccy = (below + cy + cR) / 2;
+        pts.sort(function (a, b) { return Math.hypot(a[0] - cx, a[1] - ccy) - Math.hypot(b[0] - cx, b[1] - ccy); });
+        pts = pts.slice(0, need).sort(function (a, b) { return a[1] - b[1] || a[0] - b[0]; });
+        list.forEach(function (fi, k) {
+          var p = pts[k] || [cx, cy];
+          nodes[fi] = { x: p[0], y: p[1], r: dLo / 2 * 0.86 * (0.74 + 0.26 * famWeight[fi]), a: 1 };
+        });
+        regions.push({ x: cx, y: cy, r: R, a: 1, lab: lab, ly: ly });
+      });
+      return (layoutCache[key] = { level: 'release', nodes: nodes, regions: regions });
+    }
+    // A discipline's families as one block of large discs filling the stage: the column
+    // count that gives the largest disc wins. On a phone the stage grows downward instead,
+    // so a disc never falls below the size its title needs.
+    var PHONE_DISC = 112;
+    function discGrid(n, Wp, Hp) {
+      var best = null;
+      for (var c = 1; c <= n; c++) {
+        var rows = Math.ceil(n / c), d = Math.min(Wp / (c + (rows > 1 ? 0.5 : 0)), Hp / (1 + (rows - 1) * 0.866));
+        if (!best || d > best.d + 1e-6) best = { c: c, rows: rows, d: d };
+      }
+      return best;
+    }
+    function discHeight(di) {
+      var n = D.disciplines[di].families.length, pad = 12, Wp = W - 2 * pad;
+      var c = Math.max(2, Math.floor((Wp - PHONE_DISC / 2) / PHONE_DISC)), rows = Math.ceil(n / c), d = Wp / (c + (rows > 1 ? 0.5 : 0));
+      return Math.ceil(topBand() + d + (rows - 1) * d * 0.866 + pad + 4);
+    }
+    function discLayout(di) {
+      var top = topBand(), key = 'd' + di + '|' + W + 'x' + H + '|' + top;
+      if (layoutCache[key]) return layoutCache[key];
+      var base = releaseLayout(), list = D.disciplines[di].families, n = list.length, pad = 12;
+      var g = discGrid(n, W - 2 * pad, Math.max(60, H - top - pad));
+      var d = g.d, rows = g.rows, c = g.c;
+      var blockH = d + (rows - 1) * d * 0.866, y0 = top + (H - top - pad - blockH) / 2 + d / 2;
+      var nodes = base.nodes.map(function (b) { return { x: b.x, y: b.y, r: b.r, a: 0 }; });
+      list.forEach(function (fi, k) {
+        var row = Math.floor(k / c), cnt = row < rows - 1 ? c : n - c * (rows - 1), col = k - row * c;
+        var rowW = (cnt - 1) * d, off = rows > 1 && row % 2 ? d / 4 : rows > 1 ? -d / 4 : 0;
+        var x = W / 2 - rowW / 2 + col * d + off, y = y0 + row * d * 0.866;
+        nodes[fi] = { x: x, y: y, r: d / 2 * 0.94 * (0.86 + 0.14 * famWeight[fi]), a: 1 };
+      });
+      var regions = base.regions.map(function (r) { return { x: r.x, y: r.y, r: r.r, a: 0, lab: r.lab, ly: r.ly }; });
+      return (layoutCache[key] = { level: 'disc', di: di, nodes: nodes, regions: regions });
+    }
+    // Opening a family: its disc grows to fill the stage and the board fades in over it.
+    function famLayout(fi) {
+      var b = discLayout(fams[fi].d);
+      var nodes = b.nodes.map(function (q, i) { return { x: q.x, y: q.y, r: q.r, a: i === fi ? 1 : 0 }; });
+      var top = topBand();
+      nodes[fi] = { x: W / 2, y: (top + H) / 2, r: Math.max(20, Math.min(W, H - top) * 0.46), a: 1 };
+      return { level: 'fam', fi: fi, nodes: nodes, regions: b.regions };
+    }
+    function chartTarget() {
+      var o = sel ? obj(sel) : null;
+      if (!o) return { level: 'release', di: -1, fi: -1 };
+      if (o.kind === 'd') return { level: 'disc', di: o.i, fi: -1 };
+      var fi = famOf(o);
+      return { level: 'fam', di: fams[fi].d, fi: fi };
+    }
+    function copyLayout(l) {
+      return { level: l.level, nodes: l.nodes.map(function (q) { return { x: q.x, y: q.y, r: q.r, a: q.a }; }),
+               regions: l.regions.map(function (q) { return { x: q.x, y: q.y, r: q.r, a: q.a, lab: q.lab, ly: q.ly }; }) };
+    }
+    // Move to the layout the selection asks for: animated when the reader chose it.
+    function chartTo(animate) {
+      if (!D || !W) return;
+      var tg = chartTarget();
+      // On a phone a discipline's discs keep their size and the stage grows to hold them.
+      if (stage) {
+        // At the release a phone's stage is three widths tall, so each region keeps room
+        // for its name and its families.
+        var tall = !narrow() ? 0 : tg.level === 'disc' ? discHeight(tg.di) : tg.level === 'release' ? Math.round(W * 3) : 0;
+        var want = tall && tall > Math.round(window.innerHeight * 0.72) ? tall + 'px' : '';
+        if (stage.style.height !== want) { stage.style.height = want; if (resize()) return; }
+      }
+      chrome = chromeBoxes();
+      var to = tg.level === 'release' ? releaseLayout() : tg.level === 'disc' ? discLayout(tg.di) : famLayout(tg.fi);
+      var same = chart.level === tg.level && chart.di === tg.di && chart.fi === tg.fi;
+      var leavingFamily = chart.level === 'fam';
+      chart.level = tg.level; chart.di = tg.di; chart.fi = tg.fi;
+      // The family canvas was covered by its board. Reveal the finished map on
+      // return, rather than moving hidden circles under the reader's next click.
+      if (!chart.shown || !animate || reduceMotion || same || leavingFamily || tg.level === 'fam') {
+        chart.shown = copyLayout(to); chart.to = to; chart.start = 0;
         draw();
         if (board.pending) showBoard();
-      };
-      cameraGoal = finish;
-      if (reduceMotion || !window.requestAnimationFrame || !W) { finish(); return; }
-      var from = { k: view.k, cx: (W / 2 - view.tx) / view.k, cy: (H / 2 - view.ty) / view.k };
-      var to = { k: target.k, cx: (W / 2 - target.tx) / target.k, cy: (H / 2 - target.ty) / target.k };
-      var duration = Math.min(650, 300 + 120 * Math.abs(Math.log(to.k / from.k) / Math.LN2));
-      var flight = flightPath(from, to, Math.max(W, H));
-      if (flight) duration = Math.max(duration, Math.min(900, flight.ms));
-      var start = null;
-      viewFitted = false;
-      moving = true;
-      var step = function (now) {
-        if (start === null) start = now + (delay || 0);
-        var t = clamp((now - start) / duration, 0, 1), e = easeInOut(t), k, cx, cy;
-        if (flight) { var at = flight.at(e); k = at[2]; cx = at[0]; cy = at[1]; }
-        else {
-          k = from.k * Math.pow(to.k / from.k, e);
-          cx = from.cx + (to.cx - from.cx) * e; cy = from.cy + (to.cy - from.cy) * e;
-        }
-        view.k = k; view.tx = W / 2 - cx * k; view.ty = H / 2 - cy * k;
-        paint();
-        if (t < 1) cameraFrame = requestAnimationFrame(step);
-        else { cameraFrame = 0; finish(); }
-      };
-      cameraFrame = requestAnimationFrame(step);
-    }
-    // A discipline fills the map: its families' discs framed with room beside
-    // them for their names, which stand level to the left and right.
-    function sectorFrame(di) {
-      var x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
-      D.disciplines[di].families.forEach(function (fi) {
-        var f = fams[fi];
-        x0 = Math.min(x0, f.x - f.r); x1 = Math.max(x1, f.x + f.r);
-        y0 = Math.min(y0, f.y - f.r); y1 = Math.max(y1, f.y + f.r);
-      });
-      var padX = clamp(W * 0.13, 90, 190), padY = 30;
-      var k = clamp(Math.min((W - 2 * padX) / (x1 - x0), (H - 2 * padY) / (y1 - y0)), fitK, fitK * 9);
-      return { k: k, tx: W / 2 - k * (x0 + x1) / 2, ty: H / 2 - k * (y0 + y1) / 2 };
-    }
-    function familyFrame(fi) {
-      var f = fams[fi], hasF = (L.fibres[fi] || []).length > 0;
-      var mx = Math.min(hasF ? 205 : 70, W / 4), my = hasF ? 46 : 40;
-      var ext = hasF ? 1.3 : 1.08;
-      var k = Math.min((W - 2 * mx) / (2 * ext * f.r), (H - 2 * my) / (2 * ext * f.r));
-      k = clamp(k, fitK * 1.5, 600);
-      return { k: k, tx: W / 2 - k * f.x, ty: H / 2 - k * f.y };
-    }
-    function frameFor(o) {
-      if (!o) return fitView();
-      if (o.kind === 'd') return sectorFrame(o.i);
-      return familyFrame(famOf(o));
-    }
-
-    /* ---- Levels --------------------------------------------------------- */
-    function openFamily() {
-      var o = sel ? obj(sel) : null;
-      return famOf(o);
-    }
-    function focusDisc() {
-      var o = sel ? obj(sel) : null;
-      return o && o.kind === 'd' ? o.i : -1;
-    }
-    function screenR(fi) { return fams[fi].r * view.k; }
-    function detailR(fi) {
-      var r = screenR(fi);
-      if (window.matchMedia && window.matchMedia('(max-width: 899px)').matches) {
-        // A fitted phone frame reaches the same detail fade as the 190px desktop radius.
-        var fitted = fams[fi].r * familyFrame(fi).k;
-        if (fitted > 0) r *= Math.max(1, 190 / fitted);
+        return;
       }
-      return r;
+      chart.from = copyLayout(chart.shown); chart.to = to; chart.start = nowMs(); chart.ms = CHART_MS;
+      draw();
     }
-    // Camera, marks and words are scaled apart. Inside a chosen discipline the discs are
-    // drawn at about three fifths of their room, so names and citation routes have space;
-    // the relative sizes stay as they are.
-    var mScale = 1;
-    function markTarget() { return focusDisc() >= 0 && openFamily() < 0 ? 0.6 : 1; }
-    function markR(fi) { return fams[fi].r * view.k * (openFamily() === fi ? 1 : mScale); }
-    function dotRadius(sr) { return clamp(sr * 0.05, 0.9, 4.6); }
+    function chartAnimating() { return !!chart.start; }
+    // Advance the move; returns the eased progress (1 when settled).
+    function stepChart() {
+      if (!chart.start) return 1;
+      var u = clamp((nowMs() - chart.start) / chart.ms, 0, 1), e = easeInOut(u);
+      var A = chart.from, B = chart.to, S = chart.shown;
+      for (var i = 0; i < B.nodes.length; i++) {
+        var a = A.nodes[i], b = B.nodes[i], s = S.nodes[i];
+        s.x = a.x + (b.x - a.x) * e; s.y = a.y + (b.y - a.y) * e; s.r = a.r + (b.r - a.r) * e;
+        s.a = a.a + (b.a - a.a) * (b.a > a.a ? clamp((e - 0.25) / 0.75, 0, 1) : clamp(e / 0.6, 0, 1));
+      }
+      for (var j = 0; j < B.regions.length; j++) S.regions[j].a = A.regions[j].a + (B.regions[j].a - A.regions[j].a) * e;
+      S.level = B.level;
+      if (u >= 1) {
+        chart.start = 0; chart.shown = copyLayout(B);
+        if (board.pending) showBoard();
+        settleRing();
+      }
+      return u >= 1 ? 1 : e;
+    }
 
+    /* ---- Painting -------------------------------------------------------------- */
+    function draw() {
+      if (drawPending) return;
+      drawPending = true;
+      requestAnimationFrame(function () { drawPending = false; paint(); });
+    }
     // The pair the reader shows: the selected result with its chosen Lean statement, or
     // the selected Lean statement with its chosen paper result. [result id, Lean id] or null.
     function pinnedPair() {
@@ -1091,340 +633,7 @@
       }
       return null;
     }
-    function inHand(key) {
-      if (key === sel || key === hover) return true;
-      var pp = pinnedPair();
-      return !!pp && (pp[0] === key || pp[1] === key);
-    }
-    /* ---- Painting -------------------------------------------------------- */
-    function draw() {
-      if (drawPending) return;
-      drawPending = true;
-      requestAnimationFrame(function () { drawPending = false; paint(); });
-    }
-
-    // How far each family steps back for what is pointed at, chosen or searched: the
-    // target the drawing eases toward. The open family's own fade with the camera
-    // (ctxA) is applied apart, so a flight is never slowed by the easing.
-    function famEmphasis(openF) {
-      var out = new Array(fams.length), so = sel ? obj(sel) : null;
-      var hk = hover ? obj(hover) : null;
-      var focusF = openF >= 0 ? openF : (hk && hk.kind === 'f' ? hk.i : -1);
-      var fd = focusDisc(), hd = hk && hk.kind === 'd' ? hk.i : -1;
-      for (var i = 0; i < fams.length; i++) {
-        var a = 1;
-        var picked = so && so.kind === 'f' && so.i === focusF;
-        if (focusF >= 0 && openF < 0) {
-          a = i === focusF ? 1 : fams[focusF].hop[i] ? 0.95 : picked ? 0.32 : 0.5;
-          // In a chosen discipline, pointing at one of its families never lifts the
-          // families of other disciplines it has no citation with.
-          if (fd >= 0 && fams[i].d !== fd && !fams[focusF].hop[i]) a = Math.min(a, 0.16);
-        }
-        else if (fd >= 0) a = fams[i].d === fd ? 1 : 0.16;
-        else if (hd >= 0) a = fams[i].d === hd ? 1 : 0.55;
-        // Search matches lead while the list of matches is open; once the reader opens one
-        // and the list folds, the map draws the selection in its ordinary grammar.
-        if (matchFam && !searchFolded) a *= matchFam[i] ? 1 : 0.22;
-        out[i] = a;
-      }
-      return out;
-    }
-    // The pointed family's disc grows a tenth while it is a plain disc (its own map
-    // not yet showing), so its marks never move under the pointer.
-    function famGrowth(openF) {
-      var out = new Array(fams.length), hk = hover ? obj(hover) : null;
-      var hf = hk && hk.kind === 'f' && hk.i !== openF ? hk.i : -1;
-      for (var i = 0; i < fams.length; i++) out[i] = i === hf && markR(i) < 80 ? HOVER_GROW : 1;
-      return out;
-    }
-    // Ease the step back and the growth toward their targets over EMPH_MS (snapped under
-    // reduced motion). Returns whether the easing is still running.
-    function stepEmphasis(tA, tG) {
-      var n = tA.length, i;
-      if (!emph.shown || emph.shown.length !== n || reduceMotion) {
-        emph.shown = tA.slice(); emph.grow = tG.slice(); emph.to = tA; emph.gTo = tG; emph.start = 0;
-        return false;
-      }
-      for (i = 0; i < n; i++) {
-        if (Math.abs(tA[i] - emph.to[i]) > 1e-4 || Math.abs(tG[i] - emph.gTo[i]) > 1e-4) {
-          emph.from = emph.shown.slice(); emph.gFrom = emph.grow.slice();
-          emph.to = tA; emph.gTo = tG; emph.start = nowMs();
-          break;
-        }
-      }
-      if (!emph.start) return false;
-      var u = clamp((nowMs() - emph.start) / EMPH_MS, 0, 1), e = easeOut(u);
-      for (i = 0; i < n; i++) {
-        emph.shown[i] = emph.from[i] + (emph.to[i] - emph.from[i]) * e;
-        emph.grow[i] = emph.gFrom[i] + (emph.gTo[i] - emph.gFrom[i]) * e;
-      }
-      if (u >= 1) emph.start = 0;
-      return u < 1;
-    }
-
-    function paint() {
-      if (!D || !W) return;
-      var mt = markTarget();
-      if (Math.abs(mScale - mt) > 0.004) {
-        mScale = reduceMotion ? mt : mScale + (mt - mScale) * 0.25;
-        draw();
-      } else mScale = mt;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, W, H);
-      hitTargets = [];
-      var k = view.k, tx = view.tx, ty = view.ty;
-      var openF = openFamily();
-      var srOpen = openF >= 0 ? detailR(openF) : 0;
-      // The rest of the release gives way as a family's own map fills the view.
-      var ctxA = openF >= 0 ? 1 - smooth((srOpen - 80) / 110) : 1;
-      // A family's own contents are read on the board (syncBoard), never drawn small here.
-      var openA = 0;
-      // What the drawing shows eases; where the words stand follows the target at once,
-      // so no name moves while the step back runs.
-      var emT = famEmphasis(openF), easing = stepEmphasis(emT, famGrowth(openF));
-      var alphas = new Array(fams.length), placeA = new Array(fams.length);
-      for (var ai = 0; ai < fams.length; ai++) {
-        var cA = openF >= 0 && ai !== openF ? ctxA : 1;
-        alphas[ai] = emph.shown[ai] * cA; placeA[ai] = emT[ai] * cA;
-      }
-      if (easing && !cameraFrame) draw();
-      var hk = hover ? obj(hover) : null, so = sel ? obj(sel) : null;
-      cardFor = cardObject();
-
-      // Sector slices: the focused discipline lies on one flat slice, edged with a hairline.
-      var fd = focusDisc(), hd = hk && hk.kind === 'd' ? hk.i : (hk ? discOf(hk) : -1);
-      if (ctxA > 0.02) {
-        L.wheel.sectors.forEach(function (s, di) {
-          var lit = di === fd || (di === hd && fd < 0 && openF < 0);
-          if (!lit) return;
-          ctx.save();
-          ctx.globalAlpha = ctxA * (di === fd ? 1 : 0.7);
-          ctx.beginPath();
-          ctx.arc(tx, ty, (s[3] + 1.2) * k, s[0], s[1]);
-          ctx.arc(tx, ty, L.wheel.rIn * 0.985 * k, s[1], s[0], true);
-          ctx.closePath();
-          ctx.fillStyle = palette.slice; ctx.fill();
-          ctx.lineWidth = 0.8; ctx.strokeStyle = palette.structFaint; ctx.stroke();
-          ctx.restore();
-        });
-        // A fine tick between sectors, at the inner rim.
-        ctx.save();
-        ctx.globalAlpha = ctxA;
-        ctx.strokeStyle = palette.structFaint; ctx.lineWidth = 0.8;
-        ctx.beginPath();
-        L.wheel.sectors.forEach(function (s) {
-          var a = s[0] - L.wheel.gap / 2, r0 = L.wheel.rIn * 0.97 * k, r1 = L.wheel.rIn * 0.97 * k - 7;
-          ctx.moveTo(tx + r0 * Math.cos(a), ty + r0 * Math.sin(a));
-          ctx.lineTo(tx + r1 * Math.cos(a), ty + r1 * Math.sin(a));
-        });
-        ctx.stroke();
-        ctx.restore();
-      }
-
-      // The Loom.
-      if (ctxA > 0.02 && fibres.length) paintFibres(alphas, openF, ctxA, hk);
-
-      // Every family's own small map.
-      var margin = 40;
-      for (var fi = 0; fi < fams.length; fi++) {
-        var a = alphas[fi];
-        if (a < 0.01) continue;
-        var f = fams[fi], sx = f.x * k + tx, sy = f.y * k + ty, sr = markR(fi);
-        if (sx + sr * 1.4 < -margin || sx - sr * 1.4 > W + margin || sy + sr * 1.4 < -margin || sy - sr * 1.4 > H + margin) continue;
-        paintFamily(fi, sx, sy, sr * emph.grow[fi], a, fi === openF ? openA : 0);
-      }
-      paintRing();
-
-      // Words, then the lines that must go round them, then the plates.
-      var plan = planLabels(openF, openA, ctxA, placeA);
-      [plan.flat, plan.side, plan.names].forEach(function (list) {
-        list.forEach(function (n) { n.alpha = alphas[n.fi] * ctxA; });
-      });
-      if (openF >= 0 && openA > 0.01 && partsReady) paintOpenLines(openF, openA, plan);
-      paintLabels(plan);
-      paintPlates(plan);
-      lastPlan = plan;
-      if (!board.on) placeCard(cardFor, plan.boxes);
-      if (window.__universeDebug) window.__universeDebug.plan = plan;
-    }
-
-    var citeSamples = [];
-    function paintFibres(alphas, openF, ctxA, hk) {
-      citeSamples = [];
-      var c = fibreSet(view.k);
-      var k = view.k;
-      var focusF = openF >= 0 ? openF : (hk && hk.kind === 'f' ? hk.i : (sel && obj(sel) && obj(sel).kind === 'f' ? obj(sel).i : -1));
-      var fd = focusDisc();
-      ctx.save();
-      ctx.setTransform(dpr * k, 0, 0, dpr * k, dpr * view.tx, dpr * view.ty);
-      // In a chosen discipline, each citation between two families is drawn straight
-      // across the map as a bowed line from the citing family to the cited one, an
-      // arrowhead at the cited family's edge: brick leaving the discipline's families,
-      // grey arriving at them from elsewhere.
-      if (fd >= 0 && openF < 0) {
-        ctx.restore();
-        ctx.save();
-        D.links.forEach(function (row) {
-          [[row[0], row[1], row[2]], [row[1], row[0], row[3]]].forEach(function (e) {
-            var from = e[0], to = e[1], w = e[2];
-            if (!w) return;
-            if (focusF >= 0 ? (from !== focusF && to !== focusF) : (fams[from].d !== fd && fams[to].d !== fd)) return;
-            var A = fams[from], B = fams[to];
-            var ax = A.x * k + view.tx, ay = A.y * k + view.ty, bx = B.x * k + view.tx, by = B.y * k + view.ty;
-            var dx = bx - ax, dy = by - ay, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
-            var ra = markR(from) + 2, rb = markR(to) + 3;
-            if (len < ra + rb + 4) return;
-            var bow = Math.min(90, len * 0.18);
-            var mx = (ax + bx) / 2 - uy * bow, my = (ay + by) / 2 + ux * bow;
-            // The ends sit on the discs' edges, aimed at the curve's control point.
-            var sa = Math.atan2(my - ay, mx - ax), sb = Math.atan2(my - by, mx - bx);
-            var x0 = ax + ra * Math.cos(sa), y0 = ay + ra * Math.sin(sa), x1 = bx + rb * Math.cos(sb), y1 = by + rb * Math.sin(sb);
-            var ink = (focusF >= 0 ? from === focusF : fams[from].d === fd) ? palette.cites : palette.cited;
-            ctx.globalAlpha = ctxA * 0.85;
-            ctx.strokeStyle = ink; ctx.fillStyle = ink;
-            ctx.lineWidth = 1 + 0.7 * Math.log(1 + w);
-            ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(mx, my, x1, y1); ctx.stroke();
-            // Where it runs, so a family name it crosses can be lifted off it.
-            for (var cs = 1, cn = Math.max(8, Math.ceil(len / 5)); cs < cn; cs++) {
-              var ct = cs / cn, cu = 1 - ct;
-              citeSamples.push([cu * cu * x0 + 2 * cu * ct * mx + ct * ct * x1, cu * cu * y0 + 2 * cu * ct * my + ct * ct * y1]);
-            }
-            var ex = x1 - mx, ey = y1 - my, el = Math.hypot(ex, ey) || 1;
-            ex /= el; ey /= el;
-            var hs = 6 + ctx.lineWidth;
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x1 - ex * hs - ey * hs * 0.5, y1 - ey * hs + ex * hs * 0.5);
-            ctx.lineTo(x1 - ex * hs + ey * hs * 0.5, y1 - ey * hs - ex * hs * 0.5);
-            ctx.closePath(); ctx.fill();
-          });
-        });
-        ctx.restore();
-        return;
-      }
-      // Citations are drawn only for what is in hand: the family pointed at,
-      // selected or open, or every family of a chosen discipline. The release
-      // at rest never turns into a hairball. Brick leaves the families in hand
-      // (they cite); grey arrives at them (they are cited).
-      var mine = function (fi) { return focusF >= 0 ? fi === focusF : fd >= 0 && fams[fi].d === fd; };
-      var lit = [];
-      if (focusF >= 0 || fd >= 0) {
-        fibres.forEach(function (f, i) { if (mine(f.from) || mine(f.to)) lit.push(i); });
-      }
-      lit.forEach(function (i) {
-        var f = fibres[i];
-        ctx.globalAlpha = ctxA * (focusF >= 0 ? 1 : 0.8);
-        ctx.fillStyle = mine(f.from) ? palette.cites : palette.cited;
-        ctx.fill(litFibre(c, i));
-      });
-      ctx.restore();
-      // A lit fibre runs on from the rim to its family's map.
-      if (lit.length) {
-        ctx.save();
-        ctx.lineWidth = 1;
-        ctx.globalAlpha = ctxA * 0.8;
-        lit.forEach(function (i) {
-          var f = fibres[i], ink = mine(f.from) ? palette.cites : palette.cited;
-          [f.from, f.to].forEach(function (end) {
-            var fm = fams[end], rr = Math.hypot(fm.x, fm.y) - fm.r;
-            var r0 = (L.wheel.rIn - 0.6) * k;
-            if (rr * k - r0 < 2) return;
-            ctx.strokeStyle = ink;
-            ctx.beginPath();
-            ctx.moveTo(view.tx + r0 * Math.cos(fm.a), view.ty + r0 * Math.sin(fm.a));
-            ctx.lineTo(view.tx + rr * k * Math.cos(fm.a), view.ty + rr * k * Math.sin(fm.a));
-            ctx.stroke();
-          });
-        });
-        ctx.restore();
-      }
-    }
-
-    function diamond(x, y, s) {
-      ctx.moveTo(x, y - s); ctx.lineTo(x + s, y); ctx.lineTo(x, y + s); ctx.lineTo(x - s, y); ctx.closePath();
-    }
-
-    function paintFamily(fi, sx, sy, sr, a, open) {
-      var f = fams[fi], fd = f.data;
-      var dr = dotRadius(sr) * (1 + 0.35 * open);
-      var hk = hover ? obj(hover) : null, so = sel ? obj(sel) : null;
-      var isHot = (hk && famOf(hk) === fi && hk.kind === 'f') || (so && so.kind === 'f' && so.i === fi);
-      var tone = fd.tone || 'none', ink = palette.tone[tone], wash = palette.tone[tone + 'Wash'];
-      var hollow = tone === 'none' || tone === 'unread';
-      // Seen whole, a family is one clean disc in its one colour. Its own map (papers,
-      // results, Lean statements) comes up only as it is opened or grows large on
-      // screen, and the disc steps back to a pale wash so that map can be read.
-      var inner = 0;
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(sx, sy, sr, 0, TAU);
-      ctx.globalAlpha = a * (1 - 0.6 * open);
-      ctx.fillStyle = hollow ? palette.ground : wash;
-      ctx.fill();
-      if (!hollow && inner < 1) {
-        ctx.globalAlpha = a * (1 - inner) * 0.92;
-        ctx.fillStyle = ink;
-        ctx.fill();
-      }
-      ctx.globalAlpha = a;
-      ctx.lineWidth = isHot && open < 0.5 ? 2.2 : hollow ? clamp(sr * 0.06, 1, 1.6) : clamp(sr * 0.03, 0.8, 1.4);
-      ctx.strokeStyle = isHot && open < 0.5 ? palette.focus : palette.tone[tone + 'Edge'];
-      ctx.stroke();
-      if (inner <= 0.01 || !partsReady) { ctx.restore(); return; }
-      // Paper rings and arcs.
-      ctx.globalAlpha = a * inner;
-      fd.papers.forEach(function (pi) {
-        var g = L.papers[pi];
-        var hot = (hk && hk.kind === 'p' && hk.i === pi) || (so && so.kind === 'p' && so.i === pi);
-        ctx.strokeStyle = hot ? palette.ink : palette.paper;
-        ctx.lineWidth = hot ? 2 : (sr > 60 ? 1.1 : 0.8);
-        ctx.beginPath();
-        ctx.arc(sx + g[0] * sr, sy + g[1] * sr, g[2] * sr, g[3], g[4]);
-        ctx.stroke();
-      });
-      // The Lean statements' ring.
-      if (L.leanR[fi]) {
-        ctx.globalAlpha = a * inner * 0.9;
-        ctx.setLineDash([1.5, 3.5]);
-        ctx.lineWidth = 0.8; ctx.strokeStyle = palette.struct;
-        ctx.beginPath(); ctx.arc(sx, sy, L.leanR[fi] * sr, 0, TAU); ctx.stroke();
-        ctx.setLineDash([]);
-      }
-      // Each result is a dot in its family's one colour; selected or pointed at, it is ringed.
-      var dim = function (key) { return matches && !searchFolded && !matches[key] ? 0.28 : 1; };
-      var hotKey = function (key) { return inHand(key); };
-      var dotInk = hollow ? palette.struct : ink;
-      fd.papers.forEach(function (pi) {
-        D.papers[pi].results.forEach(function (ri) {
-          var p = L.results[ri], x = sx + p[0] * sr, y = sy + p[1] * sr, r = D.results[ri];
-          ctx.globalAlpha = a * inner * dim(r.id);
-          ctx.beginPath();
-          ctx.arc(x, y, dr, 0, TAU);
-          ctx.fillStyle = dotInk; ctx.fill();
-          if (hotKey(r.id) && dr > 2) {
-            ctx.beginPath(); ctx.arc(x, y, dr + 3, 0, TAU);
-            ctx.lineWidth = 1.6; ctx.strokeStyle = palette.focus; ctx.stroke();
-          }
-        });
-      });
-      // Each Lean statement is a small steel diamond, the same for every one: its name
-      // stands beside it once the family is open, and the panel says who re-ran it.
-      fd.lean.forEach(function (li) {
-        var p = L.lean[li], x = sx + p[0] * sr, y = sy + p[1] * sr, l = D.lean[li];
-        var s = dr * 1.3;
-        ctx.globalAlpha = a * inner * dim(l.id);
-        ctx.beginPath(); diamond(x, y, s);
-        ctx.fillStyle = palette.ground; ctx.fill();
-        ctx.lineWidth = Math.max(0.9, s * 0.3); ctx.strokeStyle = palette.steel; ctx.stroke();
-        if (hotKey(l.id) && s > 2) {
-          ctx.beginPath(); diamond(x, y, s + 3.5);
-          ctx.lineWidth = 1.6; ctx.strokeStyle = palette.focus; ctx.stroke();
-        }
-      });
-      ctx.restore();
-    }
-
-    /* ---- The chosen object, once: a ring that widens and fades as it settles */
+    // One ring, once, round a discipline's region or a family's disc as the move settles.
     function settleRing() {
       if (!ringWanted) return;
       var key = ringWanted;
@@ -1433,586 +642,242 @@
       ring = { key: key, start: nowMs() };
       draw();
     }
+    // A family's title written inside its disc, line by line within the circle's chord at
+    // that height: the largest size between 11 and 17 px at which every word fits, with the
+    // family's counts beneath when there is room; failing that, cut at a word with an
+    // ellipsis (the card and the list carry the whole title).
+    // Existing compound separators are safe line breaks. A single word wider than
+    // the disc is split only as a last resort; its full spelling remains in the sidebar.
+    function labelTokens(text, r) {
+      var tokens = [], font = '500 11px ' + SERIF;
+      var edge = 11 * 1.17 * 0.45, limit = 2 * Math.sqrt(Math.max(0, r * r - edge * edge)) * 0.9 - 6;
+      text.split(/\s+/).filter(Boolean).forEach(function (word, wi) {
+        var bits = word.match(/[^–-]+[–-]?/g) || [word];
+        bits.forEach(function (bit, bi) {
+          var join = wi && !bi ? ' ' : '', chars = Array.from(bit);
+          while (chars.length && textWidth(chars.join(''), font) > limit) {
+            var n = Math.max(1, chars.length - 1);
+            while (n > 1 && textWidth(chars.slice(0, n).join('') + '-', font) > limit) n--;
+            tokens.push({ text: chars.splice(0, n).join('') + '-', join: join }); join = '';
+          }
+          if (chars.length) tokens.push({ text: chars.join(''), join: join });
+        });
+      });
+      return tokens;
+    }
+    function wrapInCircle(tokens, font, lead, r, n) {
+      var widths = [], memo = {};
+      for (var li = 0; li < n; li++) {
+        var edge = Math.abs(-n * lead / 2 + (li + 0.5) * lead) + lead * 0.45;
+        if (edge >= r) return null;
+        widths.push(2 * Math.sqrt(r * r - edge * edge) * 0.9 - 6);
+      }
+      // Explore line breaks: a long middle word may fit the broad centre of the
+      // circle even when greedily filling the preceding line would strand it.
+      function from(line, at) {
+        var key = line + ':' + at;
+        if (Object.prototype.hasOwnProperty.call(memo, key)) return memo[key];
+        var best = line === n - 1 && textWidth('…', font) <= widths[line] ? { lines: ['…'], k: at } : null, text = '';
+        for (var end = at; end < tokens.length; end++) {
+          text += (end === at ? '' : tokens[end].join) + tokens[end].text;
+          if (textWidth(text, font) > widths[line]) break;
+          if (line === n - 1) {
+            var shown = text + (end + 1 < tokens.length ? '…' : '');
+            if (textWidth(shown, font) <= widths[line]) best = { lines: [shown], k: end + 1 };
+          } else if (end + 1 < tokens.length) {
+            var rest = from(line + 1, end + 1);
+            if (rest && (!best || rest.k > best.k)) best = { lines: [text].concat(rest.lines), k: rest.k };
+          }
+          if (best && best.k === tokens.length) break;
+        }
+        return (memo[key] = best);
+      }
+      return from(0, 0);
+    }
+    function famLabel(fi, r) {
+      var cached = labelCache[fi];
+      if (cached && cached.r === r) return cached.label;
+      var tokens = labelTokens(D.families[fi].title, r), out = null, last = null;
+      for (var size = clamp(r * 0.18, 11, 17); size >= 11 && !out; size = Math.max(10.5, size - 0.5)) {
+        var font = '500 ' + size.toFixed(1) + 'px ' + SERIF, lead = size * 1.17;
+        for (var n = 1; n <= tokens.length && n * lead < r * 1.7 && !out; n++) {
+          var got = wrapInCircle(tokens, font, lead, r, n);
+          var label = got && { lines: got.lines, font: font, lead: lead, size: size };
+          if (got && got.k === tokens.length) out = label;
+          else if (got && (!last || got.k > last.k)) last = { k: got.k, label: label };
+        }
+        // Always test the readable lower bound, including fractional starting sizes.
+        if (!out && size > 11 && size < 11.5) size = 11.5;
+      }
+      if (!out && last && last.k) out = last.label;
+      if (!out) {
+        var first = Array.from(D.families[fi].title), fallbackFont = '500 11px ' + SERIF;
+        while (first.length > 1 && textWidth(first.join('') + '…', fallbackFont) > r * 1.7 - 6) first.pop();
+        out = { lines: [first.join('').trim() + '…'], font: fallbackFont, lead: 13, size: 11 };
+      }
+      labelCache[fi] = { r: r, label: out };
+      return out;
+    }
+    function drawText(lines, x, y, font, color, lead, align, halo) {
+      ctx.font = font; ctx.textAlign = align || 'center'; ctx.textBaseline = 'middle';
+      if (halo) { ctx.lineJoin = 'round'; ctx.lineWidth = 4; ctx.strokeStyle = halo; }
+      lines.forEach(function (l, i) {
+        if (halo) ctx.strokeText(l, x, y + lead / 2 + i * lead);
+        ctx.fillStyle = color; ctx.fillText(l, x, y + lead / 2 + i * lead);
+      });
+    }
+    var chartBoxes = [];          // words and discs on the drawing, for the card to keep off
+    function paint() {
+      if (!D || !W || !chart.shown) return;
+      var e = stepChart(), S = chart.shown, moving = !!chart.start;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      chartBoxes = [];
+      var hk = hover ? obj(hover) : null, lvl = S.level;
+      var words = moving ? clamp((e - 0.55) / 0.45, 0, 1) : 1;
+      var hd = hk && hk.kind === 'd' ? hk.i : -1, hf = hk && hk.kind === 'f' ? hk.i : -1;
+      // Regions: a flat slice of the ground, edged by a hairline, a heavier edge when pointed at.
+      S.regions.forEach(function (g, di) {
+        if (g.a < 0.01) return;
+        ctx.save();
+        ctx.globalAlpha = g.a;
+        ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, TAU);
+        ctx.fillStyle = palette.slice; ctx.fill();
+        ctx.lineWidth = di === hd ? 2 : 1; ctx.strokeStyle = di === hd ? palette.focus : palette.structFaint; ctx.stroke();
+        ctx.restore();
+      });
+      // At a discipline, the citations of the family pointed at: brick to the families its
+      // papers cite, grey from those that cite it, an arrowhead at the cited end.
+      var near = {};
+      if (lvl === 'disc' && hf >= 0 && !moving) {
+        near[hf] = 1;
+        ctx.save();
+        D.links.forEach(function (row) {
+          [[row[0], row[1], row[2]], [row[1], row[0], row[3]]].forEach(function (lk) {
+            var from = lk[0], to = lk[1], w = lk[2];
+            if (!w || (from !== hf && to !== hf)) return;
+            var A = S.nodes[from], B = S.nodes[to];
+            if (A.a < 0.5 || B.a < 0.5) return;
+            near[from === hf ? to : from] = 1;
+            var dx = B.x - A.x, dy = B.y - A.y, len = Math.hypot(dx, dy) || 1, ux = dx / len, uy = dy / len;
+            var bow = Math.min(60, len * 0.15), mx = (A.x + B.x) / 2 - uy * bow, my = (A.y + B.y) / 2 + ux * bow;
+            var sa = Math.atan2(my - A.y, mx - A.x), sb = Math.atan2(my - B.y, mx - B.x);
+            var x0 = A.x + (A.r + 2) * Math.cos(sa), y0 = A.y + (A.r + 2) * Math.sin(sa), x1 = B.x + (B.r + 3) * Math.cos(sb), y1 = B.y + (B.r + 3) * Math.sin(sb);
+            var ink = from === hf ? palette.cites : palette.cited;
+            ctx.strokeStyle = ink; ctx.fillStyle = ink; ctx.lineWidth = 1.8 + 0.6 * Math.log(1 + w);
+            ctx.beginPath(); ctx.moveTo(x0, y0); ctx.quadraticCurveTo(mx, my, x1, y1); ctx.stroke();
+            var ex = x1 - mx, ey = y1 - my, el = Math.hypot(ex, ey) || 1, hs = 10;
+            ex /= el; ey /= el;
+            ctx.beginPath(); ctx.moveTo(x1, y1);
+            ctx.lineTo(x1 - ex * hs - ey * hs * 0.5, y1 - ey * hs + ex * hs * 0.5);
+            ctx.lineTo(x1 - ex * hs + ey * hs * 0.5, y1 - ey * hs - ex * hs * 0.5);
+            ctx.closePath(); ctx.fill();
+          });
+        });
+        ctx.restore();
+      }
+      // The families.
+      var pp = hk ? null : null;
+      for (var fi = 0; fi < fams.length; fi++) {
+        var q = S.nodes[fi];
+        if (!q || q.a < 0.01) continue;
+        var f = fams[fi].data, tone = f.tone || 'none', hollow = tone === 'none' || tone === 'unread';
+        var a = q.a;
+        if (matchFam && !searchFolded && !matchFam[fi]) a *= 0.22;
+        if (lvl === 'disc' && hf >= 0 && !near[fi]) a *= 0.14;
+        var hot = fi === hf || (sel && obj(sel) && obj(sel).kind === 'f' && obj(sel).i === fi);
+        ctx.save();
+        ctx.globalAlpha = a;
+        ctx.beginPath(); ctx.arc(q.x, q.y, q.r, 0, TAU);
+        ctx.fillStyle = hollow ? palette.ground : (lvl === 'disc' || lvl === 'fam' ? palette.tone[tone + 'Tint'] : palette.tone[tone]);
+        ctx.fill();
+        ctx.lineWidth = hot ? 2.6 : lvl === 'release' ? (hollow ? 1.1 : 0.8) : clamp(q.r * 0.05, 2, 4);
+        ctx.strokeStyle = hot ? palette.focus : palette.tone[tone + 'Edge'];
+        if (lvl !== 'release' && !hot) ctx.strokeStyle = hollow ? palette.struct : palette.tone[tone];
+        ctx.stroke();
+        ctx.restore();
+        if (lvl === 'disc' && q.a > 0.5) chartBoxes.push({ x0: q.x - q.r, x1: q.x + q.r, y0: q.y - q.r, y1: q.y + q.r, fi: fi, disc: true });
+      }
+      // The words: each discipline's name and counts in its region; each family's title in its disc.
+      if (words > 0.01) {
+        if (lvl === 'release') {
+          S.regions.forEach(function (g, di) {
+            if (g.a < 0.05) return;
+            var lab = g.lab;
+            ctx.save(); ctx.globalAlpha = g.a * words;
+            drawText(lab.lines, g.x, g.ly, lab.nf, palette.ink, lab.lead, 'center', palette.ground);
+            drawText(lab.count, g.x, g.ly + lab.lines.length * lab.lead + 1, lab.cf, palette.muted, lab.sub * 1.3, 'center', palette.ground);
+            ctx.restore();
+            chartBoxes.push({ x0: g.x - lab.w / 2, x1: g.x + lab.w / 2, y0: g.ly, y1: g.ly + lab.h, di: di });
+          });
+        } else if (lvl === 'disc') {
+          for (var fj = 0; fj < fams.length; fj++) {
+            var n = S.nodes[fj];
+            if (!n || n.a < 0.5) continue;
+            var t = famLabel(fj, moving ? chart.to.nodes[fj].r : n.r), f2 = fams[fj].data;
+            var labelR = moving ? chart.to.nodes[fj].r : n.r;
+            var cnt = [count('papers', f2.papers.length)];
+            if (f2.lean.length) cnt.push(count('lean', f2.lean.length));
+            var cntText = cnt.length > 1 ? T('card.counts', { papers: cnt[0], lean: cnt[1] }) : cnt[0];
+            var cf = '400 ' + clamp(t.size * 0.78, 10.5, 13).toFixed(1) + 'px ' + SANS, cl = t.size * 1.05;
+            var cy2 = (t.lines.length * t.lead + cl) / 2, ce = cy2 + 2;
+            var showCnt = ce < labelR && textWidth(cntText, cf) <= 2 * Math.sqrt(labelR * labelR - ce * ce) * 0.9 - 6;
+            showCnt = showCnt && t.lines.every(function (line, i) {
+              var edge = Math.abs(-cy2 + (i + 0.5) * t.lead) + t.lead * 0.45;
+              return edge < labelR && textWidth(line, t.font) <= 2 * Math.sqrt(labelR * labelR - edge * edge) * 0.9 - 6;
+            });
+            var blockH = t.lines.length * t.lead + (showCnt ? cl : 0);
+            var a2 = n.a * words * (matchFam && !searchFolded && !matchFam[fj] ? 0.3 : 1) * (hf >= 0 && !near[fj] ? 0.18 : 1);
+            ctx.save(); ctx.globalAlpha = a2;
+            // Fit once at the destination, then scale that fit with the moving disc.
+            // Wrapping at every fractional animation radius stalls slower machines.
+            ctx.translate(n.x, n.y);
+            ctx.scale(n.r / labelR, n.r / labelR);
+            drawText(t.lines, 0, -blockH / 2, t.font, palette.ink, t.lead, 'center');
+            if (showCnt) drawText([cntText], 0, -blockH / 2 + t.lines.length * t.lead, cf, palette.muted, cl, 'center');
+            ctx.restore();
+          }
+        }
+      }
+      paintRing();
+      if (!board.on) { cardFor = cardObject(); placeCard(cardFor); }
+      if (chart.start || ring) draw();
+      if (window.__universeDebug) window.__universeDebug.boxes = chartBoxes;
+    }
     function paintRing() {
       if (!ring) return;
       var o = obj(ring.key), u = (nowMs() - ring.start) / RING_MS;
-      if (!o || ring.key !== sel || u >= 1 || reduceMotion) { ring = null; return; }
-      if (!cameraFrame) draw();
-      var k = view.k, grow = RING_GROW * easeOut(u), fi = famOf(o);
+      if (!o || ring.key !== sel || u >= 1 || reduceMotion || !chart.shown) { ring = null; return; }
+      var c = null;
+      if (o.kind === 'd') c = chart.shown.regions[o.i];
+      if (!c) { ring = null; return; }
       ctx.save();
       ctx.globalAlpha = 0.85 * (1 - u) * (1 - u);
       ctx.strokeStyle = palette.focus; ctx.lineWidth = 1.6;
-      ctx.beginPath();
-      if (o.kind === 'd') {
-        var s = L.wheel.sectors[o.i];
-        ctx.arc(view.tx, view.ty, (s[3] + 1.2) * k + grow, s[0], s[1]);
-      } else if (o.kind === 'f') {
-        var f = fams[o.i];
-        ctx.arc(f.x * k + view.tx, f.y * k + view.ty, markR(o.i) + 3 + grow, 0, TAU);
-      } else {
-        var f2 = fams[fi], sx = f2.x * k + view.tx, sy = f2.y * k + view.ty, sr = f2.r * k;
-        var dr = dotRadius(sr) * 1.35;
-        if (o.kind === 'p') {
-          var g = L.papers[o.i];
-          ctx.arc(sx + g[0] * sr, sy + g[1] * sr, g[2] * sr + grow, g[3], g[4]);
-        } else if (o.kind === 'r') {
-          var pr = L.results[o.i];
-          ctx.arc(sx + pr[0] * sr, sy + pr[1] * sr, dr + 3 + grow, 0, TAU);
-        } else if (o.kind === 'l') {
-          var pl = L.lean[o.i];
-          diamond(sx + pl[0] * sr, sy + pl[1] * sr, dr * 1.3 + 3.5 + grow * 1.2);
-        }
-      }
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(c.x, c.y, c.r + 3 + RING_GROW * easeOut(u), 0, TAU); ctx.stroke();
       ctx.restore();
     }
-
-    /* ---- Labels: placed in priority order, none covering another or a mark */
-    var PLATE_FONT = '500 13.5px ' + SERIF, PLATE_SUB = '400 12px ' + SANS, PLATE_LEAD = 17;
-    var NAME_FONT = '400 12.5px ' + SERIF, NAME_LEAD = 15;
-    var END_FONT = '400 12.5px ' + SERIF, PAPER_FONT = '500 13.5px ' + SERIF, LEAN_FONT = 'italic 400 12.5px ' + SERIF, DATE_FONT = '400 11.5px ' + SANS;
-    var NUM_HOT_FONT = '600 12px ' + SANS, NUM_FONT = '400 11.5px ' + SANS, CAP_FONT = 'italic 400 11.5px ' + SANS;
-
-    function planLabels(openF, openA, ctxA, alphas) {
-      var plan = { disc: [], names: [], flat: [], side: [], open: [], plates: [], marks: [], lines: [], leaders: [], boxes: [] };
-      var taken = [];
-      var free = function (b) {
-        if (b.x0 < 4 || b.x1 > W - 4 || b.y0 < 4 || b.y1 > H - 4) return false;
-        for (var i = 0; i < chrome.length; i++) if (boxesMeet(b, chrome[i], 0)) return false;
-        for (var j = 0; j < taken.length; j++) if (boxesMeet(b, taken[j], 1)) return false;
-        return true;
-      };
-      var k = view.k;
-      // Marks the words must keep off: the open family's dots, diamonds and rings.
-      var marks = [];
-      if (openF >= 0 && openA > 0.01 && partsReady) marks = openMarks(openF);
-      plan.marks = marks;
-      var hk = hover ? obj(hover) : null, so = sel ? obj(sel) : null;
-      // The discipline names while the wheel is in view; in a discipline, its
-      // families' names come first and the other disciplines' names take what room is left.
-      if (ctxA > 0.3 && openF < 0 && !(compactLabels && view.k < fitK * 1.6)) {
-        var fd = focusDisc();
-        var wantNames = fd >= 0 || k >= fitK * 1.9;
-        if (wantNames && fd >= 0) placeFlatNames(plan, taken, fd, alphas, ctxA, free);
-        var list = placeDiscLabels(view, function (di) { return di === fd; });
-        list.forEach(function (q) {
-          var t = discText[q.di];
-          var b = { x0: q.x0, x1: q.x1, y0: q.y0, y1: q.y1 };
-          if (!free(b)) return;
-          var lead = discLeader(q), dots = [];
-          if (lead) {
-            for (var s2 = 1; s2 < lead.length; s2++) {
-              var p0 = lead[s2 - 1], p1 = lead[s2], n2 = Math.max(1, Math.ceil(Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) / 6));
-              for (var u2 = 0; u2 <= n2; u2++) {
-                var lx2 = p0[0] + (p1[0] - p0[0]) * u2 / n2, ly2 = p0[1] + (p1[1] - p0[1]) * u2 / n2;
-                dots.push({ x0: lx2 - 2, x1: lx2 + 2, y0: ly2 - 2, y1: ly2 + 2, leader: true });
-              }
-            }
-            // A leader may not cross a word already standing.
-            for (var d2 = 0; d2 < dots.length; d2++) for (var j2 = 0; j2 < taken.length; j2++) if (!taken[j2].leader && boxesMeet(dots[d2], taken[j2], 0)) return;
-            plan.leaders.push({ ink: 'leader', pts: lead });
-          }
-          taken.push(b);
-          dots.forEach(function (d3) { taken.push(d3); });
-          plan.disc.push({ di: q.di, x: q.x0, y: q.y0, side: q.side, t: t, ax: q.ax, ay: q.ay, box: b, alpha: ctxA,
-                           hot: (hk && hk.kind === 'd' && hk.i === q.di) || discOf(hk) === q.di });
-          hitTargets.push({ box: b, key: D.disciplines[q.di].id });
-        });
-        if (wantNames && fd < 0) placeFlatNames(plan, taken, fd, alphas, ctxA, free);
+    // Family dots take precedence over their enclosing discipline at the release.
+    function hitAt(x, y, allowMoving) {
+      var S = chart.shown;
+      if (!S || (chart.start && !allowMoving)) return null;
+      if (S.level === 'disc' || S.level === 'release') {
+        var closest = null, distance = Infinity;
+        for (var fi = 0; fi < fams.length; fi++) {
+          var q = S.nodes[fi];
+          if (!q || q.a < 0.01) continue;
+          var d = Math.hypot(x - q.x, y - q.y);
+          if (d <= q.r + 2 && d < distance) { closest = D.families[fi].id; distance = d; }
+        }
+        if (closest || S.level === 'disc') return closest;
       }
-      if (openF >= 0 && openA > 0.01 && partsReady) placeOpen(plan, openF, openA, taken, marks, free);
-      // Plates last, over the words they keep clear of where they can: pointing at
-      // something names it without moving any other word. A selected result or Lean
-      // statement has no plate, since the panel beside the map names it.
-      var plateFor = [];
-      if (so && so.kind === 'f' && openA < 0.5) plateFor.push(so);
-      // Where the pointer can hover, the card beside the map names what is pointed at
-      // instead (placeCard); a touch screen keeps the plate.
-      if (hk && !cardFor && (!so || hk.key !== so.key) && (hk.kind !== 'd' || compactLabels)) plateFor.push(hk);
-      plateFor.forEach(function (o) {
-        var p = namePlate(o, marks.concat(taken));
-        if (p) plan.plates.push(p);
-      });
-      plan.boxes = taken;
-      return plan;
-    }
-
-    function rayRoom(cx, cy, a, r0) {
-      // How far a ray from the wheel's centre runs past r0 before it leaves the canvas.
-      var dx = Math.cos(a), dy = Math.sin(a), best = Infinity;
-      if (dx > 1e-6) best = Math.min(best, (W - 8 - cx) / dx);
-      if (dx < -1e-6) best = Math.min(best, (8 - cx) / dx);
-      if (dy > 1e-6) best = Math.min(best, (H - 8 - cy) / dy);
-      if (dy < -1e-6) best = Math.min(best, (8 - cy) / dy);
-      return best - r0;
-    }
-    /* Family names, set along their radius outside the band as the system map
-       names a family's components. Close to the band each name keeps its
-       family's angle; where names crowd, they fan out along the rim in the
-       families' order (clusters of names centred on their families, the way
-       pie labels are spread), each tied to its place by a fine polar leader. */
-    function placeNames(plan, taken, fd, alphas, ctxA) {
-      var k = view.k, cx = view.tx, cy = view.ty;
-      // The small maps on the canvas are marks a name keeps off.
-      var discs = [];
-      fams.forEach(function (f, fi) {
-        if (alphas[fi] < 0.02) return;
-        var x = f.x * k + cx, y = f.y * k + cy, r = f.r * k + 4;
-        if (x + r < 0 || x - r > W || y + r < 0 || y - r > H) return;
-        discs.push([x, y, r]);
-      });
-      var onDisc = function (q) {
-        var qx = (q.x0 + q.x1) / 2, qy = (q.y0 + q.y1) / 2, h = (q.x1 - q.x0) / 2;
-        for (var i = 0; i < discs.length; i++) {
-          var d = discs[i], dx = qx - d[0], dy = qy - d[1], rr = d[2] + h * 0.8;
-          if (dx * dx + dy * dy < rr * rr) return true;
-        }
-        return false;
-      };
-      L.wheel.sectors.forEach(function (s, di) {
-        if (fd >= 0 && di !== fd) return;
-        var rEdge = s[3] * k + 4, r0 = rEdge + 30;
-        var mid = s[2], mx = cx + rEdge * Math.cos(mid), my = cy + rEdge * Math.sin(mid);
-        if (fd < 0 && (mx < -200 || mx > W + 200 || my < -200 || my > H + 200)) return;
-        var items = [];
-        D.disciplines[di].families.forEach(function (fi) {
-          if (alphas[fi] < 0.3) return;
-          var f = fams[fi];
-          var room = Math.min(330, rayRoom(cx, cy, f.a, r0));
-          var t = room >= 60 ? fitLines(D.families[fi].title, NAME_FONT, Math.max(60, room), 2) : null;
-          if (!t) t = fitLines(D.families[fi].title, NAME_FONT, 330, 2);
-          if (!t) return;
-          items.push({ fi: fi, a: f.a, t: t, need: (t.lines.length * NAME_LEAD + 3) / r0 });
-        });
-        items.sort(function (p, q) { return p.a - q.a; });
-        // Spread: merge crowding neighbours into clusters, each centred on its members.
-        var clusters = items.map(function (it) { return { items: [it], size: it.need }; });
-        var place = function (c) {
-          var off = 0, sum = 0;
-          c.items.forEach(function (it) { sum += it.a - (off + it.need / 2); off += it.need; });
-          c.lo = sum / c.items.length;
-        };
-        clusters.forEach(place);
-        for (var guard = 0; guard < 400; guard++) {
-          var merged = false;
-          for (var c = 1; c < clusters.length; c++) {
-            var A = clusters[c - 1], B = clusters[c];
-            if (A.lo + A.size > B.lo) {
-              var C = { items: A.items.concat(B.items), size: A.size + B.size };
-              place(C);
-              clusters.splice(c - 1, 2, C);
-              merged = true;
-              break;
-            }
-          }
-          if (!merged) break;
-        }
-        clusters.forEach(function (c) {
-          var off = 0;
-          c.items.forEach(function (it) {
-            var b = c.lo + off + it.need / 2;
-            off += it.need;
-            var right = Math.cos(b) >= 0;
-            var room = rayRoom(cx, cy, b, r0);
-            if (it.t.width > room) return;
-            var half = (it.t.lines.length * NAME_LEAD) / 2 + 1;
-            var samples = [];
-            for (var along = 0; along <= it.t.width + 0.1; along += 8) {
-              var sx = cx + (r0 + along) * Math.cos(b), sy = cy + (r0 + along) * Math.sin(b);
-              samples.push({ x0: sx - half, x1: sx + half, y0: sy - half, y1: sy + half });
-            }
-            // A name stands whole on the canvas, clear of every other word.
-            for (var i = 0; i < samples.length; i++) {
-              var q = samples[i], qx = (q.x0 + q.x1) / 2, qy = (q.y0 + q.y1) / 2;
-              if (qx < 6 || qx > W - 6 || qy < 6 || qy > H - 6) return;
-              if (onDisc(q)) return;
-              for (var j = 0; j < chrome.length; j++) if (boxesMeet(q, chrome[j], 0)) return;
-              for (var j2 = 0; j2 < taken.length; j2++) if (boxesMeet(q, taken[j2], 1)) return;
-            }
-            var lead = null;
-            if (Math.abs(Loom.turn(it.a, b)) * r0 > 2) {
-              var a1 = it.a + Loom.turn(it.a, b);
-              lead = Loom.polarXY(cx, cy, Loom.polarBezier([it.a, rEdge], [it.a, rEdge + 13], [a1, r0 - 15], [a1, r0 - 4], 3));
-            } else {
-              lead = [[cx + rEdge * Math.cos(it.a), cy + rEdge * Math.sin(it.a)], [cx + (r0 - 4) * Math.cos(it.a), cy + (r0 - 4) * Math.sin(it.a)]];
-            }
-            samples.forEach(function (q2) { taken.push(q2); });
-            plan.leaders.push({ ink: 'name', fi: it.fi, pts: lead });
-            plan.names.push({ fi: it.fi, a: b, r0: r0, ox: cx + r0 * Math.cos(b), oy: cy + r0 * Math.sin(b), t: it.t, alpha: alphas[it.fi] * ctxA, samples: samples, lead: lead });
-            samples.forEach(function (q3) { hitTargets.push({ box: q3, key: D.families[it.fi].id }); });
-          });
-        });
-      });
-    }
-
-    /* Family names set level beside their discs, as a good map sets town names:
-       the larger families first, each tried at eight places round its disc, never
-       over another word or another disc. A name that finds no room is left to
-       the list beside the map, which names every family. */
-    var FLAT_FONT = '500 13px ' + SERIF, FLAT_LEAD = 15.5;
-    function placeFlatNames(plan, taken, fd, alphas, ctxA, free) {
-      var k = view.k, cx = view.tx, cy = view.ty;
-      var nodes = [];
-      fams.forEach(function (f, fi) {
-        // Faded families outside the focus are ground a name may stand on.
-        if (alphas[fi] < 0.5) return;
-        var x = f.x * k + cx, y = f.y * k + cy, r = markR(fi) + 3;
-        if (x + r < 0 || x - r > W || y + r < 0 || y - r > H) return;
-        nodes.push([x, y, r, fi]);
-      });
-      var onNode = function (b, own) {
-        for (var i = 0; i < nodes.length; i++) {
-          var n = nodes[i];
-          if (n[3] === own) continue;
-          var px = clamp(n[0], b.x0, b.x1), py = clamp(n[1], b.y0, b.y1);
-          if ((px - n[0]) * (px - n[0]) + (py - n[1]) * (py - n[1]) < n[2] * n[2]) return true;
-        }
-        return false;
-      };
-      var list = (fd >= 0 ? D.disciplines[fd].families : fams.map(function (f, i) { return i; }))
-        .filter(function (fi) { return alphas[fi] >= 0.3; })
-        .sort(function (a, b) { return fams[b].r - fams[a].r || a - b; });
-      list.forEach(function (fi) {
-        var f = fams[fi], x = f.x * k + cx, y = f.y * k + cy, r = markR(fi);
-        if (x < -40 || x > W + 40 || y < -40 || y > H + 40) return;
-        var title = D.families[fi].title;
-        var shapes = [fitLines(title, FLAT_FONT, 172, 3) || balancedLines(title, 4, FLAT_FONT), fitLines(title, FLAT_FONT, 240, 2)].filter(Boolean);
-        // Beside the disc first; then a short step away with a fine leader back to it.
-        for (var gi = 0; gi < 4; gi++) {
-          var g = [6, 22, 46, 76][gi];
-          for (var si = 0; si < shapes.length; si++) {
-            var t = shapes[si], w = t.width, h = t.lines.length * FLAT_LEAD, d = (r + g) * 0.72;
-            var spots = [[x + r + g, y - h / 2, 'left'], [x - r - g - w, y - h / 2, 'right'],
-                         [x + d, y - d - h, 'left'], [x + d, y + d, 'left'],
-                         [x - d - w, y - d - h, 'right'], [x - d - w, y + d, 'right'],
-                         [x - w / 2, y - r - g - h, 'center'], [x - w / 2, y + r + g, 'center']];
-            for (var s = 0; s < spots.length; s++) {
-              var b = { x0: spots[s][0], x1: spots[s][0] + w, y0: spots[s][1], y1: spots[s][1] + h };
-              if (!free(b) || onNode(b, fi)) continue;
-              taken.push(b);
-              var lead = null;
-              if (gi) {
-                var px = clamp(x, b.x0, b.x1), py = clamp(y, b.y0, b.y1), a = Math.atan2(py - y, px - x);
-                lead = [[x + (r + 2) * Math.cos(a), y + (r + 2) * Math.sin(a)], [px - 3 * Math.cos(a), py - 3 * Math.sin(a)]];
-              }
-              plan.flat.push({ fi: fi, t: t, box: b, align: spots[s][2], lead: lead, alpha: alphas[fi] * ctxA });
-              hitTargets.push({ box: b, key: D.families[fi].id });
-              return;
-            }
-          }
-        }
-      });
-    }
-
-    /* A chosen discipline's family names, level, in two columns beside its
-       families (left of the cluster for those on its left, right for the rest),
-       each in the order its family stands from top to bottom and tied to it by a
-       fine leader, as the Plectis map names each problem round its field. */
-    var SIDE_FONT = '500 13px ' + SERIF, SIDE_LEAD = 15.5;
-    function placeSideNames(plan, taken, fd, alphas, ctxA) {
-      var k = view.k, cx = view.tx, cy = view.ty;
-      var list = D.disciplines[fd].families.map(function (fi) {
-        var f = fams[fi];
-        return { fi: fi, x: f.x * k + cx, y: f.y * k + cy, r: f.r * k };
-      });
-      if (!list.length) return;
-      var x0 = Infinity, x1 = -Infinity;
-      list.forEach(function (n) { x0 = Math.min(x0, n.x - n.r); x1 = Math.max(x1, n.x + n.r); });
-      var mid = (x0 + x1) / 2;
-      var sides = { left: [], right: [] };
-      list.forEach(function (n) { sides[n.x < mid ? 'left' : 'right'].push(n); });
-      ['left', 'right'].forEach(function (side) {
-        var items = sides[side].sort(function (a, b) { return a.y - b.y; });
-        var room = side === 'left' ? x0 - 30 : W - x1 - 30;
-        var maxW = clamp(room, 90, 230);
-        // Two lines where the column has the height for them, one where it does not.
-        var lines = 2;
-        // One line, cut with an ellipsis, where two would overrun the map; the list
-        // beside it and the name plate under the pointer give the whole title.
-        var oneLine = function (text) {
-          var t = fitLines(text, SIDE_FONT, maxW, 1);
-          if (t) return t;
-          var words = text.split(' ');
-          while (words.length > 1) {
-            words.pop();
-            var cut = words.join(' ').replace(/[,;:]$/, '') + '…', w = textWidth(cut, SIDE_FONT);
-            if (w <= maxW) return { lines: [cut], width: w };
-          }
-          return { lines: [text], width: textWidth(text, SIDE_FONT) };
-        };
-        var heights = function (n) { return items.reduce(function (s, it) {
-          var title = D.families[it.fi].title;
-          var t = n === 1 ? oneLine(title) : (fitLines(title, SIDE_FONT, maxW, n) || balancedLines(title, n + 1, SIDE_FONT));
-          it.t = t; return s + t.lines.length * SIDE_LEAD + 5; }, 0); };
-        if (heights(2) > H - 24) { lines = 1; heights(1); }
-        items.forEach(function (it) { it.h = it.t.lines.length * SIDE_LEAD; it.ly = it.y - it.h / 2; });
-        for (var i = 1; i < items.length; i++) items[i].ly = Math.max(items[i].ly, items[i - 1].ly + items[i - 1].h + 5);
-        if (items.length) {
-          var over = items[items.length - 1].ly + items[items.length - 1].h - (H - 10);
-          if (over > 0) items[items.length - 1].ly -= over;
-          for (var j = items.length - 2; j >= 0; j--) items[j].ly = Math.min(items[j].ly, items[j + 1].ly - items[j].h - 5);
-          if (items[0].ly < 10) { var push = 10 - items[0].ly; items.forEach(function (it) { it.ly += push; }); }
-        }
-        items.forEach(function (it) {
-          var w = it.t.width, bx0 = side === 'left' ? x0 - 22 - w : x1 + 22;
-          var b = { x0: bx0, x1: bx0 + w, y0: it.ly, y1: it.ly + it.h };
-          if (b.x0 < 4 || b.x1 > W - 4) return;
-          var ay = clamp(it.y, b.y0 + 6, b.y1 - 6), ex = side === 'left' ? b.x1 + 4 : b.x0 - 4;
-          var ang = Math.atan2(ay - it.y, ex - it.x);
-          var sx0 = it.x + (it.r + 2) * Math.cos(ang), sy0 = it.y + (it.r + 2) * Math.sin(ang);
-          taken.push(b);
-          plan.side.push({ fi: it.fi, t: it.t, box: b, align: side === 'left' ? 'right' : 'left', alpha: alphas[it.fi] * ctxA,
-                           lead: [[sx0, sy0], [ex + (side === 'left' ? 8 : -8), ay], [ex, ay]] });
-          hitTargets.push({ box: b, key: D.families[it.fi].id });
-        });
-      });
-    }
-
-    // The open family's marks, in screen space.
-    function openMarks(fi) {
-      var f = fams[fi], k = view.k, sx = f.x * k + view.tx, sy = f.y * k + view.ty, sr = f.r * k;
-      var dr = dotRadius(sr) * 1.35 + 3, out = [];
-      f.data.papers.forEach(function (pi) {
-        D.papers[pi].results.forEach(function (ri) {
-          var p = L.results[ri], x = sx + p[0] * sr, y = sy + p[1] * sr;
-          out.push({ x0: x - dr, x1: x + dr, y0: y - dr, y1: y + dr, key: D.results[ri].id });
-        });
-        var g = L.papers[pi], rr = g[2] * sr, span = g[4] - g[3], n = Math.max(6, Math.ceil(span * rr / 9));
-        for (var j = 0; j <= n; j++) {
-          var a = g[3] + span * j / n, x2 = sx + g[0] * sr + rr * Math.cos(a), y2 = sy + g[1] * sr + rr * Math.sin(a);
-          out.push({ x0: x2 - 3, x1: x2 + 3, y0: y2 - 3, y1: y2 + 3, ring: pi });
-        }
-      });
-      f.data.lean.forEach(function (li) {
-        var p = L.lean[li], x = sx + p[0] * sr, y = sy + p[1] * sr, s = dr * 1.2;
-        out.push({ x0: x - s, x1: x + s, y0: y - s, y1: y + s, key: D.lean[li].id });
-      });
-      if (L.leanR[fi]) {
-        var rl = L.leanR[fi] * sr, m = Math.ceil(TAU * rl / 10);
-        for (var q = 0; q < m; q++) {
-          var a2 = TAU * q / m, x3 = sx + rl * Math.cos(a2), y3 = sy + rl * Math.sin(a2);
-          out.push({ x0: x3 - 2.5, x1: x3 + 2.5, y0: y3 - 2.5, y1: y3 + 2.5, ring: -1 });
+      if (S.level === 'release') {
+        for (var di = 0; di < S.regions.length; di++) {
+          var g = S.regions[di];
+          if (Math.hypot(x - g.x, y - g.y) <= g.r) return D.disciplines[di].id;
         }
       }
-      return out;
-    }
-
-    function textBlock(lines, font, lead) {
-      var w = 0;
-      lines.forEach(function (l) { w = Math.max(w, textWidth(l, font)); });
-      return { w: w, h: lines.length * lead };
-    }
-
-    function placeOpen(plan, fi, openA, taken, marks, free) {
-      var f = fams[fi], k = view.k, sx = f.x * k + view.tx, sy = f.y * k + view.ty, sr = f.r * k;
-      var clear = function (b) {
-        if (!free(b)) return false;
-        for (var i = 0; i < marks.length; i++) if (boxesMeet(b, marks[i], 0)) return false;
-        return true;
-      };
-      var take = function (b) { taken.push(b); };
-      var ENDR = 1.24;
-      var nearest = function (b, x, y) { return [clamp(x, b.x0, b.x1), clamp(y, b.y0, b.y1)]; };
-      // Words in order of what a reader needs first: each paper (short title and
-      // date), each result (its printed number), each Lean statement (its name),
-      // then the families this one cites or is cited by.
-      var paperLabel = function (pi, maxW, maxLines) {
-        var P = D.papers[pi], t = fitLines(P.short, PAPER_FONT, maxW, maxLines);
-        if (!t) t = balancedLines(P.short, maxLines + 1, PAPER_FONT);
-        var dw = P.date ? textWidth(P.date, DATE_FONT) : 0;
-        return { lines: t.lines, width: Math.max(t.width, dw), date: P.date, h: t.lines.length * 16 + (P.date ? 15 : 0) };
-      };
-      var outside = function (a0, t, from) {
-        // Beyond the family's edge at angle a0, or the nearest free angle to it, with a
-        // fine leader back to the paper it names.
-        var steps = [0, 0.18, -0.18, 0.36, -0.36, 0.6, -0.6, 0.9, -0.9, 1.3, -1.3];
-        for (var s = 0; s < steps.length; s++) {
-          var a = a0 + steps[s], rad = sr * 1.06 + 10;
-          var cxp = sx + (rad + Math.abs(Math.cos(a)) * t.width / 2) * Math.cos(a);
-          var cyp = sy + (rad + Math.abs(Math.sin(a)) * t.h / 2) * Math.sin(a);
-          var b = { x0: cxp - t.width / 2, x1: cxp + t.width / 2, y0: cyp - t.h / 2, y1: cyp + t.h / 2 };
-          if (!clear(b)) continue;
-          var end = nearest(b, from[0], from[1]);
-          return { box: b, lead: [from, end] };
-        }
-        return null;
-      };
-      f.data.papers.forEach(function (pi) {
-        var g = L.papers[pi], whole = g[4] - g[3] >= TAU - 1e-3, rr = g[2] * sr;
-        var ccx = sx + g[0] * sr, ccy = sy + g[1] * sr;
-        var t, b, spot = null;
-        if (whole) {
-          t = paperLabel(pi, rr * 1.55, 4);
-          if (t.h < rr * 1.45 && t.width < rr * 1.7) {
-            b = { x0: ccx - t.width / 2, x1: ccx + t.width / 2, y0: ccy - t.h / 2, y1: ccy + t.h / 2 };
-            if (clear(b)) spot = { box: b, center: true };
-          }
-          if (!spot) {
-            t = paperLabel(pi, 210, 2);
-            spot = outside(-Math.PI / 2, t, [ccx, ccy - rr]);
-          }
-        } else {
-          var mid = (g[3] + g[4]) / 2;
-          t = paperLabel(pi, Math.min(220, Math.max(130, (g[4] - g[3]) * rr)), 3);
-          var rad = rr + 12 + t.h * 0.6 + Math.abs(Math.cos(mid)) * t.width * 0.5;
-          var cxp = sx + rad * Math.cos(mid), cyp = sy + rad * Math.sin(mid);
-          b = { x0: cxp - t.width / 2, x1: cxp + t.width / 2, y0: cyp - t.h / 2, y1: cyp + t.h / 2 };
-          if (Math.hypot(cxp - sx, cyp - sy) + Math.max(t.width, t.h) / 2 <= ENDR * sr - 6 && clear(b)) spot = { box: b };
-          else spot = outside(mid, t, [sx + rr * Math.cos(mid), sy + rr * Math.sin(mid)]);
-        }
-        if (!spot) return;
-        take(spot.box);
-        plan.open.push({ kind: 'paper', pi: pi, t: t, box: spot.box, center: !!spot.center, lead: spot.lead || null, alpha: openA });
-        hitTargets.push({ box: spot.box, key: D.papers[pi].id });
-      });
-      // Each result by the label its paper prints, beside its dot; the selected or
-      // pointed-at result first, so it always keeps its label.
-      // A result is in hand when it is selected or pointed at, or paired with the Lean
-      // statement that is.
-      var lk = [sel, hover].map(function (k) { var o = k ? obj(k) : null; return o && o.kind === 'l' ? o.i : -1; });
-      var hotResult = function (ri) {
-        var r = D.results[ri];
-        return inHand(r.id) || r.lean.some(function (li) { return lk.indexOf(li) >= 0; });
-      };
-      var hotFirst = function (list, keyOf) {
-        return list.slice().sort(function (a, b) {
-          var ka = keyOf(a), kb = keyOf(b);
-          return (inHand(kb) ? 1 : 0) - (inHand(ka) ? 1 : 0);
-        });
-      };
-      var resultOrder = [];
-      f.data.papers.forEach(function (pi) { D.papers[pi].results.forEach(function (ri) { resultOrder.push([pi, ri]); }); });
-      resultOrder.sort(function (a, b) { return (hotResult(b[1]) ? 1 : 0) - (hotResult(a[1]) ? 1 : 0); }).forEach(function (pr) {
-        var pi = pr[0];
-        [pr[1]].forEach(function (ri) {
-          var r = D.results[ri];
-          var text = resultName(r);
-          if (!text) return;
-          var p = L.results[ri], x = sx + p[0] * sr, y = sy + p[1] * sr, g = L.papers[pi];
-          var ox = x - (sx + g[0] * sr), oy = y - (sy + g[1] * sr), len = Math.hypot(ox, oy) || 1;
-          var ux = ox / len, uy = oy / len;
-          var w = textWidth(text, hotResult(ri) ? NUM_HOT_FONT : NUM_FONT), d = dotRadius(sr) * 1.35 + 5;
-          var dirs = [[ux, uy], [-ux, -uy], [-uy, ux], [uy, -ux], [ux - uy, uy + ux], [ux + uy, uy - ux], [-ux - uy, -uy + ux], [-ux + uy, -uy - ux]];
-          var hot = hotResult(ri);
-          // A label in hand may sit over the paper's ring line; the others keep clear of it.
-          var tests = hot ? [clear, free] : [clear];
-          for (var ti = 0; ti < tests.length; ti++) {
-            for (var dist = 0; dist < 4; dist++) {
-              for (var q = 0; q < dirs.length; q++) {
-                var dl = Math.hypot(dirs[q][0], dirs[q][1]) || 1, vx = dirs[q][0] / dl, vy = dirs[q][1] / dl;
-                var reach = d + dist * 12;
-                var cxp = x + vx * (reach + w / 2), cyp = y + vy * (reach + 7);
-                var b = { x0: cxp - w / 2, x1: cxp + w / 2, y0: cyp - 7, y1: cyp + 7 };
-                if (tests[ti](b)) { take(b); plan.open.push({ kind: 'num', ri: ri, text: text, box: b, hot: hot, alpha: openA }); hitTargets.push({ box: b, key: r.id }); return; }
-              }
-            }
-          }
-        });
-      });
-      // Lean statements by name, beside their diamonds.
-      hotFirst(f.data.lean, function (li) { return D.lean[li].id; }).forEach(function (li) {
-        var p = L.lean[li], x = sx + p[0] * sr, y = sy + p[1] * sr, a = Math.atan2(p[1], p[0]);
-        var name = D.lean[li].label || D.lean[li].name, w = textWidth(name, LEAN_FONT);
-        var right = Math.cos(a) >= 0, below = Math.sin(a) >= 0, d = dotRadius(sr) * 1.8 + 6;
-        var spots = [[right ? x + d : x - d - w, y - 7], [right ? x + d : x - d - w, y - 7 + (below ? 13 : -13)],
-                     [x - w / 2, below ? y + d : y - d - 14], [right ? x + d : x - d - w, y - 7 + (below ? 26 : -26)],
-                     [right ? x - d - w : x + d, y - 7], [x - w / 2, below ? y - d - 14 : y + d],
-                     [x - w / 2, below ? y + d + 13 : y - d - 27]];
-        for (var s = 0; s < spots.length; s++) {
-          var b = { x0: spots[s][0], x1: spots[s][0] + w, y0: spots[s][1], y1: spots[s][1] + 14 };
-          if (clear(b)) { take(b); plan.open.push({ kind: 'lean', li: li, text: name, box: b, alpha: openA }); hitTargets.push({ box: b, key: D.lean[li].id }); return; }
-        }
-      });
-      // Citation ends: the other family's name, whole, beyond the end of its fibre.
-      (L.fibres[fi] || []).forEach(function (fb) {
-        var a = fb[0], g = fb[1], ex = sx + ENDR * sr * Math.cos(a), ey = sy + ENDR * sr * Math.sin(a);
-        var right = Math.cos(a) >= 0;
-        var item = { kind: 'end', g: g, a: a, ex: ex, ey: ey, way: fb[2], papers: fb[3], alpha: openA };
-        var choices = [];
-        var title = D.families[g].title;
-        [190, 240].forEach(function (mw) { var t = fitLines(title, END_FONT, mw, 3); if (t) choices.push(t); });
-        choices.push({ lines: [T('plate.family_short', { num: D.families[g].num })], width: textWidth(T('plate.family_short', { num: D.families[g].num }), END_FONT) });
-        for (var c = 0; c < choices.length; c++) {
-          var t = choices[c], bh = t.lines.length * NAME_LEAD;
-          var offs = [0, -0.5, 0.5, -1, 1, -1.6, 1.6];
-          for (var o = 0; o < offs.length; o++) {
-            var gx = ex + (right ? 9 : -9), gy = ey + offs[o] * bh * 0.7 - bh / 2 + (Math.sin(a) * bh * 0.35);
-            var b = { x0: right ? gx : gx - t.width, x1: right ? gx + t.width : gx, y0: gy, y1: gy + bh };
-            if (clear(b)) {
-              take(b);
-              item.t = t; item.box = b; item.right = right;
-              plan.open.push(item);
-              hitTargets.push({ box: b, key: D.families[g].id, follow: true });
-              return;
-            }
-          }
-        }
-        item.t = null;
-        plan.open.push(item);
-      });
-      // The Lean ring's caption.
-      if (L.leanR[fi]) {
-        var cap = T('plate.lean_ring'), cw = textWidth(cap, CAP_FONT), rl = L.leanR[fi] * sr;
-        [Math.PI / 2, -Math.PI / 2].some(function (a) {
-          var cyp = sy + (rl + 10) * Math.sin(a), b = { x0: sx - cw / 2, x1: sx + cw / 2, y0: cyp - 7, y1: cyp + 7 };
-          if (!clear(b)) return false;
-          take(b); plan.open.push({ kind: 'cap', text: cap, box: b, alpha: openA });
-          return true;
-        });
-      }
-    }
-
-    /* ---- Name plates (the Plectis universe's namePlate, least covered of six spots) */
-    function plateLines(o) {
-      var name = nameOf(o), sub = '';
-      if (o.kind === 'r') { var rp = D.papers[D.results[o.i].p]; sub = rp.short + (rp.date ? ', ' + rp.date : ''); }
-      else if (o.kind === 'l') sub = D.lean[o.i].label !== D.lean[o.i].name ? D.lean[o.i].label : '';
-      else if (o.kind === 'f') sub = T('family.plate', { num: D.families[o.i].num, discipline: D.disciplines[fams[o.i].d].name }) + '. ' + T('key.' + D.families[o.i].tone) + '.';
-      else if (o.kind === 'p') sub = D.papers[o.i].date || T('family.short', { num: D.families[D.papers[o.i].f].num });
-      else if (o.kind === 'd') sub = discCounts(D.disciplines[o.i]);
-      var maxW = Math.min(340, W - 40);
-      var main = fitLines(name, PLATE_FONT, Math.min(300, maxW), 3) || fitLines(name, PLATE_FONT, maxW, 6) || balancedLines(name, 8, PLATE_FONT);
-      var subT = sub ? (fitLines(sub, PLATE_SUB, Math.max(main.width, 220), 3) || balancedLines(sub, 5, PLATE_SUB)) : null;
-      return { main: main, sub: subT };
-    }
-    function markOf(o) {
-      var k = view.k, p, r;
-      if (o.kind === 'd') {
-        var sct = L.wheel.sectors[o.i], rr = sct[3] * k;
-        return { x: view.tx + rr * Math.cos(sct[2]), y: view.ty + rr * Math.sin(sct[2]), r: 4 };
-      }
-      if (o.kind === 'f') { var f = fams[o.i]; return { x: f.x * k + view.tx, y: f.y * k + view.ty, r: markR(o.i) + 2 }; }
-      p = objPos(o);
-      var sr = screenR(famOf(o));
-      r = o.kind === 'p' ? 4 : dotRadius(sr) * 1.5 + 2;
-      return { x: p[0] * k + view.tx, y: p[1] * k + view.ty, r: r };
-    }
-    function namePlate(o, keepOut) {
-      var m = markOf(o);
-      if (m.x < -20 || m.x > W + 20 || m.y < -20 || m.y > H + 20) return null;
-      var t = plateLines(o);
-      var pad = 7, w = Math.max(t.main.width, t.sub ? t.sub.width : 0) + pad * 2;
-      var h = t.main.lines.length * PLATE_LEAD + (t.sub ? t.sub.lines.length * 15 + 3 : 0) + pad * 2 - 2;
-      var gap = m.r + 10;
-      var spots = [[m.x + gap, m.y - h - 4], [m.x + gap, m.y + 4], [m.x - gap - w, m.y - h - 4], [m.x - gap - w, m.y + 4],
-                   [m.x - w / 2, m.y - gap - h], [m.x - w / 2, m.y + gap]];
-      var best = null, bestScore = Infinity;
-      spots.forEach(function (s, i) {
-        var x0 = clamp(s[0], 6, W - w - 6), y0 = clamp(s[1], 6, H - h - 6);
-        var b = { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h };
-        var score = i * 4;
-        keepOut.forEach(function (q) { score += overlap(b, q) * (q.ring !== undefined ? 0.6 : 1.5); });
-        chrome.forEach(function (q) { score += overlap(b, q) * 4; });
-        // Never over the mark itself.
-        if (m.x + m.r > b.x0 && m.x - m.r < b.x1 && m.y + m.r > b.y0 && m.y - m.r < b.y1) score += 5000;
-        if (score < bestScore) { bestScore = score; best = b; }
-      });
-      if (!best) return null;
-      // The leader: from the mark's edge to the plate's nearest edge.
-      var px = clamp(m.x, best.x0, best.x1), py = clamp(m.y, best.y0, best.y1);
-      var dx = px - m.x, dy = py - m.y, len = Math.hypot(dx, dy) || 1;
-      var leader = len > m.r + 3 ? [m.x + dx / len * (m.r + 1), m.y + dy / len * (m.r + 1), px, py] : null;
-      return { key: o.key, box: best, t: t, pad: pad, leader: leader };
+      return null;
     }
 
     /* ---- The card: what the pointer names, in words, beside it on the map ---------
@@ -2022,21 +887,42 @@
        sits inside the stage, never over the object or under the pointer, and fades in
        over --t-hover. A touch screen gets none: tapping selects. */
     var hoverMQ = window.matchMedia ? window.matchMedia('(hover: hover) and (pointer: fine)') : null;
-    var cardEl = null, cardFor = null, cardKey = '', cardW = 0, cardH = 0, cardOn = false, cardSpot = -1, cardPtr = null, cardBox = null;
+    var cardEl = null, cardFor = null, cardKey = '', cardOn = false, cardSpot = -1, cardPtr = null, cardBox = null;
+    function guardPreviewClicks(el) {
+      var press = null, cancelled = false;
+      el.addEventListener('pointerdown', function (e) {
+        cancelled = e.isPrimary === false;
+        press = e.button === 0 && !cancelled ? { x: e.clientX, y: e.clientY } : null;
+      });
+      el.addEventListener('pointercancel', function () { press = null; cancelled = true; });
+      el.addEventListener('click', function (e) {
+        if (e.detail === 0) { press = null; cancelled = false; }
+        var moved = press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8;
+        press = null;
+        if (cancelled || moved || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+          e.preventDefault(); e.stopImmediatePropagation();
+        }
+        cancelled = false;
+      });
+    }
     if (stage) {
       cardEl = document.createElement('div');
       cardEl.className = 'u-card';
       cardEl.setAttribute('aria-hidden', 'true');
       stage.appendChild(cardEl);
+      guardPreviewClicks(cardEl);
     }
     function cardObject() {
-      if (!cardEl || !hover || !D) return null;
+      if (!cardEl || !hover || !D || board.on || !chart.shown) return null;
       var o = obj(hover);
-      if (!o || hover === sel) return null;
+      if (!o || hover === sel || hover === cardDismissed) return null;
       if (hoverVia === 'touch' || (hoverVia !== 'focus' && !(hoverMQ && hoverMQ.matches))) return null;
-      if (o.kind === 'd') return compactLabels ? o : null;
-      if (o.kind === 'f') return o.i === openFamily() ? null : o;
-      return partsReady ? o : null;
+      var S = chart.shown;
+      if (o.kind === 'd') return S.level === 'release' && !chart.start ? o : null;
+      // At discipline depth the labelled circles and sidebar provide the preview.
+      // A floating duplicate would cover neighbouring families and intercept clicks.
+      if (o.kind === 'f') return S.nodes[o.i] && S.nodes[o.i].a > 0.5 && !chart.start && S.level === 'release' ? o : null;
+      return null;
     }
     function pairKind(st) { return st === 'candidate-pairing' ? 'candidate' : st === 'producer-declared-binding' ? 'declared' : 'cited'; }
     function resultCardName(ri) {
@@ -2060,6 +946,11 @@
       } else if (o.kind === 'd') {
         line('t', escapeHtml(D.disciplines[o.i].name));
         line('n', escapeHtml(discCounts(D.disciplines[o.i])));
+        var tally = {};
+        D.disciplines[o.i].families.forEach(function (fi) { var t = D.families[fi].tone || 'none'; tally[t] = (tally[t] || 0) + 1; });
+        ['all', 'part', 'other', 'split', 'none', 'unread'].forEach(function (t) {
+          if (tally[t]) line('e', dot(t) + '<span>' + escapeHtml(T('key.' + t)) + ': ' + tally[t] + '</span>');
+        });
       } else if (o.kind === 'p') {
         var p = D.papers[o.i];
         line('t', escapeHtml(p.short));
@@ -2089,76 +980,70 @@
       }
       return h;
     }
-    // The boxes of the words that name this object on the drawing.
-    function ownWords(o, plan) {
-      var out = [];
-      if (!plan) return out;
-      if (o.kind === 'f') {
-        plan.flat.concat(plan.side).forEach(function (n) { if (n.fi === o.i) out.push(n.box); });
-        plan.names.forEach(function (n) { if (n.fi === o.i) out.push.apply(out, n.samples); });
-      } else {
-        var field = { p: 'pi', r: 'ri', l: 'li' }[o.kind];
-        plan.open.forEach(function (it) { if (field && it[field] === o.i && it.box) out.push(it.box); });
-      }
-      return out;
-    }
     function hideCard() {
       if (!cardOn) return;
       cardEl.classList.remove('is-on');
       cardOn = false; cardSpot = -1; cardBox = null;
     }
-    // Beside the object, in the least crowded of eight places, kept inside the stage,
-    // off the map's own controls, off the object and out from under the pointer, and
-    // off the words on the drawing where it can be.
-    function placeCard(o, words) {
-      if (!cardEl) return;
+    // Keep the preview beside what it names. Prefer a clear adjacent spot without
+    // sending it across the stage merely to avoid an unselected object.
+    var cardDismissed = null, cardSwept = -1e9, cardTimer = 0;
+    function hoverBox(o) {
+      var S = chart.shown;
+      if (!o || !S) return null;
+      if (o.kind === 'd') { var g = S.regions[o.i]; return { x0: g.x - g.lab.w / 2, x1: g.x + g.lab.w / 2, y0: g.ly, y1: g.ly + g.lab.h }; }
+      if (o.kind === 'f') { var q = S.nodes[o.i]; return { x0: q.x - q.r, x1: q.x + q.r, y0: q.y - q.r, y1: q.y + q.r }; }
+      return null;
+    }
+    function placeCard(o) {
+      if (!cardEl || cardEl.classList.contains('is-board')) return;
       if (!o) { hideCard(); return; }
-      var m = markOf(o);
-      if (o.kind === 'f') m.r *= emph.grow ? Math.max(1, emph.grow[o.i]) : 1;
-      if (m.x < 0 || m.x > W || m.y < 0 || m.y > H) { hideCard(); return; }
+      var S = chart.shown, m;
+      if (o.kind === 'd') { var g = S.regions[o.i]; m = { x0: g.x - g.lab.w / 2, x1: g.x + g.lab.w / 2, y0: g.ly, y1: g.ly + g.lab.h }; }
+      else { var q = S.nodes[o.i]; m = { x0: q.x - q.r - 2, x1: q.x + q.r + 2, y0: q.y - q.r - 2, y1: q.y + q.r + 2 }; }
       var key = o.key + (detail(o) ? '+' : '');
       if (key !== cardKey) {
+        // While the pointer sweeps across the drawing the card waits for it to rest (70 ms),
+        // so a fast pass costs no typesetting and the frames stay smooth.
+        var t = nowMs();
+        if (cardOn && t - cardSwept < 70) {
+          cardSwept = t;
+          hideCard();
+          clearTimeout(cardTimer); cardTimer = setTimeout(draw, 80);
+          return;
+        }
+        cardSwept = t;
         cardEl.innerHTML = cardHtml(o);
         if (window.atlasRenderMath) window.atlasRenderMath(cardEl);
         cardKey = key; cardSpot = -1;
       }
-      cardW = cardEl.offsetWidth; cardH = cardEl.offsetHeight;
-      if (!cardW || !cardH) { hideCard(); return; }
-      var w = cardW, h = cardH, gap = m.r + 12, d = gap * 0.72;
-      var spots = [[m.x + gap, m.y - h / 2], [m.x - gap - w, m.y - h / 2],
-                   [m.x + d, m.y + d], [m.x + d, m.y - d - h], [m.x - d - w, m.y + d], [m.x - d - w, m.y - d - h],
-                   [m.x - w / 2, m.y + gap], [m.x - w / 2, m.y - gap - h]];
-      var own = ownWords(o, lastPlan);
-      // First choice where the object's name stands beside it: the card hangs just under
-      // (or over) that name, aligned with it, so the name stays readable and the card
-      // reads as its continuation.
-      if (own.length === 1) {
-        var nb = own[0];
-        spots.unshift([nb.x0 - 12, nb.y1 + 6], [nb.x1 + 12 - w, nb.y1 + 6], [nb.x0 - 12, nb.y0 - 6 - h], [nb.x1 + 12 - w, nb.y0 - 6 - h]);
+      var w = cardEl.offsetWidth, h = cardEl.offsetHeight;
+      if (!w || !h) { hideCard(); return; }
+      var keep = [m], anchor = m;
+      if (cardPtr) keep.push({ x0: cardPtr[0] - 10, x1: cardPtr[0] + 22, y0: cardPtr[1] - 10, y1: cardPtr[1] + 26 });
+      var others = chartBoxes.filter(function (b) { return !(o.kind === 'd' && b.di === o.i) && !(o.kind === 'f' && b.fi === o.i); });
+      if (o.kind === 'f' && S.level === 'release') {
+        // Keep this discipline clear so its neighbouring dots remain reachable.
+        var region = S.regions[discOf(o)];
+        anchor = { x0: region.x - region.r, x1: region.x + region.r, y0: region.y - region.r, y1: region.y + region.r };
+        keep.push(anchor);
+        others = chartBoxes.filter(function (b) { return b.di !== undefined; });
       }
-      var ptrBox = cardPtr ? { x0: cardPtr[0] - 8, x1: cardPtr[0] + 20, y0: cardPtr[1] - 8, y1: cardPtr[1] + 26 } : null;
+      var g2 = 12, spots = [[anchor.x1 + g2, (m.y0 + m.y1) / 2 - h / 2], [anchor.x0 - g2 - w, (m.y0 + m.y1) / 2 - h / 2], [m.x0, anchor.y1 + g2], [m.x0, anchor.y0 - g2 - h],
+                            [anchor.x1 + g2, m.y1 - h], [anchor.x0 - g2 - w, m.y1 - h], [m.x1 - w, anchor.y1 + g2], [m.x1 - w, anchor.y0 - g2 - h]];
+      var X1 = Math.max(8, W - w - 8), Y1 = Math.max(8, H - h - 8);
       var best = null, bestScore = Infinity, bestI = -1;
-      spots.forEach(function (sp, i) {
-        var x0 = clamp(sp[0], 8, Math.max(8, W - w - 8)), y0 = clamp(sp[1], 8, Math.max(8, H - h - 8));
+      var tryAt = function (sp, i) {
+        var x0 = clamp(sp[0], 8, X1), y0 = clamp(sp[1], 8, Y1);
         var b = { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h };
-        var score = i * 3 + (Math.abs(x0 - sp[0]) + Math.abs(y0 - sp[1])) * 0.5 - (i === cardSpot ? 12 : 0);
-        chrome.forEach(function (q) { score += overlap(b, q) * 2; });
-        // Near the object first; a neighbour's name it covers counts against it lightly,
-        // since the card lasts only while the pointer stays.
-        (words || []).forEach(function (q) { if (own.indexOf(q) < 0) score += overlap(b, q) * 0.25; });
-        // The object's own name may lie wholly under the card, which names it again,
-        // but never half under it.
-        own.forEach(function (q) {
-          var ov = overlap(b, q), area = (q.x1 - q.x0) * (q.y1 - q.y0);
-          if (ov > 0 && ov < area * 0.98) score += area * 3 + 200;
-        });
-        var nx = clamp(m.x, b.x0, b.x1), ny = clamp(m.y, b.y0, b.y1);
-        var md = Math.hypot(nx - m.x, ny - m.y);
-        if (md < m.r + 3) score += 1e6;
-        else score += (md - m.r) * 3;
-        if (ptrBox && overlap(b, ptrBox) > 0) score += 1e6;
+        var gapX = Math.max(0, m.x0 - b.x1, b.x0 - m.x1), gapY = Math.max(0, m.y0 - b.y1, b.y0 - m.y1);
+        var score = i * 2 + Math.hypot(gapX, gapY) * 2 - (i === cardSpot ? 25 : 0);
+        keep.forEach(function (k) { var ov = overlap(b, k); if (ov > 0) score += 1e5 + ov * 20; });
+        score += Math.min(20, others.reduce(function (sum, k) { return sum + Math.max(0, overlap(b, k)) * 0.0005; }, 0));
+        chrome.forEach(function (k) { var ov = overlap(b, k); if (ov > 0) score += 600 + ov * 0.05; });
         if (score < bestScore) { bestScore = score; best = b; bestI = i; }
-      });
+      };
+      spots.forEach(tryAt);
       cardSpot = bestI; cardBox = best;
       cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
       if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
@@ -2169,18 +1054,30 @@
        papers cite it on the left, its papers in columns (each result named as its paper
        prints it, with the opening of its statement typeset, and the Lean statements
        paired with it joined beneath), and the families its papers cite on the right.
-       Every name is on its card. Hover explains (the card beside it), click selects
-       (the panel shows the record), double-click or Enter opens, Escape steps back.
+       Every name is on its card. Hover explains (the card beside it), click, Enter
+       or Space selects (the panel shows the record), double-click opens, Escape steps back.
        Lines are the board's only drawing: a result to the Lean statements paired with
        it (dashed for a candidate pairing), and a neighbouring family to the papers that
        carry the citation (brick where this family cites, grey where it is cited). */
     var boardEl = root.querySelector('[data-u-board]');
-    var board = { fi: -1, sig: '', page: 0, per: 1, cols: 0, on: false, pending: false, budget: 170, hideT: 0, ringKey: null };
-    var SIDE_MAX = 8;
+    var board = { fi: -1, sig: '', per: 1, on: false, pending: false, hideT: 0, ringKey: null, revealKey: null, selectionKey: null };
+    var boardFontVersion = 0;
+    var boardPress = null;
+    var pendingBoard = null;
+    function boardPosition() {
+      return board.fi < 0 || !boardEl ? null : { family: D.families[board.fi].id, y: boardEl.scrollTop };
+    }
+    function restoreBoardPosition() {
+      if (!pendingBoard || !board.on || board.fi < 0 || pendingBoard.family !== D.families[board.fi].id) return;
+      var position = pendingBoard;
+      layoutBoard();
+      boardEl.scrollTop = position.y || 0;
+      if (pendingBoard === position && shards[fams[board.fi].d]) pendingBoard = null;
+    }
     function boardFamily() { var o = sel ? obj(sel) : null; return partsReady && o && o.kind !== 'd' ? famOf(o) : -1; }
     function dateValue(s) { var t = s ? Date.parse(s) : NaN; return isFinite(t) ? t : Infinity; }
     // The opening of a statement, concisely: its first sentence (the second too when the
-    // first is short), formulas whole, a long displayed formula as an ellipsis, cut at a
+    // first is short), formulas whole, stopping before a long displayed formula, cut at a
     // word with an ellipsis past the budget (characters; a formula counts half its TeX).
     function excerpt(html, budget) {
       var tpl = document.createElement('template');
@@ -2191,7 +1088,7 @@
           if (c.nodeType === 3) { toks.push({ t: 'text', s: c.nodeValue }); continue; }
           if (c.nodeType !== 1) continue;
           if (c.classList.contains('m')) { toks.push({ t: c.getAttribute('data-d') === '1' ? 'dmath' : 'math', s: c.textContent }); continue; }
-          if (c.classList.contains('li-lab')) { toks.push({ t: 'text', s: c.textContent + ' ' }); continue; }
+          if (c.classList.contains('li-lab')) { toks.push({ t: 'label', s: c.textContent + ' ' }); continue; }
           if (/^(P|DIV|LI|OL|UL|BLOCKQUOTE)$/.test(c.tagName)) { toks.push({ t: 'break' }); walk(c); toks.push({ t: 'break' }); continue; }
           walk(c);
         }
@@ -2209,7 +1106,7 @@
         if (k.t === 'break') { space(); continue; }
         if (k.t === 'math' || k.t === 'dmath') {
           var tex = k.s.trim(), stop = /[.;,:]$/.exec(tex), body = stop ? tex.slice(0, -1).trim() : tex;
-          if (k.t === 'dmath' && body.length > 48) { space(); out += '…'; used += 2; if (stop && stop[0] === '.' && enough()) return { html: out, cut: false }; space(); continue; }
+          if (k.t === 'dmath' && body.length > 48) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
           var w = Math.max(2, body.length * 0.5);
           if (used + w > budget && used > 0) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
           if (k.t === 'dmath') space();
@@ -2226,7 +1123,7 @@
           if (used + piece.length > budget && used > 0) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
           opens(piece);
           out += escapeHtml(piece); used += piece.length;
-          if (ends(piece) && enough()) return { html: out, cut: false };
+          if (k.t !== 'label' && ends(piece) && enough()) return { html: out, cut: false };
         }
       }
       return { html: out.trim(), cut: false };
@@ -2258,20 +1155,32 @@
       var h = bcOpen('u-bc--r', r.id, ' data-paper="' + escapeHtml(p.id) + '"');
       // In its paper's column a result needs only the number the paper prints.
       h += '<p class="u-bc__lab">' + escapeHtml(r.num || resultName(r)) + (det && det.titleHtml ? ' <span class="u-bc__ttl tex-auto">(' + det.titleHtml + ')</span>' : '') + '</p>';
-      if (!sh) h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T('board.loading')) + '</p>';
+      if (!sh) h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T(failedShards[fams[r.f].d] ? 'result.load_failed' : 'board.loading')) + '</p>';
       else if (det && det.html) {
-        var ex = excerpt(det.html, board.budget);
-        h += '<div class="u-bc__x">' + ex.html + (ex.cut ? '…' : '') + '</div>';
+        // The whole statement, as the paper prints it: a card never stops mid-sentence.
+        h += '<div class="u-bc__x">' + det.html + '</div>';
       } else h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T('board.no_statement')) + ' ' + link(r.href || p.href, T('result.read')) + '</p>';
       return h + '</div>';
     }
-    function boardLean(li, sh, free) {
+    // A Lean statement paired with several theorems keeps one full card, under the
+    // clearest of them, which names the others; under each other theorem a short card
+    // points back to it, so every theorem it states shows it.
+    function boardLean(li, sh, free, ri) {
       var l = D.lean[li], det = sh && sh.lean ? sh.lean[l.id] : null, kind = pairKind(l.pairing);
       var cand = !free && kind === 'candidate';
-      var h = bcOpen('u-bc--l' + (cand ? ' is-cand' : ''), l.id);
+      var ref = !free && l.results.length > 1 && ri !== undefined && ri !== l.results[0];
+      var pairName = function (x) { var r = D.results[x]; return ri !== undefined && D.results[ri].p === r.p ? (r.num || resultName(r)) : resultCardName(x); };
+      var h = bcOpen('u-bc--l' + (cand ? ' is-cand' : '') + (ref ? ' u-bc--also' : ''), l.id);
       h += '<p class="u-bc__lt">' + escapeHtml(l.label || l.name) + '</p>';
+      if (ref) {
+        h += '<p class="u-bc__ln u-bc__ln--q">' + escapeHtml(T('board.also_ref', { name: pairName(l.results[0]) })) + '</p>';
+        return h + '</div>';
+      }
       if (l.label && l.label !== l.name) h += '<p class="u-bc__id"><code>' + escapeHtml(l.name) + '</code></p>';
       h += '<p class="u-bc__ln u-bc__ln--q">' + escapeHtml(free ? T('board.unpaired') : T('board.pair_' + kind)) + '</p>';
+      if (!free && l.results.length > 1) {
+        h += '<p class="u-bc__ln">' + escapeHtml(T('board.also', { names: l.results.slice(1).map(pairName).join(', ') })) + '</p>';
+      }
       if (det) h += '<p class="u-bc__ln">' + escapeHtml(det.reruns || T('lean.reruns_none')) + '</p>';
       return h + '</div>';
     }
@@ -2297,9 +1206,7 @@
       var h = '<section class="u-board__side u-board__side--' + way + '"><h3>' + escapeHtml(T(way === 'in' ? 'board.cited_by' : 'board.cites')) + '</h3>';
       if (!list.length) return h + '<p class="u-board__none">' + escapeHtml(T(way === 'in' ? 'board.none_in' : 'board.none_out')) + '</p></section>';
       var sorted = list.slice().sort(function (a, b) { return b[1] - a[1] || a[0] - b[0]; });
-      sorted.slice(0, SIDE_MAX).forEach(function (c) { h += boardNeighbour(c[0], c[1], way); });
-      var more = sorted.length - SIDE_MAX;
-      if (more > 0) h += '<p class="u-board__more">' + escapeHtml(more === 1 ? T('board.more_one') : T('board.more', { n: more })) + '</p>';
+      sorted.forEach(function (c) { h += boardNeighbour(c[0], c[1], way); });
       return h + '</section>';
     }
     function boardHtml(fi) {
@@ -2314,13 +1221,9 @@
         var said = fdet.readers.map(function (rd) { return rd.name + ' ' + rd.words; }).join('; ') + '.';
         h += '<p class="u-board__r"><b>' + escapeHtml(T('board.readers')) + '</b> ' + escapeHtml(said + (fdet.agree ? ' ' + fdet.agree : '')) + '</p>';
       } else if (fdet && fdet.agree) h += '<p class="u-board__r"><b>' + escapeHtml(T('board.readers')) + '</b> ' + escapeHtml(fdet.agree) + '</p>';
-      h += '</div><div class="u-board__cols">' + boardSide('in', f.citedBy) + '<div class="u-board__main"><div class="u-board__bar">' +
-        '<span class="u-pager" data-u-pager hidden>' +
-        '<button type="button" data-u-page="-1" aria-label="' + escapeHtml(T('board.earlier')) + '"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>' +
-        '<span data-u-page-n></span>' +
-        '<button type="button" data-u-page="1" aria-label="' + escapeHtml(T('board.later')) + '"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button></span></div>' +
+      h += '</div><div class="u-board__cols">' + boardSide('in', f.citedBy) + '<div class="u-board__main">' +
         '<div class="u-board__papers" data-u-papers>';
-      var papers = f.papers.slice().sort(function (a, b) { return dateValue(D.papers[a].date) - dateValue(D.papers[b].date) || a - b; });
+      var papers = familyPapers(fi);
       var anyCand = false;
       papers.forEach(function (pi) {
         h += '<section class="u-col" data-pi="' + pi + '">' + boardPaper(pi) + '<ol>';
@@ -2328,7 +1231,7 @@
           var r = D.results[ri];
           h += '<li>' + boardResult(ri, sh);
           if (r.lean.length) {
-            h += '<div class="u-leans">' + r.lean.map(function (li) { if (pairKind(D.lean[li].pairing) === 'candidate') anyCand = true; return boardLean(li, sh, false); }).join('') + '</div>';
+            h += '<div class="u-leans">' + r.lean.map(function (li) { if (pairKind(D.lean[li].pairing) === 'candidate') anyCand = true; return boardLean(li, sh, false, ri); }).join('') + '</div>';
           }
           h += '</li>';
         });
@@ -2344,13 +1247,36 @@
       return h;
     }
     // Typeset every card: each result with its own paper's macros.
+    // A displayed formula wider than its card scrolls sideways: it takes focus, so a
+    // keyboard reader can scroll it with the arrow keys (which then do not step).
+    var SCROLLERS = '.m-d, .u-bc__x, .u-stmt, .u-lean, .u-example, .lean, .tex-fallback';
+    function markScrollers(scope) {
+      if (!scope) return;
+      Array.prototype.forEach.call(scope.querySelectorAll(SCROLLERS), function (x) {
+        var wide = x.scrollWidth > x.clientWidth + 1;
+        if (wide && !x.hasAttribute('tabindex')) { x.setAttribute('tabindex', '0'); x.setAttribute('data-u-scroller', ''); }
+        else if (!wide && x.hasAttribute('data-u-scroller')) { x.removeAttribute('tabindex'); x.removeAttribute('data-u-scroller'); }
+      });
+    }
+    // True when the arrow key belongs to what has focus: a field, or a box that scrolls sideways.
+    function arrowsBelongTo(target) {
+      for (var n = target; n && n.nodeType === 1 && n !== document.body; n = n.parentElement) {
+        if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName) || n.isContentEditable) return true;
+        if (n.matches(SCROLLERS + ', pre, .table-wrap') && n.scrollWidth > n.clientWidth + 1) {
+          var ox = getComputedStyle(n).overflowX;
+          if (ox === 'auto' || ox === 'scroll') return true;
+        }
+      }
+      return false;
+    }
     function typesetBoard(fi) {
       var di = fams[fi].d;
       Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--r'), function (c) { katexIn(c, c.getAttribute('data-paper'), di); });
       katexIn(boardEl.querySelector('.u-board__head'), null, di);
       Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--f'), function (c) { katexIn(c, null, fams[+c.getAttribute('data-g')].d); });
     }
-    // How many paper columns stand side by side, which page shows, and the pager's words.
+    // Every paper shows at once: the columns fill the board's width and wrap onto
+    // further rows, so a family's papers are read together, never one page at a time.
     function layoutBoard() {
       if (!board.on && !board.pending) return;
       var papersEl = boardEl.querySelector('[data-u-papers]');
@@ -2359,46 +1285,13 @@
       var fpx = parseFloat(getComputedStyle(boardEl).fontSize) || 16;
       var per = narrow() ? cols.length : Math.max(1, Math.floor((papersEl.clientWidth + 1.25 * fpx) / (14 * fpx + 1.25 * fpx)));
       per = Math.min(per, Math.max(1, cols.length));
-      board.per = per; board.cols = cols.length;
-      var pages = Math.max(1, Math.ceil(cols.length / per));
-      board.page = clamp(board.page, 0, pages - 1);
-      papersEl.style.gridTemplateColumns = narrow() ? '' : 'repeat(' + per + ', minmax(0, 1fr))';
-      papersEl.style.gridAutoFlow = 'row';
-      cols.forEach(function (c, i) { c.hidden = i < board.page * per || i >= (board.page + 1) * per; });
-      var pager = boardEl.querySelector('[data-u-pager]');
-      if (pager) {
-        pager.hidden = pages < 2;
-        var from = board.page * per + 1, to = Math.min(cols.length, (board.page + 1) * per);
-        pager.querySelector('[data-u-page-n]').textContent = T('board.page', { from: from, to: to, n: cols.length });
-        pager.querySelector('[data-u-page="-1"]').disabled = board.page === 0;
-        pager.querySelector('[data-u-page="1"]').disabled = board.page >= pages - 1;
-      }
-      // The statements' length follows the column's width: about four lines of it.
-      var rc = papersEl.querySelector('.u-col:not([hidden]) .u-bc--r');
-      if (rc && rc.clientWidth > 0) {
-        var cpl = (rc.clientWidth - 1.5 * fpx) / (fpx * 0.48);
-        var want = clamp(Math.round(cpl * 4 / 10) * 10, 90, 420);
-        if (Math.abs(want - board.budget) >= 20) { board.budget = want; board.sig = ''; syncBoard(); return; }
-      }
-      fitExcerpts();
+      board.per = per;
+      // Columns pack like a newspaper, so a paper with many results leaves no gap beside it.
+      papersEl.style.columnCount = narrow() ? '' : String(per);
+      cols.forEach(function (c) { c.hidden = false; });
       drawWires();
-    }
-    // An excerpt that would run past its card's four or five lines (a formula wider or
-    // taller than the estimate) is cut shorter, so no statement is ever clipped mid-line.
-    function fitExcerpts() {
-      var di = fams[board.fi] ? fams[board.fi].d : -1, sh = shards[di];
-      if (!sh || !sh.results) return;
-      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-col:not([hidden]) .u-bc--r .u-bc__x:not(.u-bc__x--none)'), function (x) {
-        var c = x.closest('.u-bc'), det = sh.results[c.getAttribute('data-bk')];
-        if (!det || !det.html || !x.clientWidth) return;
-        var b = board.budget, n = 0, most = 7.6 * (parseFloat(getComputedStyle(x).fontSize) || 16);
-        while ((x.offsetHeight > most || x.scrollWidth > x.clientWidth + 1) && n < 6) {
-          b = Math.round(b * 0.8); n++;
-          var ex = excerpt(det.html, b);
-          x.innerHTML = ex.html + (ex.cut ? '…' : '');
-          katexIn(x, c.getAttribute('data-paper'), di);
-        }
-      });
+      markScrollers(boardEl);
+      repositionBoardCard();
     }
     function drawWires() {
       var inEl = boardEl && boardEl.querySelector('[data-u-board-in]'), svg = inEl && inEl.querySelector('[data-u-wires]');
@@ -2444,8 +1337,11 @@
           });
         });
       }
-      svg.setAttribute('width', inEl.scrollWidth); svg.setAttribute('height', inEl.scrollHeight);
-      svg.innerHTML = paths.join('');
+      // The old overlay contributes to scrollWidth/scrollHeight. Its next size
+      // follows the content box so a narrower or shorter board can shrink.
+      svg.setAttribute('width', inEl.clientWidth); svg.setAttribute('height', inEl.clientHeight);
+      svg.innerHTML = '<defs><marker id="u-cite-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="w-arrow-in" d="M0 0 10 5 0 10Z"/></marker>' +
+        '<marker id="u-cite-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="w-arrow-out" d="M0 0 10 5 0 10Z"/></marker></defs>' + paths.join('');
     }
     function markBoard() {
       if (!boardEl) return;
@@ -2457,59 +1353,130 @@
         c.setAttribute('aria-pressed', k === sel ? 'true' : 'false');
       });
     }
-    // The page that shows the selection.
-    function pageToSelection() {
-      var c = sel && boardEl.querySelector('.u-col [data-bk="' + (window.CSS && CSS.escape ? CSS.escape(sel) : sel) + '"]');
-      if (!c || !board.per) return;
-      var col = c.closest('.u-col'), cols = Array.prototype.slice.call(col.parentNode.children);
-      board.page = Math.floor(cols.indexOf(col) / board.per);
+    // A new selection from the panel can sit below the board's visible rows.
+    // Reveal it within the board; history still restores its saved reading place.
+    function revealBoardSelection() {
+      if (!board.revealKey || board.revealKey !== sel || !board.on || narrow() || !shards[fams[board.fi].d]) return;
+      var c = boardEl.querySelector('.u-col:not([hidden]) .u-bc.is-sel');
+      if (!c || !boardEl.clientHeight) return;
+      var view = boardEl.getBoundingClientRect(), card = c.getBoundingClientRect();
+      var top = view.top + 12, bottom = view.top + boardEl.clientHeight - 12;
+      if (card.height > bottom - top || card.top < top) boardEl.scrollTop += card.top - top;
+      else if (card.bottom > bottom) boardEl.scrollTop += card.bottom - bottom;
+      board.revealKey = null;
+    }
+    // A neighbouring packet only enriches its title. Keep the cards and controls
+    // being read intact, rather than reconstructing all this family's papers.
+    function refreshBoardNeighbours() {
+      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--f'), function (c) {
+        var di = fams[+c.getAttribute('data-g')].d, sh = shards[di];
+        if (!sh || c.getAttribute('data-u-detail') === 'ready') return;
+        var det = sh.families && sh.families[c.getAttribute('data-bk')], title = c.querySelector('.u-bc__ft');
+        if (det && det.titleHtml && title) { title.innerHTML = det.titleHtml; katexIn(title, null, di); }
+        c.setAttribute('data-u-detail', 'ready');
+      });
+    }
+    function rememberBoardFocus() {
+      var active = document.activeElement;
+      if (!active || !boardEl.contains(active)) return null;
+      var card = active.closest('[data-bk]');
+      return { key: card && card.getAttribute('data-bk'), way: card && card.getAttribute('data-way'), href: active.getAttribute('href') };
+    }
+    function restoreBoardFocus(saved) {
+      if (!saved) return;
+      var target = null;
+      if (saved.key) {
+        Array.prototype.some.call(boardEl.querySelectorAll('[data-bk]'), function (c) {
+          if (c.getAttribute('data-bk') !== saved.key) return false;
+          if (saved.way && c.getAttribute('data-way') !== saved.way) return false;
+          target = c;
+          if (saved.href) Array.prototype.some.call(c.querySelectorAll('a'), function (a) {
+            if (a.getAttribute('href') !== saved.href) return false;
+            target = a; return true;
+          });
+          return true;
+        });
+      }
+      if (target && !target.closest('[hidden]')) target.focus({ preventScroll: true });
+    }
+    var boardShardWaiting = {};
+    function watchBoardShard(di) {
+      if (shards[di] || failedShards[di] || boardShardWaiting[di]) return;
+      var waiting = loadShard(di);
+      boardShardWaiting[di] = waiting;
+      var settled = function () {
+        if (boardShardWaiting[di] !== waiting) return;
+        delete boardShardWaiting[di];
+        // The reader may have left this board while the packet was in flight.
+        // Only its current family and neighbours can need a layout update.
+        var fi = boardFamily();
+        if (fi < 0) return;
+        var f = D.families[fi];
+        if (fams[fi].d === di || f.cites.concat(f.citedBy).some(function (c) { return fams[c[0]].d === di; })) syncBoard();
+      };
+      waiting.then(settled, settled);
     }
     function syncBoard() {
       if (!boardEl || !D) return;
       var fi = boardFamily();
       if (fi < 0) { hideBoard(); return; }
       var f = D.families[fi], di = fams[fi].d;
-      if (!shards[di]) loadShard(di).then(syncBoard, syncBoard);
+      watchBoardShard(di);
       // The neighbours' titles are typeset from their own disciplines' records.
       var near = f.cites.concat(f.citedBy).map(function (c) { return fams[c[0]].d; });
-      var ready = near.filter(function (d2) { return shards[d2]; }).length;
-      near.forEach(function (d2) { if (!shards[d2] && !failedShards[d2]) loadShard(d2).then(syncBoard, function () {}); });
-      var sig = fi + '|' + (shards[di] ? 1 : 0) + '|' + ready + '|' + board.budget;
+      near = near.filter(function (d2, i) { return d2 !== di && near.indexOf(d2) === i; });
+      near.forEach(watchBoardShard);
+      var sig = fi + '|' + (shards[di] ? 1 : failedShards[di] ? 'failed' : 0);
       var fresh = board.fi !== fi;
+      var focused = null;
       if (sig !== board.sig) {
         var keepScroll = board.fi === fi ? boardEl.scrollTop : 0;
-        if (fresh) board.page = 0;
+        if (fresh) board.selectionKey = null;
+        else focused = rememberBoardFocus();
         board.fi = fi; board.sig = sig;
         boardEl.innerHTML = boardHtml(fi);
         typesetBoard(fi);
         boardEl.scrollTop = keepScroll;
         hideBoardCard();
       }
+      refreshBoardNeighbours();
       markBoard();
       if (!board.on) {
         board.pending = true;
-        // From the discipline, the camera flies into the family's disc first and the
-        // board fades in over it once the camera settles (cameraTo calls showBoard).
-        requestAnimationFrame(function () { if (board.pending && !cameraFrame) showBoard(); });
+        // Family boards do not wait for an ornamental zoom. chartTo settles a
+        // family target immediately; this frame also covers direct page entries.
+        requestAnimationFrame(function () { if (board.pending && !chartAnimating()) showBoard(); });
       }
-      if (fresh || !board.on) { layoutPages(); }
-      else { pageToSelection(); layoutBoard(); }
+      layoutPages();
       if (ringWanted || ring) board.ringKey = sel;
       ringBoard();
+      restoreBoardPosition();
+      revealBoardSelection();
+      restoreBoardFocus(focused);
     }
-    function layoutPages() { var keep = board.on; board.on = true; layoutBoard(); pageToSelection(); layoutBoard(); board.on = keep; }
+    function layoutPages() {
+      var keep = board.on; board.on = true; layoutBoard();
+      board.selectionKey = sel;
+      board.on = keep;
+    }
     function showBoard() {
       if (!board.pending) return;
       board.pending = false;
       board.on = true;
+      boardEl.removeAttribute('inert');
       root.setAttribute('data-board', '');
       boardEl.classList.add('is-on');
       hover = null; hideCard();
       layoutBoard();
       ringBoard();
+      restoreBoardPosition();
+      revealBoardSelection();
     }
     function hideBoard() {
       board.pending = false;
+      // The outgoing board may still be fading, but its old controls must stop
+      // catching clicks or keyboard focus as soon as the map becomes current.
+      boardEl.setAttribute('inert', '');
       if (!board.on) { board.fi = -1; board.sig = ''; return; }
       board.on = false; board.fi = -1; board.sig = '';
       boardEl.classList.remove('is-on');
@@ -2571,20 +1538,32 @@
       }
       return '';
     }
-    function hideBoardCard() {
+    function hideBoardCard(dismiss) {
+      if (dismiss) board.dismissedKey = board.hoverKey;
       clearTimeout(board.hideT);
+      board.hoverVia = '';
+      board.hoverEl = null;
       if (board.hoverKey) { board.hoverKey = null; if (board.on) drawWires(); }
       if (cardEl) cardEl.classList.remove('is-board');
       hideCard();
     }
-    function showBoardCard(el, via) {
+    function showBoardCard(el, via, reposition) {
       if (!cardEl || !board.on || narrow()) return;
       if (via !== 'focus' && !(hoverMQ && hoverMQ.matches)) return;
       var key = el.getAttribute('data-bk');
+      // Removing a preview can expose its source under a stationary pointer.
+      // Wait for that pointer or keyboard focus to leave before showing it again.
+      if (board.dismissedKey === key) return;
+      board.dismissedKey = null;
       clearTimeout(board.hideT);
+      var ck = 'b:' + key + (shards[discOf(obj(key))] ? '+' : '');
+      // Formula spans and paragraph children bubble many pointerover events.
+      // An unchanged preview needs no new whole-board placement scan. Keep
+      // distinct left/right cards for the same family as separate sources.
+      if (!reposition && cardOn && board.hoverEl === el && board.hoverVia === via && cardKey === ck) return;
+      board.hoverEl = el; board.hoverVia = via;
       if (board.hoverKey !== key) { board.hoverKey = key; drawWires(); }
       cardEl.classList.add('is-board');
-      var ck = 'b:' + key + (shards[discOf(obj(key))] ? '+' : '');
       if (ck !== cardKey) {
         cardEl.innerHTML = boardCardHtml(key);
         var px = cardEl.querySelector('[data-paper]');
@@ -2600,8 +1579,7 @@
         if (b.y1 < 0 || b.y0 > sr.height) return;
         if (c.classList.contains('is-sel')) keep.push(b); else others.push(b);
       });
-      // The eight places beside the card first; failing those, any place in the stage
-      // (a 24 px lattice), nearest first, that keeps off the card and the selection.
+      // Adjacent placements keep the preview reachable across a small gap.
       var g = 10, spots = [[me.x1 + g, me.y0], [me.x0 - g - w, me.y0], [me.x0, me.y1 + g], [me.x0, me.y0 - g - h],
                            [me.x1 + g, me.y1 - h], [me.x0 - g - w, me.y1 - h], [me.x1 - w, me.y1 + g], [me.x1 - w, me.y0 - g - h]];
       var X1 = Math.max(8, sr.width - w - 8), Y1 = Math.max(8, sr.height - h - 8);
@@ -2610,40 +1588,102 @@
         var x0 = clamp(sp[0], 8, X1), y0 = clamp(sp[1], 8, Y1);
         var b = { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h };
         var gapX = Math.max(0, me.x0 - b.x1, b.x0 - me.x1), gapY = Math.max(0, me.y0 - b.y1, b.y0 - me.y1);
-        var score = (sp[2] ? 40 : i * 2) + Math.hypot(gapX, gapY) * 0.8;
+        var score = i * 2 + Math.hypot(gapX, gapY) * 2;
         // Over the card itself or the selection only where nothing else is free, and then
         // over as little of them as it can.
         keep.forEach(function (q) { var ov = overlap(b, q); if (ov > 0) score += 1e5 + ov * 20; });
-        others.forEach(function (q) { var ov = overlap(b, q); if (ov > 0) score += 400 + ov * 0.02; });
+        score += Math.min(20, others.reduce(function (sum, q) { return sum + Math.max(0, overlap(b, q)) * 0.0005; }, 0));
         if (score < bestScore) { bestScore = score; best = b; }
       };
       spots.forEach(tryAt);
-      if (bestScore >= 400) for (var gx = 8; gx <= X1; gx += 24) for (var gy = 8; gy <= Y1; gy += 24) tryAt([gx, gy, 1], 0);
       cardBox = best;
       cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
       if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
     }
+    function repositionBoardCard() {
+      if (!cardOn || !board.on || !board.hoverEl) return;
+      if (narrow() || !boardEl.contains(board.hoverEl)) { hideBoardCard(); return; }
+      // Width and font changes re-pack the board while focus may stay put.
+      showBoardCard(board.hoverEl, board.hoverVia, true);
+    }
+    // Reading width changes on the first click. The next press in a double-click
+    // may therefore land on the sidebar or another card, outside the old board.
+    var boardClick = null, boardRepeatPress = null, boardDoubleOpened = false;
+    function boardDoublePress(e) {
+      boardRepeatPress = null; boardDoubleOpened = false;
+      var prior = boardClick; boardClick = null;
+      if (!prior || e.button !== 0 || e.isPrimary === false || e.pointerType === 'touch' ||
+          e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !board.on || board.fi !== prior.fi || sel !== prior.key) return;
+      var elapsed = e.timeStamp - prior.time;
+      if (elapsed < 0 || elapsed > 500 || Math.hypot(e.clientX - prior.x, e.clientY - prior.y) > 8) return;
+      boardRepeatPress = { key: prior.key, fi: prior.fi, x: e.clientX, y: e.clientY, time: prior.time };
+    }
+    function boardDoubleClick(e) {
+      var press = boardRepeatPress; boardRepeatPress = null;
+      if (!press || e.detail === 0 || e.defaultPrevented || e.button > 0 ||
+          e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !board.on || board.fi !== press.fi || sel !== press.key ||
+          e.timeStamp - press.time > 500 || Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) return;
+      boardPress = null; boardDoubleOpened = true;
+      e.preventDefault(); e.stopImmediatePropagation();
+      openFromBoard(press.key);
+    }
+    root.addEventListener('pointerdown', boardDoublePress, true);
+    root.addEventListener('click', boardDoubleClick, true);
+    root.addEventListener('pointercancel', function () { boardClick = null; boardRepeatPress = null; }, true);
+    function selectFromBoard(key) {
+      if (key !== sel) select(key, { trail: true });
+      hideBoardCard();
+      board.dismissedKey = key;
+      // On a phone the detail panel is a separate view, so reveal the record
+      // that a paper, theorem or Lean card just selected.
+      if (narrow() && obj(key) && obj(key).kind !== 'f') {
+        showView('list');
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        focusArrival();
+      }
+    }
     if (boardEl) {
+      boardEl.addEventListener('pointerdown', function (e) {
+        boardPress = e.button === 0 && e.isPrimary !== false ? { x: e.clientX, y: e.clientY, pointerType: e.pointerType } : null;
+      });
+      boardEl.addEventListener('pointercancel', function () { boardPress = null; });
       boardEl.addEventListener('click', function (e) {
-        var pg = e.target.closest('[data-u-page]');
-        if (pg) { board.page += +pg.getAttribute('data-u-page'); hideBoardCard(); layoutBoard(); return; }
+        var press = boardPress; boardPress = null;
+        if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) { e.preventDefault(); return; }
+        if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         if (e.target.closest('a')) return;
         var c = e.target.closest('[data-bk]');
-        if (!c || e.detail > 1) return;
+        if (e.detail > 1) return;
+        if (!c) {
+          // Empty board space backs out just like empty space between map discs.
+          // Restrict this to layout containers so selecting words or using controls
+          // cannot accidentally navigate away.
+          if (e.target.matches('.u-board, .u-board__in, .u-board__cols, .u-board__main, .u-board__papers, .u-board__side, .u-col, .u-leans')) {
+            hideBoardCard();
+            if (sel) stepBack();
+          }
+          return;
+        }
         var key = c.getAttribute('data-bk');
-        if (key !== sel) select(key, { trail: true });
+        selectFromBoard(key);
+        if (press && press.pointerType !== 'touch' && e.detail !== 0) boardClick = { key: key, fi: board.fi, x: e.clientX, y: e.clientY, time: e.timeStamp };
       });
       boardEl.addEventListener('dblclick', function (e) {
+        if (boardDoubleOpened) { boardDoubleOpened = false; return; }
+        if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
         if (e.target.closest('a')) return;
         var c = e.target.closest('[data-bk]');
         if (c) openFromBoard(c.getAttribute('data-bk'));
       });
       boardEl.addEventListener('keydown', function (e) {
+        boardPress = null; boardClick = null; boardRepeatPress = null;
         var c = e.target && e.target.getAttribute && e.target.getAttribute('data-bk') ? e.target : null;
         if (!c) return;
         var key = c.getAttribute('data-bk');
-        if (e.key === 'Enter') { e.preventDefault(); openFromBoard(key); }
-        else if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); if (key !== sel) select(key, { trail: true }); }
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+          e.preventDefault(); selectFromBoard(key);
+          if (!boardEl.contains(c)) focusArrival();
+        }
       });
       boardEl.addEventListener('pointerover', function (e) {
         var c = e.target.closest && e.target.closest('[data-bk]');
@@ -2652,6 +1692,7 @@
       boardEl.addEventListener('pointerout', function (e) {
         var c = e.target.closest && e.target.closest('[data-bk]');
         if (!c || (e.relatedTarget && (c.contains(e.relatedTarget) || (cardEl && cardEl.contains(e.relatedTarget))))) return;
+        if (board.dismissedKey === c.getAttribute('data-bk')) board.dismissedKey = null;
         clearTimeout(board.hideT);
         board.hideT = setTimeout(hideBoardCard, 160);
       });
@@ -2661,7 +1702,10 @@
         try { visible = !!c && c.matches(':focus-visible'); } catch (err) { visible = false; }
         if (visible) showBoardCard(c, 'focus');
       });
-      boardEl.addEventListener('focusout', function () { if (cardEl && cardEl.classList.contains('is-board')) hideBoardCard(); });
+      boardEl.addEventListener('focusout', function () {
+        board.dismissedKey = null;
+        if (board.hoverVia === 'focus') hideBoardCard();
+      });
       boardEl.addEventListener('scroll', function () { if (cardEl && cardEl.classList.contains('is-board')) hideBoardCard(); }, { passive: true });
       if (cardEl) {
         cardEl.addEventListener('pointerenter', function () { if (cardEl.classList.contains('is-board')) clearTimeout(board.hideT); });
@@ -2687,378 +1731,6 @@
       openPage(o);
     }
 
-    /* ---- The open family's lines: threads to Lean, fibres to other families */
-    var routeCache = { key: '', routes: null };
-    function paintOpenLines(fi, openA, plan) {
-      var f = fams[fi], k = view.k, sx = f.x * k + view.tx, sy = f.y * k + view.ty, sr = f.r * k;
-      var words = plan.boxes.filter(function (b) { return !b.ring && !b.plate; });
-      // The routes depend on where the words stand relative to the family, so a
-      // pan reuses them, moved; a zoom or a change of words finds them again.
-      var sig = [fi, k.toFixed(4), words.length].concat(words.map(function (b) { return (b.x0 - sx).toFixed(1) + ',' + (b.y0 - sy).toFixed(1); })).join('|');
-      var routes;
-      if (routeCache.key === sig) {
-        routes = routeCache.routes.map(function (r) {
-          return { ink: r.ink, dash: r.dash, w: r.w, end: r.end, pair: r.pair, pts: r.rel.map(function (p) { return [p[0] + sx, p[1] + sy]; }) };
-        });
-      } else {
-        routes = [];
-        var obstacles = words.map(function (b) { return { x0: b.x0 - 4, x1: b.x1 + 4, y0: b.y0 - 4, y1: b.y1 + 4 }; });
-        // Threads: each paired result to its Lean statement (chosen automatically, so dashed).
-        f.data.lean.forEach(function (li) {
-          var lp = L.lean[li], B = [sx + lp[0] * sr, sy + lp[1] * sr];
-          D.lean[li].results.forEach(function (ri) {
-            var rp = L.results[ri], A = [sx + rp[0] * sr, sy + rp[1] * sr];
-            var obs = obstacles.filter(function (o) { return !insideBox(A, o) && !insideBox(B, o); });
-            var way = [A, B];  // a pairing is drawn straight, so its two ends read as one pair
-            routes.push({ ink: 'steel', dash: D.lean[li].pairing === 'candidate-pairing', w: 1.2, pair: [D.results[ri].id, D.lean[li].id], pts: trimEnds(way, dotRadius(sr) * 1.4 + 2, dotRadius(sr) * 1.7 + 2) });
-          });
-        });
-        // Citations: a short stub from the family's edge out to the end that names the
-        // other family, so a citation never runs across the family's own drawing.
-        (L.fibres[fi] || []).forEach(function (fb) {
-          var a = fb[0];
-          var pts = [[sx + 1.01 * sr * Math.cos(a), sy + 1.01 * sr * Math.sin(a)], [sx + 1.24 * sr * Math.cos(a), sy + 1.24 * sr * Math.sin(a)]];
-          var ways = fb[2] === 3 ? ['cites', 'cited'] : fb[2] === 1 ? ['cites'] : ['cited'];
-          ways.forEach(function (ink, n) {
-            var off = ways.length > 1 ? (n ? 1.6 : -1.6) : 0;
-            routes.push({ ink: ink, dash: false, w: 1.4, end: true, pts: offsetLine(pts, off) });
-          });
-        });
-        routeCache = { key: sig, routes: routes.map(function (r) {
-          return { ink: r.ink, dash: r.dash, w: r.w, end: r.end, pair: r.pair, rel: r.pts.map(function (p) { return [p[0] - sx, p[1] - sy]; }) };
-        }) };
-      }
-      ctx.save();
-      // The pair the reader shows is the strongest line on the map (still dashed when it
-      // is a candidate); pointing at a result or a Lean statement previews its lines, and
-      // leaving restores the pinned pair. Other pairings step back.
-      var pp = pinnedPair();
-      var hk2 = hover && /^[rl]:/.test(hover) ? hover : null;
-      var isOn = function (r) {
-        if (!r.pair) return false;
-        if (hk2) return r.pair[0] === hk2 || r.pair[1] === hk2;
-        return !!pp && r.pair[0] === pp[0] && r.pair[1] === pp[1];
-      };
-      var anyLit = routes.some(isOn);
-      routes.forEach(function (r) {
-        var on = isOn(r);
-        ctx.globalAlpha = openA * (anyLit && r.pair ? (on ? 1 : 0.3) : 1);
-        ctx.strokeStyle = r.ink === 'steel' ? palette.steel : r.ink === 'cites' ? palette.cites : palette.cited;
-        ctx.lineWidth = on ? 2.4 : r.w;
-        ctx.setLineDash(r.dash ? [3, 3] : []);
-        ctx.beginPath();
-        r.pts.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
-        ctx.stroke();
-      });
-      ctx.setLineDash([]);
-      ctx.globalAlpha = openA;
-      // The fibre's end: a small open ring at the edge.
-      (L.fibres[fi] || []).forEach(function (fb) {
-        var a = fb[0], ex = sx + 1.24 * sr * Math.cos(a), ey = sy + 1.24 * sr * Math.sin(a);
-        ctx.beginPath(); ctx.arc(ex, ey, 3.2, 0, TAU);
-        ctx.fillStyle = palette.ground; ctx.fill();
-        ctx.lineWidth = 1.2; ctx.strokeStyle = fb[2] & 1 ? palette.cites : palette.cited; ctx.stroke();
-      });
-      ctx.restore();
-      plan.lines = routes;
-    }
-    function clampAngle(a, lo, hi) {
-      var mid = (lo + hi) / 2, d = Loom.turn(mid, a), half = (hi - lo) / 2;
-      return mid + clamp(d, -half, half);
-    }
-    function offsetLine(pts, off) {
-      if (!off) return pts;
-      return pts.map(function (p, i) {
-        var a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)];
-        var dx = b[0] - a[0], dy = b[1] - a[1], l = Math.hypot(dx, dy) || 1;
-        return [p[0] - dy / l * off, p[1] + dx / l * off];
-      });
-    }
-    function trimEnds(pts, r0, r1) {
-      if (pts.length < 2) return pts;
-      var out = pts.slice();
-      var cut = function (a, b, r) {
-        var d = Math.hypot(b[0] - a[0], b[1] - a[1]);
-        if (d <= r) return a;
-        return [a[0] + (b[0] - a[0]) * r / d, a[1] + (b[1] - a[1]) * r / d];
-      };
-      out[0] = cut(out[0], out[1], r0);
-      out[out.length - 1] = cut(out[out.length - 1], out[out.length - 2], r1);
-      return out;
-    }
-
-    /* ---- The way round words (the Plectis universe's shortestWay) ---------- */
-    function segLength(a, b) { return Math.sqrt((b[0] - a[0]) * (b[0] - a[0]) + (b[1] - a[1]) * (b[1] - a[1])); }
-    function clipSegment(p, q, b) {
-      var dx = q[0] - p[0], dy = q[1] - p[1], t0 = 0, t1 = 1;
-      var checks = [[-dx, p[0] - b.x0], [dx, b.x1 - p[0]], [-dy, p[1] - b.y0], [dy, b.y1 - p[1]]];
-      for (var c = 0; c < 4; c++) {
-        var pp = checks[c][0], qq = checks[c][1];
-        if (pp === 0) { if (qq < 0) return null; continue; }
-        var t = qq / pp;
-        if (pp < 0) { if (t > t0) t0 = t; } else if (t < t1) t1 = t;
-        if (t1 < t0) return null;
-      }
-      return t1 > t0 ? [t0, t1] : null;
-    }
-    function routeIntrusion(points, obstacles) {
-      var inside = 0;
-      for (var j = 1; j < points.length; j++) {
-        var p = points[j - 1], q = points[j], len = segLength(p, q);
-        for (var o = 0; o < obstacles.length; o++) {
-          var hit = clipSegment(p, q, obstacles[o]);
-          if (hit) inside += (hit[1] - hit[0]) * len;
-        }
-      }
-      return inside;
-    }
-    function insideBox(pt, b) { return pt[0] > b.x0 && pt[0] < b.x1 && pt[1] > b.y0 && pt[1] < b.y1; }
-    var ROUTE_ROUND = 12, ROUTE_GAP = 8;
-    function roundRoute(pts) {
-      if (pts.length < 3) return pts;
-      var out = [pts[0]];
-      for (var j = 1; j < pts.length - 1; j++) {
-        var p = pts[j - 1], c = pts[j], q = pts[j + 1];
-        var r = Math.min(ROUTE_ROUND, segLength(p, c) / 2, segLength(c, q) / 2);
-        var lin = segLength(p, c) || 1, lout = segLength(c, q) || 1;
-        var s0 = [c[0] + (p[0] - c[0]) * r / lin, c[1] + (p[1] - c[1]) * r / lin];
-        var s1 = [c[0] + (q[0] - c[0]) * r / lout, c[1] + (q[1] - c[1]) * r / lout];
-        out.push(s0);
-        for (var k = 1; k < 6; k++) {
-          var t = k / 6, u = 1 - t;
-          out.push([u * u * s0[0] + 2 * u * t * c[0] + t * t * s1[0], u * u * s0[1] + 2 * u * t * c[1] + t * t * s1[1]]);
-        }
-        out.push(s1);
-      }
-      out.push(pts[pts.length - 1]);
-      return out;
-    }
-    function shortestWay(A, B, obstacles) {
-      var route = [A, B];
-      if (routeIntrusion(route, obstacles) > 0) {
-        route = null;
-        var pts = [A, B];
-        obstacles.forEach(function (o) {
-          [[o.x0 - ROUTE_GAP, o.y0 - ROUTE_GAP], [o.x1 + ROUTE_GAP, o.y0 - ROUTE_GAP],
-           [o.x1 + ROUTE_GAP, o.y1 + ROUTE_GAP], [o.x0 - ROUTE_GAP, o.y1 + ROUTE_GAP]].forEach(function (c) {
-            if (!obstacles.some(function (other) { return insideBox(c, other); })) pts.push(c);
-          });
-        });
-        var count = pts.length, dist = [], prev = [], done = [];
-        for (var n0 = 0; n0 < count; n0++) { dist.push(Infinity); prev.push(-1); done.push(false); }
-        dist[0] = 0;
-        var clear = function (p, r) {
-          var len = segLength(p, r);
-          for (var o = 0; o < obstacles.length; o++) {
-            var hit = clipSegment(p, r, obstacles[o]);
-            if (hit && (hit[1] - hit[0]) * len > 0.5) return false;
-          }
-          return true;
-        };
-        for (;;) {
-          var at = -1;
-          for (var m = 0; m < count; m++) if (!done[m] && (at < 0 || dist[m] < dist[at])) at = m;
-          if (at < 0 || !isFinite(dist[at]) || at === 1) break;
-          done[at] = true;
-          for (var v = 0; v < count; v++) {
-            if (done[v]) continue;
-            var d = dist[at] + segLength(pts[at], pts[v]) + 10;
-            if (d < dist[v] && clear(pts[at], pts[v])) { dist[v] = d; prev[v] = at; }
-          }
-        }
-        if (isFinite(dist[1])) {
-          var way = [], step = 1;
-          while (step >= 0) { way.unshift(pts[step]); step = prev[step]; }
-          route = roundRoute(way);
-        }
-      }
-      return route;
-    }
-
-    /* ---- Drawing the words ----------------------------------------------- */
-    // Words on the drawing stand on a thin halo of the ground, so a line passing
-    // under a name never breaks its letters.
-    function drawLines(lines, x, y, font, color, lead, align, halo) {
-      ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align || 'left'; ctx.textBaseline = 'middle';
-      ctx.lineJoin = 'round'; ctx.strokeStyle = halo || palette.ground; ctx.lineWidth = 3.5;
-      lines.forEach(function (l, i) { ctx.strokeText(l, x, y + lead / 2 + i * lead); ctx.fillText(l, x, y + lead / 2 + i * lead); });
-    }
-    // A family name that a citation line crosses stands on a soft patch of the ground,
-    // so the stroke stops short of its letters. Only names a line actually crosses get one.
-    function liftOffLines(b) {
-      if (!citeSamples.length) return;
-      var hit = false;
-      for (var i = 0; i < citeSamples.length && !hit; i++) {
-        var p = citeSamples[i];
-        hit = p[0] > b.x0 - 2 && p[0] < b.x1 + 2 && p[1] > b.y0 - 1 && p[1] < b.y1 + 1;
-      }
-      if (!hit) return;
-      ctx.save();
-      ctx.globalAlpha = 0.9;
-      ctx.fillStyle = palette.ground; ctx.shadowColor = palette.ground; ctx.shadowBlur = 5;
-      ctx.beginPath();
-      var x = b.x0 - 3, y = b.y0 - 1, w = b.x1 - b.x0 + 6, h = b.y1 - b.y0 + 2;
-      if (ctx.roundRect) ctx.roundRect(x, y, w, h, 4); else ctx.rect(x, y, w, h);
-      ctx.fill();
-      ctx.restore();
-    }
-    function discLeader(q) {
-      var lx = q.side > 0 ? q.x0 : q.x1, ly = q.y0 + 8;
-      if (Math.abs(lx - q.ax) <= 14 && Math.abs(ly - q.ay) <= 6) return null;
-      var ex = lx - q.side * 4;
-      return [[q.ax, q.ay], [ex - q.side * 6, ly], [ex, ly]];
-    }
-    function paintLabels(plan) {
-      ctx.save();
-      // Discipline names, each with its leader from its sector.
-      plan.disc.forEach(function (q) {
-        ctx.globalAlpha = q.alpha;
-        var lead = discLeader({ side: q.side, x0: q.box.x0, x1: q.box.x1, y0: q.box.y0, ax: q.ax, ay: q.ay });
-        if (lead) {
-          ctx.strokeStyle = palette.structFaint; ctx.lineWidth = 0.8;
-          ctx.beginPath(); ctx.moveTo(lead[0][0], lead[0][1]);
-          ctx.lineTo(lead[1][0], lead[1][1]); ctx.lineTo(lead[2][0], lead[2][1]); ctx.stroke();
-        }
-        var align = q.side > 0 ? 'left' : 'right', x = q.side > 0 ? q.x : q.x + q.t.w;
-        drawLines(q.t.lines, x, q.y, DISC_FONT, q.hot ? palette.focus : palette.ink, DISC_LEAD, align);
-        drawLines([q.t.count], x, q.y + q.t.lines.length * DISC_LEAD + 1, DISC_COUNT_FONT, q.hot ? palette.ink : palette.muted, 16, align);
-      });
-      var hk = hover ? obj(hover) : null;
-      // A discipline's family names in their two columns, each with its leader.
-      plan.side.forEach(function (n) {
-        ctx.globalAlpha = n.alpha;
-        var hot = hk && famOf(hk) === n.fi;
-        ctx.strokeStyle = hot ? palette.focus : palette.structFaint; ctx.lineWidth = hot ? 1.2 : 0.8;
-        ctx.beginPath(); n.lead.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); }); ctx.stroke();
-        liftOffLines(n.box);
-        drawLines(n.t.lines, n.align === 'right' ? n.box.x1 : n.box.x0, n.box.y0, SIDE_FONT, hot ? palette.focus : palette.ink, SIDE_LEAD, n.align);
-      });
-      // Family names set level beside their discs.
-      plan.flat.forEach(function (n) {
-        ctx.globalAlpha = n.alpha;
-        var hot = hk && famOf(hk) === n.fi;
-        var x = n.align === 'right' ? n.box.x1 : n.align === 'center' ? (n.box.x0 + n.box.x1) / 2 : n.box.x0;
-        if (n.lead) {
-          ctx.strokeStyle = hot ? palette.focus : palette.struct; ctx.lineWidth = hot ? 1.2 : 0.9;
-          ctx.beginPath(); ctx.moveTo(n.lead[0][0], n.lead[0][1]); ctx.lineTo(n.lead[1][0], n.lead[1][1]); ctx.stroke();
-        }
-        liftOffLines(n.box);
-        drawLines(n.t.lines, x, n.box.y0, FLAT_FONT, hot ? palette.focus : palette.ink, FLAT_LEAD, n.align);
-      });
-      // Family names along their radius.
-      plan.names.forEach(function (n) {
-        ctx.globalAlpha = n.alpha;
-        var right = Math.cos(n.a) >= 0, hot = hk && famOf(hk) === n.fi;
-        if (n.lead) {
-          ctx.strokeStyle = hot ? palette.focus : palette.structFaint; ctx.lineWidth = hot ? 1.1 : 0.8;
-          ctx.beginPath();
-          n.lead.forEach(function (p, i) { if (i) ctx.lineTo(p[0], p[1]); else ctx.moveTo(p[0], p[1]); });
-          ctx.stroke();
-        }
-        ctx.save();
-        ctx.translate(view.tx + n.r0 * Math.cos(n.a), view.ty + n.r0 * Math.sin(n.a));
-        ctx.rotate(right ? n.a : n.a + Math.PI);
-        var h = n.t.lines.length * NAME_LEAD;
-        drawLines(n.t.lines, 0, -h / 2, NAME_FONT, hot ? palette.focus : palette.muted, NAME_LEAD, right ? 'left' : 'right');
-        ctx.restore();
-      });
-      // The open family's words.
-      plan.open.forEach(function (it) {
-        ctx.globalAlpha = it.alpha;
-        if (it.kind === 'end' && it.t) {
-          var hot = hk && hk.kind === 'f' && hk.i === it.g;
-          drawLines(it.t.lines, it.right ? it.box.x0 : it.box.x1, it.box.y0, END_FONT, hot ? palette.focus : palette.ink, NAME_LEAD, it.right ? 'left' : 'right');
-        } else if (it.kind === 'paper') {
-          if (it.lead) {
-            ctx.strokeStyle = palette.structFaint; ctx.lineWidth = 0.9;
-            ctx.beginPath(); ctx.moveTo(it.lead[0][0], it.lead[0][1]); ctx.lineTo(it.lead[1][0], it.lead[1][1]); ctx.stroke();
-          }
-          drawLines(it.t.lines, (it.box.x0 + it.box.x1) / 2, it.box.y0, PAPER_FONT, palette.ink, 16, 'center');
-          if (it.t.date) drawLines([it.t.date], (it.box.x0 + it.box.x1) / 2, it.box.y0 + it.t.lines.length * 16 + 1, DATE_FONT, palette.muted, 14, 'center');
-        } else if (it.kind === 'lean') {
-          drawLines([it.text], it.box.x0, it.box.y0, LEAN_FONT, palette.steel, 14, 'left');
-        } else if (it.kind === 'num') {
-          if (it.hot) {
-            ctx.fillStyle = palette.ground;
-            ctx.fillRect(it.box.x0 - 3, it.box.y0 - 1, it.box.x1 - it.box.x0 + 6, it.box.y1 - it.box.y0 + 2);
-          }
-          drawLines([it.text], (it.box.x0 + it.box.x1) / 2, it.box.y0, it.hot ? NUM_HOT_FONT : NUM_FONT, palette.ink, 13, 'center');
-        } else if (it.kind === 'cap') {
-          drawLines([it.text], (it.box.x0 + it.box.x1) / 2, it.box.y0, CAP_FONT, palette.faint, 14, 'center');
-        }
-      });
-      ctx.restore();
-    }
-    function paintPlates(plan) {
-      ctx.save();
-      plan.plates.forEach(function (p) {
-        var b = p.box;
-        if (p.leader) {
-          ctx.strokeStyle = palette.focus; ctx.lineWidth = 1;
-          ctx.beginPath(); ctx.moveTo(p.leader[0], p.leader[1]); ctx.lineTo(p.leader[2], p.leader[3]); ctx.stroke();
-        }
-        ctx.fillStyle = palette.plate; ctx.strokeStyle = palette.plateRule; ctx.lineWidth = 1;
-        ctx.beginPath();
-        if (ctx.roundRect) ctx.roundRect(b.x0 + 0.5, b.y0 + 0.5, b.x1 - b.x0 - 1, b.y1 - b.y0 - 1, 5);
-        else ctx.rect(b.x0 + 0.5, b.y0 + 0.5, b.x1 - b.x0 - 1, b.y1 - b.y0 - 1);
-        ctx.fill(); ctx.stroke();
-        drawLines(p.t.main.lines, b.x0 + p.pad, b.y0 + p.pad - 1, PLATE_FONT, palette.ink, PLATE_LEAD, 'left', palette.plate);
-        if (p.t.sub) drawLines(p.t.sub.lines, b.x0 + p.pad, b.y0 + p.pad + p.t.main.lines.length * PLATE_LEAD + 1, PLATE_SUB, palette.muted, 15, 'left', palette.plate);
-      });
-      ctx.restore();
-    }
-
-    /* ---- Hit testing ---------------------------------------------------- */
-    function hitAt(x, y) {
-      for (var i = hitTargets.length - 1; i >= 0; i--) {
-        var h = hitTargets[i];
-        if (x >= h.box.x0 && x <= h.box.x1 && y >= h.box.y0 && y <= h.box.y1) return h.key;
-      }
-      var k = view.k, openF = openFamily();
-      if (openF >= 0 && partsReady && screenR(openF) > 50) {
-        var f = fams[openF], sx = f.x * k + view.tx, sy = f.y * k + view.ty, sr = f.r * k;
-        var best = null, bd = Math.max(8, dotRadius(sr) * 1.6 + 3);
-        f.data.papers.forEach(function (pi) {
-          D.papers[pi].results.forEach(function (ri) {
-            var p = L.results[ri], d = Math.hypot(sx + p[0] * sr - x, sy + p[1] * sr - y);
-            if (d < bd) { bd = d; best = D.results[ri].id; }
-          });
-        });
-        f.data.lean.forEach(function (li) {
-          var p = L.lean[li], d = Math.hypot(sx + p[0] * sr - x, sy + p[1] * sr - y);
-          if (d < bd) { bd = d; best = D.lean[li].id; }
-        });
-        if (best) return best;
-        // A paper's ring or arc, within a few pixels of its line.
-        for (var q = 0; q < f.data.papers.length; q++) {
-          var pi = f.data.papers[q], g = L.papers[pi];
-          var dx = x - (sx + g[0] * sr), dy = y - (sy + g[1] * sr), rr = Math.hypot(dx, dy);
-          if (Math.abs(rr - g[2] * sr) > 6) continue;
-          var a = Math.atan2(dy, dx), whole = g[4] - g[3] >= TAU - 1e-3;
-          if (whole || Math.abs(Loom.turn((g[3] + g[4]) / 2, a)) <= (g[4] - g[3]) / 2) return D.papers[pi].id;
-        }
-        var dc = Math.hypot(x - sx, y - sy);
-        if (dc < sr * 1.05) return D.families[openF].id;
-        if (screenR(openF) > Math.min(W, H) * 0.25) return null;
-      }
-      // A family's small map.
-      var bestF = -1, bestD = Infinity;
-      for (var fi = 0; fi < fams.length; fi++) {
-        var fm = fams[fi], d2 = Math.hypot(fm.x * k + view.tx - x, fm.y * k + view.ty - y), rr2 = markR(fi) + 3;
-        if (d2 <= rr2 && d2 / rr2 < bestD) { bestD = d2 / rr2; bestF = fi; }
-      }
-      if (bestF >= 0 && (openF < 0 || bestF === openF || 1 - smooth((detailR(openF) - 80) / 110) > 0.3)) return D.families[bestF].id;
-      // A sector of the wheel.
-      var wx = (x - view.tx) / k, wy = (y - view.ty) / k, wr = Math.hypot(wx, wy), wa = Math.atan2(wy, wx);
-      if (openF < 0 && wr >= L.wheel.rIn * 0.95) {
-        for (var di = 0; di < L.wheel.sectors.length; di++) {
-          var s = L.wheel.sectors[di];
-          if (wr <= s[3] + 2 && Math.abs(Loom.turn((s[0] + s[1]) / 2, wa)) <= (s[1] - s[0]) / 2) return D.disciplines[di].id;
-        }
-      }
-      return null;
-    }
-
     /* ---- Selection, trail and address ------------------------------------- */
     function parentKey(o) {
       if (!o) return null;
@@ -3069,17 +1741,20 @@
     // The selection lives in the address. A selection the reader makes is a new entry
     // in the history, so Back and Forward walk the same steps; one that follows from
     // the drawing (a zoom settling) or from the history itself replaces it.
-    function updateHash(push, leavingY) {
+    function updateHash(push, leavingY, leavingBoard, leavingViews) {
       if (!window.history || !window.history.replaceState) return;
       var base = window.location.pathname + window.location.search;
       var url = sel ? base + '#o=' + encodeURIComponent(sel) : base;
+      var view = root.getAttribute('data-view');
       if (url === window.location.pathname + window.location.search + window.location.hash) return;
+      var state = window.history.state || {};
       if (push && window.history.pushState) {
         // The entry being left keeps how far down the list the reader was, so Back
         // returns them to the same row.
-        try { window.history.replaceState({ o: (window.history.state || {}).o || null, y: leavingY || 0 }, ''); } catch (e) { /* the address still works */ }
-        window.history.pushState({ o: sel }, '', url);
-      } else window.history.replaceState({ o: sel }, '', url);
+        var previous = readHash();
+        try { window.history.replaceState(Object.assign({}, state, { o: previous, y: leavingY || 0, v: view, ys: leavingViews, sf: searchFolded, b: leavingBoard }), ''); } catch (e) { /* the address still works */ }
+        window.history.pushState({ o: sel, uPrev: previous, v: view, ys: phoneViewY, sf: searchFolded, b: boardPosition() }, '', url);
+      } else window.history.replaceState(Object.assign({}, state, { o: sel, v: view, ys: phoneViewY, sf: searchFolded, b: boardPosition() }), '', url);
     }
     // The list scrolls inside the panel on a wide screen and with the page on a narrow one.
     function panelScroller() {
@@ -3087,64 +1762,97 @@
       return narrow ? (document.scrollingElement || document.documentElement) : panelBody;
     }
     function scrollPos() { var s = panelScroller(); return s ? s.scrollTop : 0; }
+    // The phone's Map and List/Details share a page scroller, but not a reading place.
+    var phoneViewY = { map: 0, list: 0 };
+    var pendingViewSwitch = null;
+    function savedScrollPos() {
+      return narrow() && pendingViewSwitch ? phoneViewY[root.getAttribute('data-view')] : scrollPos();
+    }
+    function viewPositions() {
+      var positions = Object.assign({}, phoneViewY);
+      if (narrow()) positions[root.getAttribute('data-view')] = savedScrollPos();
+      return positions;
+    }
+    function restoreViewPositions(state) {
+      pendingViewSwitch = null;
+      phoneViewY = Object.assign({ map: 0, list: 0 }, state && state.ys);
+      if (state && !state.ys && (state.v === 'map' || state.v === 'list') && typeof state.y === 'number') phoneViewY[state.v] = state.y;
+    }
     // A position to restore once the panel holds enough to scroll that far.
     var pendingY = null;
     function restorePending() {
       var s = panelScroller();
       if (pendingY == null || !s) return;
+      if (!narrow() && pendingY > s.scrollHeight - s.clientHeight) reserveEntryTail();
       s.scrollTop = pendingY;
       if (s.scrollTop >= pendingY - 2) pendingY = null;
     }
     // Select an object: its panel, its plate and, where its level asks, a flight.
+    var selectionRequest = 0, historyBackPending = null, historySelection = null;
     function select(key, opts) {
+      var request = ++selectionRequest;
       opts = opts || {};
+      // A browser traversal settles on the next event turn. Keep a click made in
+      // that interval, rather than letting the arriving popstate erase it.
+      if (historyBackPending && !opts.fromHistory) { historySelection = { key: key, opts: opts }; return; }
       if (key && !partsReady && !/^d:/.test(key)) {
         // A family, paper, result or Lean statement opens once the parts are in.
-        loadParts().then(function () { select(key, opts); }, function () {});
+        var family = obj(key);
+        if (family && family.kind === 'f') {
+          var earlyDi = discOf(family);
+          if (!shards[earlyDi] && !failedShards[earlyDi]) loadShard(earlyDi).catch(function () {});
+        }
+        if (statusEl) { statusEl.textContent = T('status.parts_loading'); statusEl.hidden = false; }
+        loadParts().then(function () {
+          if (request === selectionRequest) select(key, opts);
+        }, function () {
+          if (request === selectionRequest && statusEl) {
+            statusEl.textContent = T('status.parts_failed'); statusEl.hidden = false;
+          }
+        });
         return;
       }
       var o = key ? obj(key) : null;
       if (key && !o) return;
-      var before = viewNow();
+      // Only an explicit selection may retry a failed detail packet. A redraw or
+      // rejected cached promise must never recursively start another board update.
+      var retryDi = o ? discOf(o) : -1;
+      if (retryDi >= 0 && failedShards[retryDi]) loadShard(retryDi).catch(function () {});
+      if (statusEl) statusEl.hidden = true;
       var prev = sel ? obj(sel) : null;
-      var leavingY = scrollPos();
-      if (!opts.fromHistory) pendingY = null;
+      var revealSelection = !opts.fromHistory || !pendingBoard;
+      var leavingY = savedScrollPos();
+      var leavingBoard = boardPosition();
+      var leavingViews = viewPositions();
+      pendingViewSwitch = null;
+      if (!opts.fromHistory) { pendingY = null; pendingBoard = null; restoreViewPositions(); }
       sel = key || null;
       pin = -1;
-      hover = null; hoverVia = '';
-      routeCache.key = '';
-      // A selection the reader makes gets its ring once it settles; a step through the
-      // history, a zoom that settles on its own or the first paint gets none.
+      hover = null; hoverVia = ''; cardDismissed = null;
+      // A discipline the reader chooses gets its ring once the move settles; a step
+      // through the history or the first paint gets none.
       var fly = opts.fly !== false;
       ring = null;
-      ringWanted = o && opts.trail && !opts.fromHistory && fly ? key : null;
-      if (opts.trail) trail.push({ key: key, before: before, prev: prev ? prev.key : null });
+      ringWanted = o && o.kind === 'd' && opts.trail && !opts.fromHistory && fly ? key : null;
+      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view'), y: leavingY, views: leavingViews, board: leavingBoard });
+      setReading(o);
+      board.revealKey = revealSelection && o && (o.kind === 'p' || o.kind === 'r' || o.kind === 'l') ? key : null;
       renderPanel(opts.quiet);
-      updateHash(!!opts.trail && !opts.fromHistory, leavingY);
+      updateHash(!!opts.trail && !opts.fromHistory, leavingY, leavingBoard, leavingViews);
       if (o && liveEl) liveEl.textContent = nameOf(o);
-      var widened = setReading(o);
-      if (fly) {
-        var needs = widened || !o || o.kind === 'd' || o.kind === 'f' || famOf(o) !== famOf(prev) || !inView(o);
-        if (needs) cameraTo(frameFor(o), !o, opts.delay);
-        else draw();
-      } else draw();
-      if (!cameraFrame) settleRing();
+      chartTo(fly);
+      // A fresh selection starts with its heading and breadcrumbs visible. The
+      // desktop sidebar's scrollIntoView can otherwise leave the whole map cropped.
+      // Returning through history keeps the saved reading position.
+      if (!opts.fromHistory) window.scrollTo({ top: 0, behavior: 'auto' });
     }
-    function inView(o) {
-      var p = objPos(o);
-      var x = p[0] * view.k + view.tx, y = p[1] * view.k + view.ty;
-      return x > 40 && x < W - 40 && y > 40 && y < H - 40 && screenR(famOf(o)) > 90;
-    }
-    // A theorem or a Lean statement in hand is read: the panel widens to give the
-    // mathematics room, and the family's map is refitted into the rest. Returns
-    // whether the map's width changed.
+    // A paper, theorem or Lean statement in hand is read: the panel widens to give the
+    // mathematics room, and the chart is laid out again in the rest.
     function setReading(o) {
-      var reading = !!(o && (o.kind === 'r' || o.kind === 'l'));
+      var reading = !!(o && (o.kind === 'p' || o.kind === 'r' || o.kind === 'l'));
       if (root.classList.contains('is-reading') === reading) return false;
       root.classList.toggle('is-reading', reading);
-      var changed = resize();
-      if (changed) { routeCache.key = ''; draw(); }
-      return changed && reading;
+      return resize();
     }
     /* At family depth, a small key names the objects and lines this family's
        map actually draws, in words. */
@@ -3178,20 +1886,60 @@
       chrome = chromeBoxes();
     }
     function stepBack() {
+      if (historyBackPending) return;
       if (trail.length) {
-        var last = trail.pop();
+        var last = trail[trail.length - 1], state = window.history && window.history.state;
+        if (state && state.o === sel && Object.prototype.hasOwnProperty.call(state, 'uPrev') &&
+            state.uPrev === last.prev && window.history.back) {
+          historyBackPending = { key: last.prev, trail: trail.slice(0, -1) };
+          try {
+            window.history.replaceState(Object.assign({}, state, { y: savedScrollPos(), v: root.getAttribute('data-view'), ys: viewPositions(), sf: searchFolded, b: boardPosition() }), '');
+            window.history.back();
+            return;
+          } catch (e) { historyBackPending = null; /* an explicit ancestor still works */ }
+        }
+        var leavingY = savedScrollPos(), leavingBoard = boardPosition(), leavingViews = viewPositions();
+        last = trail.pop();
         sel = last.prev;
-        hover = null; hoverVia = ''; ring = null; ringWanted = null;
-        routeCache.key = '';
+        restoreViewPositions({ ys: last.views, v: last.view, y: last.y });
+        pendingY = typeof last.y === 'number' ? last.y : null;
+        pendingBoard = last.board || null;
+        if (last.view) showView(last.view, true);
+        hover = null; hoverVia = ''; ring = null; ringWanted = null; cardDismissed = null;
+        setReading(sel ? obj(sel) : null);
         renderPanel();
-        updateHash();
-        if (setReading(sel ? obj(sel) : null)) { cameraTo(frameFor(sel ? obj(sel) : null), !sel); return; }
-        if (last.before.fitted) cameraTo(fitView(), true);
-        else cameraTo({ k: last.before.k, tx: last.before.tx, ty: last.before.ty }, false);
+        // A breadcrumb can skip several levels. Its map ancestor is then a new
+        // visit, not necessarily the immediately preceding browser entry.
+        updateHash(true, leavingY, leavingBoard, leavingViews);
+        chartTo(true);
         return;
       }
-      if (sel) { select(parentKey(obj(sel)), {}); return; }
-      if (!viewFitted) cameraTo(fitView(), true);
+      if (sel) selectAncestor(parentKey(obj(sel)));
+    }
+    function selectAncestor(key) {
+      if (historyBackPending) { historySelection = { key: key, ancestor: true }; return; }
+      var saved = null, remaining = [];
+      for (var i = trail.length - 1; i >= 0; i--) {
+        if (trail[i].prev === key) {
+          saved = trail[i];
+          if (key) remaining = trail.slice(0, i);
+          break;
+        }
+      }
+      // Browser Back still records the click. Escape and blank-map clicks continue
+      // out from this ancestor, rather than reopening the child just left.
+      select(key, { trail: true });
+      trail = remaining;
+      if (!saved) return;
+      restoreViewPositions({ ys: saved.views, v: saved.view, y: saved.y });
+      pendingY = typeof saved.y === 'number' ? saved.y : null;
+      pendingBoard = saved.board || null;
+      if (saved.view) showView(saved.view, true);
+      restorePending();
+      restoreBoardPosition();
+      if (window.history && window.history.replaceState) {
+        try { window.history.replaceState(Object.assign({}, window.history.state, { y: saved.y, v: saved.view, ys: phoneViewY, b: saved.board }), ''); } catch (e) { /* navigation still works */ }
+      }
     }
     function openPage(o) {
       if (!o) return;
@@ -3220,9 +1968,73 @@
       });
       return items.join('<span class="u-crumb-sep" aria-hidden="true">/</span>');
     }
+    // The selection's siblings in reading order: fields of the release, families of a
+    // field, and a family's papers, results and Lean statements in the board's order.
+    function familyPapers(fi) {
+      return D.families[fi].papers.slice().sort(function (a, b) { return dateValue(D.papers[a].date) - dateValue(D.papers[b].date) || a - b; });
+    }
+    function siblings(o) {
+      if (!o) return null;
+      var all = function (n) { var out = []; for (var i = 0; i < n; i++) out.push(i); return out; };
+      if (o.kind === 'd') return { list: all(D.disciplines.length), key: function (i) { return D.disciplines[i].id; }, name: function (i) { return escapeHtml(D.disciplines[i].name); }, pos: 'step.field' };
+      if (o.kind === 'f') {
+        var d = fams[o.i].d;
+        return { list: all(D.families.length).filter(function (i) { return fams[i].d === d; }), key: function (i) { return D.families[i].id; },
+          name: function (i) { return escapeHtml(T('family.short', { num: D.families[i].num }) + ': ' + D.families[i].title); }, pos: 'step.family', where: D.disciplines[d].name };
+      }
+      var fi = famOf(o), papers = familyPapers(fi);
+      if (o.kind === 'p') return { list: papers, key: function (i) { return D.papers[i].id; }, name: function (i) { return escapeHtml(D.papers[i].short); }, pos: 'step.paper' };
+      if (o.kind === 'r') {
+        var rs = [];
+        papers.forEach(function (pi) { rs = rs.concat(D.papers[pi].results); });
+        return { list: rs, key: function (i) { return D.results[i].id; }, name: function (i) { var n = resultName(D.results[i]), t = D.papers[D.results[i].p].short; return escapeHtml(n.indexOf(t) < 0 ? n + ', ' + t : n); }, pos: 'step.result' };
+      }
+      if (o.kind === 'l') return { list: D.families[fi].lean, key: function (i) { return D.lean[i].id; }, name: function (i) { return escapeHtml(D.lean[i].label || D.lean[i].name); }, pos: 'step.lean' };
+      return null;
+    }
+    function siblingKey(o, way) {
+      var sb = siblings(o), at = sb ? sb.list.indexOf(o.i) : -1;
+      if (at < 0) return null;
+      var j = at + way;
+      return j >= 0 && j < sb.list.length ? sb.key(sb.list[j]) : null;
+    }
+    // One compact row under the breadcrumbs: up is the trail, sideways is this.
+    function stepperHtml(o) {
+      var sb = siblings(o), at = sb ? sb.list.indexOf(o.i) : -1;
+      if (at < 0 || sb.list.length < 2) return '';
+      var side = function (j, way) {
+        var i = j >= 0 && j < sb.list.length ? sb.list[j] : null;
+        var label = T(way === 'prev' ? 'step.previous' : 'step.next');
+        if (i === null) return '<span class="u-step__go u-step__go--' + way + ' is-end" aria-hidden="true">' + escapeHtml(label) + '</span>';
+        var name = sb.name(i);
+        return '<button type="button" class="u-go u-step__go u-step__go--' + way + '" data-go="' + escapeHtml(sb.key(i)) + '" title="' + name + '" aria-label="' + escapeHtml(label) + ': ' + name + '" aria-keyshortcuts="' + (way === 'prev' ? 'ArrowLeft' : 'ArrowRight') + '">' + escapeHtml(label) + '</button>';
+      };
+      return side(at - 1, 'prev') + '<span class="u-step__pos">' + escapeHtml(T(sb.pos, { n: at + 1, of: sb.list.length, where: sb.where || '' })) + '</span>' + side(at + 1, 'next');
+    }
+    function renderStepper(o) {
+      if (!stepEl) return;
+      var active = document.activeElement;
+      var way = active && stepEl.contains(active) ? (active.classList.contains('u-step__go--prev') ? 'prev' : 'next') : null;
+      var html = o ? stepperHtml(o) : '';
+      stepEl.innerHTML = html; stepEl.hidden = !html;
+      if (way) {
+        var target = stepEl.querySelector('button.u-step__go--' + way) || stepEl.querySelector('button') || titleEl;
+        if (target) target.focus({ preventScroll: true });
+      }
+    }
     function scopeName(o) {
       if (!o) return '';
       return o.kind === 'd' ? D.disciplines[o.i].name : D.families[famOf(o)].title;
+    }
+    // The words standing with the drawing: what it shows and what choosing does.
+    function updateCap(o) {
+      if (!capEl) return;
+      if (!o) capEl.textContent = T('chart.release_cap', { families: D.families.length, disciplines: D.disciplines.length });
+      else if (o.kind === 'd') {
+        capEl.innerHTML = escapeHtml(T('chart.disc_cap', { name: D.disciplines[o.i].name, counts: discCounts(D.disciplines[o.i]) })) +
+          '<span class="u-edge-guide"><span class="u-edge-key u-edge-key--out"><span aria-hidden="true">⟶</span> ' + escapeHtml(T('board.cites')) + '</span> ' +
+          '<span class="u-edge-key u-edge-key--in"><span aria-hidden="true">⟶</span> ' + escapeHtml(T('board.cited_by')) + '</span> ' + escapeHtml(T('mapkey.arrow')) + '</span>';
+      }
     }
     function updateFit() {
       var b = root.querySelector('[data-u-zoom="fit"]');
@@ -3245,16 +2057,34 @@
         el.classList.add('is-arriving');
       });
     }
+    var panelDetailVisit = 0, panelShardWaiting = {};
+    function watchPanelShard(di, again) {
+      var current = panelShardWaiting[di];
+      if (current) { current.again = again; return; }
+      current = { again: again };
+      panelShardWaiting[di] = current;
+      var settled = function () {
+        if (panelShardWaiting[di] !== current) return;
+        delete panelShardWaiting[di];
+        current.again();
+      };
+      loadShard(di).then(settled, settled);
+    }
     function renderPanel(quiet) {
       if (!viewEl) return;
+      var visit = ++panelDetailVisit;
       var o = sel ? obj(sel) : null;
       var changed = panelKey !== null && panelKey !== (sel || '');
+      var listSwitch = root.querySelector('[data-u-show="list"]');
+      if (listSwitch) listSwitch.textContent = T(o && o.kind !== 'd' ? 'switch.details' : 'switch.list');
       panelKey = sel || '';
       updateFit();
       updateMapKey();
+      updateCap(o);
       updateLegend(o && o.kind !== 'd' ? famOf(o) : -1);
       if (trailEl) trailEl.innerHTML = trailHtml();
       if (trailEl) trailEl.hidden = !o;
+      renderStepper(o);
       var groundEl = root.querySelector('[data-u-ground]');
       if (groundEl) groundEl.hidden = !!o;
       var html = '';
@@ -3274,9 +2104,45 @@
       if (changed && !quiet) arrive([titleEl, viewEl]);
       if (o) {
         var di = discOf(o);
-        if (di >= 0 && !shards[di]) {
-          var again = function () { if (sel === (o && o.key)) { viewEl.innerHTML = rerender(o); typeset(viewEl, o); restorePending(); } };
-          loadShard(di).then(again, again);
+        if (di >= 0 && !shards[di] && !failedShards[di]) {
+          var again = function () {
+            if (visit !== panelDetailVisit || sel !== o.key) return;
+            var top = scrollPos(), active = document.activeElement;
+            var focusedId = viewEl.contains(active) && /^u-section-/.test(active.id) ? active.id : null;
+            var focusedButton = viewEl.contains(active) ? active.getAttribute('data-u-section') : null;
+            var focusedGo = viewEl.contains(active) ? active.getAttribute('data-go') : null;
+            var goIndex = 0;
+            if (focusedGo) {
+              Array.prototype.some.call(viewEl.querySelectorAll('[data-go]'), function (go) {
+                if (go === active) return true;
+                if (go.getAttribute('data-go') === focusedGo) goIndex++;
+                return false;
+              });
+            }
+            var oldRect = focusedId ? active.getBoundingClientRect() : null;
+            var bounds = panelScroller().getBoundingClientRect();
+            var followSection = oldRect && oldRect.bottom > bounds.top && oldRect.top < bounds.bottom;
+            viewEl.innerHTML = rerender(o);
+            typeset(viewEl, o);
+            if (panelScroller()) panelScroller().scrollTop = top;
+            restorePending();
+            syncActive();
+            // Loading may replace the section being read. Keep keyboard focus
+            // there, but never take it back from another part of the page.
+            var replacement = focusedId ? viewEl.querySelector('#' + focusedId) : focusedButton ?
+              viewEl.querySelector('[data-u-section="' + focusedButton + '"]') : null;
+            if (!replacement && focusedGo) {
+              Array.prototype.some.call(viewEl.querySelectorAll('[data-go]'), function (go) {
+                if (go.getAttribute('data-go') !== focusedGo || goIndex-- > 0) return false;
+                replacement = go; return true;
+              });
+            }
+            if (replacement) {
+              if (followSection) showPanelSection(replacement);
+              else replacement.focus({ preventScroll: true });
+            }
+          };
+          watchPanelShard(di, again);
         }
       }
     }
@@ -3292,36 +2158,50 @@
       if (shards[di]) return Promise.resolve(shards[di]);
       if (shardLoading[di]) return shardLoading[di];
       var url = root.getAttribute('data-universe-detail').replace('{d}', di);
-      shardLoading[di] = fetchJson(url).then(function (sh) {
+      var retry = !!failedShards[di];
+      failedShards[di] = false;
+      shardLoading[di] = fetchJson(url, retry ? 'reload' : 'default').then(function (sh) {
         if (sh.generation_id !== D.generation_id) throw new Error('detail from another build');
         shards[di] = sh;
+        failedShards[di] = false;
         return sh;
-      }, function (err) { shardLoading[di] = null; failedShards[di] = true; throw err; });
+      }).catch(function (err) {
+        shardLoading[di] = null; failedShards[di] = true;
+        if (sel && discOf(obj(sel)) === di && statusEl) {
+          statusEl.textContent = T('status.parts_failed'); statusEl.hidden = false;
+        }
+        throw err;
+      });
       return shardLoading[di];
     }
     function detail(o) {
       var sh = shards[discOf(o)];
       if (!sh) return null;
+      if (o.kind === 'p') return sh.papers && sh.papers[o.key];
       if (o.kind === 'r') return sh.results[o.key];
       if (o.kind === 'l') return sh.lean[o.key];
       if (o.kind === 'f') return sh.families[o.key];
       return null;
     }
-    function typeset(el, o) {
-      if (!window.katex) { if (window.atlasRenderMath) window.atlasRenderMath(el); return; }
+    function paperMacros(sh, paper) {
       var macros = {}, k;
       for (k in GLOBAL_MACROS) macros[k] = GLOBAL_MACROS[k];
-      var sh = o ? shards[discOf(o)] : null;
-      if (sh && o.kind === 'r') {
-        var own = sh.macros[D.papers[D.results[o.i].p].id] || {};
-        for (k in own) {
-          var v = own[k];
-          if (typeof v === 'string' && !/\\(?:newcommand|def|let|ifx|ifmmode|csname|expandafter)/.test(v)) macros[k] = v;
-        }
+      var own = sh && sh.macros && paper ? sh.macros[paper] || {} : {};
+      for (k in own) {
+        var v = own[k];
+        if (typeof v === 'string' && !/\\(?:newcommand|def|let|ifx|ifmmode|csname|expandafter)/.test(v)) macros[k] = v;
       }
+      return macros;
+    }
+    function typeset(el, o) {
+      if (!window.katex) { if (window.atlasRenderMath) window.atlasRenderMath(el); return; }
+      var sh = o ? shards[discOf(o)] : null;
       var spans = el.querySelectorAll('span.m:not([data-done])');
       for (var i = 0; i < spans.length; i++) {
         var s = spans[i], tex = s.textContent;
+        var scope = s.closest('[data-u-paper]');
+        var paper = scope ? scope.getAttribute('data-u-paper') : o && o.kind === 'r' ? D.papers[D.results[o.i].p].id : null;
+        var macros = paperMacros(sh, paper);
         s.setAttribute('data-done', '1');
         try {
           // A short inline formula stays on one line (atlas.js keepShort).
@@ -3330,6 +2210,18 @@
           window.katex.render(src, s, { displayMode: display, macros: macros, throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
         } catch (err) { s.textContent = tex; s.classList.add('m-fail'); }
       }
+      if (el === viewEl) requestAnimationFrame(function () { markScrollers(viewEl); });
+      // Abstracts retain the source's delimiters; render those with the same
+      // paper-local macros as explicit theorem spans before the global pass.
+      if (window.renderMathInElement) Array.prototype.forEach.call(el.querySelectorAll('.tex-auto[data-u-paper]:not([data-done])'), function (host) {
+        host.setAttribute('data-done', '1');
+        window.renderMathInElement(host, {
+          delimiters: [{ left: '\\(', right: '\\)', display: false }, { left: '\\[', right: '\\]', display: true }],
+          macros: paperMacros(sh, host.getAttribute('data-u-paper')), throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000,
+          preProcess: window.atlasKeepShortMath || function (tex) { return tex; },
+          errorCallback: function () { host.classList.add('m-fail'); }
+        });
+      });
       if (window.atlasRenderMath) window.atlasRenderMath(el);
     }
     function releaseHtml() { return restViewHtml; }
@@ -3345,7 +2237,6 @@
     }
     function para(text, cls) { return text ? '<p class="' + (cls || 'u-note') + '">' + escapeHtml(text) + '</p>' : ''; }
     function plural(n, one, many) { return n === 1 ? T(one) : T(many, { n: n }); }
-    function nRes(fi) { return D.families[fi].papers.reduce(function (s, p) { return s + D.papers[p].results.length; }, 0); }
     function loadingHtml(di, waiting, failed) {
       return '<p class="u-note" data-u-loading>' + escapeHtml(failedShards[di] ? T(failed) : T(waiting)) + '</p>';
     }
@@ -3353,7 +2244,7 @@
 
     /* A discipline: its families as plain entries a person can read. */
     function statusLine(f) {
-      return T('key.' + f.tone) + (f.lean.length ? '. ' + count('lean', f.lean.length) : '') + '.';
+      return count('papers', f.papers.length) + '. ' + T('key.' + f.tone) + (f.lean.length ? '. ' + count('lean', f.lean.length) : '') + '.';
     }
     function entryHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
@@ -3364,14 +2255,32 @@
           (det.first ? '<span class="u-entry__c"><span class="u-role">' + escapeHtml(T('family.catalogue')) + '</span> <span class="tex-auto">' + det.first + '</span></span>' : '') +
           '<span class="u-entry__e">' + escapeHtml(det.evidence) + '</span></span>' : '') + '</a></li>';
     }
-    // The entry for the family under the pointer on the map opens to its synopsis;
-    // pointing within the list only highlights, so the list never moves under the pointer.
+    // Leave enough scroll range to bring even the last family to the reading edge.
+    // Keep that range when its synopsis closes, so leaving the map does not jump the list.
+    function reserveEntryTail() {
+      var entries = viewEl && viewEl.querySelector('.u-entries');
+      if (!entries || !panelBody || narrow()) return;
+      var last = entries.lastElementChild && entries.lastElementChild.firstElementChild;
+      if (!last) return;
+      var more = last.querySelector('.u-entry__more');
+      var compactHeight = last.offsetHeight - (more ? more.offsetHeight : 0);
+      entries.style.paddingBottom = Math.max(0, panelBody.clientHeight - compactHeight - 12) + 'px';
+    }
+    function revealEntry(entry) {
+      if (!entry || !entry.classList.contains('u-entry') || narrow()) return;
+      reserveEntryTail();
+      panelBody.scrollTop += entry.getBoundingClientRect().top - panelBody.getBoundingClientRect().top - 12;
+    }
+    // Map previews bring their synopsis to the top of the sidebar. Pointer browsing
+    // inside the list stays stationary; keyboard focus follows the same reading edge.
     function syncActive() {
       if (!viewEl) return;
       if (typeof updateMapKey === 'function' && mapKeyEl && !mapKeyEl.hidden) updateMapKey();
       var hk = hover ? obj(hover) : null, fk = hk ? D.families[famOf(hk)] : null;
       Array.prototype.forEach.call(viewEl.querySelectorAll('.u-entry'), function (e) {
-        e.classList.toggle('is-active', !!fk && e.getAttribute('data-go') === fk.id);
+        var active = !!fk && e.getAttribute('data-go') === fk.id;
+        e.classList.toggle('is-active', active);
+        if (active && hoverVia === 'map') revealEntry(e);
       });
     }
     function disciplineHtml(di) {
@@ -3393,43 +2302,83 @@
           (rd.note ? '<p class="u-readers__note">' + escapeHtml(rd.note) + '</p>' : '') + '</li>';
       }).join('') + '</ul>';
     }
-    function resultRow(ri) {
-      var r = D.results[ri];
-      var label = resultName(r) + (r.lean.length ? '' : '');
-      return '<li>' + goBtn(r.id, '<span class="u-sub__t">' + escapeHtml(label) + '</span>' +
-        (r.lean.length ? '<span class="u-sub__n">' + escapeHtml(r.lean.map(function (li) { return D.lean[li].label; }).join(', ')) + '</span>' : ''), 'u-sub') + '</li>';
+    function sectionNav(parts) {
+      return '<nav class="u-sections" aria-label="' + escapeHtml(T('panel.sections')) + '">' + parts.map(function (part) {
+        return '<button type="button" data-u-section="' + part + '">' + escapeHtml(T('panel.' + part)) + '</button>';
+      }).join('') + '</nav>';
+    }
+    function sectionHeading(key, label) {
+      return '<h2 class="u-h2" id="u-section-' + key + '" tabindex="-1">' + escapeHtml(T(label)) + '</h2>';
+    }
+    // The sidebar has room for source paragraphs, display maths and lists. Keep
+    // those blocks intact and take a prefix only; skipping an equation while
+    // retaining its following qualifier can change what a preview appears to say.
+    function statementPreview(html, budget) {
+      var source = document.createElement('template'), preview = document.createElement('div');
+      source.innerHTML = html || '';
+      var used = 0, cut = false;
+      for (var node = source.content.firstChild; node; node = node.nextSibling) {
+        var size = (node.textContent || '').trim().length;
+        if (used >= budget && size) { cut = true; break; }
+        preview.appendChild(node.cloneNode(true));
+        used += size;
+      }
+      return { html: preview.innerHTML, cut: cut };
+    }
+    function evidenceSection(det) {
+      return det && det.readers && det.readers.length ? 'readers' : 'evidence';
+    }
+    function familyEvidence(det, f, inResult) {
+      var section = evidenceSection(det);
+      var h = sectionHeading(section, section === 'readers' ? (inResult ? 'result.family_readers_heading' : 'family.readers_heading') : 'family.evidence_heading');
+      if (section === 'readers') h += para(T('family.readers_scope'));
+      h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(det ? det.evidence : T('key.' + f.tone) + '.') + '</span></p>';
+      return h + readersHtml(det);
+    }
+    function resultRow(ri, preview) {
+      var r = D.results[ri], det = detail(obj(r.id));
+      var h = '<li>' + goBtn(r.id, '<span class="u-sub__t">' + escapeHtml(resultName(r)) + '</span>', 'u-sub');
+      if (preview && det && det.html) {
+        var ex = statementPreview(det.html, 700);
+        h += '<div class="u-excerpt" data-u-paper="' + escapeHtml(D.papers[r.p].id) + '"><p class="u-role">' + escapeHtml(T('panel.preview')) + '</p>' +
+          '<div class="u-excerpt__text">' + ex.html + (ex.cut ? '<p class="u-note">' + escapeHtml(T('panel.preview_continues')) + '</p>' : '') + '</div></div>' +
+          goBtn(r.id, escapeHtml(T('panel.open_result')), 'u-inline u-excerpt__open');
+      }
+      return h + '</li>';
     }
     function leanRow(li) {
-      var l = D.lean[li], det = detail(obj(l.id));
-      return '<li>' + goBtn(l.id, '<span class="u-sub__t">' + escapeHtml(l.label) + '</span><code class="u-sub__n">' + escapeHtml(l.name) + '</code>', 'u-sub') +
-        (det ? '<p class="u-sub__w">' + escapeHtml(det.reruns) + '</p>' : '') + '</li>';
+      var l = D.lean[li];
+      return '<li>' + goBtn(l.id, '<span class="u-sub__t">' + escapeHtml(l.label) + '</span><code class="u-sub__n">' + escapeHtml(l.name) + '</code>', 'u-sub') + '</li>';
     }
     function familyHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
-      var h = '<p class="u-kicker">' + escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })) + '</p>';
+      // The row above already says "3 of 37 families in Combinatorics"; the kicker then
+      // names the family by its number in the release, and the discipline only once.
+      var stepped = !!stepperHtml(obj(f.id));
+      var h = '<p class="u-kicker">' + escapeHtml(stepped ? T('family.short', { num: f.num }) : T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })) + '</p>';
       if (!det) return h + loadingHtml(f.d, 'discipline.loading', 'discipline.failed');
+      h += sectionNav(['papers', 'lean', evidenceSection(det), 'connections'].filter(function (part) { return part !== 'lean' || f.lean.length; }));
+      h += para(T('panel.family_counts', { papers: count('papers', f.papers.length), lean: count('lean', f.lean.length) }), 'u-facts');
+      h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(T('key.' + f.tone)) + '</span></p>';
       h += '<figure class="u-cat"><figcaption>' + link(D.catalogue_url, T('family.catalogue')) + ' ' + escapeHtml(T('family.catalogue_says')) + '</figcaption>' +
         '<blockquote class="tex-auto">' + det.desc + '</blockquote>' +
-        (det.descMore ? '<p class="u-cat__more">' + link(f.href + '#h-desc', T('family.catalogue_more')) + '</p>' : '') + '</figure>';
+        '</figure>';
       // "Compare the theorem with its Lean" only when a Lean statement is paired with the
       // candidate theorem; it opens that pairing on the family page.
       var co = det.candidate ? obj(det.candidate) : null, cr = co && co.kind === 'r' ? D.results[co.i] : null;
       h += '<p class="u-doors">' + door(f.href, T('family.page_link'), true) + (cr && cr.lean.length ? door(f.href + '#lean-' + D.lean[cr.lean[0]].name, T('family.compare_link')) : '') + '</p>';
-      h += '<h2 class="u-h2">' + escapeHtml(T('family.readers_heading')) + '</h2>';
-      h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(det.evidence) + '</span></p>';
-      h += readersHtml(det);
-      if (f.lean.length) h += para(T('family.readers_scope'));
-      h += para(T(det.headline === 'candidate' ? 'family.headline_candidate' : 'family.headline_unresolved'));
-      h += '<h2 class="u-h2">' + escapeHtml(T('family.papers_heading')) + '</h2><ol class="u-papers">';
+      h += sectionHeading('papers', 'family.papers_heading') + '<ol class="u-papers">';
       f.papers.forEach(function (pi, n) {
         var p = D.papers[pi];
         h += '<li>' + goBtn(p.id, '<span class="u-row__t">' + escapeHtml(p.short) + '</span><span class="u-row__n">' +
-          escapeHtml([p.date, n === 0 && f.papers.length > 1 ? T('family.lead') : ''].filter(Boolean).join(', ')) + '</span>', 'u-row u-row--paper');
-        h += p.results.length ? '<ul class="u-subrows">' + p.results.map(resultRow).join('') + '</ul>' : '';
+          escapeHtml([p.date, T('panel.paper_counts', { results: count('results', p.results.length) }), n === 0 && f.papers.length > 1 ? T('family.lead') : ''].filter(Boolean).join(', ')) + '</span>', 'u-row u-row--paper');
+        // Results are read after choosing their paper; the family remains an index.
         h += '</li>';
       });
       h += '</ol>';
-      if (f.lean.length) h += '<h2 class="u-h2">' + escapeHtml(T('family.lean_list_heading')) + '</h2><ul class="u-subrows u-subrows--lean">' + f.lean.map(leanRow).join('') + '</ul>';
+      if (f.lean.length) h += sectionHeading('lean', 'family.lean_list_heading') + '<ul class="u-subrows u-subrows--lean">' + f.lean.map(leanRow).join('') + '</ul>';
+      h += familyEvidence(det, f, false);
+      h += para(T(det.headline === 'candidate' ? 'family.headline_candidate' : 'family.headline_unresolved'));
       var more = [];
       if (det.checks) more.push(det.checks);
       if (det.editions) more.push(plural(det.editions, 'family.editions_one', 'family.editions'));
@@ -3437,7 +2386,7 @@
       if (det.explained) more.push(plural(det.explained, 'family.explained_one', 'family.explained'));
       if (det.problems) more.push(plural(det.problems, 'family.problems_one', 'family.problems'));
       if (more.length) h += '<div class="u-more">' + more.map(function (t) { return '<p>' + escapeHtml(t) + '</p>'; }).join('') + '<p>' + link(f.href, T('family.page_link')) + '</p></div>';
-      h += '<h2 class="u-h2">' + escapeHtml(T('family.connections_heading')) + '</h2>';
+      h += sectionHeading('connections', 'family.connections_heading');
       if (!f.cites.length && !f.citedBy.length) h += para(T('family.no_connections'));
       [['cites', f.cites, 'is-cites'], ['cited_by', f.citedBy, 'is-cited']].forEach(function (part) {
         if (!part[1].length) return;
@@ -3450,12 +2399,15 @@
       return h;
     }
     function paperHtml(pi) {
-      var p = D.papers[pi], f = D.families[p.f];
-      var h = '<p class="u-kicker">' + escapeHtml(T('paper.kicker', { num: f.num })) + (p.date ? ', ' + escapeHtml(p.date) : '') + '</p>';
-      h += '<p class="u-paper-title">' + escapeHtml(p.title) + '</p>';
+      var p = D.papers[pi], f = D.families[p.f], det = detail(obj(p.id));
+      var h = sectionNav(det && det.abstract ? ['abstract', 'results'] : ['results']);
+      h += '<p class="u-kicker">' + escapeHtml(T('paper.kicker', { num: f.num })) + (p.date ? ', ' + escapeHtml(p.date) : '') + '</p>';
       h += '<p class="u-doors">' + door(p.href, T('paper.read'), true) + door(p.pdf, T('paper.pdf')) + door(f.href, T('family.page_link')) + '</p>';
-      h += '<h2 class="u-h2">' + escapeHtml(T('paper.results_heading')) + '</h2>';
-      h += p.results.length ? '<ul class="u-subrows">' + p.results.map(resultRow).join('') + '</ul>' : para(T('family.results_none'));
+      if (det && det.abstract) h += sectionHeading('abstract', 'paper.abstract_heading') +
+        '<div class="u-abstract tex-auto" data-u-paper="' + escapeHtml(p.id) + '">' + det.abstract + '</div>';
+      if (!det && !shards[f.d]) h += loadingHtml(f.d, 'discipline.loading', 'discipline.failed');
+      h += sectionHeading('results', 'paper.results_heading');
+      h += p.results.length ? '<ul class="u-subrows u-result-previews">' + p.results.map(function (ri) { return resultRow(ri, true); }).join('') + '</ul>' : para(T('family.results_none'));
       return h;
     }
 
@@ -3485,10 +2437,12 @@
     /* A result: the theorem as printed, the Lean paired with it, and the ways on. */
     function resultHtml(ri) {
       var r = D.results[ri], p = D.papers[r.p], f = D.families[r.f], o = obj(r.id), det = detail(o);
-      var h = '<p class="u-context">' + goBtn(p.id, escapeHtml(T('result.in_paper', { paper: p.short })), 'u-inline u-inline--plain') +
+      var fd = detail(obj(f.id));
+      var h = sectionNav(['statement', 'lean', evidenceSection(fd)]);
+      h += '<p class="u-context">' + goBtn(p.id, escapeHtml(T('result.in_paper', { paper: p.short })), 'u-inline u-inline--plain') +
         (p.date ? ', <span class="u-nowrap">' + escapeHtml(p.date) + '</span>' : '') + '</p>';
       if (det && det.html) {
-        h += '<figure class="u-stmt"><p class="u-stmt__head"><strong>' + escapeHtml(resultName(r)) + '.</strong>' +
+        h += '<figure class="u-stmt" id="u-section-statement" tabindex="-1"><p class="u-stmt__head"><strong>' + escapeHtml(resultName(r)) + '.</strong>' +
           (det.titleHtml ? ' <span class="u-stmt__title">(' + det.titleHtml + ')</span>' : '') + '</p>' +
           '<div class="u-stmt__body">' + det.html + '</div><figcaption class="u-note">' + escapeHtml(det.where) +
           (det.source ? '. ' + link(det.source, T('result.tex_source')) : '') + '</figcaption></figure>';
@@ -3500,7 +2454,7 @@
       var states = r.lean.map(function (li) { return D.lean[li].pairing; });
       var kind = function (st) { return st === 'candidate-pairing' ? 'candidate' : st === 'producer-declared-binding' ? 'declared' : 'cited'; };
       var one = states.length && states.every(function (st) { return kind(st) === kind(states[0]); }) ? kind(states[0]) : null;
-      h += '<h2 class="u-h2">' + escapeHtml(T(r.lean.length ? (one ? 'result.lean_heading_' + one : 'result.lean_heading_mixed') : 'result.lean_heading_none')) + '</h2>';
+      h += '<h2 class="u-h2" id="u-section-lean" tabindex="-1">' + escapeHtml(T(r.lean.length ? (one ? 'result.lean_heading_' + one : 'result.lean_heading_mixed') : 'result.lean_heading_none')) + '</h2>';
       if (one === 'candidate') h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_candidate')) + '</p>';
       if (r.lean.length) {
         var pp = pinnedPair();
@@ -3514,11 +2468,7 @@
         }).join('') + '</ul>';
       } else h += para(T('result.unpaired'));
       h += para(r.num ? T('result.numbering_note') : r.nn ? T('result.unnumbered') : T('result.number_unavailable'));
-      var fd = detail(obj(f.id));
-      h += '<h2 class="u-h2">' + escapeHtml(T('family.readers_heading')) + '</h2>';
-      h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(fd ? fd.evidence : T('key.' + f.tone) + '.') + '</span></p>';
-      h += readersHtml(fd);
-      if (f.lean.length) h += para(T('family.readers_scope'));
+      h += familyEvidence(fd, f, true);
       h += '<p class="u-note">' + goBtn(f.id, escapeHtml(T('result.whole_family', { name: f.title })), 'u-inline') + '</p>';
       return h;
     }
@@ -3526,23 +2476,24 @@
     /* A Lean statement: what it is, who re-ran it, and the theorem it is paired with. */
     function leanHtml(li) {
       var l = D.lean[li], f = D.families[l.f], det = detail(obj(l.id));
-      var h = '<p class="u-kicker">' + escapeHtml(T('lean.kicker', { num: f.num })) + '</p>';
-      h += '<p class="u-lean-label"><code>' + escapeHtml(l.name) + '</code></p>';
+      var h = sectionNav(['statement', 'results', 'checks']);
+      h += '<p class="u-kicker">' + escapeHtml(T('lean.kicker', { num: f.num })) + '</p>';
+      h += '<p class="u-lean-label" id="u-section-statement" tabindex="-1">' + escapeHtml(l.label) + '</p>';
       if (l.main) h += para(T('lean.main'));
       if (det && det.snippet) h += '<pre class="lean lean--snippet u-lean"><code>' + det.snippet + '</code></pre>' + para(T('lean.challenge_note'));
       h += '<p class="u-doors">' + door(l.href, T('lean.page'), true) + (l.results.length ? door(f.href + '#lean-' + l.name, T('result.compare')) : '') + door(f.href, T('lean.family_page')) + '</p>';
       var lk = l.pairing === 'candidate-pairing' ? 'candidate' : l.pairing === 'producer-declared-binding' ? 'declared' : l.pairing === 'unavailable' ? 'none' : 'cited';
-      h += '<h2 class="u-h2">' + escapeHtml(T('lean.paper_heading_' + (l.results.length ? lk : 'none'))) + '</h2>';
+      h += '<h2 class="u-h2" id="u-section-results" tabindex="-1">' + escapeHtml(T('lean.paper_heading_' + (l.results.length ? lk : 'none'))) + '</h2>';
       if (l.results.length && lk === 'candidate') h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_candidate')) + '</p>';
       if (l.results.length) {
         var lp = pinnedPair();
         h += '<ul class="u-subrows">' + l.results.map(function (ri) {
           var shown = !!lp && lp[0] === D.results[ri].id;
-          return resultRow(ri).replace(/<\/li>$/, (l.results.length > 1 ? pairControl(shown, ri) : '') + '</li>');
+          return resultRow(ri, true).replace(/<\/li>$/, (l.results.length > 1 ? pairControl(shown, ri) : '') + '</li>');
         }).join('') + '</ul>';
         if (det) h += whyHtml(l, det);
       } else h += para(T('lean.paired_none'));
-      h += '<h2 class="u-h2">' + escapeHtml(T('lean.reruns_heading')) + '</h2>';
+      h += sectionHeading('checks', 'lean.reruns_heading');
       if (det) {
         h += checksHtml(det);
         if (det.holes.length) h += '<h3 class="u-h3">' + escapeHtml(T('lean.holes_heading')) + '</h3>' + para(T('lean.holes_note')) + '<p>' +
@@ -3603,14 +2554,41 @@
       return searchLoading;
     }
     var matchList = [];
+    var searchShown = { q: null, kind: '', all: false };   // the kind chip and "Show all" for the current words
     var searchFolded = false;   // the reader opened a match and folded the list away
-    function runSearch() {
+    var searchEdited = false;
+    function rememberSearch() {
+      if (!window.history || !window.history.replaceState) return;
+      var url = new URL(window.location.href), raw = (searchIn.value || '').trim();
+      if (raw) url.searchParams.set('q', raw); else url.searchParams.delete('q');
+      window.history.replaceState(Object.assign({}, window.history.state, { sf: searchFolded }), '', url.pathname + url.search + url.hash);
+    }
+    function restoreSearch(state, initial) {
+      if (!searchIn) return;
+      var edited = initial && searchEdited;
+      var raw = edited ? searchIn.value : new URLSearchParams(window.location.search).get('q') || '';
+      var folded = !edited && !!(state && state.sf);
+      searchIn.value = raw;
+      // Exact result and Lean identifiers need the parts index, including on a
+      // direct visit before any family has been opened.
+      (raw ? loadParts() : Promise.resolve()).then(function () {
+        if (searchIn.value !== raw) return;
+        return runSearch(!edited).then(function () {
+          if (searchIn.value !== raw) return;
+          foldResults(folded, true);
+          if (state && typeof state.y === 'number') pendingY = state.y;
+          restorePending();
+        });
+      }).catch(function () {});
+    }
+    function runSearch(restoring) {
       // Pass the typed query to the site's search; only the map's matching is lower case.
       var raw = (searchIn.value || '').trim();
       var q = raw.toLowerCase();
       query = q;
       if (resultsEl) resultsEl.classList.remove('is-folded');
       searchFolded = false;
+      if (!restoring) rememberSearch();
       if (!q) {
         matches = null; matchFam = null; matchList = [];
         resultsEl.hidden = true; resultsEl.innerHTML = '';
@@ -3621,21 +2599,16 @@
       // hits light their families here and list beside the map. The map's own rows
       // stand in until it is.
       if (window.AtlasSearch && typeof window.AtlasSearch.query === 'function') {
-        return Promise.resolve(window.AtlasSearch.query(raw)).then(function (hits) {
+        var AS = window.AtlasSearch;
+        if (q !== searchShown.q) searchShown = { q: q, kind: '', all: false };
+        var want = searchShown.all ? 100000 : 400;
+        return Promise.all([AS.query(raw, { statements: want }), AS.names ? AS.names() : null, loadParts()]).then(function (both) {
           if (query !== q) return;
-          hits = hits || [];
-          // Disciplines, families, papers and Lean statements before the paper
-          // statements that mention the words; within a kind, an entry whose own name
-          // holds every word comes first (the search dialog orders its groups so).
-          // Accents folded on both sides, so "erdos" ranks the Erdős families as "Erdős" does.
-          var fold = function (list) { return list.map(function (t) { return String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }); };
-          var toks = window.AtlasSearch.tokens ? fold(window.AtlasSearch.tokens(q)) : [];
-          var order = { discipline: 0, family: 1, manuscript: 2, lean: 3, statement: 4 };
-          hits = hits.map(function (h, i) {
-            var own = toks.length ? fold(window.AtlasSearch.tokens(h.name || '')) : [];
-            var named = toks.every(function (t) { return own.indexOf(t) >= 0; });
-            return { h: h, i: i, k: order[h.kind] != null ? order[h.kind] : 5, n: named ? 0 : 1 };
-          }).sort(function (a, b) { return a.k - b.k || a.n - b.n || a.i - b.i; }).map(function (x) { return x.h; });
+          var hits = both[0] || [], names = both[1];
+          // One order with the search dialog (assets/atlas.js rankByName): disciplines,
+          // families, papers, statements, Lean statements, the closest names first.
+          var kinds = hits.kindOrder || AS.kindOrder || ['discipline', 'family', 'manuscript', 'statement', 'lean'];
+          var counts = hits.counts || {};
           matches = {}; matchFam = {}; matchList = [];
           hits.forEach(function (hit) {
             if (obj(hit.id)) { matches[hit.id] = true; matchList.push(hit.id); }
@@ -3643,9 +2616,14 @@
             var own = obj(hit.id), f = famOf(own);
             if (f >= 0) matchFam[f] = true;
           });
-          var shown = hits.slice(0, 60);
-          var kindKey = { manuscript: 'paper' };
-          var kindWord = function (k) { var key = 'search.kind_' + (kindKey[k] || k); return T(key) !== key ? T(key) : k; };
+          var total = 0;
+          kinds.forEach(function (k) { total += counts[k] || 0; });
+          if (!hits.length) total = 0;
+          var kind = searchShown.kind && counts[searchShown.kind] ? searchShown.kind : '';
+          var pool = kind ? hits.filter(function (h) { return h.kind === kind; }) : hits;
+          var poolN = kind ? counts[kind] : total;
+          var shown = searchShown.all ? pool : pool.slice(0, 60);
+          var kindWord = function (k) { return T('search.kind_' + ({ manuscript: 'paper' }[k] || k)); };
           // A name is the paper's own text: its TeX dashes become dashes outside $...$,
           // and its mathematics is typeset below.
           var words = function (s) {
@@ -3653,33 +2631,79 @@
               return j % 2 ? part : part.replace(/---/g, '—').replace(/--/g, '–');
             }).join('');
           };
-          var head = hits.length ? (hits.length === 1 ? T('search.count_one') : T('search.count', { n: hits.length })) : T('search.none');
-          if (hits.length > shown.length) head += ' ' + T('search.shown', { shown: shown.length });
-          resultsEl.hidden = false;
-          resultsEl.innerHTML = '<p class="u-note" role="status">' + escapeHtml(head) + '</p><ul class="u-rows">' + shown.map(function (hit) {
-            // A statement with no title of its own is named by its label in the
-            // index ("thm:main"); the map names it as its paper prints it.
+          var head = total ? (total === 1 ? T('search.count_one') : T('search.count', { n: fmtNum(total) })) : T('search.none');
+          var h = '<p class="u-note u-results__head" role="status">' + escapeHtml(head) + '</p>';
+          // Chips: every kind that matched, with its count; one shows only that kind.
+          var present = kinds.filter(function (k) { return counts[k]; });
+          if (present.length > 1) {
+            h += '<div class="u-chips" role="group" aria-label="' + escapeHtml(T('search.filter_label')) + '">' +
+              '<button type="button" class="u-chip" data-u-kind="" aria-pressed="' + (!kind) + '">' + escapeHtml(T('search.all')) + ' <span class="u-chip__n">' + fmtNum(total) + '</span></button>' +
+              present.map(function (k) {
+                return '<button type="button" class="u-chip" data-u-kind="' + k + '" aria-pressed="' + (kind === k) + '">' + escapeHtml(kindWord(k)) + ' <span class="u-chip__n">' + fmtNum(counts[k]) + '</span></button>';
+              }).join('') + '</div>';
+          }
+          var row = function (hit) {
             var own = obj(hit.id);
-            var AS = window.AtlasSearch, isLabel = /^[A-Za-z]+:\S*$/.test(hit.name || '');
-            var nameHtml = own && hit.kind === 'statement' && isLabel ? escapeHtml(nameOf(own))
-              : isLabel && AS.statementName ? escapeHtml(AS.statementName(hit.name))
-              : AS.richName ? AS.richName(hit.name) : escapeHtml(words(hit.name));
-            var inner = '<span class="u-row__k">' + escapeHtml(kindWord(hit.kind)) + '</span><span class="u-row__t md-math">' + nameHtml + '</span>';
+            var nameHtml;
+            if (hit.kind === 'statement') nameHtml = AS.richName(AS.displayName ? AS.displayName(hit, names) : hit.name);
+            else if (hit.kind === 'lean') nameHtml = '<code>' + escapeHtml(hit.id.slice(2)) + '</code>';
+            else nameHtml = AS.richName ? AS.richName(hit.name) : escapeHtml(words(hit.name));
+            var inner = '<span class="u-row__t md-math">' + nameHtml + '</span>';
             var fo = obj((hit.family_ids || [])[0]);
-            if (own && own.kind === 'd') inner += '<span class="u-row__n">' + escapeHtml(discCounts(D.disciplines[own.i])) + '</span>';
-            // A family's row names its discipline; any other row names its family.
-            else if (fo && hit.kind === 'family') inner += '<span class="u-row__n">' + escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.disciplines[D.families[fo.i].d].name) + '</span>';
-            else if (fo) inner += '<span class="u-row__n">' + escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.families[fo.i].title) + '</span>';
-            if (obj(hit.id)) return '<li>' + goBtn(hit.id, inner, 'u-row u-row--hit') + '</li>';
+            var ctx = '';
+            if (own && own.kind === 'd') ctx = escapeHtml(discCounts(D.disciplines[own.i]));
+            // A family's row names its discipline; a statement its paper; any other row its family.
+            else if (fo && hit.kind === 'family') ctx = escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.disciplines[D.families[fo.i].d].name);
+            else if (hit.kind === 'statement' && hit.paper) ctx = AS.richName(T('search.in_paper', { title: hit.paper }));
+            else if (hit.kind === 'lean' && hit.name && hit.name !== hit.id.slice(2)) ctx = AS.richName(hit.name) + (fo ? escapeHtml(', ' + T('family.short', { num: D.families[fo.i].num })) : '');
+            else if (fo) ctx = escapeHtml(T('family.short', { num: D.families[fo.i].num }) + ', ' + D.families[fo.i].title);
+            if (ctx) inner += '<span class="u-row__n md-math">' + ctx + '</span>';
+            if (hit.idx != null && hit.kind !== 'discipline') inner += '<span class="u-row__x" data-snip="' + hit.idx + '"></span>';
+            if (own) return '<li>' + goBtn(hit.id, inner, 'u-row u-row--hit') + '</li>';
             return '<li><a class="u-row u-row--hit" href="' + escapeHtml(hit.url) + '">' + inner + '</a></li>';
-          }).join('') + '</ul>';
+          };
+          kinds.forEach(function (k) {
+            var rows = shown.filter(function (hit) { return hit.kind === k; });
+            if (!rows.length) return;
+            h += '<h3 class="u-h3 u-results__kind">' + escapeHtml(kindWord(k)) + ' <span class="u-chip__n">' + fmtNum(counts[k] || rows.length) + '</span></h3>';
+            h += '<ul class="u-rows">' + rows.map(row).join('') + '</ul>';
+          });
+          if (poolN > shown.length) {
+            h += '<p class="u-results__more"><button type="button" class="u-more-btn" data-u-all>' + escapeHtml(T('search.show_all', { n: fmtNum(poolN) })) + '</button> <span class="u-note">' + escapeHtml(T('search.shown', { shown: fmtNum(shown.length) })) + '</span></p>';
+          }
+          resultsEl.hidden = false;
+          resultsEl.innerHTML = h;
           if (window.atlasRenderMath) window.atlasRenderMath(resultsEl);
+          // Each row's line of text with the matched words marked, as it arrives.
+          if (AS.snippet) Array.prototype.forEach.call(resultsEl.querySelectorAll('[data-snip]'), function (x) {
+            var hit = shown.filter(function (sh) { return String(sh.idx) === x.getAttribute('data-snip'); })[0];
+            if (!hit) return;
+            AS.snippet(hit, hits).then(function (sn) {
+              if (query !== q || !x.isConnected) return;
+              if (!sn) { x.remove(); return; }
+              x.innerHTML = sn.code ? '<code>' + sn.html + '</code>' : sn.html;
+              if (!sn.code && window.atlasRenderMath) window.atlasRenderMath(x);
+            });
+          });
+          // Nothing found: the title words nearest to what was typed.
+          if (!total && hits.missing && hits.missing.length && AS.suggest) {
+            AS.suggest(hits.missing).then(function (ws) {
+              if (query !== q || !ws.length) return;
+              var p = document.createElement('p');
+              p.className = 'u-note u-suggest';
+              p.innerHTML = escapeHtml(T('search.suggest')) + ' ' + ws.map(function (w) {
+                return '<button type="button" class="u-suggest__w" data-u-suggest="' + escapeHtml(w) + '" data-u-for="' + escapeHtml(hits.missing[0]) + '">' + escapeHtml(w) + '</button>';
+              }).join(', ');
+              resultsEl.appendChild(p);
+            });
+          }
           draw();
           return matchList;
         }, function () {});
       }
-      return loadSearch().then(function (rows) {
+      return Promise.all([loadSearch(), loadParts()]).then(function (both) {
         if (query !== q) return;
+        var rows = both[0];
         var words = q.split(/\s+/).filter(Boolean);
         var found = [];
         rows.forEach(function (row) {
@@ -3712,125 +2736,70 @@
     }
 
     /* ---- Events --------------------------------------------------------- */
-    var panning = false, moved = false, px0 = 0, py0 = 0, pointers = {}, pinch = null, lastClick = 0;
+    var lastPointerType = '', mapPress = null;
     function localXY(e) { var r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
     canvas.addEventListener('pointermove', function (e) {
-      if (pinch) return;
-      if (panning) {
-        var dx = e.clientX - px0, dy = e.clientY - py0;
-        if (!moved && dx * dx + dy * dy < 9) return;
-        moved = true; viewFitted = false;
-        view.tx += dx; view.ty += dy; px0 = e.clientX; py0 = e.clientY;
-        if (cameraFrame) { cancelAnimationFrame(cameraFrame); cameraFrame = 0; moving = false; ringWanted = null; }
-        draw();
-        return;
-      }
       var p = localXY(e), h = hitAt(p[0], p[1]);
-      cardPtr = p;
-      if (h !== hover) {
-        hover = h;
-        hoverVia = e.pointerType === 'touch' ? 'touch' : 'map';
-        canvas.classList.toggle('is-over', !!h);
-        syncActive();
-        draw();
-      } else if (cardOn && cardBox && p[0] >= cardBox.x0 - 8 && p[0] <= cardBox.x1 + 20 && p[1] >= cardBox.y0 - 8 && p[1] <= cardBox.y1 + 26) {
-        // The pointer moved on toward the card: it steps aside.
-        placeCard(cardFor, lastPlan ? lastPlan.boxes : null);
+      if (h === hover) return;
+      // On the way from the object to its card the pointer may cross the ground or the
+      // edge of a neighbour: inside the box spanning both, the card stays.
+      var nextObject = h ? obj(h) : null;
+      var sameRegion = nextObject && nextObject.kind === 'd' && hover && obj(hover).kind === 'f' && discOf(obj(hover)) === nextObject.i;
+      if (sameRegion) {
+        var region = chart.shown.regions[nextObject.i];
+        if (p[0] >= region.x - region.lab.w / 2 && p[0] <= region.x + region.lab.w / 2 &&
+            p[1] >= region.ly && p[1] <= region.ly + region.lab.h) sameRegion = false;
       }
+      if ((!h || sameRegion) && cardOn && cardBox && hoverVia === 'map' && cardFor && cardFor.key === hover && hover) {
+        var hb = hoverBox(obj(hover));
+        if (hb && p[0] >= Math.min(hb.x0, cardBox.x0) && p[0] <= Math.max(hb.x1, cardBox.x1) &&
+            p[1] >= Math.min(hb.y0, cardBox.y0) && p[1] <= Math.max(hb.y1, cardBox.y1) &&
+            (p[0] - (hb.x0 + hb.x1) / 2) * ((cardBox.x0 + cardBox.x1) / 2 - (hb.x0 + hb.x1) / 2) +
+            (p[1] - (hb.y0 + hb.y1) / 2) * ((cardBox.y0 + cardBox.y1) / 2 - (hb.y0 + hb.y1) / 2) > 0) return;
+      }
+      hover = h; hoverVia = e.pointerType === 'touch' ? 'touch' : 'map'; cardPtr = p;
+      if (h !== cardDismissed) cardDismissed = null;
+      canvas.classList.toggle('is-over', !!h);
+      syncActive();
+      if (sel && obj(sel) && obj(sel).kind === 'd' && mapKeyEl && !mapKeyEl.hidden) updateMapKey();
+      draw();
     });
-    canvas.addEventListener('pointerleave', function () {
+    canvas.addEventListener('pointerleave', function (e) {
+      if (e.relatedTarget && cardEl && cardEl.contains(e.relatedTarget)) return;
       cardPtr = null;
-      if (hover) { hover = null; hoverVia = ''; canvas.classList.remove('is-over'); syncActive(); draw(); }
+      if (hover && hoverVia !== 'list' && hoverVia !== 'focus') { hover = null; hoverVia = ''; canvas.classList.remove('is-over'); syncActive(); draw(); }
     });
     canvas.addEventListener('pointerdown', function (e) {
-      pointers[e.pointerId] = [e.clientX, e.clientY];
-      var ids = Object.keys(pointers);
-      if (ids.length === 2) {
-        var a = pointers[ids[0]], b = pointers[ids[1]];
-        pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), mx: (a[0] + b[0]) / 2, my: (a[1] + b[1]) / 2 };
-        panning = false; moved = true;
-        return;
-      }
-      panning = true; moved = false; px0 = e.clientX; py0 = e.clientY;
-      canvas.classList.add('is-panning');
-      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+      lastPointerType = e.pointerType || '';
+      mapPress = null;
+      if (e.button !== 0 || e.isPrimary === false) return;
+      var p = localXY(e);
+      // Keep the object the reader pressed: a moving disc may have left that
+      // position (or another may have arrived there) by the time they release.
+      mapPress = { key: hitAt(p[0], p[1], true), x: p[0], y: p[1], selection: sel, moving: !!chart.start };
     });
-    canvas.addEventListener('pointermove', function (e) {
-      if (!pointers[e.pointerId]) return;
-      pointers[e.pointerId] = [e.clientX, e.clientY];
-      var ids = Object.keys(pointers);
-      if (pinch && ids.length >= 2) {
-        var a = pointers[ids[0]], b = pointers[ids[1]], r = canvas.getBoundingClientRect();
-        var d = Math.hypot(a[0] - b[0], a[1] - b[1]), mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
-        view.tx += mx - pinch.mx; view.ty += my - pinch.my;
-        zoomAt(mx - r.left, my - r.top, d / pinch.d);
-        pinch = { d: d, mx: mx, my: my };
-      }
-    });
-    var release = function (e) {
-      delete pointers[e.pointerId];
-      if (Object.keys(pointers).length < 2) pinch = null;
-      panning = false;
-      canvas.classList.remove('is-panning');
-    };
-    canvas.addEventListener('pointerup', release);
-    canvas.addEventListener('pointercancel', release);
+    canvas.addEventListener('pointercancel', function () { mapPress = null; });
     canvas.addEventListener('click', function (e) {
-      if (moved) { moved = false; return; }
-      var p = localXY(e), key = hitAt(p[0], p[1]), o = key ? obj(key) : null;
-      var now = Date.now();
-      // A second click on what is already selected opens it, as a double-click does.
-      if (o && (e.detail >= 2 || (key === sel && now - lastClick < 450))) { openPage(o); return; }
-      lastClick = now;
-      if (!o) { stepBack(); return; }
+      var p = localXY(e), press = mapPress;
+      mapPress = null;
+      if (press && (press.selection !== sel || Math.hypot(p[0] - press.x, p[1] - press.y) > 8)) return;
+      var key = press && (press.key || press.moving) ? press.key : hitAt(p[0], p[1], true);
+      if (!key) { if (sel && !chart.start && !(press && press.moving)) stepBack(); return; }
       if (key === sel) return;
       select(key, { trail: true });
     });
-    canvas.addEventListener('dblclick', function (e) {
-      var p = localXY(e), key = hitAt(p[0], p[1]);
-      if (key) openPage(obj(key));
-    });
-    // Over the map the wheel zooms about the pointer; a scroll already moving the
-    // page carries on (350 ms), and a pinch always zooms.
-    var pageWheelAt = -1e9;
-    window.addEventListener('wheel', function (e) { if (e.target !== canvas) pageWheelAt = e.timeStamp || Date.now(); }, { passive: true, capture: true });
-    canvas.addEventListener('wheel', function (e) {
-      var now = e.timeStamp || Date.now();
-      if (!e.ctrlKey && !e.metaKey && now - pageWheelAt < 350) { pageWheelAt = now; return; }
-      e.preventDefault();
-      var p = localXY(e);
-      var dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? H : 1);
-      dy = clamp(dy, -240, 240);
-      zoomAt(p[0], p[1], Math.exp(-dy * (e.ctrlKey ? 0.01 : 0.0022)));
-      settleZoom(p[0], p[1]);
-    }, { passive: false });
-    function zoomAt(mx, my, factor) {
-      if (cameraFrame) { cancelAnimationFrame(cameraFrame); cameraFrame = 0; moving = false; ringWanted = null; }
-      var k = clamp(view.k * factor, fitK * 0.6, 900);
-      factor = k / view.k;
-      viewFitted = false;
-      view.tx = mx - (mx - view.tx) * factor;
-      view.ty = my - (my - view.ty) * factor;
-      view.k = k;
-      draw();
-    }
-    // Zooming is drilling: a family that comes to fill the view opens, and an
-    // open family that shrinks back gives way to its discipline, then the release.
-    var settleTimer = 0;
-    function settleZoom(mx, my) {
-      clearTimeout(settleTimer);
-      settleTimer = setTimeout(function () {
-        var o = sel ? obj(sel) : null, m = Math.min(W, H);
-        var openF = famOf(o);
-        if (openF >= 0) {
-          if (screenR(openF) < m * 0.12) select(view.k < fitK * 1.25 ? null : D.disciplines[fams[openF].d].id, { fly: false });
-          return;
-        }
-        var key = hitAt(mx, my), h = key ? obj(key) : null;
-        if (h && h.kind === 'f' && screenR(h.i) > m * 0.3) { select(h.key, { fly: false, trail: true }); return; }
-        if (!o && view.k > fitK * 2.4 && h) { var di = discOf(h); if (di >= 0) select(D.disciplines[di].id, { fly: false }); return; }
-        if (o && o.kind === 'd' && view.k < fitK * 1.25) select(null, { fly: false });
-      }, 160);
+    if (cardEl) {
+      cardEl.addEventListener('pointerleave', function (e) {
+        if (cardEl.classList.contains('is-board')) return;
+        if (e.relatedTarget === canvas) return;
+        if (hover && hoverVia === 'map') { hover = null; hoverVia = ''; syncActive(); draw(); }
+      });
+      cardEl.addEventListener('click', function () {
+        if (cardEl.classList.contains('is-board') || !hover) return;
+        var key = hover;
+        hover = null; hoverVia = '';
+        if (key !== sel) select(key, { trail: true });
+      });
     }
     document.addEventListener('click', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
@@ -3847,26 +2816,32 @@
       // The map is the page's first screen: going back up to it shows the header too.
       if (outside) window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
       var fromResults = !!(resultsEl && resultsEl.contains(go));
-      var byKey = e.detail === 0 && root.contains(go) && !fromResults;
-      select(key || null, { trail: true });
+      var byKey = e.detail === 0 && root.contains(go);
+      if (go.classList.contains('u-crumb')) selectAncestor(key || null);
+      else select(key || null, { trail: true });
       // A match opened from the search folds the list of matches away, so what was
       // opened starts at the top of the panel; one button brings the matches back.
       if (fromResults) foldResults(true);
-      // A row opened from the keyboard was redrawn away: focus goes to what replaced it,
+      // A row opened from the keyboard was redrawn or folded away: focus goes to what replaced it,
       // the family's board on a wide screen, else the panel's heading.
       if (byKey) focusArrival();
     });
     function focusArrival() {
-      var target = board.on || board.pending ? (narrow() ? null : boardEl) : null;
+      var phoneMap = narrow() && root.getAttribute('data-view') === 'map';
+      // Keyboard navigation needs a visible focus target before the disc's
+      // transition finishes; a hidden board cannot receive focus.
+      if (board.pending && (!narrow() || phoneMap)) showBoard();
+      var target = board.on || board.pending ? (!narrow() || phoneMap ? boardEl : null) : (phoneMap ? canvas : null);
       if (!target) target = titleEl;
       if (!target) return;
       if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
       try { target.focus({ preventScroll: narrow() }); } catch (err) { target.focus(); }
     }
-    function foldResults(fold) {
+    function foldResults(fold, restoring) {
       if (!resultsEl || resultsEl.hidden) return;
       resultsEl.classList.toggle('is-folded', fold);
       searchFolded = !!fold;
+      if (!restoring) rememberSearch();
       draw();
       var b = resultsEl.querySelector('[data-u-unfold]');
       if (fold && !b) {
@@ -3879,6 +2854,19 @@
         resultsEl.insertBefore(b, resultsEl.firstChild);
       }
     }
+    function showPanelSection(target) {
+      var scroller = panelScroller(), nav = viewEl.querySelector('.u-sections');
+      var offset = narrow() ? 12 : (nav ? nav.offsetHeight : 0) + 12;
+      var top = target.getBoundingClientRect().top - (narrow() ? 0 : scroller.getBoundingClientRect().top) + scroller.scrollTop - offset;
+      scroller.scrollTo({ top: top, behavior: 'auto' });
+      target.focus({ preventScroll: true });
+    }
+    root.addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-u-section]') : null;
+      if (!b) return;
+      var target = viewEl.querySelector('#u-section-' + b.getAttribute('data-u-section'));
+      if (target) showPanelSection(target);
+    });
     // Choosing which recorded pair the map traces: the reader and the map follow, the
     // camera stays where it is.
     root.addEventListener('click', function (e) {
@@ -3890,21 +2878,24 @@
       var o = sel ? obj(sel) : null;
       if (o) { viewEl.innerHTML = rerender(o); typeset(viewEl, o); }
       if (panelBody) panelBody.scrollTop = top;
-      routeCache.key = '';
       if (board.on) { markBoard(); drawWires(); }
       draw();
     });
-    // A row under the pointer in the panel lights its place on the map.
+    // Compact pointer browsing lights the map without reflowing the list.
     root.addEventListener('pointerover', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
       var key = go ? go.getAttribute('data-go') : null;
-      if (go && panelBody && panelBody.contains(go) && key && key !== hover) {
-        hover = key; hoverVia = e.pointerType === 'touch' ? 'touch' : 'list'; cardPtr = null; draw();
+      var via = e.pointerType === 'touch' ? 'touch' : 'list';
+      if (go && panelBody && panelBody.contains(go) && key && (key !== hover || hoverVia === 'map')) {
+        hover = key; hoverVia = via; cardPtr = null; draw();
       }
     });
     root.addEventListener('pointerout', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
-      if (go && panelBody && panelBody.contains(go) && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
+      var next = e.relatedTarget && e.relatedTarget.closest ? e.relatedTarget.closest('[data-go]') : null;
+      // Child transitions stay in this row; another row replaces it on over.
+      if (next && panelBody && panelBody.contains(next)) return;
+      if (go && panelBody && panelBody.contains(go) && hoverVia !== 'focus' && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
     });
     // A row reached by the keyboard lights its place on the map and names it there too.
     root.addEventListener('focusin', function (e) {
@@ -3912,34 +2903,54 @@
       var key = go ? go.getAttribute('data-go') : null;
       var visible = false;
       try { visible = go && go.matches(':focus-visible'); } catch (err) { visible = false; }
-      if (go && visible && panelBody && panelBody.contains(go) && key && obj(key)) { hover = key; hoverVia = 'focus'; cardPtr = null; draw(); }
+      if (go && visible && panelBody && panelBody.contains(go) && key && obj(key) && (key !== hover || hoverVia !== 'focus')) { hover = key; hoverVia = 'focus'; cardPtr = null; syncActive(); revealEntry(go); draw(); }
     });
     root.addEventListener('focusout', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
-      if (go && hoverVia === 'focus' && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; draw(); }
+      if (go && e.relatedTarget && go.contains(e.relatedTarget)) return;
+      if (go && hoverVia === 'focus' && hover === go.getAttribute('data-go')) { hover = null; hoverVia = ''; syncActive(); draw(); }
     });
-    root.querySelectorAll('[data-u-zoom]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        var m = b.getAttribute('data-u-zoom');
-        if (m === 'fit') { var so = sel ? obj(sel) : null; cameraTo(frameFor(so), !so); return; }
-        var f = m === 'in' ? 1.5 : 1 / 1.5, k = clamp(view.k * f, fitK * 0.6, 900);
-        f = k / view.k;
-        cameraTo({ k: k, tx: W / 2 - (W / 2 - view.tx) * f, ty: H / 2 - (H / 2 - view.ty) * f }, false);
-        setTimeout(function () { settleZoom(W / 2, H / 2); }, 700);
-      });
-    });
-    function showView(v) {
+    function showView(v, restoring) {
       root.setAttribute('data-view', v);
       root.querySelectorAll('[data-u-show]').forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-u-show') === v ? 'true' : 'false'); });
+      if (!restoring && window.history && window.history.replaceState) {
+        try { window.history.replaceState(Object.assign({}, window.history.state, { v: v }), ''); } catch (e) { /* the view still switches */ }
+      }
       if (v === 'map') { resize(); draw(); }
     }
     root.querySelectorAll('[data-u-show]').forEach(function (b) {
-      b.addEventListener('click', function () { showView(b.getAttribute('data-u-show')); });
+      b.addEventListener('click', function () {
+        var v = b.getAttribute('data-u-show');
+        if (v === root.getAttribute('data-view')) return;
+        phoneViewY = viewPositions();
+        var visit = { key: sel, view: v };
+        pendingViewSwitch = visit;
+        showView(v);
+        // Wait for the newly visible content to lay out before restoring its place.
+        requestAnimationFrame(function () {
+          if (pendingViewSwitch !== visit || sel !== visit.key || root.getAttribute('data-view') !== v) return;
+          pendingViewSwitch = null;
+          if (narrow()) { pendingY = phoneViewY[v]; restorePending(); }
+          if (window.history && window.history.replaceState) {
+            try { window.history.replaceState(Object.assign({}, window.history.state, { y: scrollPos(), ys: phoneViewY }), ''); } catch (e) { /* the view still switches */ }
+          }
+        });
+      });
+    });
+    if (resultsEl) resultsEl.addEventListener('click', function (e) {
+      var chip = e.target.closest('[data-u-kind]'), all = e.target.closest('[data-u-all]'), sug = e.target.closest('[data-u-suggest]');
+      if (chip) { searchShown.kind = chip.getAttribute('data-u-kind'); searchShown.all = false; runSearch(true).then(function () { var c = resultsEl.querySelector('[data-u-kind="' + searchShown.kind + '"]'); if (c) c.focus(); }); }
+      else if (all) { searchShown.all = true; runSearch(true); }
+      else if (sug && searchIn) {
+        var re = new RegExp(sug.getAttribute('data-u-for').replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+        searchIn.value = re.test(searchIn.value) ? searchIn.value.replace(re, sug.getAttribute('data-u-suggest')) : sug.getAttribute('data-u-suggest');
+        searchEdited = true; runSearch(); searchIn.focus();
+      }
     });
     if (searchIn) {
       var t = 0;
       searchIn.addEventListener('focus', function () { if (D && !window.AtlasSearch) loadSearch().catch(function () {}); });
-      searchIn.addEventListener('input', function () { clearTimeout(t); t = setTimeout(runSearch, 120); });
+      searchIn.addEventListener('input', function () { searchEdited = true; clearTimeout(t); t = setTimeout(runSearch, 120); });
       searchIn.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
           e.preventDefault();
@@ -3960,32 +2971,31 @@
       });
     }
     document.addEventListener('keydown', function (e) {
+      boardClick = null; boardRepeatPress = null;
       var tag = e.target && e.target.tagName;
       var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable);
       if (e.key === 'Escape') {
         if (document.querySelector('dialog[open], .nav-toggle[aria-expanded="true"]')) return;
-        if (cardOn && cardEl && cardEl.classList.contains('is-board')) { e.preventDefault(); hideBoardCard(); return; }
+        if (cardOn && cardEl && cardEl.classList.contains('is-board')) { e.preventDefault(); hideBoardCard(true); return; }
         if (mapKeyEl && !mapKeyEl.hidden) { e.preventDefault(); mapKeyPinned = false; showMapKey(false); mapKeyBtn.focus(); return; }
         // The input clears its query before a later Escape steps out of the map selection.
         if (e.target === searchIn && searchIn.value) return;
-        if (sel || !viewFitted) { e.preventDefault(); stepBack(); }
+        if (cardOn && hover && !cardEl.classList.contains('is-board')) { e.preventDefault(); cardDismissed = hover; hideCard(); return; }
+        if (sel) { e.preventDefault(); stepBack(); focusArrival(); }
         return;
       }
       if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+      // Left and right step to the previous or next sibling at the same level.
+      if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && sel && !e.shiftKey && !document.querySelector('dialog[open]')) {
+        if (arrowsBelongTo(e.target) || arrowsBelongTo(document.activeElement)) return;
+        var to = siblingKey(obj(sel), e.key === 'ArrowLeft' ? -1 : 1);
+        if (to) { e.preventDefault(); select(to, { trail: true }); focusArrival(); }
+        return;
+      }
       if (e.key === '/' && searchIn && !document.querySelector('dialog[open]')) {
         // The site's own search owns '/' elsewhere; on this page it finds on the map.
         e.preventDefault(); e.stopImmediatePropagation(); searchIn.focus(); searchIn.select(); return;
       }
-      var held = document.activeElement;
-      if (held && held !== document.body && held !== canvas) return;
-      var arrow = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
-      if (arrow) {
-        e.preventDefault();
-        var step = e.shiftKey ? 240 : 80;
-        cameraTo({ k: view.k, tx: view.tx + arrow[0] * step, ty: view.ty + arrow[1] * step }, false);
-      } else if (e.key === '+' || e.key === '=') { e.preventDefault(); root.querySelector('[data-u-zoom="in"]').click(); }
-      else if (e.key === '-' || e.key === '_') { e.preventDefault(); root.querySelector('[data-u-zoom="out"]').click(); }
-      else if (e.key === '0') { e.preventDefault(); cameraTo(fitView(), true); }
     }, true);
     window.addEventListener('hashchange', function () {
       var key = readHash();
@@ -3993,15 +3003,27 @@
     });
     window.addEventListener('popstate', function (e) {
       var key = readHash();
+      var returning = historyBackPending, queued = historySelection;
+      historyBackPending = null; historySelection = null;
       var y = e.state && typeof e.state.y === 'number' ? e.state.y : null;
-      if (key !== sel) { trail = []; pendingY = y; select(key, { fromHistory: true }); }
+      restoreViewPositions(e.state);
+      pendingBoard = e.state && e.state.b || null;
+      if (e.state && (e.state.v === 'map' || e.state.v === 'list')) showView(e.state.v, true);
+      if (key !== sel) { trail = returning && returning.key === key ? returning.trail : []; pendingY = y; select(key, { fromHistory: true }); }
       else if (y != null) { pendingY = y; }
+      restoreSearch(e.state);
       restorePending();
+      restoreBoardPosition();
+      if (returning && returning.key === key) focusArrival();
+      if (queued) {
+        if (queued.ancestor) selectAncestor(queued.key);
+        else select(queued.key, queued.opts);
+      }
     });
     // Leaving for a paper or a family page, the address's entry keeps the list's place,
     // so coming back finds it.
     window.addEventListener('pagehide', function () {
-      try { window.history.replaceState({ o: sel, y: scrollPos() }, ''); } catch (e) { /* nothing to keep */ }
+      try { window.history.replaceState(Object.assign({}, window.history.state, { o: sel, y: savedScrollPos(), v: root.getAttribute('data-view'), ys: viewPositions(), sf: searchFolded, b: boardPosition() }), ''); } catch (e) { /* nothing to keep */ }
     });
     function readHash() {
       var hash = window.location.hash || '';
@@ -4045,62 +3067,66 @@
         validate(both[0], both[1]);
         ingest(both[0], both[1]);
         readFonts();
-        var ready = Promise.resolve();
         if (document.fonts && document.fonts.load) {
-          ready = Promise.all(['400 13px ', '600 13px ', 'italic 400 12px '].map(function (w) {
+          // The chart uses upright text. Italic faces load naturally when the reader
+          // opens content that uses them, rather than competing with the first view.
+          Promise.all(['400 13px ', '600 13px '].map(function (w) {
             return Promise.all([document.fonts.load(w + SERIF), document.fonts.load(w + SANS)]);
-          })).then(function () { return document.fonts.ready; });
+          })).catch(function () {});
         }
-        return Promise.race([ready, new Promise(function (r) { setTimeout(r, 1500); })]);
       })
       .then(function () {
         widthCache = {};
+        weights();
         W = H = 0;
-        resize();
-        computeFit();
         var start = readHash();
         // Back from a paper or a family page: the entry remembers the list's place.
         var kept = window.history && window.history.state;
+        restoreViewPositions(kept);
+        pendingBoard = kept && kept.b || null;
         if (kept && typeof kept.y === 'number') pendingY = kept.y;
+        if (kept && (kept.v === 'map' || kept.v === 'list')) showView(kept.v, true);
         if (start && !/^d:/.test(start)) {
+          var initialFamily = obj(start);
+          if (initialFamily && initialFamily.kind === 'f') {
+            var initialDi = discOf(initialFamily);
+            if (!shards[initialDi] && !failedShards[initialDi]) loadShard(initialDi).catch(function () {});
+          }
           loadParts().then(function () {
             var key = readHash(), o = key ? obj(key) : null;
             if (!o) return;
             select(key, { fly: false, fromHistory: true, quiet: true });
-            setView(frameFor(o)); viewFitted = false; draw();
           }, function () {});
           start = null;
-        } else {
-          var idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 400); };
-          idle(function () { loadParts().catch(function () {}); });
         }
+        // The release and discipline charts need only the first-screen packets.
+        // Selection and search load the parts when requested.
         sel = start;
-        if (start) {
-          var o = obj(start);
-          setReading(o);
-          setView(frameFor(o));
-          viewFitted = false;
-        } else setView(fitView());
         renderPanel();
         if (statusEl) statusEl.hidden = true;
         root.classList.add('is-ready');
-        paint();
+        resize();
+        chartTo(false);
+        restoreSearch(kept, true);
         window.__universe = {
           select: function (key) { select(key, { trail: true }); },
-          state: function () { return { sel: sel, view: viewNow(), fitK: fitK, W: W, H: H, trail: trail.length }; },
-          plan: function () { return lastPlan; },
+          state: function () { return { sel: sel, level: chart.level, W: W, H: H, trail: trail.length, moving: !!chart.start }; },
+          // Where everything stands on the drawing now, for checks.
+          chart: function () { return { shown: chart.shown, boxes: chartBoxes, chrome: chrome }; },
           hover: function (key) { hover = key; paint(); },
           // What the motion is doing now, for checks: the ring's age, whether the step
           // back is still easing, and what the card says.
           motion: function () {
             return { ring: ring ? { key: ring.key, age: nowMs() - ring.start } : null, ringWanted: ringWanted,
-                     easing: !!emph.start, card: cardOn ? cardEl.innerText : null, cardBox: cardOn ? cardBox : null };
+                     card: cardOn ? cardEl.innerText : null, cardBox: cardOn ? cardBox : null };
           },
-          paint: paint,
-          fitted: function () { return viewFitted; }
+          paint: paint
         };
         if (document.fonts && document.fonts.addEventListener) {
-          document.fonts.addEventListener('loadingdone', function () { widthCache = {}; computeFit(); if (viewFitted) setView(fitView()); draw(); });
+          document.fonts.addEventListener('loadingdone', function () {
+            widthCache = {}; labelCache = {}; layoutCache = {}; boardFontVersion++;
+            chartTo(false); if (board.on) layoutBoard();
+          });
         }
       })
       .catch(function (err) {

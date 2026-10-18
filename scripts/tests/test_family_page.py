@@ -4,7 +4,7 @@ Builds the pages into a temporary directory and checks what DESIGN.md and the br
 pin: the anchors other pages link to, the theorem shown only when the backend names a
 candidate, every state in words (no symbol mark), every inspection trigger with its
 record, no repeated ids, and every "what is left to check" link carrying its target's
-exact fingerprint. Standard library only: python3 scripts/test_family_page.py
+exact fingerprint. Standard library only: python3 scripts/tests/test_family_page.py
 """
 from __future__ import annotations
 
@@ -18,7 +18,7 @@ from html import unescape
 from pathlib import Path
 from urllib.parse import unquote
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import build_site as S  # noqa: E402
 import family_page  # noqa: E402
@@ -56,7 +56,13 @@ def main() -> int:
             check('id="claim-theorem"' in html, "the candidate theorem is not the centrepiece")
         else:
             check('id="claim-theorem"' not in html, "an unresolved headline shows a single theorem")
-            check(family_page.W("claim.unresolved") in unquote(html), "the unresolved sentence is missing")
+            notes = [family_page.W(k) for k in ("claim.unresolved", "claim.unresolved_one", "claim.unresolved_none")]
+            page_text = unquote(html)
+            said = next((n for n in notes if n in page_text), None)
+            check(said is not None, "the unresolved sentence is missing")
+            # The page leads with what the papers state; how those statements were chosen follows them.
+            if said and 'id="claim-alt-1"' in html:
+                check(page_text.index('id="claim-alt-1"') < page_text.index(said), "the unresolved note comes before the statements")
         for rc in doc.get("remaining_checks") or []:
             fp = (rc.get("contribution_target") or {}).get("fingerprint")
             if fp:
@@ -84,7 +90,7 @@ def attributed_source_note() -> list:
     c = family_page.Ctx(S, S.FAM["017"])
     c.doc = copy.deepcopy(c.doc)
     card = next(x for x in c.doc["independent_check_cards"] if x["source"] == "hol-cards")
-    source = json.loads((Path(__file__).resolve().parent.parent / "curated/sources/hol-cards.json").read_text())
+    source = json.loads((S.ROOT / "curated/sources/hol-cards.json").read_text())
     value = source["families"]["017"]["hol_checks"][0]
     original_relation = card["value"]["relation"]
     card["value"] = value
@@ -124,8 +130,18 @@ def definition_only_statement(tmp: Path) -> list:
             fails.append(f"{rel}: configured definition is missing from the Lean snippet")
     page = (tmp / views[0][0]).read_text(encoding="utf-8")
     opening = page.split('id="h-lean-read"', 1)[1].split('<h3', 1)[0]
-    if "This configuration names no theorem" not in opening or "name and type only" not in opening:
+    if "verification settings name no theorem" not in opening or "name and type only" not in opening:
         fails.append("ElementaryPositivity: definition-only qualification missing beside the snippet")
+    if "Definition selected for comparison:" not in page or "Theorem selected for verification:" in page:
+        fails.append("ElementaryPositivity: definition-only target labelled as a theorem")
+    report_heading = re.search(r'<h2[^>]*id="h-runs"[^>]*>(.*?)</h2>', page, re.S)
+    if not report_heading or "proof" in report_heading[1].lower():
+        fails.append("ElementaryPositivity: run report heading implies a theorem proof was verified")
+    if "This configuration names no theorem to prove." not in page or "solution proves the configured theorem" in page:
+        fails.append("ElementaryPositivity: acceptance explanation implies a theorem proof was verified")
+    theorem_box = S.comparator_box_html(S.ST["ErdosReciprocal"])
+    if "solution proves the configured theorem" not in theorem_box:
+        fails.append("ErdosReciprocal: configured theorem verification is missing from acceptance explanation")
     family = (tmp / "families/169.html").read_text(encoding="utf-8")
     if family_page.W("compare.sorry") in family or "by its name and type only" not in family:
         fails.append("Family 169: definition-only snippet is described as a theorem")
@@ -171,7 +187,7 @@ def compare_buttons(fid: str, html: str) -> list:
     c = family_page.Ctx(S, S.FAM[fid])
     claim = c.doc.get("claim") or {}
     if claim.get("state") == "candidate" and claim.get("primary_candidate") in c.stmts:
-        shown = [claim["primary_candidate"]]
+        shown = family_page.opening_statements(c)[0]
     else:
         alts = [a for a in claim.get("alternatives") or [] if a.get("statement_id") in c.stmts]
         shown = [a["statement_id"] for a in family_page.tie_order(c, alts)][:3]
@@ -227,13 +243,13 @@ def status_group_counts() -> list:
         line = family_page.status_runs(c)
         groups = {s for l in c.leans for s in l.get("accepted_current_sources") or []}
         if not groups:
-            ok = line.startswith("no outside group")
+            ok = line.startswith("no independent acceptance report")
         elif len(groups) == 1:
-            ok = line.startswith("one outside group ") and "groups" not in line
+            ok = line.startswith("one independent group ") and "groups" not in line
         else:
-            ok = "outside groups" in line and not line.startswith("one outside group")
+            ok = "independent groups" in line and not line.startswith("one independent group")
             if len(c.leans) == 1 or sum(1 for l in c.leans if l.get("accepted_current_sources")) == 1:
-                ok = ok and line.startswith(f"{NUMBER_WORDS.get(len(groups), len(groups))} outside groups ")
+                ok = ok and line.startswith(f"{NUMBER_WORDS.get(len(groups), len(groups))} independent groups ")
         if not ok:
             fails.append(f"{fid}: status line {line!r} for {len(groups)} accepting groups")
     return fails

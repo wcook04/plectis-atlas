@@ -18,9 +18,13 @@ that the page each result links to is the backend's own reading_page for every
 paper statement in the reader packets, in Python (build_site.search_url) and in
 JavaScript (urlFor).
 Exact Lean filename searches also run through the browser query code with generated
-packets, checking canonical routes regardless of the query's capitalisation.
+packets, checking canonical routes regardless of the query's capitalisation. The front
+door's search words (scripts/build_universe.py) are generated too, and the query code is
+checked to find a prefix of the last word, plural and singular forms, a hyphen either
+way, a formula word (L^2), statements by printed number (Theorem 1.1), a marked line of
+text per result and the nearest title words when nothing matches.
 
-    python3 scripts/test_search.py
+    python3 scripts/tests/test_search.py
 
 Skips, with a message, when node is not installed. Standard library only.
 """
@@ -37,7 +41,7 @@ import tempfile
 import unicodedata
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 
@@ -96,9 +100,16 @@ def check_lean_filename_search(node, build_site, entries):
         finally:
             build_site.OUT = previous_out
         labels = json.loads(Path(tmp, "data/search/labels.json").read_text())
-        expected = {e["id"]: e.get("family_ids") or [] for e in entries if e["kind"] == "lean"}
+        expected = {e["id"][2:]: [build_site.curly_prose(e["name"]), e.get("family_ids") or []]
+                    for e in entries if e["kind"] == "lean"}
         assert labels["lean"] == expected, "Lean filenames must come from the search catalogue"
         assert len({key.lower() for key in expected}) == len(expected), "ambiguous Lean filename case"
+        formula_name = build_site.search_statement_name({
+            "kind": "statement",
+            "id": "r:Global-Arthur-Enhancements-of-Cuspidal-Excursion-Parameters-October-5-2026:thm:parent",
+            "name": r"$a<b>c$ \cite[Theorem~1.1]{Parent}",
+        })
+        assert "a<b>c" in formula_name.replace(" ", ""), "formula comparisons are not HTML tags"
         js = Path(tmp, "query.cjs")
         js.write_text(r"""
 const assert = require('node:assert/strict');
@@ -129,11 +140,89 @@ vm.runInContext(src.slice(src.indexOf('(function (global) {')), context);
   }
   assert.equal((await context.AtlasSearch.query('UnlistedLeanIdentifierForSearchTest')).length, 0);
   assert.ok((await context.AtlasSearch.query('014')).some(h => h.id === 'f:014'));
+  const parentId = 'r:Global-Arthur-Enhancements-of-Cuspidal-Excursion-Parameters-October-5-2026:thm:parent';
+  const parent = (await context.AtlasSearch.query('Ramanujan')).find(h => h.id === parentId);
+  assert.ok(parent, 'citation-bearing title remains searchable');
+  assert.ok(parent.name.startsWith('Finite-level Ramanujan–Arthur decomposition ['));
+  assert.ok(parent.name.includes('Theorem 1.1'), 'retain the cited locator');
+  assert.ok(!parent.name.includes('\\'), 'render citation syntax in result labels');
+  assert.equal(parent.url, 'papers/Global-Arthur-Enhancements-of-Cuspidal-Excursion-Parameters-October-5-2026.html#thm:parent');
+  const citedOnly = (await context.AtlasSearch.query('ABKRT21')).find(h => h.name === '[Aaronson et al., 2021]');
+  assert.ok(citedOnly, 'a citation-only title keeps its attribution');
+  const labels = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/search/labels.json'), 'utf8'));
+  const packetId = 'r:Diagonal-Fourier-extension-for-positively-curved-surfaces-in-three-dimensions-September-24-2026:thm:packet';
+  assert.ok(labels.statement_names[packetId].startsWith('Packet propagation ['));
+  assert.ok(!labels.statement_names[packetId].includes('\\'), 'undefined source locator macros stay out of navigation labels');
   assert.ok(requested.every(url => url.endsWith('.json')), 'no guessed page request');
   console.log('test_search: canonical Lean filename searches pass in original, lower and upper case; unknown name stays empty.');
 })().catch(err => { console.error(err); process.exitCode = 1; });
 """, encoding="utf-8")
         subprocess.run([node, str(js), str(ROOT / "site/assets/atlas.js")], check=True)
+        check_search_words(node, Path(tmp))
+
+
+def check_search_words(node, tmp: Path):
+    """The front door's search words (scripts/build_universe.py): a prefix of the last word,
+    plural and singular, a hyphen either way, a formula word, a printed statement number,
+    a line of text with the words marked, and the title words offered when nothing matches."""
+    from types import SimpleNamespace
+    import build_universe as BU
+    import reader
+    BU.import_site()
+    r = reader.load()
+    words, blocks, vocab_files = BU.build_search_words(SimpleNamespace(r=r, gen=r.generation))
+    wdir = tmp / "data" / "universe-search"
+    wdir.mkdir(parents=True)
+    dump = lambda o: json.dumps(o, ensure_ascii=False)
+    for part in ("names", "atoms"):
+        (wdir / f"{part}.json").write_text(dump(words.pop(part)), encoding="utf-8")
+    (wdir / "words.json").write_text(dump(words), encoding="utf-8")
+    for k, v in vocab_files.items():
+        (wdir / f"vocab-{k}.json").write_text(dump(v), encoding="utf-8")
+    for b in blocks:
+        (wdir / f"text-{b['start'] // BU.TEXT_BLOCK:04d}.json").write_text(dump(b), encoding="utf-8")
+    assert BU.list_label_template(r"label=\textup{(G\arabic*)},ref=G\arabic*") == r"\textup{(G\arabic*)}"
+    assert BU.list_label_template("(a)") is None
+    js = tmp / "words.cjs"
+    js.write_text(r"""
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+const src = fs.readFileSync(process.argv[2], 'utf8');
+const context = {
+  document: {body: {getAttribute: () => ''}, getElementById: () => null},
+  fetch: async url => ({ok: true, json: async () => JSON.parse(fs.readFileSync(path.join(__dirname, url), 'utf8'))})
+};
+vm.createContext(context);
+vm.runInContext(src.slice(src.indexOf('(function (global) {')), context);
+const AS = context.AtlasSearch;
+const total = r => Object.values(r.counts).reduce((a, b) => a + b, 0);
+(async () => {
+  const hy = await AS.query('log-concave'), flat = await AS.query('logconcave');
+  assert.ok(total(hy) > 0 && total(flat) === total(hy), 'logconcave finds what log-concave finds');
+  const sob = await AS.query('Sob'), sobolev = await AS.query('Sobolev');
+  assert.ok(total(sob) >= total(sobolev), 'a prefix of the last word finds the word');
+  const rm = await AS.query('random matrix');
+  assert.ok(rm.some(h => /random sign matrices/.test(h.name)), 'matrix finds matrices');
+  const l2 = await AS.query('L^2', {statements: 100000});
+  assert.ok(total(l2) > 0 && total(l2) < 400, 'L^2 is one formula word, not the letters L and 2');
+  const thm = await AS.query('Theorem 1.1', {statements: 100000});
+  const names = await AS.names();
+  const st = thm.filter(h => h.kind === 'statement');
+  assert.ok(st.length > 100 && st.every(h => names[h.idx] === 'Theorem 1.1'), 'Theorem 1.1 finds the statements printed so');
+  assert.equal(AS.displayName(st[0], names).indexOf('Theorem 1.1'), 0, 'statements are named by their printed number');
+  const sn = await AS.snippet(rm.find(h => /random sign matrices/.test(h.name)), rm);
+  assert.ok(sn && /<mark>random<\/mark>/i.test(sn.html), 'a result line marks the matched words');
+  const none = await AS.query('hypergraf');
+  assert.equal(total(none), 0);
+  assert.ok((await AS.suggest(none.missing)).some(w => /^hypergraph/i.test(w)), 'nearest title words are offered');
+  const ids = thm.map(h => h.id);
+  assert.equal(new Set(ids).size, ids.length, 'one row per entry');
+  console.log('test_search: prefixes, plurals, hyphens, formula words, printed numbers, marked lines and suggestions pass.');
+})().catch(err => { console.error(err); process.exitCode = 1; });
+""", encoding="utf-8")
+    subprocess.run([node, str(js), str(ROOT / "site/assets/atlas.js")], check=True)
 
 
 def main() -> int:

@@ -17,7 +17,9 @@ backend/                      imported Statement Map reader packets and receipts
 curated/                      attributed outside records and draft scope readings
 contributions/                authored notes, checks, explanations and templates
 data/                         generated source indexes and rendering metadata
-scripts/                      ingestion, rendering, validation and regression tests
+scripts/                      ingestion, rendering and validation
+scripts/tests/                Python and JavaScript regression suites
+docs/images/                  README screenshots
 site/                         authored copy, settings, styles, scripts and assets
 site/_build/                  generated HTML and assets; ignored by Git
 skills/                       canonical task instructions for agents
@@ -29,7 +31,7 @@ docs/                         repository explanation and README images
 
 The folders separate authored material, imported evidence and generated output.
 The website is built by scripts; it needs no application server or installable
-Python package. Tests stay beside the scripts they exercise and are listed in
+Python package. Tests live in `scripts/tests/`, import their script owners explicitly and are listed in
 the [scripts guide](../scripts/README.md#check-a-change).
 
 The root keeps documents GitHub and contributors expect to find there:
@@ -101,7 +103,7 @@ cd plectis-atlas
 python3 scripts/reader.py               # validates the pinned backend packets
 sh scripts/fetch_upstream.sh            # sparse checkout of openai/math at the pinned commit, without PDFs
 python3 scripts/build_site.py           # writes site/_build/
-python3 scripts/build_papers.py         # writes each paper's full reading page into site/_build/papers/
+python3 scripts/build_papers.py --jobs 2 # writes each paper's full reading page into site/_build/papers/
 python3 scripts/build_universe.py       # writes the map, site/_build/index.html, and its data
 python3 scripts/check_paper_links.py site/_build
 python3 -m http.server -d site/_build   # then open http://localhost:8000
@@ -150,6 +152,17 @@ be stable between the two passes. Rendering acceptance concerns conversion;
 the PDF remains the reference for the paper.
 
 ## Use the data
+
+The [published website is agent-navigable](https://wcook04.github.io/plectis-atlas/agents.md).
+`scripts/build_universe.py::build_agent_navigation` generates the static `llms.txt`
+entry and `agents.md` traversal guide alongside the existing map packets. The guide
+describes `data/universe-data.json` and `data/universe-parts.json`, including stable
+IDs, generation checks, all index relationships, directed citations, evidence limits
+and a runnable fetch example. It uses `site/config.json` for the complete project URL.
+Shared HTML links to the guide with an ordinary footer link and `rel=help`; no new
+script, preload, prefetch or dependency is introduced. The complete build and deploy
+run `python3 scripts/tests/test_agent_navigation.py --built site/_build` to check
+graph connectivity, source identity, generated routes and their local destinations.
 
 The files in [`data/`](../data/) are plain JSON. Baseline extraction and later
 rendering have different producers; neither replaces Statement Map's evidence
@@ -241,7 +254,7 @@ the relevant checks in [the CI workflow](../.github/workflows/check.yml).
 It covers packet reading, search, extraction, paper conversion, contribution
 validation, community records, generated entry surfaces and a site build.
 For rendered page changes, also inspect the relevant pages and run
-`scripts/test_family_page.py` when family layouts change. The
+`scripts/tests/test_family_page.py` when family layouts change. The
 [Pages workflow](../.github/workflows/pages.yml) shows the full publication
 build, including optional share cards.
 
@@ -258,25 +271,42 @@ also apply to the canonical [`improve-the-atlas` skill](../skills/improve-the-at
 
 ### README preview images
 
-`docs/map-light.png` and `docs/map-dark.png` are real browser captures of the
-same map state. They are displayed by the README's `<picture>` element and
-both link to the website. Keep these stable paths when refreshing them.
+The README opens with `docs/images/overview-light.png` and
+`docs/images/overview-dark.png`: real browser captures of the entire release
+map, with its discipline regions, family dots, release summary and colour key.
+Both link to the public Atlas front page. The paper reader now sits beside the
+“What you can do” feature table; the family board remains a separate detail view.
 
-The current pair was captured on 12 October 2026 from the local `reader-v2`
-build, matching the round-three map design. The source checkout was at
-`d32c790`; the local build was served from `site/_build/`. At capture time this
-revision was not the public deployment. The images show Family 017 under the
-pointer and its attributed disagreement, with no selection committed.
+The overview pair was captured on 15 October 2026 from a local build of main
+commit `96d9f05d8f1a5cf4fefbc47879b4dfbc1278ccc6`, using the documented quick
+preview commands above. The map reads Statement Map generation
+`sha256:e44fe048bf34d4e55b76af0e42f931ce1121c5c189edf0e8cd6061a5902b3e47`.
+The native owners are `scripts/build_universe.py`, `site/assets/universe.js`
+and `site/assets/universe.css`, with the shared `atlas.css`, fonts and theme
+control. No map, labels, data or interface elements were reconstructed.
 
-To reproduce the framing, serve the intended build and use a 1440 × 790 CSS
-pixel viewport at device scale 1. Wait for fonts and the map to finish loading,
-then point to the Family 017 disc (979, 197 in this framing). Check that the
-hover card names that family. Capture once in each colour scheme, with the
-same viewport and pointer. Do not recolour one screenshot to make the other.
-A change to the layout may move the disc; verify the family before capture.
+To reproduce the overview, open the locally served front page with no selection
+or URL fragment, at a 1440 × 980 CSS pixel viewport and device scale 1. Wait for
+the native map and fonts to load, and move the pointer off the map. The overview
+fits all disciplines automatically; it has no zoom or pan controls. Capture each
+theme through the site's own switch, keeping the viewport and scroll position.
+These are full viewport PNG captures with no crop or pixel editing. Inspect both
+at full size and in the GitHub README at desktop and phone widths. At phone
+width the image is a linked thumbnail; its caption and text routes remain the
+reading path.
 
-Check both images in the rendered README at laptop and phone widths. The map
-is a preview: keep the website link and description as text for readers who
-cannot read the image. Update the date and source revision here when the
-images change; screenshots are illustrations of that revision, not live
-status indicators.
+The paper reader pair, `reader-light.jpg` and `reader-dark.jpg`, shows
+*Quasipolynomial Bounds for Arithmetic Progressions*. It was captured on
+15 October 2026 from the public deployment of Atlas commit
+`4ac8e9f09057cd0a1c311df02bca0520839ae616`, verified against
+[the successful Pages build](https://github.com/wcook04/plectis-atlas/actions/runs/38424773534).
+It uses the actual output of `scripts/build_papers.py`, `site/assets/paper.css`
+and the shared typography, fonts and theme control, at a 1440 × 900 CSS pixel
+viewport. The PDF remains the reference. The family board uses
+`family-light.png` and `family-dark.png`.
+
+The old map pair (`map-light.png` and `map-dark.png`) remains historical imagery.
+It was captured on 12 October 2026 from the local `reader-v2` build at `d32c790`,
+with a 1440 × 790 CSS pixel viewport at device scale 1 and Family 017 under the
+pointer. At capture time that revision was not the public deployment. Do not
+recolour a screenshot to manufacture another theme.

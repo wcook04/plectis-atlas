@@ -24,6 +24,14 @@ Define unfamiliar terms before using them. Use established names for established
 
 Prefer direct sentences. Replace an unsupported 'clearly' with its reason. Use British spelling in atlas documentation, and commas, colons and full stops for prose punctuation. Authors may use normal mathematical notation.
 
+## Write the website for a first-time reader
+
+Assume a reader understands mathematics but has never used Atlas, Lean or a proof assistant. Explain Lean on entry pages before interpreting its results. Explain a family as OpenAI’s group of related papers, and put source identifiers beside the source they identify. A glossary can add detail; it must not carry an explanation needed to understand the first paragraph.
+
+Name the operation behind a word such as “check”: who compared which statements, which program verified which proof, or which renderer tested the typesetting. State the reported result and what it leaves open. A selected theorem is not a verified theorem; matching words is not a comparison of mathematical meaning; a successful typesetting test is not mathematical validation. Say “no review recorded” when only the Atlas records have been searched.
+
+Edit the owning copy file or generator, never imported quotations, paper titles, mathematical statements or generated HTML. Review each changed sentence in context, including map menus, filters, table headers and source notes. Preserve mathematical hypotheses, quantifiers, uncertainty and credit. Inspect the generated pages at desktop and phone sizes after changing text length, and follow a paper-to-Lean-to-source link to confirm that the explanations describe the actual operation. A word blacklist or a polished summary cannot establish that all page types are understandable.
+
 ## Locate the evidence
 
 Credit an idea where it is used and cite the exact theorem, page or passage you read. Distinguish an existing citation from an additional source you found. Say 'the earliest source I found' when describing a bounded search.

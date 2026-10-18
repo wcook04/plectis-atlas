@@ -100,6 +100,7 @@
 main.u-main { padding: 0; max-width: none; }
 .u-explorer {
   --u-gutter: max(24px, calc((100vw - 1600px) / 2));
+  position: relative;
   display: grid;
   grid-template-columns: calc(var(--u-panel-w) + var(--u-gutter) - 20px) minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
@@ -131,6 +132,16 @@ main.u-main { padding: 0; max-width: none; }
 .u-title { font: 500 1.625rem/1.18 var(--serif); letter-spacing: -0.01em; margin: 2px 0 14px; color: var(--ink); text-wrap: balance; }
 .u-title--deep { font-size: 1.25rem; font-weight: 600; letter-spacing: 0; }
 .u-trail[hidden] { display: none; }
+.u-step { display: flex; align-items: center; gap: 10px; margin: 6px 0 0; font: 400 var(--fs-small)/1.4 var(--sans); color: var(--muted); }
+.u-step[hidden] { display: none; }
+.u-step__pos { flex: 1 1 auto; min-width: 0; text-align: center; font-variant-numeric: tabular-nums; }
+.u-step__go { flex: none; padding: 2px 8px; border: 1px solid var(--rule); border-radius: var(--r-sm); font: inherit; color: var(--ink); background: var(--surface); }
+.u-step__go.u-go { width: auto; cursor: pointer; }
+.u-step__go.u-go:hover { border-color: var(--rule-strong); }
+.u-step__go.u-go:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 1px; }
+.u-step__go.is-end { opacity: 0.35; }
+.u-step__go--prev::before { content: "\2190\00a0"; }
+.u-step__go--next::after { content: "\00a0\2192"; }
 .u-ground { font: 400 var(--fs-small)/1.5 var(--sans); color: var(--ink-soft); margin: -6px 0 14px; max-width: 46ch; text-wrap: pretty; }
 .u-ground[hidden] { display: none; }
 .u-nobr { display: inline-block; } /* whole where it fits, wrapping inside itself where its line is narrower */
@@ -306,7 +317,7 @@ main.u-main { padding: 0; max-width: none; }
 .u-tool:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 1px; }
 .u-tool svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
 .u-help { position: absolute; left: 14px; bottom: 10px; margin: 0; max-width: min(560px, calc(100% - 80px)); font: 400 var(--fs-micro)/1.4 var(--sans); color: var(--muted); pointer-events: none; }
-.u-status { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; font: 400 var(--fs-meta)/1.4 var(--sans); color: var(--muted); }
+.u-status { position: absolute; inset: 0 0 0 calc(var(--u-panel-w) + var(--u-gutter) - 20px); pointer-events: none; display: grid; place-items: center; margin: 0; font: 400 var(--fs-meta)/1.4 var(--sans); color: var(--muted); }
 .u-status[hidden] { display: none; }
 .u-switch { display: none; }
 
@@ -323,8 +334,16 @@ main.u-main { padding: 0; max-width: none; }
   .u-panel__head { padding: 12px 16px; }
   .u-panel__body { overflow: visible; padding: 4px 16px 28px; }
   .u-stage { height: 72vh; height: 72svh; }
+  /* The same status stays visible while List hides the map, including when
+     the chosen family is far down the list. One live region serves both views. */
+  .u-status { position: fixed; inset: auto 16px 16px; z-index: 4; padding: 12px 16px; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-sm); text-align: center; }
   [data-universe][data-view="list"] .u-stage { display: none; }
-  [data-universe][data-view="map"] .u-panel { display: none; }
+  [data-universe][data-view="map"] .u-panel { display: block; }
+  [data-universe][data-view="map"] .u-panel__body,
+  [data-universe][data-view="map"] .u-panel__head > :not(.u-trail):not(.u-step) { display: none; }
+  [data-universe][data-view="map"] .u-panel__head { padding: 0; border-bottom: 0; }
+  [data-universe][data-view="map"] .u-trail:not([hidden]) { margin: 0; padding: 10px 16px; border-bottom: 1px solid var(--rule); }
+  [data-universe][data-view="map"] .u-step:not([hidden]) { margin: 0; padding: 6px 16px; border-bottom: 1px solid var(--rule); }
   .u-help { display: none; }
   /* The list starts with something to open: the disciplines and the ways in come
      straight after the release's two sentences, and the colour key, which explains
@@ -370,7 +389,6 @@ main.u-main { padding: 0; max-width: none; }
 .u-cat { margin: 6px 0 10px; }
 .u-cat figcaption { font: 400 var(--fs-small)/1.45 var(--sans); color: var(--muted); margin: 0 0 4px; }
 .u-cat blockquote { margin: 0; padding: 0 0 0 12px; border-left: 2px solid var(--rule-strong); font: 400 var(--fs-body)/1.55 var(--serif); color: var(--ink); text-wrap: pretty; }
-.u-cat__more { margin: 6px 0 0 14px; font: 400 var(--fs-small)/1.4 var(--sans); }
 .u-btn { display: inline-flex; align-items: center; min-height: 32px; padding: 5px 12px; border-radius: var(--r-sm); border: 1px solid var(--rule-control); background: var(--surface); color: var(--ink); font: 500 var(--fs-meta)/1.25 var(--sans); text-decoration: none; }
 .u-btn--primary { background: var(--ink); border-color: var(--ink); color: var(--on-ink); }
 /* The site-wide a:hover colour must not reach a primary button: its label stays legible. */
@@ -404,7 +422,7 @@ main.u-main { padding: 0; max-width: none; }
 .u-index__fams li { margin: 0 0 4px; }
 .u-index__fams a { display: inline-flex; align-items: baseline; min-height: 24px; padding: 2px 0; font: 400 var(--fs-meta)/1.4 var(--serif); color: var(--steel-text); }
 .u-nowrap { white-space: nowrap; }
-.u-panel .u-lean { font-size: 0.75rem; line-height: 1.5; }
+.u-panel .u-lean { font-size: 0.75rem; line-height: 1.5; max-height: none; overflow-x: auto; }
 
 /* Reading a theorem or a Lean statement: the panel takes about two fifths of the
    workspace so the mathematics keeps its size, and the map refits beside it. */
@@ -431,7 +449,16 @@ main.u-main { padding: 0; max-width: none; }
 @media (max-width: 899px) { .u-maplegend { max-width: calc(100% - 28px); } }
 
 /* The map key for the release and a discipline, top left of the drawing. */
-.u-mapkey-btn { position: absolute; left: 14px; top: 12px; min-height: 32px; padding: 5px 12px; border-radius: var(--r-sm); border: 1px solid var(--rule-strong); background: var(--surface); color: var(--ink); font: 500 var(--fs-small)/1.2 var(--sans); cursor: pointer; }
+/* The bar over the drawing: the key's button and one line saying what the drawing shows. */
+.u-mapbar { position: absolute; left: 14px; right: 14px; top: 10px; display: flex; align-items: center; gap: 8px 14px; pointer-events: none; }
+.u-mapbar > * { pointer-events: auto; }
+.u-cap { margin: 0; max-width: 78ch; font: 400 var(--fs-small)/1.4 var(--sans); color: var(--ink-soft); text-wrap: pretty; }
+.u-edge-guide { display: block; margin-top: 5px; }
+.u-edge-key { display: inline-flex; align-items: baseline; gap: 4px; margin-right: 10px; font-weight: 600; white-space: nowrap; }
+.u-edge-key--out { color: var(--u-cites); }
+.u-edge-key--in { color: var(--u-cited); }
+[data-board] .u-mapbar { display: none; }
+.u-mapkey-btn { flex: none; position: static; min-height: 32px; padding: 5px 12px; border-radius: var(--r-sm); border: 1px solid var(--rule-strong); background: var(--surface); color: var(--ink); font: 500 var(--fs-small)/1.2 var(--sans); cursor: pointer; }
 .u-mapkey-btn[hidden] { display: none; }
 .u-mapkey-btn[aria-expanded="true"] { border-color: var(--ink); }
 .u-mapkey-btn:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
@@ -465,7 +492,7 @@ main.u-main { padding: 0; max-width: none; }
    down, and one line points to the list of every family below. */
 .u-nojs { display: none; }
 html:not(.js) .u-nojs { display: block; font: 400 var(--fs-meta)/1.5 var(--sans); color: var(--ink-soft); }
-html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
+html:not(.js) .u-stage, html:not(.js) .u-switch, html:not(.js) .u-status { display: none; }
 
 /* ---- The family board -------------------------------------------------------- */
 /* Inside a family the map is a board of cards, read left to right: the families whose
@@ -475,12 +502,13 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
    screen, so a 27-inch monitor reads as easily as a laptop. */
 .u-board {
   position: absolute; inset: 0; z-index: 2; overflow: auto; overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   background: var(--page); color: var(--ink-soft);
   font: 400 clamp(15px, calc(0.42vw + 9.5px), 20px)/1.45 var(--sans);
-  opacity: 0; visibility: hidden; transform: translateY(8px);
-  transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s linear var(--t-open);
+  opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(8px);
+  transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s;
 }
-.u-board.is-on { opacity: 1; visibility: visible; transform: none; transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s; }
+.u-board.is-on { opacity: 1; visibility: visible; pointer-events: auto; transform: none; transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s; }
 .u-board:focus { outline: none; }
 .u-board:focus-visible { outline: 2px solid var(--steel-text); outline-offset: -2px; }
 .u-title:focus { outline: none; }
@@ -490,8 +518,10 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
 .u-board__wires path { fill: none; stroke-width: 1.5; stroke-linecap: round; }
 .u-board__wires .w-lean { stroke: var(--u-steel); }
 .u-board__wires .w-cand { stroke-dasharray: 5 4; }
-.u-board__wires .w-out { stroke: var(--u-cites); opacity: 0.75; }
-.u-board__wires .w-in { stroke: var(--u-cited); opacity: 0.75; }
+.u-board__wires .w-out { stroke: var(--u-cites); opacity: 0.85; marker-start: url(#u-cite-out); }
+.u-board__wires .w-in { stroke: var(--u-cited); opacity: 0.85; marker-end: url(#u-cite-in); }
+.u-board__wires .w-arrow-out { fill: var(--u-cites); stroke: none; }
+.u-board__wires .w-arrow-in { fill: var(--u-cited); stroke: none; }
 .u-board__wires .is-hot { opacity: 1; stroke-width: 2.2; }
 .u-board__head { margin: 0 0 0.9em; max-width: 72em; }
 .u-board__k { margin: 0; font: 600 0.8125em/1.4 var(--sans); color: var(--muted); }
@@ -499,12 +529,11 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
 .u-board__r { margin: 0.25em 0 0; max-width: 60em; font-size: 0.875em; color: var(--ink-soft); text-wrap: pretty; }
 .u-board__r b { font-weight: 600; color: var(--ink); }
 .u-board__cols { display: grid; grid-template-columns: minmax(8.5em, 11em) minmax(0, 1fr) minmax(8.5em, 11em); gap: 0 2.25em; align-items: start; }
-.u-board__bar { display: flex; justify-content: flex-end; align-items: center; min-height: 2em; margin: -0.35em 0 0; }
 .u-board__side h3, .u-board__colh { margin: 0 0 0.55em; font: 600 0.875em/1.3 var(--sans); color: var(--ink); }
 .u-board__side .u-bc + .u-bc { margin-top: 0.6em; }
-.u-board__none, .u-board__more { margin: 0; font-size: 0.8125em; color: var(--muted); }
-.u-board__more { margin-top: 0.6em; }
-.u-board__papers { display: grid; gap: 1.25em; padding-top: 1.5em; align-items: start; }
+.u-board__none { margin: 0; font-size: 0.8125em; color: var(--muted); }
+.u-board__papers { column-gap: 1.25em; padding-top: 1.5em; }
+.u-board__papers > .u-col { break-inside: avoid; margin-bottom: 1.25em; }
 .u-board__papers > [hidden] { display: none; }
 .u-col { min-width: 0; }
 .u-col > ol { list-style: none; margin: 0; padding: 0; }
@@ -512,13 +541,6 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
 .u-leans > .u-bc { margin: 0.55em 0 0 1.4em; }
 .u-board__foot { margin: 1.1em 0 0; font-size: 0.8125em; color: var(--muted); }
 .u-board__foot::before { content: ""; display: inline-block; width: 1.6em; margin-right: 0.5em; vertical-align: 0.3em; border-top: 1.5px dashed var(--u-steel); }
-.u-pager { display: inline-flex; align-items: center; gap: 0.5em; }
-.u-pager[hidden] { display: none; }
-.u-pager button { width: 2em; height: 2em; display: grid; place-items: center; padding: 0; border: 1px solid var(--rule-strong); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); cursor: pointer; font: inherit; }
-.u-pager button:disabled { opacity: 0.4; cursor: default; }
-.u-pager button:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 1px; }
-.u-pager svg { width: 0.9em; height: 0.9em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.u-pager span { font-variant-numeric: tabular-nums; color: var(--ink-soft); }
 /* A card: one object, named on it, its words kept inside it. */
 .u-bc {
   position: relative; display: block; box-sizing: border-box; min-width: 0; padding: 0.55em 0.75em 0.65em;
@@ -541,7 +563,11 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
 .u-bc__acts a { color: var(--steel-text); }
 .u-bc__lab { font: 600 0.8125em/1.35 var(--sans); color: var(--ink); }
 .u-bc__lab .u-bc__ttl { font-weight: 400; color: var(--ink-soft); }
-.u-bc__x { margin-top: 0.3em; font: 400 1em/1.5 var(--serif); color: var(--ink); }
+/* Give typeset glyphs room beyond the text line box; a few pixels of ink must
+   not create an inner vertical scrollbar and narrow the whole statement. */
+.u-bc__x { margin-top: 0.3em; padding-block: 0.25em; font: 400 1em/1.5 var(--serif); color: var(--ink); overflow-x: auto; overflow-wrap: break-word; }
+.u-bc__x p { margin: 0 0 0.4em; }
+.u-bc__x p:last-child { margin-bottom: 0; }
 .u-bc__x .katex { font-size: 1.02em; }
 .u-bc__x--none { font: 400 0.8125em/1.45 var(--sans); color: var(--muted); max-height: none; }
 .u-bc--l { border-color: color-mix(in oklab, var(--u-steel) 40%, var(--rule-strong)); }
@@ -551,7 +577,7 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
 .u-bc__ln { margin-top: 0.3em !important; font-size: 0.8125em; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
 .u-bc__ln--q { color: var(--ink); }
 .u-bc--f .u-bc__k { font: 600 0.75em/1.4 var(--sans); color: var(--muted); }
-.u-bc__ft { font: 500 0.9375em/1.3 var(--serif); color: var(--ink); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.u-bc__ft { font: 500 0.9375em/1.3 var(--serif); color: var(--ink); }
 .u-bc--f .u-bc__ln { margin-top: 0.2em !important; color: var(--muted); }
 .u-bc--f .u-dot { width: 0.6em; height: 0.6em; margin-right: 0.4em; }
 /* On a wide screen the panel beside the board names the family; on a phone the board
@@ -568,8 +594,8 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
   .u-board__side--in { order: 2; }
   .u-board__side--out { order: 3; }
   .u-board__papers { display: block; padding-top: 0; }
-  .u-board__bar { display: none; }
   .u-col + .u-col { margin-top: 1.4em; }
+  .u-board__papers > .u-col { margin-bottom: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   .u-board, .u-board.is-on { transition: none; transform: none; }
@@ -603,7 +629,7 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
 /* On the board the card says more (a statement's opening, a pairing's terms), and the
    pointer can move onto it to read it; a click on it selects what it names. */
 .u-card.is-board { max-width: min(23rem, calc(100% - 16px)); }
-.u-card.is-board.is-on { pointer-events: auto; cursor: pointer; }
+.u-card.is-on { pointer-events: auto; cursor: pointer; }
 .u-card__x { margin: 5px 0 2px; font: 400 0.9375rem/1.5 var(--serif); color: var(--ink); overflow-wrap: break-word; }
 .u-card__n + .u-card__n { margin-top: 3px !important; }
 .u-card__n b { font-weight: 600; color: var(--ink); }
@@ -620,3 +646,55 @@ html:not(.js) .u-stage, html:not(.js) .u-switch { display: none; }
   .u-view.is-arriving, .u-title.is-arriving { animation: none; }
   .u-card, .u-card.is-on { transition: none; }
 }
+
+/* The selection has one scrolling reading surface. Section links stay reachable
+   without hiding evidence in folds or imposing a second vertical scrollbar. */
+.u-sections { position: sticky; top: -4px; z-index: 2; display: flex; flex-wrap: wrap; gap: 2px 12px; margin: -4px 0 12px; padding: 8px 0; background: var(--page); border-bottom: 1px solid var(--rule); }
+.u-sections button { border: 0; background: none; color: var(--steel-text); padding: 4px 0; min-height: 28px; cursor: pointer; font: 500 var(--fs-small)/1.4 var(--sans); text-decoration: underline; text-underline-offset: 3px; }
+.u-sections button:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+.u-abstract { font: 400 var(--fs-body)/1.6 var(--serif); color: var(--ink); }
+.u-result-previews { margin-left: 0; }
+.u-result-previews > li { padding: 8px 0 14px; border-top: 1px solid var(--rule); }
+.u-excerpt { margin: 2px 8px 6px; font: 400 var(--fs-body)/1.55 var(--serif); }
+.u-excerpt .u-role { margin: 0 0 5px; }
+.u-excerpt__text { overflow-wrap: anywhere; }
+.u-excerpt__text p { margin: 0 0 8px; }
+.u-excerpt__open { margin: 0 8px 8px; }
+.u-excerpt .m-d { overflow-x: auto; }
+.u-papers > li + li { border-top: 1px solid var(--rule); }
+.u-lean-label { font: 500 var(--fs-base)/1.4 var(--serif); }
+@media (max-width: 899px) { .u-sections { position: static; } }
+
+/* map + search: usability pass (13 October 2026) */
+/* Inline numbers that link (the release sentences) keep a 24 px target without changing the line. */
+.u-num, a.u-key__n { display: inline-block; min-width: 24px; min-height: 24px; padding: 3px 4px; margin: -3px -2px; text-align: center; box-sizing: border-box; }
+a.u-key__n { color: var(--steel-text); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: color-mix(in oklab, currentColor 40%, transparent); }
+.u-key__counted a { display: inline-block; min-height: 24px; padding: 3px 0; margin: -3px 0; }
+.u-since { font: 400 var(--fs-small)/1.55 var(--sans); color: var(--ink-soft); margin: 4px 0 12px; padding: 8px 10px; border-left: 2px solid var(--rule-strong); background: var(--surface); border-radius: 0 var(--r-sm) var(--r-sm) 0; }
+.u-since__h { color: var(--ink); font-weight: 600; }
+.u-since a { color: var(--steel-text); padding: 3px 0; }
+/* Search results: the kinds as chips, a heading per kind, and why each matched. */
+.u-results__head { margin-bottom: 6px; }
+.u-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; }
+.u-chip { min-height: 28px; padding: 3px 10px; border: 1px solid var(--rule-strong); border-radius: 14px; background: var(--surface); color: var(--ink-soft); font: 500 var(--fs-small)/1.3 var(--sans); cursor: pointer; }
+.u-chip:hover { border-color: var(--rule-control); color: var(--ink); }
+.u-chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--page); }
+.u-chip:focus-visible, .u-more-btn:focus-visible, .u-suggest__w:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+.u-chip__n { font-variant-numeric: tabular-nums; opacity: 0.8; }
+.u-results__kind { margin: 10px 0 2px; font: 600 var(--fs-small)/1.4 var(--sans); color: var(--muted); }
+.u-row--hit .u-row__t, .u-row--hit .u-row__n, .u-row--hit .u-row__x { grid-column: 1 / -1; overflow-wrap: break-word; }
+.u-row__x { display: block; font: 400 var(--fs-small)/1.45 var(--serif); color: var(--ink-soft); overflow-wrap: break-word; }
+.u-row__x:empty { display: none; }
+.u-row__x code { font: 400 0.75rem/1.45 var(--mono); color: var(--ink-soft); white-space: normal; overflow-wrap: anywhere; }
+.u-row__x mark, .u-row__x code mark { background: color-mix(in oklab, var(--steel-text) 22%, transparent); color: inherit; border-radius: 2px; padding: 0 1px; }
+.u-row__x .katex { font-size: 1em; }
+.u-results__more { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin: 8px 0 4px; }
+.u-more-btn, .u-suggest__w { min-height: 28px; padding: 3px 10px; border: 1px solid var(--rule-strong); border-radius: var(--r-sm); background: var(--surface); color: var(--steel-text); font: 600 var(--fs-small)/1.3 var(--sans); cursor: pointer; }
+.u-suggest__w { padding: 2px 8px; font-weight: 500; }
+/* A formula wider than its card that takes focus to scroll. */
+[data-u-scroller]:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 1px; }
+
+/* round 2: pairing consistency */
+/* A short card under a second theorem a Lean statement is paired with points back to its full card. */
+.u-bc--l.u-bc--also { background: transparent; padding-block: 0.4em; }
+.u-bc--l.u-bc--also .u-bc__lt { font-size: 0.92em; }

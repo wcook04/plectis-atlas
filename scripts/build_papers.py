@@ -44,7 +44,7 @@ import unicodedata
 from collections import Counter, defaultdict
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
@@ -75,14 +75,15 @@ sys.setrecursionlimit(20000)
 # Every human-facing sentence this script writes. British spelling, no em dashes.
 TXT = {
     "kicker": "Reading view",
-    "numbering": "Numbering computed from the TeX source; the PDF is the reference.",
-    "converted": "This page is converted from the paper’s TeX source at commit {commit}.",
+    "numbering": "Atlas reconstructs statement numbers from the paper’s typesetting source (TeX). Use the original PDF if they differ.",
+    "converted": "This page is converted from the paper’s {source}.",
+    "tex_source_title": "The paper’s TeX source in the release at commit {commit}",
     "figures_one": "One figure is shown as a placeholder; see the PDF for it.",
     "figures_many": "{n} figures are shown as placeholders; see the PDF for them.",
     "partial_h": "This reading view is incomplete",
     "partial_p": "Parts of the TeX source did not convert, so this page is not a faithful copy of the paper. The PDF is the reference for everything listed here.",
     "pdf_link": "Read the PDF",
-    "f_unchecked": "The formulas on this page have not been checked.",
+    "f_unchecked": "Atlas could not test whether the formulas can be typeset correctly. This rendering test does not assess their mathematical correctness.",
     "f_formulas": ("1 formula could not be typeset; its TeX source is shown instead.",
                    "{n} formulas could not be typeset; their TeX source is shown instead."),
     "f_refs": ("1 cross-reference points to a label the source does not define.",
@@ -102,19 +103,50 @@ TXT = {
     "fig_tikz": "Figure drawn in TikZ; see the PDF",
     "fig_image": "Figure image; see the PDF",
     "fig_other": "Figure not reproduced here; see the PDF",
+    "fig_pdf": "Pages included from {file}, which this view cannot show; see the PDF",
+    "f_pdf": ("1 PDF file is set into the paper as whole pages, which this view cannot show: {names}.",
+              "{n} PDF files are set into the paper as whole pages, which this view cannot show: {names}."),
     "atlas_note": "Atlas note, not part of the paper",
-    "lean_k": "Lean.",
+    "lean_k": "Lean, a language for mathematical statements and computer-verifiable proofs.",
     "lean_how": {
-        "candidate-pairing": "{lean} is paired with this theorem as a candidate, found by the words the two share; nobody has reviewed the pairing.",
-        "producer-cited-association": "The source of {lean} cites this theorem by its label; nobody has reviewed whether the two state the same thing.",
-        "producer-declared-binding": "The release binds {lean} to this theorem; nobody has reviewed whether the two state the same thing.",
+        "candidate-pairing": "{lean} is a possible match to this theorem, selected from shared wording. Atlas records no review that the statements mean the same thing.",
+        "producer-cited-association": "The source of {lean} cites this theorem by its label. Atlas records no review that the statements mean the same thing.",
+        "producer-declared-binding": "OpenAI’s release explicitly links {lean} to this theorem. Atlas records no review that the statements mean the same thing.",
+    },
+    "lean_how_other": "{lean} is paired with this theorem.",
+    "lean_tag": {
+        "candidate-pairing": "possible match from shared wording",
+        "producer-cited-association": "cited in its source, not reviewed",
+        "producer-declared-binding": "linked by OpenAI, not reviewed",
+        "reviewed": "reviewed pairing",
+        "other": "paired",
+    },
+    "bib_read": "Reading view on this site:",
+    "bib_pdf": "PDF",
+    "bib_later": " (current edition)",
+    "sib_with_others": "{n} of {total} papers in this family, including {others}",
+    "sib_withdrawn": "withdrawn papers",
+    "sib_earlier": "earlier editions",
+    "sib_both": "withdrawn papers and earlier editions",
+    # Words paper.js shows: the heading's buttons and the reference preview.
+    "ui": {
+        "link": "Link",
+        "link_label": "Copy a link to {name}",
+        "tex": "Copy TeX",
+        "tex_label": "Copy the TeX source of {name}",
+        "copied": "Copied",
+        "lean": "Lean",
+        "lean_label": "Lean statement {lean}, {tag}",
+        "preview": "Preview",
+        "loading": "Loading…",
+        "unavailable": "The passage could not be shown here; follow the link to read it.",
     },
     "family_n": "family {n}",
-    "headline_note": "Of the papers’ main statements, this one shares the most words with OpenAI’s description of {families}, so the atlas shows it as the candidate for the theorem that description names. Nobody has reviewed the choice.",
-    "lean_proof": "Its Lean proof, checked against the Lean statement only:",
-    "lean_runs_n": "re-run and accepted by {n} groups outside OpenAI",
-    "lean_runs_1": "re-run and accepted by one group outside OpenAI",
-    "lean_runs_0": "not yet re-run outside OpenAI",
+    "headline_note": "Of the papers’ main statements, this one shares the most words with OpenAI’s description of {families}. Atlas therefore selects it as a possible match to that description, with no recorded review confirming the choice.",
+    "lean_proof": "Reports of running Comparator against this Lean statement:",
+    "lean_runs_n": "{n} independent groups report acceptance",
+    "lean_runs_1": "one independent group reports acceptance",
+    "lean_runs_0": "no independent run recorded",
     "lean_holes_1": "one definition Comparator compares by name and type only",
     "lean_holes_n": "{n} definitions Comparator compares by name and type only",
     "listing_link": "Code listing {file}: open it in the release",
@@ -124,6 +156,7 @@ TXT = {
     "permalink": "Link to this passage",
     "fn_label": "Note {n}",
     "description": "Reading view of {title}, converted from its TeX source.",
+    "title_dated": "{title} ({date})",
 }
 
 
@@ -283,8 +316,26 @@ def clean_url(u: str) -> str:
     return u
 
 
+# Hosts that serve the same address over https: a bibliography's http:// link to one of
+# them is followed as https (the printed text stays as the paper prints it).
+HTTPS_HOSTS = {
+    "hdl.handle.net", "doi.org", "dx.doi.org", "arxiv.org", "www.arxiv.org", "export.arxiv.org", "www.ams.org",
+    "ams.org", "mathscinet.ams.org", "zbmath.org", "www.zbmath.org", "eudml.org", "www.numdam.org", "numdam.org",
+    "projecteuclid.org", "www.jstor.org", "jstor.org", "link.springer.com", "onlinelibrary.wiley.com",
+    "www.sciencedirect.com", "oeis.org", "www.oeis.org", "en.wikipedia.org", "github.com", "mathoverflow.net",
+    "math.stackexchange.com", "msp.org", "www.cambridge.org", "academic.oup.com", "epubs.siam.org", "dl.acm.org",
+    "ieeexplore.ieee.org", "www.worldscientific.com", "citeseerx.ist.psu.edu", "www.emis.de", "emis.de",
+    "annals.math.princeton.edu", "www.ems-ph.org", "ems.press", "www.semanticscholar.org", "inspirehep.net",
+    "repository.kulib.kyoto-u.ac.jp", "www.kurims.kyoto-u.ac.jp", "www.mathnet.ru", "mathnet.ru", "www.lmfdb.org",
+    "lmfdb.org", "www.math.ias.edu", "www.ihes.fr", "www.numdam.org",
+}
+
+
 def safe_href(u: str) -> str | None:
     u = clean_url(u)
+    m = re.match(r"(?i)^http://([^/:?#]+)", u)
+    if m and m.group(1).lower() in HTTPS_HOSTS:
+        u = "https://" + u[len("http://"):]
     if u.lower().startswith(SAFE_SCHEMES):
         return u
     if re.match(r"^(www\.)", u):
@@ -505,13 +556,14 @@ DEF_RE = re.compile(
     r"DeclarePairedDelimiterXPP|DeclarePairedDelimiterX|DeclarePairedDelimiter|newenvironment|renewenvironment|"
     r"newtheorem|theoremstyle|numberwithin|counterwithin|counterwithout|newcounter|crefname|Crefname|crefalias|"
     r"NewCommandCopy|RenewCommandCopy|DeclareCommandCopy|LetLtxMacro|"
-    r"def|gdef|edef|xdef|let|expandafter|newtheoremstyle|setcounter|bibliographystyle|appendix|"
+    r"def|gdef|edef|xdef|let|expandafter|newtheoremstyle|setcounter|bibliographystyle|appendix|@namedef|"
     r"begin\s*\{document\})(?![A-Za-z@])")
 COPY_CMDS = {"NewCommandCopy", "RenewCommandCopy", "DeclareCommandCopy", "LetLtxMacro"}
 DEF_CMDS = {"newcommand", "renewcommand", "providecommand", "DeclareRobustCommand", "DeclareMathOperator",
             "DeclarePairedDelimiter", "DeclarePairedDelimiterX", "DeclarePairedDelimiterXPP", "newenvironment",
             "renewenvironment", "newtheorem", "theoremstyle", "numberwithin", "counterwithin", "counterwithout",
             "newcounter", "crefname", "Crefname", "crefalias", "def", "gdef", "edef", "xdef", "let", "newtheoremstyle",
+            "@namedef",
             *COPY_CMDS}
 
 
@@ -585,6 +637,7 @@ def parse_def_params(params: str):
 # ------------------------------------------------------------ text-mode tables
 
 TEXT_SYMBOLS = {
+    "tablename": "Table", "figurename": "Figure",
     "S": "§", "P": "¶", "dag": "†", "ddag": "‡", "copyright": "©", "textcopyright": "©", "textregistered": "®",
     "texttrademark": "™", "pounds": "£", "textsterling": "£", "euro": "€", "texteuro": "€", "textdollar": "$",
     "textbackslash": "\\", "textasciitilde": "~", "textasciicircum": "^", "textbar": "|", "textless": "&lt;",
@@ -614,7 +667,7 @@ CONTROL_SYMBOLS = {
 }
 ACCENTS = {"'": "\u0301", "`": "\u0300", "^": "\u0302", '"': "\u0308", "~": "\u0303", "=": "\u0304",
            ".": "\u0307", "u": "\u0306", "v": "\u030c", "H": "\u030b", "c": "\u0327", "k": "\u0328",
-           "r": "\u030a", "d": "\u0323", "b": "\u0331", "t": "\u0361"}
+           "r": "\u030a", "d": "\u0323", "b": "\u0331", "t": "\u0361", "textcommabelow": "\u0326"}
 SPACING_ACCENT = {"'": "´", "`": "`", "^": "^", '"': "¨", "~": "~", "=": "¯", ".": "˙"}
 FONT_ARG = {"emph": ("<em>", "</em>"), "textit": ("<i>", "</i>"), "textsl": ("<i>", "</i>"),
             "textbf": ("<b>", "</b>"), "textsc": ('<span class="pr-sc">', "</span>"),
@@ -687,11 +740,21 @@ DIMEN_PRIMITIVES = {
     "labelwidth", "fboxsep", "fboxrule", "arrayrulewidth", "doublerulesep", "extrarowheight", "footnotesep",
     "medmuskip", "thinmuskip", "thickmuskip", "lineskiplimits", "delimitershortfall", "nulldelimiterspace",
     "scriptspace", "hangindent", "hangafter", "spaceskip", "xspaceskip", "baselinestretch", "vbadness",
+    # hyphenation and page-builder parameters (\lefthyphenmin=2): nothing on a web page
+    "lefthyphenmin", "righthyphenmin", "uchyph", "defaulthyphenchar", "pagegoal", "pagetotal", "pagedepth",
+    "pagestretch", "pageshrink", "maxdepth", "topskip", "splittopskip", "vsize", "hsize", "textheight",
 }
+# \dimen0=\pagegoal, \count255=3: a register assignment, which prints nothing.
+REGISTER_PRIMITIVES = {"dimen", "count", "skip", "muskip", "toks"}
+# \advance\dimen0 by -\pagetotal: register arithmetic, which prints nothing.
+ARITH_PRIMITIVES = {"advance", "multiply", "divide"}
 DIMEN_RE = re.compile(
     r"\s*=?\s*(?:[-+]?\s*(?:\d+(?:\.\d*)?|\.\d+)?\s*(?:\\[A-Za-z@]+|(?:pt|em|ex|cm|mm|in|bp|pc|dd|cc|sp|mu|fil+|true\s*pt)?))"
     r"(?:\s*(?:plus|minus)\s*[-+]?\s*(?:\d+(?:\.\d*)?|\.\d+)?\s*(?:pt|em|ex|cm|mm|in|bp|pc|dd|cc|sp|mu|fil+|\\[A-Za-z@]+)?)*")
 
+REGISTER_RE = re.compile(r"\s*(?:\d+|@+[A-Za-z]*)?" + DIMEN_RE.pattern)
+ARITH_RE = re.compile(r"\s*\\(?:(?:dimen|count|skip|muskip)\s*(?:\d+|@+[A-Za-z]*)?|[A-Za-z@]+)\s*(?:by(?![A-Za-z]))?"
+                      + DIMEN_RE.pattern)
 LEVELS = {"part": 0, "chapter": 0, "section": 1, "subsection": 2, "subsubsection": 3, "paragraph": 4,
           "subparagraph": 5}
 REF_CMDS = {"ref", "eqref", "cref", "Cref", "autoref", "Autoref", "labelcref", "crefrange", "Crefrange",
@@ -816,7 +879,7 @@ MATH_REF_RE = re.compile(
     r"Crefrange|vref|subref)(\*?)(?![A-Za-z@])\s*(?:\[[^\]]*\]\s*)?\{([^{}]*)\}(?:\s*\{([^{}]*)\})?")
 MATH_CITE_RE = re.compile(
     r"\\(cite[a-zA-Z]*|Cite[a-zA-Z]*|parencite|textcite)(\*?)(?![A-Za-z@])\s*((?:\[[^\]]*\]\s*){0,2})\{([^{}]*)\}")
-LABEL_RE = re.compile(r"\\label\s*\{([^{}]*)\}")
+LABEL_RE = re.compile(r"\\label\s*(?:\[[^\]]*\]\s*)?\{([^{}]*)\}")
 NONUM_RE = re.compile(r"\\(?:nonumber|notag)(?![A-Za-z@])")
 TAG_RE = re.compile(r"\\tag(\*?)\s*\{")
 QEDHERE_RE = re.compile(r"\\qedhere(?![A-Za-z@])")
@@ -864,6 +927,7 @@ class Paper:
         self.class_opts: set = set()
         self.secnumdepth = 3
         self.untranslated: dict[str, str] = {}
+        self.included_pdfs: list[str] = []
         # conversion state
         self.ctxs: list[dict] = []
         self.cur = None
@@ -1224,6 +1288,12 @@ class Paper:
             target, k = read_cs_name(s, k, end)
             if name and target and apply and name != target:
                 self.let_macro(name, target)
+            return k
+        if cmd == "@namedef":
+            name, k = read_arg(s, j, end)
+            body, k = read_arg(s, k, end)
+            if apply and name and "#" not in name:
+                self.macros[name.strip()] = Macro(name.strip(), 0, None, body, None, "csname")
             return k
         if cmd == "expandafter":
             m2 = re.compile(r"\s*\\(?:global\s*\\)?(def|gdef|edef|xdef|newcommand|renewcommand)\s*"
@@ -1780,6 +1850,12 @@ class Paper:
         if name in DIMEN_PRIMITIVES:
             m2 = DIMEN_RE.match(s, j, end)
             return m2.end() if m2 else j
+        if name in REGISTER_PRIMITIVES:
+            m2 = REGISTER_RE.match(s, j, end)
+            return m2.end() if m2 else j
+        if name in ARITH_PRIMITIVES:
+            m2 = ARITH_RE.match(s, j, end)
+            return m2.end() if m2 else j
         if name.startswith("the") and (name[3:] in self.counters or name[3:] in self.fmt):
             out.append(esc_t(self.the(name[3:])))
             return skip_space_after_word(s, j, end)
@@ -2105,7 +2181,8 @@ class Paper:
         elif name in ("iffalse",):
             cond = False
             k = j
-        elif name == "ifdim" and re.match(r"\s*(?:\\dimexpr\s*)?\\page(?:goal|total)(?![A-Za-z@])", s[j:min(end, j + 80)]):
+        elif name == "ifdim" and re.match(r"\s*(?:\\dimexpr\s*)?\\(?:page(?:goal|total)(?![A-Za-z@])|dimen\s*(?:\d+|@))",
+                                          s[j:min(end, j + 80)]):
             # \ifdim\dimexpr\pagegoal-\pagetotal...\newpage\fi tests the position on the printed
             # page; on a web page there is none, and the whole conditional shows nothing.
             _, _, after = self.split_conditional(s[:end], j)
@@ -2215,6 +2292,29 @@ class Paper:
         out.append(block(h))
         return k
 
+    def h_includepdf(self, name, s, start, j, end, out, origin):
+        """\\includepdf[...]{file.pdf} sets whole pages of a PDF into the paper. They are its
+        content, so the page names the file and stays incomplete rather than reading as a
+        faithful copy."""
+        _, k = read_opt(s, j, end)
+        arg, k = read_arg(s, k, end)
+        f = (arg or "").strip()
+        self.included_pdfs.append(f)
+        text = TXT["fig_pdf"].format(file=f)
+        out.append(block(f'<div class="pr-ph pr-ph--pdf" role="img" aria-label="{esc_a(text)}">{esc_t(text)}</div>'))
+        return k
+
+    def h_nameuse(self, name, s, start, j, end, out, origin):
+        """\\@nameuse{name}: the macro \\name, defined by \\@namedef."""
+        arg, k = read_arg(s, j, end)
+        cs = (arg or "").strip()
+        mac = self.macros.get(cs)
+        if mac is None:
+            if cs in HANDLERS or cs in TEXT_SYMBOLS:
+                return self.dispatch(cs, s, start, k, end, out, origin)
+            return k
+        return self.expand_user(mac, s, start, k, end, out, origin)
+
     def h_includegraphics(self, name, s, start, j, end, out, origin):
         star, k = read_star(s, j, end)
         _, k = read_opt(s, k, end)
@@ -2292,6 +2392,7 @@ class Paper:
         return e
 
     def h_label(self, name, s, start, j, end, out, origin):
+        _, j = read_opt(s, j, end)  # cleveref's \label[type]{key}
         arg, k = read_arg(s, j, end)
         self.set_label(arg, out=out)
         return skip_space_after_word(s, k, end)
@@ -2643,12 +2744,15 @@ class Paper:
         style = spec["style"]
         self.thm_lines[lid] = env
         self.printed[(f, line)] = (strip_tags(ctx["name"]).strip(), num or None)
+        # data-tex: the statement as the author wrote it, for the heading's Copy TeX button
+        # (paper.js adds the Link and Copy TeX buttons, so a passage cloned elsewhere has none).
+        tex_src = f"\\begin{{{env}}}{s[b0:b1]}\\end{{{env}}}"
         out.append(block(f'<div class="pr-thm pr-thm--{style}" id="{self.id_ph(ctx)}" data-env="{esc_a(env)}" '
-                         f'data-src="{esc_a(f)}:{line}">{self.xa_ph(ctx)}{body}</div>'))
+                         f'data-src="{esc_a(f)}:{line}" data-tex="{esc_a(tex_src)}">{self.xa_ph(ctx)}{body}</div>'))
+        mark = lean_pairs().get((self.slug, f, line))
         # What the atlas records at this theorem follows it in a box of its own, named as
         # the atlas's: the paper's statement ends where its author ended it, and the
         # highlight on a linked theorem covers only the author's text.
-        mark = lean_pairs().get((self.slug, f, line))
         if mark and (mark["lean"] or mark["headline"]):
             notes = "".join(lean_evidence_html(x) for x in mark["lean"])
             if mark["headline"]:
@@ -3001,6 +3105,7 @@ class Paper:
                 if word == "endfirsthead":
                     skip_mode = "firsthead"
                 if word == "label":
+                    _, pos = read_opt(s, pos, r1)
                     lab, pos = read_arg(s, pos, r1)
                     self.set_label(lab)
                 if word == "caption":
@@ -3920,6 +4025,8 @@ class Paper:
         if cmd in ("citeyear", "citeyearpar"):
             return ", ".join(self.bib_year(k) for k in keys)
         inner = ", ".join(compress(items))
+        if post and as_html and len(keys) == 1 and keys[0] in self.internal_refs():
+            post = release_xref(post, self.internal_refs()[keys[0]])
         if pre:
             inner = f"{pre} {inner}"
         if post:
@@ -3963,6 +4070,16 @@ class Paper:
         rec = e.get(key)
         return re.sub(r"[{}]", "", rec["fields"].get("year", "")) if rec else "?"
 
+    def internal_refs(self) -> dict:
+        """Bibliography key -> the paper of the release it cites, from data/manuscripts.json's
+        internal_references (build_data.py reads the entry's preprint link or OAI: key)."""
+        if getattr(self, "_internal", None) is None:
+            self._internal = {}
+            for r in self.m.get("internal_references") or []:
+                if r.get("key") and r.get("target") and r["key"] not in self._internal:
+                    self._internal[r["key"]] = r
+        return self._internal
+
     def bibliography_html(self) -> str:
         items = getattr(self, "bib_items", [])
         if not items:
@@ -3970,7 +4087,10 @@ class Paper:
         rn = self.macros.get("refname") or self.macros.get("bibname")
         heading = strip_tags(self.walk_inline(rn.body, None)) if rn else TXT["references"]
         lis = []
+        internal = self.internal_refs()
         for key, label, text in items:
+            if key in internal:
+                text = release_bib_text(text, internal[key])
             lis.append(f'<li class="pr-bib-item" id="bib-{esc_a(quote(key, safe=""))}">'
                        f'<span class="pr-bib-lab">[{label}]</span><span class="pr-bib-text">{text}</span></li>')
         self.toc_bib = heading
@@ -4052,6 +4172,103 @@ class Paper:
             if lid not in ids and lid not in self.thm_lines:
                 missing.append(lid)
         return missing
+
+
+# ------------------------------------------------------------ papers of the release cited by a paper
+
+_PAGES = None
+_LABELS = None
+
+
+def reading_pages() -> set:
+    """Manuscripts that have a reading page, from data/paper_acceptance.json."""
+    global _PAGES
+    if _PAGES is None:
+        try:
+            _PAGES = {r["id"] for r in json.loads(ACCEPTANCE.read_text(encoding="utf-8")).get("papers", [])
+                      if r.get("page")}
+        except (OSError, ValueError, KeyError):
+            _PAGES = set()
+    return _PAGES
+
+
+def release_labels(slug: str) -> dict:
+    """data/paper_labels.json's label map for one paper: label -> [kind, name, number]."""
+    global _LABELS
+    if _LABELS is None:
+        try:
+            _LABELS = {r["manuscript"]: r["labels"] for r in json.loads(LABELS.read_text(encoding="utf-8")).get("rows", [])}
+        except (OSError, ValueError, KeyError):
+            _LABELS = {}
+    return _LABELS.get(slug) or {}
+
+
+def release_target(ref: dict):
+    """(href, title_html, exact) for a paper of the release cited in a bibliography: its
+    reading page when the cited edition is current, else the current edition's reading
+    page, else its family; exact is True when the link opens the edition cited."""
+    import_site()
+    t, latest = ref["target"], ref.get("target_latest") or ref["target"]
+    m = S.MS.get(t)
+    if m and m.get("status") == "current" and t in reading_pages():
+        return f"../papers/{quote(t)}.html", S.ms_title_html(m), True
+    ml = S.MS.get(latest)
+    if ml and ml.get("status") == "current" and latest in reading_pages():
+        return f"../papers/{quote(latest)}.html", S.ms_title_html(ml) + esc_t(TXT["bib_later"]), False
+    fam = (m or ml or {}).get("family")
+    if fam and fam in S.FAM:
+        return f"../families/{quote(fam)}.html#{quote(t)}", S.ms_title_html(m or ml), False
+    return None, None, False
+
+
+def release_bib_text(text: str, ref: dict) -> str:
+    """A bibliography entry citing a paper of the release: its preprint link keeps the
+    PDF as a second route, labelled as one rather than by the folder name, and the
+    entry ends with the paper's title linked to its page on this site."""
+    href, title_html, _exact = release_target(ref)
+    slugs = {ref["target"], ref.get("target_latest") or ref["target"]}
+
+    def relabel(mm):
+        if any(s in mm.group(1) for s in slugs) and ("OAI:" in mm.group(2) or any(s in mm.group(2) for s in slugs)
+                                                       or "github.com" in mm.group(2)):
+            return mm.group(1) + esc_t(TXT["bib_pdf"]) + "</a>"
+        return mm.group(0)
+    text = re.sub(r'(<a href="[^"]*"[^>]*>)([^<]*)</a>', relabel, text)
+    if href:
+        text += (f' <span class="pr-bib-in">{esc_t(TXT["bib_read"])} '
+                 f'<a class="pr-bib-in__a" href="{esc_a(href)}">{title_html}</a>.</span>')
+    return text
+
+
+THM_NAMES = {"thm": "theorem", "theorem": "theorem", "cor": "corollary", "corollary": "corollary",
+             "lem": "lemma", "lemma": "lemma", "prop": "proposition", "proposition": "proposition",
+             "def": "definition", "defn": "definition", "definition": "definition", "conj": "conjecture",
+             "conjecture": "conjecture", "rem": "remark", "remark": "remark", "example": "example",
+             "claim": "claim", "question": "question", "problem": "problem", "hypothesis": "hypothesis",
+             "assumption": "assumption"}
+XREF_RE = re.compile(r"^\s*([A-Za-z]+)\.?\s+(\(?[0-9A-Z]+(?:\.[0-9A-Za-z]+)*\)?)\s*$")
+
+
+def release_xref(post_html: str, ref: dict) -> str:
+    """The note of a citation such as [21, Corollary 1.2], linked to that statement on the
+    cited paper's reading page when the cited edition has one and exactly one statement
+    of the paper prints that name and number; otherwise the note as written."""
+    href, _title, exact = release_target(ref)
+    if not href or not exact or "<" in post_html:
+        return post_html
+    mm = XREF_RE.match(post_html.replace("\u00a0", " ").replace("&nbsp;", " "))
+    if not mm:
+        return post_html
+    name = THM_NAMES.get(mm.group(1).lower())
+    num = mm.group(2)
+    if not name:
+        return post_html
+    hits = sorted(k for k, (_kind, nm, n) in release_labels(ref["target"]).items()
+                  if (nm or "").lower() == name and n == num)
+    if not hits:
+        return post_html
+    # Several labels can sit on one statement; they then print the same name and number.
+    return f'<a class="pr-xref" href="{esc_a(href + frag_href(hits[0]))}">{post_html}</a>'
 
 
 # ------------------------------------------------------------ BibTeX helpers
@@ -4281,6 +4498,8 @@ _h("item", Paper.h_item_stray)
 _h("qed", Paper.h_qed)
 _h("tikz", Paper.h_tikz_inline)
 _h("includegraphics", Paper.h_includegraphics)
+_h("includepdf", Paper.h_includepdf)
+_h("@nameuse", Paper.h_nameuse)
 _h("input include subfile", Paper.h_input_left)
 _h("appendix", Paper.h_appendix)
 _h("bibliography", Paper.h_bibliography)
@@ -4384,11 +4603,22 @@ def lean_evidence_html(mark: dict) -> str:
             TXT["lean_runs_1"] if mark["accepted"] == 1 else TXT["lean_runs_0"]]
     if mark.get("holes"):
         bits.append(TXT["lean_holes_1"] if mark["holes"] == 1 else TXT["lean_holes_n"].format(n=mark["holes"]))
-    link = f'<a href="../statements/{quote(lid)}.html"><code>{esc_t(lid)}</code></a>'
-    how = TXT["lean_how"][mark["state"]].replace("{lean}", "\x00")
-    return (f'<p class="pr-lean pr-lean--{"candidate" if mark["state"] == "candidate-pairing" else "cited"}">'
+    state = mark["state"]
+    # data-tag: the pairing in two words, for the short Lean link paper.js puts on the heading
+    link = (f'<a href="../statements/{quote(lid)}.html" data-tag="{esc_a(lean_tag(state))}">'
+            f'<code>{esc_t(lid)}</code></a>')
+    how = TXT["lean_how"].get(state, TXT["lean_how_other"]).replace("{lean}", "\x00")
+    return (f'<p class="pr-lean pr-lean--{"candidate" if state == "candidate-pairing" else "cited"}">'
             f'<span class="pr-lean__k">{esc_t(TXT["lean_k"])}</span> '
             f'{esc_t(how).replace(chr(0), link)}<span class="pr-lean__ev">{esc_t(TXT["lean_proof"])} {esc_t("; ".join(bits))}.</span></p>')
+
+
+def lean_tag(state: str) -> str:
+    """The pairing state in a few words ("candidate pairing", "reviewed pairing")."""
+    tags = TXT["lean_tag"]
+    if state in tags:
+        return tags[state]
+    return tags["reviewed"] if "review" in (state or "") else tags["other"]
 
 
 def headline_note_html(fids: list) -> str:
@@ -4511,6 +4741,7 @@ def build_one_paper(m: dict, upstream: str, check: bool, out_dir: str) -> dict:
                    "untranslated_examples": dict(list(p.untranslated.items())[:8]),
                    "built_ins_kept": sorted(getattr(p, "dropped_wrappers", []))},
         "figures": {"placeholders": sum(p.figures.values()), **{k: v for k, v in sorted(p.figures.items())}},
+        **({"pdf_pages": {"files": list(p.included_pdfs)}} if p.included_pdfs else {}),
         "statements": {"total": len(p.m.get("statements") or []), "missing_anchor": missing_anchors[:20],
                        "missing": len(missing_anchors)},
         "labels": {"defined": len(p.labels), "duplicates": sorted(set(p.dup_labels))[:10]},
@@ -4532,6 +4763,8 @@ def build_one_paper(m: dict, upstream: str, check: bool, out_dir: str) -> dict:
         reasons.append("unknown environments")
     if unknown_cmds:
         reasons.append("untranslated commands")
+    if p.included_pdfs:
+        reasons.append("pages included from PDF")
     if missing_anchors:
         reasons.append("statement anchors missing")
     row["reasons"] = reasons
@@ -4620,6 +4853,27 @@ def remove_stale(out_dir: Path, slug: str):
 
 # ------------------------------------------------------------ the page
 
+COPY_TEX = f"assets/vendor/katex-{CFG.get('katex_version')}/contrib/copy-tex.min.js"
+
+
+def sibling_row(slug: str, root: str) -> str:
+    """build_site's previous and next row for the papers of a family; when the count
+    includes withdrawn papers or earlier editions, the sentence says so."""
+    found = S.paper_siblings(slug, root)
+    html_ = S.sibling_nav("paper", found)
+    if not html_ or not found:
+        return html_
+    items, i = found[0], found[1]
+    ids = [unquote(h.rsplit("/", 1)[-1][:-len(".html")]) for h, _, _ in items]
+    st = {S.MS[x].get("status") for x in ids if x in S.MS} - {"current"}
+    if not st:
+        return html_
+    others = TXT["sib_both"] if st >= {"withdrawn", "previous-edition"} else (
+        TXT["sib_withdrawn"] if "withdrawn" in st else TXT["sib_earlier"])
+    pos = TXT["sib_with_others"].format(n=i + 1, total=len(items), others=others)
+    return re.sub(r'<p class="sib__pos">.*?</p>', lambda _m: f'<p class="sib__pos">{S.esc(pos)}</p>', html_, count=1)
+
+
 def banner_items(row) -> list[str]:
     out = []
     f = row["formulas"]
@@ -4637,6 +4891,9 @@ def banner_items(row) -> list[str]:
     if row["commands"]["unknown"]:
         names = ", ".join("\\" + k for k in list(row["commands"]["names"])[:6])
         out.append(plural("f_cmds", row["commands"]["unknown"], names=names))
+    pdfs = (row.get("pdf_pages") or {}).get("files") or []
+    if pdfs:
+        out.append(plural("f_pdf", len(pdfs), names=", ".join(pdfs)))
     if row["statements"]["missing"]:
         out.append(plural("f_anchors", row["statements"]["missing"]))
     return out
@@ -4653,8 +4910,12 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
         if di is not None:
             crumbs.append((esc(S.DISCIPLINES[di]["name"]), f"{root}index.html#o=d:{S.DISC_SLUG[di]}"))
         crumbs.append((S.fam_title_html(fam), f"{root}families/{fam['id']}.html"))
-        crumbs.append((S.ms_title_html(m), None))
+        # The page's own crumb repeats its title (the heading below); when the family has
+        # the same title the trail would print it twice, so it ends at the family.
+        if S.tex_plain(fam["title"]).strip().lower() != S.tex_plain(m["title"]).strip().lower():
+            crumbs.append((S.ms_title_html(m), None))
         trail = S.trail(root, crumbs)
+        trail += sibling_row(m["id"], root)
     else:
         trail = S.trail(root, [(S.ms_title_html(m), None)])
     title_plain = S.tex_plain(m["title"])
@@ -4667,7 +4928,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
                f'<a class="btn btn--ghost ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" rel="noopener">{esc(TXT["tex_source"])}</a>']
     lede = ""
     if fam:
-        lede = (f'<p class="lede">{esc(site_copy("paper.in_result", "Part of result {id}: {title}.", id=fam["id"], title=S.tex_plain(fam["title"])))} '
+        lede = (f'<p class="lede">{esc(site_copy("paper.in_result", "Part of family {id}: {title}.", id=fam["id"], title=S.tex_plain(fam["title"])))} '
                 f'<a href="{root}families/{fam["id"]}.html#{esc(m["id"])}">{esc(site_copy("paper.read_in_result", "Read it with its result"))}</a></p>')
     notes = ""
     if m.get("version_note"):
@@ -4675,10 +4936,14 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
                   f'<div class="md-math">{S.md_paragraphs(m["version_note"])}</div></div>')
     figs = row["figures"]["placeholders"]
     if row["status"] == "accepted":
-        lines = [TXT["converted"].format(commit=COMMIT[:7]), TXT["numbering"]]
+        lines = [TXT["numbering"]]
         if figs:
             lines.append(TXT["figures_one"] if figs == 1 else TXT["figures_many"].format(n=figs))
-        status = f'<div class="pr-status" role="note"><p>{" ".join(esc(x) for x in lines)}</p></div>'
+        # The commit is named by the link, not printed in the sentence.
+        src_link = (f'<a class="ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" '
+                    f'rel="noopener" title="{esc(TXT["tex_source_title"].format(commit=COMMIT[:7]))}">{esc(TXT["tex_source"])}</a>')
+        converted = esc(TXT["converted"]).replace("{source}", src_link)
+        status = f'<div class="pr-status" role="note"><p>{converted} {" ".join(esc(x) for x in lines)}</p></div>'
     else:
         items = banner_items(row)
         if figs:
@@ -4728,16 +4993,23 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
 {status}
 {abstract}
 {toc}
-<article class="paper" id="pr-paper" lang="en" data-paper="{esc(m['id'])}" data-math-failed="{esc(TXT['math_failed'])}"{attrs}>
+<article class="paper" id="pr-paper" lang="en" data-paper="{esc(m['id'])}" data-math-failed="{esc(TXT['math_failed'])}" data-url="{esc(S.BASE_URL + rel)}"{attrs}>
 {body_html}
 </article>
 {notes_html}
 </div>
-<script type="application/json" id="pr-macros">{macros_json}</script>"""
+<script type="application/json" id="pr-macros">{macros_json}</script>
+<script type="application/json" id="pr-words">{json.dumps(TXT["ui"], ensure_ascii=False)}</script>"""
     desc = S.tex_plain(m.get("abstract") or "") or TXT["description"].format(title=title_plain)
-    extra = (f'{PAGE_MARK}\n<link rel="stylesheet" href="{root}assets/paper.css">\n'
-             f'<script defer src="{root}assets/paper.js"></script>')
-    return S.page(rel, title_plain, desc, body, extra_head=extra, page_type="article", main_class="pr-main")
+    # copy-tex: a selection of typeset formulas copies as their TeX, once each.
+    extra = (f'{PAGE_MARK}\n<link rel="stylesheet" href="{root}assets/{S.asset_v("paper.css")}">\n'
+             f'<script defer src="{root}{COPY_TEX}"></script>\n'
+             f'<script defer src="{root}assets/{S.asset_v("paper.js")}"></script>')
+    # Two current papers can share a title: each tab then carries its date.
+    page_title = title_plain
+    if sum(1 for x in S.MS.values() if x.get("status") == "current" and S.tex_plain(x["title"]) == title_plain) > 1:
+        page_title = TXT["title_dated"].format(title=title_plain, date=S.date_words(m.get("date")) or m["id"])
+    return S.page(rel, page_title, desc, body, extra_head=extra, page_type="article", main_class="pr-main")
 
 
 # ------------------------------------------------------------ main
@@ -4784,6 +5056,9 @@ def main():
                     help="the pinned openai/math checkout")
     ap.add_argument("--out", default=str(OUT), help="site build directory (default site/_build)")
     args = ap.parse_args()
+    if not (Path(args.upstream) / "preprints").is_dir():
+        ap.error(f"upstream preprints directory is missing: {Path(args.upstream) / 'preprints'}. "
+                 "Run sh scripts/fetch_upstream.sh, or pass --upstream with the pinned openai/math checkout.")
     t0 = time.time()
     import_site()
     ms = load_manuscripts()
@@ -4806,6 +5081,9 @@ def main():
     for name in OWN_ASSETS:
         if (ASSETS / name).exists():
             shutil.copy(ASSETS / name, out_dir / "assets" / name)
+    if (SITE / COPY_TEX).exists():
+        (out_dir / COPY_TEX).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(SITE / COPY_TEX, out_dir / COPY_TEX)
     rows = []
     do_check = check and bool(version)
     if args.jobs <= 1 or len(ms) <= 1:

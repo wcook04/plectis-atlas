@@ -8,6 +8,8 @@ uses Playwright and Chromium.
 For a first build, follow the [quick preview](../docs/ARCHITECTURE.md#quick-preview-without-paper-sources)
 or [complete website build](../docs/ARCHITECTURE.md#rebuilding-the-website).
 That guide owns the order of the commands and the paper-metadata refresh rule.
+The [published site is agent-navigable](https://wcook04.github.io/plectis-atlas/agents.md)
+through the same static map packets built here.
 
 ## Build and render
 
@@ -17,7 +19,7 @@ That guide owns the order of the commands and the paper-metadata refresh rule.
 | [build_site.py](build_site.py) | Builds family and Lean pages, lists, search and shared assets. Clears its output directory first. |
 | [family_page.py](family_page.py) | Renders family pages for the site builder. |
 | [build_papers.py](build_papers.py) | Converts the paper sources into full reading pages and writes their rendering metadata. |
-| [build_universe.py](build_universe.py) | Builds the release map and replaces the front page after the site build. |
+| [build_universe.py](build_universe.py) | Builds the release map, its existing JSON exports and agent navigation (`llms.txt`, `agents.md`); replaces the front page after the site build. |
 | [lean_render.py](lean_render.py) | Renders Lean source for the page builders. |
 | [cards.py](cards.py) | Renders share images. |
 | [sync_readme.py](sync_readme.py) | Refreshes the root README's computed blocks and the data folder's generated guide. |
@@ -43,22 +45,29 @@ pin requires a matching backend export and refreshed dependent data; follow
 
 ## Check a change
 
+Regression suites live in `tests/`; builders and shared modules remain above.
+Run `python3 scripts/check_repository_structure.py` to check placement, and
+`python3 scripts/tests/test_repository_structure.py` for its negative fixtures.
+The checker uses Git candidates, including staged files and nonignored new files.
+
 Choose the check for the code you changed. Each `test_*.py` runs directly with
 Python from the repository root, for example:
 
 ```sh
-python3 scripts/test_family_page.py
+python3 scripts/tests/test_family_page.py
 ```
 
 | Change | Check |
 |---|---|
-| Packet reading, hashes or evidence records | [test_reader.py](test_reader.py) |
-| Search normalisation and result links | [test_search.py](test_search.py), with Node installed |
-| Source extraction | [test_build_data.py](test_build_data.py) |
-| Paper rendering | [test_build_papers.py](test_build_papers.py) |
-| Family layouts and statement snippets | [test_family_page.py](test_family_page.py) |
+| Packet reading, hashes or evidence records | [test_reader.py](tests/test_reader.py) |
+| Search normalisation and result links | [test_search.py](tests/test_search.py), with Node installed |
+| Agent entry, map relationships and project-path URLs | [test_agent_navigation.py](tests/test_agent_navigation.py); add `--built site/_build` after the complete build |
+| Source extraction | [test_build_data.py](tests/test_build_data.py) |
+| Paper rendering | [test_build_papers.py](tests/test_build_papers.py) |
+| Family layouts and statement snippets | [test_family_page.py](tests/test_family_page.py) |
+| Previous and next links between families, Lean statements and papers | [test_sibling_nav.py](tests/test_sibling_nav.py) |
 | A contribution file or its validation | [check_contributions.py](check_contributions.py); see [Contributing](../CONTRIBUTING.md) |
-| Links between built paper and Lean pages | [check_paper_links.py](check_paper_links.py), after the complete build |
+| Links between built paper and Lean pages | [test_check_paper_links.py](tests/test_check_paper_links.py); [check_paper_links.py](check_paper_links.py), after the complete build |
 
 For documentation and skill changes:
 

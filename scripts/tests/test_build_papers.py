@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Regression fixtures for the paper reader in build_papers.py.
 
-    python3 scripts/test_build_papers.py
-    KATEX_JS=path/to/node_modules/katex python3 scripts/test_build_papers.py   # also renders with KaTeX
+    python3 scripts/tests/test_build_papers.py
+    KATEX_JS=path/to/node_modules/katex python3 scripts/tests/test_build_papers.py   # also renders with KaTeX
 
 Each fixture comes from a failure found by building every paper of the release.
 Standard library only.
@@ -17,9 +17,31 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import build_papers as bp  # noqa: E402
+
+
+class MissingUpstream(unittest.TestCase):
+    def test_missing_checkout_fails_before_loading_or_writing_metadata(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "existing output"
+            output.mkdir()
+            sentinel = output / "sentinel.txt"
+            sentinel.write_text("preserve existing pages", encoding="utf-8")
+            for extra in ([], ["--no-math-check"]):
+                with self.subTest(extra=extra), \
+                        patch.object(sys, "argv", ["build_papers.py", "--upstream",
+                                                 str(Path(directory) / "missing"),
+                                                 "--out", str(output), *extra]), \
+                        patch.object(bp, "import_site") as load_site, \
+                        self.assertRaises(SystemExit) as error:
+                    bp.main()
+                self.assertEqual(error.exception.code, 2)
+                load_site.assert_not_called()
+                self.assertEqual(list(output.iterdir()), [sentinel])
+                self.assertEqual(sentinel.read_text(), "preserve existing pages")
 
 
 class LayoutCommands(unittest.TestCase):
@@ -56,6 +78,7 @@ class MacroExpansion(unittest.TestCase):
             if statements is not None:
                 m["statements"] = statements
             p = bp.Paper(m, Path(d))
+            bp.lean_pairs()  # the backend's pairings load once, outside the conversion's time limit
             signal.signal(signal.SIGALRM, lambda *_: (_ for _ in ()).throw(TimeoutError("conversion runs away")))
             signal.alarm(30)
             try:
@@ -140,6 +163,38 @@ class MacroExpansion(unittest.TestCase):
                 self.assertNotIn(gone, t)
 
 
+class MapStatementReferences(unittest.TestCase):
+    def test_packet_urls_change_when_rendering_changes_at_the_same_pin(self):
+        import build_universe as universe
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            packet = directory / "universe-detail-0.json"
+            packet.write_text('{"generation_id":"same-pin","html":"(eq:label)"}')
+            before = universe.packet_version(directory)
+            self.assertEqual(before, universe.packet_version(directory))
+            packet.write_text('{"generation_id":"same-pin","html":"(2.1)"}')
+            self.assertNotEqual(before, universe.packet_version(directory))
+
+    def test_map_excerpts_use_the_papers_printed_equation_numbers(self):
+        import build_universe as universe
+        universe.import_site()
+        cases = [
+            ("A-local-Penrose-inequality-for-conformal-perturbations-of-Schwarzschild-anti-de-Sitter-data-October-5-2026",
+             "thm:main", ("2.1", "2.6"), ("eq:background", "eq:branch")),
+            ("Asymptotic-midpoint-uniform-convexity-and-unbounded-diamond-distortion-in-a-reflexive-tree-space-September-27-2026",
+             "thm:main", ("1.4",), ("eq:segment-norm",)),
+        ]
+        for manuscript, label, numbers, raw_labels in cases:
+            with self.subTest(manuscript=manuscript):
+                result = universe.statement_html(manuscript, {"name": label}, "fixture")
+                self.assertIsNotNone(result)
+                for number in numbers:
+                    self.assertIn(f">({number})</a>", result["html"])
+                for raw in raw_labels:
+                    self.assertNotIn(f">({raw})</span>", result["html"])
+                    self.assertIn(f".html#{raw}", result["html"])
+
+
 class SupportMacros(unittest.TestCase):
     def test_no_fbox_macro(self):
         # KaTeX defines \boxed through \fbox, so a \fbox macro written with \boxed loops.
@@ -159,6 +214,46 @@ class SupportMacros(unittest.TestCase):
         loops = [items[f["index"]]["tex"] for f in json.loads(r.stdout)["failures"]
                  if "Too many expansions" in f.get("error", "")]
         self.assertEqual(loops, [])
+
+
+class ReleaseLinks(unittest.TestCase):
+    """A paper of the release cited in a bibliography links to its page on the site."""
+    CITED = "A-counterexample-to-Hadwigers-conjecture-September-23-2026"
+
+    def ref(self):
+        return {"key": "K", "target": self.CITED, "target_latest": self.CITED}
+
+    def test_bibliography_entry_names_the_paper_and_keeps_the_pdf(self):
+        if self.CITED not in bp.reading_pages():
+            self.skipTest("the cited paper has no reading page in data/paper_acceptance.json")
+        text = (f'OpenAI. Preprint <a href="https://github.com/openai/math/blob/main/preprints/{self.CITED}/paper.pdf" '
+                f'rel="noopener">OAI:{self.CITED}</a>, 2026.')
+        out = bp.release_bib_text(text, self.ref())
+        self.assertIn(f'href="../papers/{self.CITED}.html"', out)
+        self.assertIn(f'>{bp.TXT["bib_pdf"]}</a>', out)
+        self.assertNotIn(f">OAI:{self.CITED}<", out)
+
+    def test_a_cited_statement_links_to_its_anchor_only_when_it_is_found(self):
+        if self.CITED not in bp.reading_pages():
+            self.skipTest("the cited paper has no reading page in data/paper_acceptance.json")
+        labels = bp.release_labels(self.CITED)
+        cor = sorted(k for k, v in labels.items() if v[1] == "Corollary" and v[2] == "1.2")
+        if not cor:
+            self.skipTest("no Corollary 1.2 recorded")
+        got = bp.release_xref("Corollary\u00a01.2", self.ref())
+        self.assertIn(f'href="../papers/{self.CITED}.html#{cor[0]}"', got)
+        self.assertEqual(bp.release_xref("Corollary 99.9", self.ref()), "Corollary 99.9")
+        self.assertEqual(bp.release_xref("page 3", self.ref()), "page 3")
+
+
+class PairingWords(unittest.TestCase):
+    def test_every_pairing_state_has_words(self):
+        bp.import_site()
+        for state in bp.S.PAIRED_STATES:
+            self.assertTrue(bp.TXT["lean_how"].get(state, bp.TXT["lean_how_other"]))
+            self.assertTrue(bp.lean_tag(state))
+        self.assertEqual(bp.lean_tag("some-reviewed-state"), bp.TXT["lean_tag"]["reviewed"])
+        self.assertEqual(bp.lean_tag("unknown"), bp.TXT["lean_tag"]["other"])
 
 
 if __name__ == "__main__":

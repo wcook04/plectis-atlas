@@ -23,6 +23,7 @@ Writes, after scripts/build_site.py has run (into the same --out, default site/_
 
     index.html                                    the map and the list, then the bands
     universe.html                                 a redirect to index.html, kept for old links
+    llms.txt, agents.md                           agent entry and map traversal guide
     site/_build/data/universe-data.json           the first screen: disciplines, families, citations
     site/_build/data/universe-parts.json          papers, results and Lean statements, loaded after it
     site/_build/data/universe-layout.json         where it is drawn
@@ -313,11 +314,12 @@ class Model:
                 # A statement a Lean statement is paired with is drawn too, even when it is
                 # not one of the paper's flagged headline results, so every thread lands.
                 targets = self._pair_targets(doc)
-                for lid, (sid, state) in targets.items():
-                    if sid and sid not in rviews and sid in stmts:
-                        st = stmts[sid]
-                        if not any(sid == x[1] for x in by_ms[st.get("manuscript_id")]):
-                            by_ms[st.get("manuscript_id")].append((10_000 + (st.get("source") or {}).get("line", 0), sid, st, {}))
+                for lid, (sids, state) in targets.items():
+                    for sid in sids:
+                        if sid not in rviews and sid in stmts:
+                            st = stmts[sid]
+                            if not any(sid == x[1] for x in by_ms[st.get("manuscript_id")]):
+                                by_ms[st.get("manuscript_id")].append((10_000 + (st.get("source") or {}).get("line", 0), sid, st, {}))
                 for k, pid in enumerate(v.get("papers") or []):
                     slug = pid[2:]
                     m = S.MS.get(slug) or {}
@@ -347,17 +349,21 @@ class Model:
                     lean_of[l["id"]] = li
                     fams[fi]["lean"].append(li)
                     lsum = r.lean_summary(l["id"]) or {}
-                    sid, state = targets.get(l["id"], (None, "unavailable"))
+                    _, state = targets.get(l["id"], ([], "unavailable"))
                     leans.append({"id": l["id"], "f": fi, "name": l["id"][2:],
                                   "label": plain(lsum.get("name_tex") or l.get("name") or l["id"][2:]),
                                   "acc": list(l.get("accepted_current_sources") or []),
                                   "main": bool(l.get("main_result")), "results": [], "pairing": state,
                                   "href": f"statements/{quote(l['id'][2:])}.html"})
-                for lid, (sid, state) in targets.items():
-                    if sid in res_of and lid in lean_of and results[res_of[sid]]["f"] == fi:
-                        results[res_of[sid]]["lean"].append(lean_of[lid])
-                        leans[lean_of[lid]]["results"].append(res_of[sid])
-                        self.pairs += 1
+                # A Lean statement paired with several theorems hangs under each of them,
+                # the clearest first (the board draws its card there and a reference
+                # under the others).
+                for lid, (sids, state) in targets.items():
+                    for sid in sids:
+                        if sid in res_of and lid in lean_of and results[res_of[sid]]["f"] == fi:
+                            results[res_of[sid]]["lean"].append(lean_of[lid])
+                            leans[lean_of[lid]]["results"].append(res_of[sid])
+                            self.pairs += 1
         # A printed number can repeat inside a family (two editions or companions each
         # with a "Theorem 1.1"): such a label carries its paper's date, or its short
         # title when the dates are the same, so every label on the map names one thing.
@@ -398,24 +404,12 @@ class Model:
 
     @staticmethod
     def _pair_targets(doc) -> dict:
-        """Lean id -> (paper statement id or None, pairing state), as the backend records it:
-        the family's selected Lean statement keeps the selection's own state (a candidate, a
-        citation in the Lean source or a binding the release declares); the others keep their
-        candidate pairing, or none when the backend abstained."""
-        out = {}
-        for p in doc.get("pairing_selections") or []:
-            src = p.get("source")
-            if not src:
-                continue
-            if p.get("status") == "candidate" and p.get("target"):
-                out[src] = (p["target"], "candidate-pairing")
-            else:
-                out[src] = (None, "unavailable")
-        sel = doc.get("selection") or {}
-        if sel.get("lean"):
-            if sel.get("paired_statement") and sel.get("pairing_state") in E.PAIRINGS[:3]:
-                out[sel["lean"]] = (sel["paired_statement"], sel["pairing_state"])
-        return out
+        """Lean id -> ([paper statement ids], pairing state), from build_site.pair_targets:
+        the same pairing the family and statement pages show (a citation in the Lean
+        source or a binding the release declares stands; otherwise the atlas's reading of
+        the Lean text, which may pair one Lean statement with up to three theorems, or
+        with none when no match is confident)."""
+        return S.pair_targets(doc)
 
 
 # ---------------------------------------------------------------- one family's map
@@ -733,19 +727,6 @@ def sentences(text: str) -> list[str]:
     return [unmask(LEAN_LINK.sub("", s)) for s in out if LEAN_LINK.sub("", s)]
 
 
-def lead_sentences(text: str, limit: int = 360) -> tuple[str, bool]:
-    """The first sentences of a description, at least one and up to about `limit`
-    characters, and whether anything was left out."""
-    ss = sentences(text)
-    out, n = [], 0
-    for s in ss:
-        if out and n + len(s) > limit:
-            break
-        out.append(s)
-        n += len(s) + 1
-    return " ".join(out), len(out) < len(ss)
-
-
 def no_links(h: str) -> str:
     """HTML for inside a link (a list entry is one): its own links become plain text."""
     return re.sub(r"</?a\b[^>]*>", "", h)
@@ -795,6 +776,18 @@ def evidence_words(M, ev, names) -> str:
     return " ".join(parts)
 
 
+def list_label_template(opt: str) -> str | None:
+    """The label= key of an enumerate's options, or None (build_site.list_label_template)."""
+    return import_site().list_label_template(opt)
+
+
+def printed_list_conv():
+    """The family pages' TeX reader. build_site's TexConv.list_env labels each item of an
+    enumerate as the paper labels it (label=(G\\arabic*) prints (G1), (G2), (G3)), so the
+    map's cards and the family pages print the same labels."""
+    return import_site().LabelTexConv
+
+
 def statement_html(slug: str, st_backend: dict | None, rid: str):
     """The statement typeset as the family pages typeset it (TeX spans for KaTeX), from
     the Atlas's own data/manuscripts.json, joined by the backend statement's manuscript,
@@ -814,8 +807,8 @@ def statement_html(slug: str, st_backend: dict | None, rid: str):
         hit = next((st for st in m.get("statements") or [] if st.get("label") == label), None)
     if hit is None:
         return None
-    conv = S.TexConv(m, "")
-    sec = U("result.appendix") if hit.get("appendix") else U("result.section", n=hit.get("section") or "?")
+    conv = printed_list_conv()(m, "")
+    sec =U("result.appendix") if hit.get("appendix") else U("result.section", n=hit.get("section") or "?")
     return {
         "html": keep_punctuation(conv.blocks(hit["text"])),
         "titleHtml": conv.text(hit["title"], inline=True) if hit.get("title") else None,
@@ -848,19 +841,18 @@ def build_detail(M, names):
     evidence in words, each result's statement typeset as printed, each Lean statement's
     re-runs and pairing."""
     D = M.data
-    shards = [{"families": {}, "results": {}, "lean": {}, "macros": {}} for _ in D["disciplines"]]
+    shards = [{"families": {}, "results": {}, "papers": {}, "lean": {}, "macros": {}} for _ in D["disciplines"]]
     for fi, f in enumerate(D["families"]):
         ev, doc = M.evs[f["id"]], M.docs[f["id"]]
         sh = shards[f["d"]]
         cat = ((doc.get("claim") or {}).get("catalogue_claim") or {}).get("text") or ""
         ss = sentences(cat)
-        lead, more = lead_sentences(cat)
         kinds = [E.say("check_kind." + c) for c in ev.checks if c in E.WORDS["check_kind"]]
         claim = doc.get("claim") or {}
         sh["families"][f["id"]] = {
             "titleHtml": no_links(S.rich(ev.name)),
             "first": no_links(S.rich(ss[0] if ss else "")),
-            "desc": S.rich(lead), "descMore": more,
+            "desc": S.rich(cat),
             "evidence": evidence_words(M, ev, names),
             "agree": ev.agreement_sentence() if ev.has_lean else "",
             "readers": reader_rows(ev, doc) if ev.has_lean else [],
@@ -876,6 +868,7 @@ def build_detail(M, names):
             p = D["papers"][pi]
             slug = p["id"][2:]
             m = S.MS.get(slug) or {}
+            sh["papers"][p["id"]] = {"abstract": S.rich(m.get("abstract") or "")}
             sh["macros"][p["id"]] = (m.get("tex") or {}).get("macros") or {}
             for ri in p["results"]:
                 res = D["results"][ri]
@@ -885,12 +878,14 @@ def build_detail(M, names):
                 det["date"] = p["date"]
                 sh["results"][res["id"]] = det
         lean_doc = {l["id"]: l for l in doc.get("lean") or []}
-        # The words a candidate pairing was found by, as the backend records them.
+        # The words a candidate pairing was found by: the Lean's own words when the atlas
+        # read the Lean text, the catalogue's words for the backend's fallback candidate.
         shared = {}
-        for p in doc.get("pairing_selections") or []:
-            alt = next((a for a in p.get("alternatives") or [] if a.get("target") == p.get("target")), None)
-            if p.get("source") and alt:
-                shared[p["source"]] = list(alt.get("matched_terms") or [])
+        for lid in lean_doc:
+            pinfo = S.lean_pairing(doc, lid)
+            if pinfo.get("state") == "candidate-pairing" and pinfo.get("target"):
+                t = S.pairing_terms(pinfo)
+                shared[lid] = t["lean"] + t["title"] + t["note"] + t["catalogue"]
         for li in f["lean"]:
             L = D["lean"][li]
             l = lean_doc.get(L["id"]) or {}
@@ -931,6 +926,171 @@ def build_search(M):
     return rows
 
 
+# ---------------------------------------------------------------- search words
+
+# The site's search (window.AtlasSearch in assets/atlas.js) matches Statement Map's
+# exact tokens. These files, in data/universe-search/, let it say why an entry matched
+# and forgive the usual variations, without changing what the backend's index holds.
+# Every list is in the index's entry order.
+#   words.json        which vocabulary files exist, and the size of a text block
+#   vocab-<c>.json    every indexed word starting with c, with how many entries hold it: for
+#                     a prefix of the last word, plural and singular forms, and spellings
+#                     with or without a hyphen
+#   names.json        the name each statement prints ("Proposition 4.2"), or null
+#   atoms.json        each short formula word ("L^2", "W^{1,p}") with the entries holding it
+#   text-<n>.json     per block of entries, the text a result line quotes: the statement,
+#                     the Lean source, the abstract or the catalogue's description
+TEXT_BLOCK = 64
+TEXT_CAP = {"statement": 1600, "lean": 2400, "manuscript": 1400, "family": 1200, "discipline": 0}
+_CMD_ARG = re.compile(r"\\(?:emph|textit|textbf|textup|textrm|textsc|textsf|texttt|mbox|hbox|underline|uline|textnormal)\s*\{([^{}]*)\}")
+_DROP_ARG = re.compile(r"\\(?:label|index|footnote|vspace|hspace|phantom|nocite)\*?\s*(?:\[[^\]]*\])?\s*\{[^{}]*\}")
+_CITE = re.compile(r"\\(?:cite[a-z]*|citet|citep)\*?\s*(?:\[[^\]]*\])?\s*\{[^{}]*\}")
+_REF = re.compile(r"\\(eqref|ref|cref|Cref|autoref|Autoref)\*?\s*\{([^{}]*)\}")
+_ENV_MATH = re.compile(r"\\begin\{(equation|align|gather|multline|eqnarray|displaymath|flalign|alignat)(\*?)\}(?:\{[^{}]*\})?(.*?)\\end\{\1\2\}", re.S)
+_ENV = re.compile(r"\\(?:begin|end)\{[^{}]*\}(?:\[[^\]]*\])?")
+
+
+def snippet_tex(text: str, labels: dict) -> str:
+    """A statement's TeX as one line a result list can quote: prose as prose, each formula
+    kept whole between dollars for KaTeX, references printed as the paper prints them."""
+    t = re.sub(r"(?<!\\)%[^\n]*", "", text or "")
+
+    def ref(m):
+        rec = labels.get(m.group(2).split(",")[0].strip())
+        if not rec or not rec[2]:
+            return "??"
+        if m.group(1) == "eqref" or rec[0] == "equation":
+            return f"({rec[2]})"
+        if m.group(1) in ("cref", "Cref", "autoref", "Autoref"):
+            return f"{rec[1] or S.KIND_WORD.get(rec[0]) or ''} {rec[2]}".strip()
+        return rec[2]
+
+    def display(body: str) -> str:
+        body = re.sub(r"\\\\(\[[^\]]*\])?", " ", body).replace("&", " ")
+        body = re.sub(r"\\(?:nonumber|notag|label\{[^{}]*\})", "", body)
+        return " $" + re.sub(r"\s+", " ", body).strip() + "$ "
+
+    t = _ENV_MATH.sub(lambda m: display(m.group(3)), t)
+    t = re.sub(r"\\\[(.*?)\\\]", lambda m: display(m.group(1)), t, flags=re.S)
+    t = re.sub(r"\$\$(.*?)\$\$", lambda m: display(m.group(1)), t, flags=re.S)
+    t = re.sub(r"\\\((.*?)\\\)", lambda m: "$" + m.group(1).strip() + "$", t, flags=re.S)
+    t = _REF.sub(ref, t)
+    t = _DROP_ARG.sub("", t)
+    t = _CITE.sub("", t)
+    for _ in range(3):
+        t = _CMD_ARG.sub(r"\1", t)
+    t = _ENV.sub(" ", t)
+    t = re.sub(r"\\item\s*(\[[^\]]*\])?", lambda m: " " + (m.group(1)[1:-1] + " " if m.group(1) else ""), t)
+    t = t.replace("~", " ").replace("``", "“").replace("''", "”")
+    t = re.sub(r"\s+", " ", t).strip()
+    return re.sub(r"\s+([.,;:])", r"\1", t)
+
+
+def cap_text(t: str, n: int) -> str:
+    """At most about n characters, cut between formulas and at a word, with an ellipsis."""
+    if len(t) <= n:
+        return t
+    cut, inside = 0, False
+    for i, ch in enumerate(t[:n]):
+        if ch == "$" and (i == 0 or t[i - 1] != "\\"):
+            inside = not inside
+        if ch == " " and not inside:
+            cut = i
+    return t[:cut or n].rstrip(" ,;:") + "…"
+
+
+def lean_snippet(src: str) -> str:
+    """A Lean file as a result line quotes it: from its first docstring or declaration,
+    without imports and options."""
+    lines = [ln for ln in (src or "").splitlines() if not re.match(r"\s*(import|open|set_option|namespace|end|section|noncomputable section)\b", ln)]
+    t = "\n".join(lines)
+    m = re.search(r"/--|^\s*(?:theorem|lemma|def|abbrev|structure|class|instance|axiom)\b", t, re.M)
+    t = t[m.start():] if m else t
+    return re.sub(r"\n\s*\n+", "\n", t).strip()
+
+
+def vocab_shard(term: str) -> str:
+    """The file a word's vocabulary row is in (mirrors vocabShard in site/assets/atlas.js)."""
+    c = term[:1]
+    return c if re.fullmatch(r"[a-z0-9]", c) else "_"
+
+
+# A short formula a reader types as a search word: a letter with a superscript or a
+# subscript ("L^2", "W^{1,p}", "\\ell_1"), read as one word. The key drops braces and
+# spaces (mirrors mathAtoms in site/assets/atlas.js).
+ATOM = re.compile(r"(?<![A-Za-z\\])([A-Za-z]|\\ell|\\mathbb\s*\{[A-Z]\}|\\mathcal\s*\{[A-Z]\})\s*([\^_])\s*(\{[^{}$]{1,12}\}|\\[A-Za-z]+|[0-9A-Za-z])")
+
+
+def atom_key(base: str, op: str, sup: str) -> str:
+    return re.sub(r"[\s{}]", "", base) + op + re.sub(r"[\s{}]", "", sup)
+
+
+def atom_postings(entries, texts) -> dict:
+    """Each formula word, with the entries whose name or quoted text holds it."""
+    out = defaultdict(set)
+    for i, (e, t) in enumerate(zip(entries, texts)):
+        for m in ATOM.finditer((e.get("name") or "") + " " + (t if e["kind"] != "lean" else "")):
+            out[atom_key(*m.groups())].add(i)
+    return {k: sorted(v) for k, v in sorted(out.items()) if len(v) <= 4000}
+
+
+def build_search_words(M):
+    """vocab.json and text-<n>.json for the site's search (see the note above)."""
+    r = M.r
+    idx = r.search_index
+    entries = []
+    for k, chunk in enumerate(idx["entry_chunks"]):
+        doc = r.packet(chunk)
+        if doc.get("start") != k * idx["entry_chunk_size"]:
+            raise SystemExit(f"{chunk} starts at {doc.get('start')}")
+        entries.extend(doc["entries"])
+    if len(entries) != idx["entry_count"]:
+        raise SystemExit(f"search entries: {len(entries)} read, the index says {idx['entry_count']}")
+    df = defaultdict(int)
+    for logical in idx["shards"].values():
+        for term, post in (r.packet(logical).get("terms") or {}).items():
+            df[term] += len(post)
+    vocab = sorted(df)
+    lean_src = {s["id"]: s.get("lean") or "" for s in S.STATEMENTS}
+    fam_desc = {f["id"]: f.get("description") or "" for f in S.FAMILIES}
+    names, texts = [], []
+    for e in entries:
+        kind, eid = e["kind"], e["id"]
+        name, text = None, ""
+        if kind == "statement":
+            slug, _, label = eid[2:].partition(":")
+            ms = S.MS.get(slug) or {}
+            st = next((x for x in ms.get("statements") or [] if x.get("label") == label), None)
+            if st:
+                row = S.STATEMENT_NUMBERS.get((slug, st.get("file"), st.get("line")))
+                if row and row.get("statement_sha256") == st.get("sha256"):
+                    name = f'{row["kind"]} {row["number"]}' if row.get("number") else U("result.unnumbered_label", kind=row["kind"])
+                text = snippet_tex(st.get("text") or "", S.PAPER_LABELS.get(slug, {}))
+        elif kind == "lean":
+            text = lean_snippet(lean_src.get(eid[2:], ""))
+        elif kind == "manuscript":
+            text = snippet_tex((S.MS.get(eid[2:]) or {}).get("abstract") or "", {})
+        elif kind == "family":
+            text = snippet_tex(fam_desc.get(eid[2:], ""), {})
+        names.append(name)
+        texts.append(cap_text(text, TEXT_CAP.get(kind, 0)))
+    blocks = [{"generation_id": M.gen, "start": s, "text": texts[s:s + TEXT_BLOCK]}
+              for s in range(0, len(entries), TEXT_BLOCK)]
+    # The vocabulary in files by first letter: a prefix, a plural and a spelling with or
+    # without a hyphen all share their word's first letter. Long bare numbers are left out.
+    shards = defaultdict(list)
+    for t in vocab:
+        if re.fullmatch(r"[0-9]{5,}", t):
+            continue
+        shards[vocab_shard(t)].append(f"{t}\t{df[t]}")
+    words = {"generation_id": M.gen, "schema": "plectis-atlas-search-words/1", "text_block": TEXT_BLOCK,
+             "entry_count": len(entries), "vocab_shards": sorted(shards),
+             "names": {"generation_id": M.gen, "names": names},
+             "atoms": {"generation_id": M.gen, "atoms": atom_postings(entries, texts)}}
+    vocab_files = {k: {"generation_id": M.gen, "terms": "\n".join(v)} for k, v in shards.items()}
+    return words, blocks, vocab_files
+
+
 # ---------------------------------------------------------------- the page
 
 def num_link(M, key: str) -> str:
@@ -955,20 +1115,87 @@ def number_sentence(M, key: str) -> str:
     return linked(tpl, **{k: num_link(M, k) for k in re.findall(r"\{(\w+)\}", tpl)})
 
 
+# Each colour's families on the Families list (explain.html), by its two reader
+# columns: l is MathVet's reading, r is cert-machine's, c a class. A colour whose
+# families no filter there selects exactly is counted without a link.
+# Each colour's count links to the Families list filtered by the same colour: the list's
+# rows carry the map's colour (data-t, from tone_class), so every count reproduces exactly.
+KEY_FILTERS = {t: f"t={t}" for t in TONE_ORDER}
+
+
+def explain_rows() -> dict:
+    """The Families list's rows as built (explain.html in --out): family number -> its
+    filter attributes, so each colour's link is checked to select exactly its families."""
+    page = OUT / "explain.html"
+    rows = {}
+    if not page.exists():
+        return rows
+    for m in re.finditer(r'<tr id="f-(\d+)"([^>]*)>', page.read_text(encoding="utf-8")):
+        attrs = dict(re.findall(r'data-([a-z])="([^"]*)"', m.group(2)))
+        rows[m.group(1)] = attrs
+    return rows
+
+
+def filter_selects(rows: dict, query: str) -> set:
+    """The family numbers explain.html?<query> shows (mirrors data-filter-families in atlas.js)."""
+    want = dict(kv.split("=", 1) for kv in query.split("&"))
+    out = set()
+    for num, a in rows.items():
+        if all((k == "c" and v in a.get("c", "").split()) or (k != "c" and a.get(k) == v) for k, v in want.items()):
+            out.add(num)
+    return out
+
+
 def key_html(M) -> str:
-    """The colour key: one line for each meaning, with how many families it covers."""
+    """The colour key: one line for each meaning, with how many families it covers, each
+    count linked to the same families on the Families list; then what the counts count."""
     counts = {t: 0 for t in TONE_ORDER}
+    members = defaultdict(set)
     for f in M.data["families"]:
         counts[f["tone"]] += 1
+        members[f["tone"]].add(f["num"])
+    listed = explain_rows()
     rows = []
     for t in TONE_ORDER:
         if not counts[t]:
             continue
+        n = esc(counts[t])
+        q = KEY_FILTERS.get(t)
+        if q and filter_selects(listed, q) != members[t]:
+            print(f"universe: the colour key's link explain.html?{q} does not select exactly the {counts[t]} families coloured {t}; left unlinked")
+            q = None
+        num = (f'<a class="u-key__n" href="explain.html?{esc(q)}" aria-label="{esc(U("key.count_link", n=counts[t]))}">{n}</a>'
+               if q else f'<span class="u-key__n">{n}</span>')
         rows.append(f'<li data-tone="{t}"><span class="u-dot u-dot--{t}" aria-hidden="true"></span>'
-                    f'<span class="u-key__t">{esc(U("key." + t))}</span><span class="u-key__n">{counts[t]}</span></li>')
+                    f'<span class="u-key__t">{esc(U("key." + t))}</span>{num}</li>')
+    counted = linked(U("key.counted"), files=esc(U("key.counted_files", n=M.r.number("statements_lean").get("value") or 0)),
+                     numbers=f'<a href="numbers.html#n-statements_lean">{esc(U("key.counted_numbers"))}</a>',
+                     drafts=f'<a href="numbers.html#h-n-scope">{esc(U("key.counted_drafts"))}</a>')
     return (f'<h2 class="u-h2" id="u-key-h">{esc(U("key.heading"))}</h2>'
             f'<p class="u-note">{esc(U("key.intro"))} <a href="sources.html">{esc(U("key.readers"))}</a></p><ul class="u-key" aria-labelledby="u-key-h">{"".join(rows)}</ul>'
+            f'<p class="u-note u-key__counted">{counted}</p>'
             f'<p class="u-note">{esc(U("key.size"))} {esc(U("key.citations"))}</p>')
+
+
+def since_html(M) -> str:
+    """Since the release: the withdrawn papers by name, each linked to its page, and how
+    many papers OpenAI replaced with later editions (Statement Map's receipts)."""
+    wd = M.r.number_receipt("manuscripts_withdrawn")
+    members = wd.get("members") or []
+    if len(members) != wd.get("value"):
+        raise SystemExit(f"withdrawn papers: {len(members)} named, the receipt counts {wd.get('value')}")
+    links = []
+    for pid in members:
+        ms = S.MS.get(pid[2:])
+        if not ms:
+            raise SystemExit(f"withdrawn paper {pid} is not in data/manuscripts.json")
+        links.append(f'<a href="papers/{esc(quote(pid[2:]))}.html">{esc(S.tex_plain(ms["title"]))}</a>')
+    eds = M.r.number("manuscripts_previous_editions").get("value")
+    papers = links[0] if len(links) == 1 else ", ".join(links[:-1]) + U("since.and") + links[-1]
+    withdrawn = U("since.withdrawn_one") if len(links) == 1 else U("since.withdrawn", n=len(links))
+    text = linked(U("since.text"), withdrawn=esc(withdrawn), papers=papers,
+                  editions=f'<a href="numbers.html#n-manuscripts_previous_editions">{esc(U("since.editions", n=eds))}</a>')
+    return f'<p class="u-since"><b class="u-since__h">{esc(U("since.heading"))}</b> {text}</p>'
 
 
 def discipline_rows(M) -> str:
@@ -1053,8 +1280,8 @@ def checked_band() -> str:
 </section>"""
 
 
-def page_body(M, gen) -> str:
-    data_v = gen[7:19]
+def page_body(M, gen, data_version=None) -> str:
+    data_v = data_version or gen[7:19]
     copy = json.loads(json.dumps(COPY_U))
     # Two of the reader's sentences are the shared evidence vocabulary's own.
     copy["lean"]["what_it_checks"] = E.say("reruns.what_it_checks")
@@ -1073,6 +1300,7 @@ def page_body(M, gen) -> str:
  <aside class="u-panel" aria-labelledby="u-title">
   <div class="u-panel__head">
    <nav class="u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail hidden></nav>
+   <nav class="u-step" aria-label="{esc(U('step.label'))}" data-u-step hidden></nav>
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
    <p class="u-ground" data-u-ground>{esc(U('page.independent'))}</p>
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
@@ -1084,9 +1312,10 @@ def page_body(M, gen) -> str:
    <div class="u-results" data-u-results hidden></div>
    <div class="u-view" data-u-view>
     <p class="u-lede">{number_sentence(M, 's1')} {number_sentence(M, 's2')}</p>
+    {since_html(M)}
+    <section class="u-keysec" id="u-key">{key_html(M)}</section>
     <p class="u-nojs">{esc(U('page.nojs'))}</p>
     <p class="u-keyjump"><a href="#u-key" data-u-keyjump>{esc(U('key.heading'))}</a></p>
-    <section class="u-keysec" id="u-key">{key_html(M)}</section>
     <section class="u-discsec">{discipline_rows(M)}</section>
     <section class="u-wayssec">{ways_html(M)}</section>
    </div>
@@ -1097,15 +1326,13 @@ def page_body(M, gen) -> str:
   <div class="u-visually-hidden" aria-live="polite" data-u-live></div>
   <div class="u-maplegend" data-u-legend hidden></div>
   <div class="u-board" data-u-board role="region" aria-label="{esc(U('board.label'))}"></div>
-  <button type="button" class="u-mapkey-btn" data-u-mapkey aria-expanded="false" aria-controls="u-mapkey">{esc(U('mapkey.button'))}</button>
-  <div class="u-mapkey" id="u-mapkey" data-u-mapkey-panel hidden></div>
-  <div class="u-tools">
-   <button type="button" class="u-tool" data-u-zoom="in" aria-label="{esc(U('controls.zoom_in'))}" title="{esc(U('controls.zoom_in'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg></button>
-   <button type="button" class="u-tool" data-u-zoom="out" aria-label="{esc(U('controls.zoom_out'))}" title="{esc(U('controls.zoom_out'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10"/></svg></button>
-   <button type="button" class="u-tool" data-u-zoom="fit" aria-label="{esc(U('controls.fit'))}" title="{esc(U('controls.fit'))}"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5"/><circle cx="8" cy="8" r="1.4"/></svg></button>
+  <div class="u-mapbar" data-u-bar>
+   <button type="button" class="u-mapkey-btn" data-u-mapkey aria-expanded="false" aria-controls="u-mapkey">{esc(U('mapkey.button'))}</button>
+   <p class="u-cap" data-u-cap>{esc(U('chart.release_cap', families=len(M.data['families']), disciplines=len(M.data['disciplines'])))}</p>
   </div>
-  <p class="u-status" data-u-status>{esc(U('status.loading'))}</p>
+  <div class="u-mapkey" id="u-mapkey" data-u-mapkey-panel hidden></div>
  </div>
+ <p class="u-status" data-u-status role="status">{esc(U('status.loading'))}</p>
  <script type="application/json" id="universe-copy">{copy_json}</script>
 </div>
 <section class="u-band u-band--index" id="catalogue" aria-labelledby="h-index" tabindex="-1">
@@ -1166,6 +1393,132 @@ def canonical(obj) -> bytes:
     return json.dumps(obj, ensure_ascii=False, separators=(",", ":"), sort_keys=True).encode("utf-8")
 
 
+def packet_version(directory: Path) -> str:
+    """Invalidate cached map packets when rendering changes at the same source pin."""
+    digest = hashlib.sha256()
+    for packet in sorted(directory.glob("universe-*.json")):
+        digest.update(packet.name.encode("utf-8") + b"\0")
+        digest.update(packet.read_bytes())
+    return digest.hexdigest()[:12]
+
+
+def build_agent_navigation(model, generation: str, version: str) -> dict[str, str]:
+    """Describe the existing map packets without duplicating or changing their schema.
+
+    These are ordinary static resources, never loaded by the browser application.
+    Absolute URLs retain config.json's project path when read away from the site.
+    """
+    base = S.BASE_URL
+    repo = S.REPO
+    packet = lambda name: f"{base}data/{name}?v={version}"
+    llms = f"""# Plectis Atlas
+
+> An independent reader's atlas to OpenAI's mathematics release. The website and its map can be navigated without JavaScript through static HTML and JSON.
+
+Read the navigation guide before interpreting map edges. Citation links are not proof dependencies; automatically proposed paper-to-Lean pairings remain unreviewed. A reported proof replay checks its formal statement, not its match to a paper. The original PDF remains the reference.
+
+## Start
+
+- [Agent navigation]({base}agents.md): packet fields, stable identifiers, traversal example and source limits.
+- [Map overview JSON]({packet('universe-data.json')}): all disciplines and families, directed citations, source contract and counts.
+- [Map parts JSON]({packet('universe-parts.json')}): all papers, displayed results and Lean statements in the map, joined by indices.
+- [Browse families]({base}explain.html): static HTML links to every family.
+- [Sources and credits]({base}sources.html): attributed outside readings and reported replays.
+- [Site sitemap]({base}sitemap.xml): published HTML reading routes.
+- [Repository]({repo}): source, build instructions, licences and contribution skills.
+"""
+    guide = f"""# Navigate Plectis Atlas as an agent
+
+The website is agent-navigable using HTTP GET requests. No browser, account, JavaScript execution or installation is needed to read the map. This guide describes the same packets the human map uses; it adds no data fetch to human page loads. `llms.txt` is an optional discovery convention, not an access requirement or a guarantee about any crawler.
+
+## Entry points
+
+- [Concise entry]({base}llms.txt)
+- [All families in static HTML]({base}explain.html)
+- [Lean statements]({base}statements.html)
+- [Sources and credits]({base}sources.html)
+- [Counts and their definitions]({base}numbers.html)
+- [Page sitemap]({base}sitemap.xml)
+- [Repository instructions]({repo}/blob/main/AGENTS.md) and [source architecture]({repo}/blob/main/docs/ARCHITECTURE.md)
+
+## Fetch the complete map
+
+Fetch these two JSON packets to obtain all the map's nodes and relationships. Layout coordinates are unnecessary for research.
+
+1. [Overview]({packet('universe-data.json')}): `disciplines`, `families`, `links`, `sources`, `counts`, `catalogue_url` and `contract`.
+2. [Parts]({packet('universe-parts.json')}): `papers`, `results` and `lean`.
+
+Both packets must have the same `generation_id`. This build uses `{generation}` from Statement Map, reading `openai/math` at `{S.COMMIT}`. Check `contract[0].upstream_commit` in the overview. The query version is a cache key for the built packet bytes, not an archived snapshot. A generation mismatch detects different backend exports; it does not detect every rendering-only deployment. On a mismatch, reload this guide and both packets. For reproducible archival work, pin a repository commit and retain the packets together. Array indices are local to that packet set; store an object's `id`, never its array position.
+
+The map contains {len(model['disciplines'])} disciplines, {len(model['families'])} families, {len(model['papers'])} papers, {len(model['results'])} displayed results and {len(model['lean'])} Lean statements. Displayed results include the headline selection and additional pairing targets; this is not every theorem-like environment in every paper. Follow each paper's page for its full text and conversion limits.
+
+## Nodes and edges
+
+Every node has a stable backend `id`: `d:` for a discipline, `f:` for a family, `p:` for a paper, `r:` for a displayed paper result, and `l:` for a Lean statement. Read names from `name`, `title`, `label` or the result's `kind` and `num`. A missing title or printed number remains unknown.
+
+All numeric references below are zero-based array indices in the two packets fetched together:
+
+| From | Relationship | Target |
+|---|---|---|
+| `disciplines[i].families` | contains | indices in `families` |
+| `families[i].d` | belongs to | index in `disciplines` |
+| `families[i].papers`, `.lean` | contains | indices in `papers`, `lean` |
+| `papers[i].f`, `.results` | belongs to family; contains results | index in `families`; indices in `results` |
+| `results[i].p`, `.f` | belongs to paper and family | indices in `papers`, `families` |
+| `results[i].lean` | paper-to-Lean pairing | indices in `lean` |
+| `lean[i].f`, `.results` | belongs to family; paired results | index in `families`; indices in `results` |
+| `families[i].cites` | cites another family | pairs `[family_index, citing_paper_pair_count]` |
+| `families[i].citedBy` | cited by another family | the reverse directed citation pairs |
+
+`links` records the same family citations compactly as `[a, b, a_to_b_count, b_to_a_count]`. Each positive count is a directed citation between those family indices, measured in citing pairs of papers. A citation is not a proof dependency. A zero count means no edge in that direction.
+
+Keep `lean[i].pairing` with a pairing edge. `candidate-pairing` is unreviewed. Keep `acc` as the attributed sources reporting accepted replays, not an Atlas verification claim. Read the family or Lean page for the precise evidence and limits.
+
+Resolve each non-null `href` relative to `{base}`, including its fragment. Some nodes can have a null `href`; use the parent family or the paper's `pdf` instead of inventing a URL. Open a map node with `{base}#o=` followed by its URL-encoded `id`. Readable page URLs are preferable when a client cannot execute JavaScript.
+
+## A small traversal
+
+This standard-library example fetches the existing map packets and follows a family's papers, Lean statements and outgoing citations. Replace `f:159` with another returned family ID.
+
+```python
+import json
+from urllib.parse import urljoin
+from urllib.request import urlopen
+
+base = {base!r}
+version = {version!r}
+
+def fetch(name):
+    with urlopen(urljoin(base, 'data/' + name + '?v=' + version), timeout=30) as response:
+        return json.load(response)
+
+overview = fetch('universe-data.json')
+parts = fetch('universe-parts.json')
+if overview['generation_id'] != parts['generation_id']:
+    raise RuntimeError('Deployment changed: reload agents.md and both packets')
+family = next(row for row in overview['families'] if row['id'] == 'f:159')
+print(family['id'], family['title'], urljoin(base, family['href']))
+for kind in ('papers', 'lean'):
+    for index in family[kind]:
+        node = parts[kind][index]
+        target = urljoin(base, node['href']) if node.get('href') else node.get('pdf')
+        print(kind, node['id'], target)
+for index, count in family['cites']:
+    target = overview['families'][index]
+    print('cites', target['id'], count, urljoin(base, target['href']))
+```
+
+For a selected family's extra wording, fetch `data/universe-detail-<d>.json` using its `d` index and check the generation. [Map search rows]({packet('universe-search.json')}) offer names and result labels without downloading the separate full-text search shards. The [backend export]({repo}/blob/main/backend/EXPORT.json) identifies the source receipts; [source indexes]({repo}/tree/main/data) contain the extracted text and source locations. Respect their source, version, attribution and licence.
+
+## Interpretation and contribution
+
+Atlas is independent of OpenAI. It presents source records and attributed outside readings. It does not establish new mathematical results or equate a successful formal proof replay with a paper-to-Lean match. Paper conversions can be partial; the original PDF is the reference. Preserve unknown, candidate, unreviewed, withdrawn and source-attributed states when reporting findings.
+
+Read [contribution instructions]({repo}/blob/main/CONTRIBUTING.md) before proposing changes. Signed contributions need the required human identity and review. An agent may report an unreviewed observation through the repository's dedicated form only when its operator and platform permit posting; reading this guide does not authorise a submission.
+"""
+    return {"llms.txt": llms, "agents.md": guide}
+
+
 def main():
     global OUT
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
@@ -1197,7 +1550,7 @@ def main():
     h.update(canonical(layout))
     contract = [{"generation_id": gen, "drawing_sha256": h.hexdigest()[:20], "upstream_commit": S.COMMIT,
                  "ids": "Statement Map's reader ids: d:, f:, p:, r:, l:",
-                 "pairing": "Statement Map's pairing_selections and selection; candidate pairings are unreviewed"}]
+                 "pairing": "build_site.lean_pairing: Statement Map's citations and bindings, else the atlas's reading of the Lean text; candidate pairings are unreviewed"}]
     data = {"generation_id": gen, "contract": contract, **data}
     layout = {"generation_id": gen, "contract": contract, **layout}
     ddir = OUT / "data"
@@ -1214,17 +1567,31 @@ def main():
     for di, sh in enumerate(detail):
         (ddir / f"universe-detail-{di}.json").write_text(dump({"generation_id": gen, **sh}), encoding="utf-8")
     (ddir / "universe-search.json").write_text(dump({"generation_id": gen, "rows": search}), encoding="utf-8")
+    words, blocks, vocab_files = build_search_words(M)
+    wdir = ddir / "universe-search"
+    if wdir.is_dir():
+        shutil.rmtree(wdir)
+    wdir.mkdir(parents=True)
+    for part in ("names", "atoms"):
+        (wdir / f"{part}.json").write_text(dump(words.pop(part)), encoding="utf-8")
+    (wdir / "words.json").write_text(dump(words), encoding="utf-8")
+    for k, v in vocab_files.items():
+        (wdir / f"vocab-{k}.json").write_text(dump(v), encoding="utf-8")
+    for b in blocks:
+        (wdir / f"text-{b['start'] // TEXT_BLOCK:04d}.json").write_text(dump(b), encoding="utf-8")
     (OUT / "assets").mkdir(parents=True, exist_ok=True)
     for name in OWN_ASSETS:
         shutil.copy(ASSETS / name, OUT / "assets" / name)
-    v = gen[7:19]
+    v = packet_version(ddir)
+    for name, content in build_agent_navigation(model, gen, v).items():
+        (OUT / name).write_text(content, encoding="utf-8")
     extra = ('<link rel="stylesheet" href="assets/lean.css">\n'
              f'<link rel="stylesheet" href="assets/universe.css?v={asset_version()}">\n'
              f'<link rel="preload" href="data/universe-data.json?v={v}" as="fetch" crossorigin>\n'
              f'<link rel="preload" href="data/universe-layout.json?v={v}" as="fetch" crossorigin>\n'
              '<meta name="format-detection" content="telephone=no">\n'
              f'<script defer src="assets/universe.js?v={asset_version()}"></script>')
-    body = page_body(M, gen)
+    body = page_body(M, gen, v)
     html_text = S.page("index.html", U("page.title"), U("page.description"), body, current="map",
                        extra_head=extra, main_class="u-main")
     (OUT / "index.html").write_text(html_text, encoding="utf-8")
@@ -1235,6 +1602,8 @@ def main():
           f"{counts['results']} results drawn, {counts['lean']} Lean statements, {counts['pairs']} pairings drawn")
     print(f"universe: data {sizes['universe-data.json']:,} B, parts {sizes['universe-parts.json']:,} B, layout {sizes['universe-layout.json']:,} B, "
           f"search {sizes['universe-search.json']:,} B, detail {total_detail:,} B in {len(detail)} files; "
+          f"search names {(wdir / 'names.json').stat().st_size:,} B, formulas {(wdir / 'atoms.json').stat().st_size:,} B, vocabulary {sum(p.stat().st_size for p in wdir.glob('vocab-*.json')):,} B, "
+          f"text {sum(p.stat().st_size for p in wdir.glob('text-*.json')):,} B in {len(blocks)} files; "
           f"page {(OUT / 'index.html').stat().st_size:,} B")
 
 

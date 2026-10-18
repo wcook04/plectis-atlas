@@ -22,6 +22,9 @@
 @font-face { font-family: "Plectis Serif Fallback"; src: local("Times New Roman"), local("TimesNewRomanPSMT"), local("Liberation Serif"); size-adjust: 105.63%; ascent-override: 72.14%; descent-override: 22.53%; line-gap-override: 23.67%; }
 @font-face { font-family: "Plectis Sans Fallback"; src: local("Arial"), local("ArialMT"), local("Liberation Sans"); size-adjust: 94.72%; ascent-override: 108.11%; descent-override: 42.23%; line-gap-override: 0%; }
 math { font-family: "Plectis MathML", math; }
+/* KaTeX paints its HTML tree. Its clipped, accessible MathML does not need a
+   second mathematical font; native MathML elsewhere keeps the font above. */
+.katex-mathml math { font-family: inherit; }
 
 :root {
   --page: #f8f0e2;
@@ -286,11 +289,29 @@ code.sr__name { font-size: 0.86rem; }
 /* ---- Page skeleton ---------------------------------------------------- */
 .page { padding-block: 28px 64px; }
 .page--narrow { width: min(820px, calc(100% - 48px)); }
-.trail { display: flex; flex-wrap: wrap; gap: 6px; font-size: var(--fs-meta); color: var(--muted); margin-bottom: 18px; }
+.trail { display: block; font-size: var(--fs-meta); line-height: 1.55; color: var(--muted); margin-bottom: 18px; }
 .trail a { color: var(--muted); }
 .trail a:hover { color: var(--ink); }
 .trail [aria-current] { color: var(--ink-soft); }
-.trail__sep { color: var(--faint); }
+.trail__sep { color: var(--faint); margin-inline-end: 0.45em; }
+/* The previous and next row under the breadcrumb (build_site.sibling_nav): the neighbouring
+   family, Lean statement or paper by name, this page's place between them. One line on a
+   wide screen; stacked on a phone. Names wrap rather than truncate, so nothing is hidden. */
+.sib { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: "prev pos next"; align-items: baseline; gap: 4px 20px; max-width: 64rem; margin: -6px 0 22px; padding-block: 8px; border-block: 1px solid var(--rule); font-size: var(--fs-meta); line-height: 1.45; color: var(--muted); }
+.sib__pos { grid-area: pos; margin: 0; color: var(--faint); text-align: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sib__a { display: inline-flex; align-items: baseline; gap: 0.45em; min-height: 24px; min-width: 0; color: var(--muted); overflow-wrap: anywhere; }
+.sib__a--prev { grid-area: prev; justify-self: start; }
+.sib__a--next { grid-area: next; justify-self: end; text-align: end; }
+a.sib__a:hover { color: var(--ink); }
+.sib__arr { flex: none; color: var(--faint); }
+.sib__t { text-wrap: pretty; }
+.sib__st { color: var(--faint); }
+@media (max-width: 640px) {
+  .sib { grid-template-columns: minmax(0, 1fr); grid-template-areas: "pos" "prev" "next"; gap: 6px; }
+  .sib__pos { text-align: start; white-space: normal; }
+  .sib__a--next { justify-self: start; text-align: start; }
+  span.sib__a { display: none; }
+}
 .phead { margin-bottom: 24px; max-width: 64rem; }
 .phead__kicker { font-size: var(--fs-meta); color: var(--muted); margin: 0 0 6px; }
 .phead__kicker code { color: var(--ink-soft); }
@@ -652,6 +673,8 @@ body.card-only { background: var(--page); margin: 0; }
 .tbl td { padding: 8px 10px; border-bottom: 1px solid var(--rule); vertical-align: top; }
 .tbl tr:hover td { background: color-mix(in oklab, var(--sunk) 60%, transparent); }
 .tbl .t-title { font-family: var(--serif); font-size: 0.97rem; min-width: 16em; }
+/* Wrapped catalogue titles remain one target, including the space between lines. */
+.tbl .t-title > a, #stmt-table td > a { display: inline-block; }
 .tbl .t-title a { color: var(--ink); }
 .tbl .t-title a:hover { color: var(--steel-text); }
 .t-id { display: block; font-family: var(--mono); font-size: 0.72rem; color: var(--faint); margin-top: 1px; }
@@ -951,7 +974,6 @@ a.term:hover, a.term:focus-visible { text-decoration-color: currentColor; }
 .tbl--families td { padding: 9px 10px; }
 .tbl--families .t-id { display: table-cell; font-family: var(--sans); font-size: inherit; margin: 0; color: var(--faint); font-variant-numeric: tabular-nums; width: 3.5em; }
 .tbl--families .t-title { min-width: 22em; max-width: 34em; line-height: 1.35; }
-.tbl--families .t-title > a { display: inline; }
 .tbl--families .t-disc { color: var(--ink-soft); min-width: 9em; }
 .tbl--families .t-reader { min-width: 8.5em; }
 .tbl--families .t-action { white-space: nowrap; }
@@ -970,7 +992,7 @@ a.cell__sub { color: var(--steel-text); }
   .tbl--families td { border: 0; padding: 2px 0; min-width: 0; max-width: none; text-align: left; }
   .tbl--families td:empty { display: none; }
   .tbl--families .t-id { display: block; width: auto; font-size: var(--fs-small); }
-  .tbl--families .t-title { font-size: 1.0625rem; padding-bottom: 6px; }
+  .tbl--families .t-title { min-width: 0; max-width: none; font-size: 1.0625rem; padding-bottom: 6px; }
   .tbl--families td[data-label] { display: grid; grid-template-columns: minmax(8.5em, 40%) 1fr; gap: 8px; font-size: var(--fs-meta); }
   .tbl--families td[data-label]::before { content: attr(data-label); color: var(--muted); font-size: var(--fs-small); }
   .tbl--families td[data-label] .cell__sub { margin-top: 0; }
@@ -1024,3 +1046,78 @@ a.cell__sub { min-height: 24px; padding: 2px 0; }
 code.path { overflow-wrap: normal; word-break: normal; }
 .approach__then { margin-top: 18px; }
 @media (max-width: 640px) { .actions .btn--quiet { padding-inline: 0; } }
+
+/* Families list: one invitation to explain for the page, under its lede; a quiet dash in
+   an empty cell (its meaning is read out); on a phone a dash-only state is left out of the
+   card except the Lean count, and a Sort menu stands in for the hidden column heads, whose
+   buttons leave the tab order with them. */
+.phead__invite { margin: 6px 0 0; max-width: 80ch; font-size: var(--fs-small); color: var(--muted); }
+.filters__g--sort { display: none; }
+@media (max-width: 760px) {
+  .tbl--families thead { visibility: hidden; }
+  .filters__g--sort { display: block; grid-column: 1 / -1; }
+  .filters--families .filters__g--sort .select { min-width: 0; }
+  .tbl--families td[data-label]:not(.t-lean):has(> .cell__dash:only-child) { display: none; }
+}
+
+/* family page: usability pass */
+/* Under the family title: the outside readers' verdict in words (the meaning the map's
+   colour carries) and the count of current, withdrawn and replaced papers, as the lede. */
+.fx .fx-fact--lede { margin-top: 10px; }
+.fx .fx-fact--lede + .fx-fact--lede { margin-top: 4px; }
+.fx .fx-verdict { color: var(--ink); }
+/* Connections: each row names the family paper on the other end of the citation. */
+.rel__by { font-size: var(--fs-small); color: var(--ink-soft); }
+.fx-within { margin: 0 0 18px; }
+.fx-within li { margin: 4px 0; max-width: 70ch; }
+.fx .fx-intro--comparator { margin-top: 6px; }
+
+/* map + search: usability pass */
+.sr__name, .sr__k { overflow-wrap: break-word; }
+.sr__x { display: block; margin-top: 2px; font: 400 var(--fs-small)/1.45 var(--serif); color: var(--ink-soft); overflow-wrap: break-word; }
+.sr__x:empty { display: none; }
+.sr__x code { font: 400 0.75rem/1.45 var(--mono); white-space: normal; overflow-wrap: anywhere; }
+.sr__x mark { background: color-mix(in oklab, var(--steel-text) 22%, transparent); color: inherit; border-radius: 2px; padding: 0 1px; }
+.sr__x .katex { font-size: 1em; }
+.sr-suggest { margin: 0; padding: 4px 18px 14px; font-size: var(--fs-meta); color: var(--ink-soft); }
+.sr-suggest__w { min-height: 28px; padding: 2px 8px; border: 1px solid var(--rule-strong); border-radius: var(--r-sm); background: var(--surface); color: var(--steel-text); font-size: var(--fs-small); cursor: pointer; }
+
+/* statements: lean pairing pass */
+.phead__thms { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.phead__thmk { color: var(--muted); font-size: var(--fs-small); }
+.phead__thm { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 6px; min-width: 0; }
+.phead__thm code { overflow-wrap: anywhere; }
+.phead__thm .copy, .lean__tools .copy { min-height: 28px; padding: 2px 10px; font-size: var(--fs-small); }
+.lean__tools { position: relative; }
+.lean__tools > .copy { display: block; margin: 0 0 6px auto; }
+.lean--cont { margin-top: 0; }
+.pair__target { margin: 0 0 18px; }
+.pair__method { margin-top: 14px; max-width: 72ch; }
+.tbl--stmts .t-lid { display: block; font-size: var(--fs-small); color: var(--faint); overflow-wrap: anywhere; }
+.tbl--stmts .t-pair { min-width: 14em; max-width: 22em; }
+.tbl--stmts .t-pair .cell__sub { display: block; }
+.tbl--stmts .t-notes { min-width: 10em; max-width: 16em; }
+.tbl--stmts .t-notes .cell__sub { display: block; }
+@media (max-width: 767px) {
+  .tbl--stmts .t-pair, .tbl--stmts .t-notes { min-width: 0; max-width: none; }
+  .tbl--stmts td.t-pair[data-label] > *, .tbl--stmts td.t-notes[data-label] > * { grid-column: 2; }
+  .tbl--stmts td.t-notes:not(:has(*)) { display: none; }
+}
+/* The header row stays in view: the list scrolls inside its own box, so the sticky
+   heads have a scrolling ancestor to stick to (the box also scrolls sideways). */
+@media (min-width: 768px) {
+  .page--stmts .table-wrap { max-height: calc(100vh - 96px); max-height: calc(100dvh - 96px); overflow: auto; overscroll-behavior: contain; }
+  .tbl--stmts th { position: sticky; top: 0; z-index: 2; background: var(--page); box-shadow: 0 1px 0 var(--rule-strong); }
+  .tbl--stmts .t-title { min-width: 15em; max-width: 24em; }
+}
+
+/* round 2: list pages */
+/* A head that names a glossary term: the words link the term, the arrow beside them sorts. */
+th > a.term + .sort--arrow { min-width: 24px; min-height: 24px; margin-left: 2px; vertical-align: baseline; }
+th > a.term + .sort--arrow::after { content: "\2195"; }
+th[aria-sort="ascending"] > a.term + .sort--arrow::after { content: "\2191"; }
+th[aria-sort="descending"] > a.term + .sort--arrow::after { content: "\2193"; }
+.filters__h a.term { color: inherit; }
+/* "Search all text": the site search with the same words, under the family-name box. */
+.filters__all { display: inline-block; margin-top: 4px; font-size: var(--fs-small); color: var(--ink-soft); }
+.filters__g--q { flex-basis: 14rem; }

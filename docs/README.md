@@ -5,6 +5,7 @@ These guides explain how to contribute to it and work on the repository.
 
 | I want to | Read |
 |---|---|
+| Navigate the website or map as an agent | [Agent navigation and JSON traversal](https://wcook04.github.io/plectis-atlas/agents.md), starting with [llms.txt](https://wcook04.github.io/plectis-atlas/llms.txt) |
 | Suggest a correction or explanation | [Contributing](../CONTRIBUTING.md) |
 | Cite the Atlas or check source credit | [Sources, credit and citation](ATTRIBUTION.md) |
 | Write a contribution file | [Formats and templates](../contributions/README.md) |
@@ -22,6 +23,6 @@ These guides explain how to contribute to it and work on the repository.
 source boundaries. The folder guides link to it and identify the relevant
 files. The root [README](../README.md) is the introduction for visitors.
 
-The `map-light.png` and `map-dark.png` files illustrate that introduction.
+The `images/overview-light.png` and `images/overview-dark.png` files show the whole-release map at the top of that introduction.
 [Capture provenance and refresh instructions](ARCHITECTURE.md#readme-preview-images)
 record which website version they show.
