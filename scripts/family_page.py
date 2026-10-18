@@ -1248,7 +1248,32 @@ def comparison_html(c: Ctx) -> str:
     return (f'<section class="fx-sec" id="compare" aria-labelledby="compare-h" data-cmp-host>{alias}'
             f'<h2 class="fx-h2" id="compare-h">{esc(heading)}</h2><p class="fx-intro">{esc(intro)}</p>'
             f'<p class="fx-intro fx-intro--comparator">{S.ctext(W("compare.comparator_once"))}</p>'
-            f'{idx}<div class="fx-cmps">{cmps}</div>{CMP_HASH_SCRIPT if n > 1 else ""}{formulations_html(c)}</section>')
+            f'{source_notes_html(c)}{idx}<div class="fx-cmps">{cmps}</div>{CMP_HASH_SCRIPT if n > 1 else ""}{formulations_html(c)}</section>')
+
+
+def source_notes_html(c: Ctx) -> str:
+    """Show attributed Atlas source observations beside the selected-check comparison.
+
+    These are imported observations, not inferred extra checks or a theorem inventory.
+    Retain the same dated text and pinned links printed with the original report.
+    """
+    notes, seen = [], set()
+    for card in c.doc.get("independent_check_cards") or []:
+        note = (card.get("value") or {}).get("atlas_source_note") or {}
+        if not note.get("text"):
+            continue
+        key = json.dumps(note, sort_keys=True)
+        if key in seen:
+            continue
+        seen.add(key)
+        links = " · ".join(f'<a class="ext" href="{esc(x["url"])}" rel="noopener">{esc(x["label"])}</a>'
+                           for x in note.get("links") or [])
+        notes.append(f'<p class="fx-prose"><strong>{esc(W("checks.atlas_source_note", date=note.get("inspected") or ""))}.</strong> '
+                     f'{code_spans(note["text"])}</p>' + (f'<p class="fx-prose">{links}</p>' if links else ""))
+    if not notes:
+        return ""
+    return (f'<div class="fx-forms-wrap" id="h-source-notes"><h3 class="fx-h3">{esc(W("compare.source_notes_heading"))}</h3>'
+            + "".join(notes) + '</div>')
 
 
 # Before the first paint, a link to one comparison (families/003.html#lean-SiegelZeros, or
@@ -1511,8 +1536,17 @@ def other_checks_html(c: Ctx) -> str:
             if plain.count(ident) > 1 and v.get("id"):
                 sub = (sub + " " if sub else "") + esc(W("checks.report_id", id=v["id"]))
                 ident = f"{ident} ({W('checks.report_id', id=v['id'])})"
+            # Atlas observations stay outside the original report's attributed words.
+            source_note = v.get("atlas_source_note") or {}
+            source_note_html = code_spans(source_note.get("text") or "")
+            if source_note_html:
+                links = " · ".join(f'<a class="ext" href="{esc(x["url"])}" rel="noopener">{esc(x["label"])}</a>'
+                                   for x in source_note.get("links") or [])
+                source_note_html += (" " + links) if links else ""
+            source_note_label = W("checks.atlas_source_note", date=source_note.get("inspected") or "")
             rows = [(W("checks.verdict"), f"“{esc(verdict)}”" if verdict else ""), (W("checks.certifies"), code_spans(what)),
                     (W("checks.relation"), covers_html),
+                    (source_note_label, source_note_html),
                     (W("checks.detail"), "" if whole else code_spans(v.get("detail") or "")),
                     (W("inspect.version"), f'<code translate="no">{esc((credit.get("pin") or "")[:7])}</code>' if credit.get("pin") else "")]
             c.tpls[tid] = record(W("inspect.kind_card"), ident_html, rows, [(W("inspect.link"), v.get("url") or credit.get("url"))],
@@ -1530,7 +1564,9 @@ def other_checks_html(c: Ctx) -> str:
             # apart, so they are set in the reading ink and size; the outcome's plain gloss, the
             # same on every record of a state, is quieter.
             fields = [(W("checks.who"), esc(who), ""), (W("checks.method_label"), esc(method), ""), (W("checks.verdict"), outcome, ""),
-                      (W("checks.relation"), covers_html, "fx-fields__scope"), (W("checks.receipt"), f'{report} {details}', "")]
+                      (W("checks.relation"), covers_html, "fx-fields__scope"),
+                      (source_note_label, source_note_html, "fx-fields__scope"),
+                      (W("checks.receipt"), f'{report} {details}', "")]
             dl = "".join(f'<div><dt>{esc(k)}</dt><dd{f" class={chr(34)}{cl}{chr(34)}" if cl else ""}>{val}</dd></div>' for k, val, cl in fields if val)
             items.append(f'<li class="fx-card"><p class="fx-card__id">{ident_html}</p>'
                          + (f'<p class="fx-card__sub">{sub}</p>' if sub else "")

@@ -135,7 +135,26 @@
      "relation": "Hook card; Flint–Hills convergence stays paper-only",
      "warm": "PASS (8/8)",
      "cold": "PASS",
-     "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/cards/017/CARD.md"
+     "url": "https://github.com/BenKnill/openai-math-hol-cards/blob/68a12280f84cac1e9204e0f3272fdd9339773d1f/cards/017/CARD.md",
+     "atlas_source_note": {
+      "text": "The selected PiExponent check names OAI.PiExponent.main only. At the Atlas source pin fd4aeeb2, the same Lean Main.lean file also contains flint_hills_summable. Flint–Hills convergence is outside that selected check, not absent from the Lean source. This is an AI-assisted source inspection, not a new proof replay or mathematical review.",
+      "inspected": "2026-10-18",
+      "source_pin": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
+      "links": [
+       {
+        "label": "Selected check configuration",
+        "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/ComparatorChallenges/PiExponent.json"
+       },
+       {
+        "label": "Lean declarations",
+        "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/OAI/NumberTheory/PiExponent/Main.lean#L17-L32"
+       },
+       {
+        "label": "Release scope note",
+        "url": "https://github.com/openai/math/blob/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb/lean/docs/017.md"
+       }
+      ]
+     }
     }
    ]
   },

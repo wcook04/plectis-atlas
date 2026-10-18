@@ -39,7 +39,7 @@
       "repository": "https://github.com/openai/math",
       "summary": "openai-math/summary.json",
       "web": {
-        "generation_id": "sha256:e44fe048bf34d4e55b76af0e42f931ce1121c5c189edf0e8cd6061a5902b3e47",
+        "generation_id": "sha256:5a03758bbca39920a550b1c239dc979d39e0f6a37e43cadc614dc3fc932c29ee",
         "index": "openai-math/web/index.json",
         "manifest": "openai-math/web/manifest.json",
         "navigation": "openai-math/web/navigation.json",
