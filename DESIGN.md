@@ -425,6 +425,24 @@ is reading, delay the mathematics, or run in a loop.
   matches behind one button, and the map stops dimming what the search did not
   match, so the opened paper's own results read at full strength.
 
+## Lean statement and paper reading pages (UX pass, 19 October 2026)
+
+- **The answer comes first.** A Lean statement page opens with "At a glance": its
+  family, the paper statement and the match's state ("possible match, not
+  reviewed"), then one row per group with both answers in the group's own term:
+  does the family's Lean state the advertised result, and did OpenAI's proof pass
+  Comparator for this statement. The full reports follow, linked from the table.
+- **Compare side by side.** The Lean statement and its paper statement are two
+  columns from 1100px; run reports and assessments are equal cards in a grid; the
+  share card sits beside the recorded comparisons.
+- **Margins carry navigation, never emptiness.** From 1280px a Lean page keeps a
+  contents rail and the file's facts in a sticky side column. A paper keeps its
+  40em reading measure; the contents stay open on the left from 1280px and the
+  family panel (its Lean statements, their possible matches and each group's
+  reports) stays on the right from 1000px. Below that, one column: the contents a
+  disclosure above the text, the panel after it.
+- **A wide display scrolls in its own box**, never past the reading column.
+
 ## The map sidebar at each selection level
 
 On desktop, the release starts with the colour key, visible without scrolling;

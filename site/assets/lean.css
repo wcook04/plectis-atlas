@@ -221,3 +221,121 @@
 .run__state { font-weight: 600; color: var(--ink); margin-left: 0; }
 .run__term { font-size: var(--fs-small); color: var(--muted); margin-left: 6px; }
 .reading__gloss { display: inline; margin: 0; font-weight: 600; color: var(--ink); font-size: var(--fs-body); }
+
+/* ---- The Lean statement page, laid out for the screen (UX pass, 19 October) ----
+   Wide screens: the page and a side column (contents, then the file's facts) that
+   stays in view. The Lean statement and the paper statement sit side by side; the
+   groups' answers come first as one table; run reports and assessments are cards in
+   a grid. Narrow screens: one column, the side column last, its contents hidden. */
+.page--lean { --lx-gap: 24px; --lx-gap-lg: 40px; --lx-pad: 16px; --lx-side: 17rem; padding-bottom: 24px; }
+.lxs { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 var(--lx-gap-lg); }
+.lxs-head { margin-bottom: 8px; max-width: none; }
+.lxs-head > * { margin-top: 0; }
+.page--lean .lxs-head .phead__title { margin-bottom: 8px; }
+.page--lean .lxs-head .phead__sub { margin: 0 0 8px; }
+.page--lean .lxs-head .phead__where { margin: 0 0 8px; }
+.page--lean .lxs-head .intro { margin: 0 0 8px; max-width: 110ch; color: var(--ink-soft); font-size: var(--fs-meta); }
+.page--lean .lxs-head .phead__go { margin-top: 12px; }
+.page--lean .lxs-head .phead__go .actions { margin: 0; }
+.lxs-main { min-width: 0; }
+.lxs-main > .band:first-child { border-top: 0; }
+
+/* the side column */
+.lxs-side { min-width: 0; font-size: var(--fs-small); }
+.lxs-side__h { font-family: var(--sans); font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+.lxs-toc { display: none; }
+.lxs-toc ol { list-style: none; margin: 0; padding: 0; }
+.lxs-toc li { margin: 0; }
+.lxs-toc a { display: block; padding: 4px 10px; border-left: 2px solid var(--rule); color: var(--ink-soft); text-decoration: none; line-height: 1.35; }
+.lxs-toc a:hover { color: var(--ink); border-left-color: var(--rule-strong); }
+.lxs-toc a[aria-current="true"] { color: var(--ink); font-weight: 600; border-left-color: var(--steel); }
+.lxs-facts { margin-top: var(--lx-gap); padding-top: 12px; border-top: 1px solid var(--rule); }
+.lxs-facts .dl { grid-template-columns: minmax(0, 1fr); }
+.lxs-facts .dl div { padding: 6px 0; }
+.lxs-facts .dl dd { font-size: var(--fs-small); }
+.lxs-facts .dl__note { display: block; color: var(--muted); }
+
+/* at a glance */
+.lxs-glance .h2 { margin-bottom: 10px; }
+.glance__facts { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 0 0 14px; }
+.glance__facts > div { min-width: 0; }
+.glance__facts dt { font-size: var(--fs-small); color: var(--muted); }
+.glance__facts dd { margin: 2px 0 0; font-size: var(--fs-body); }
+.glance__state { display: inline-block; margin-left: 6px; padding: 0 8px; border: 1px dashed var(--steel); border-radius: 999px; font-size: var(--fs-small); color: var(--ink-soft); white-space: nowrap; }
+.glance__state--cited { border-style: solid; }
+.glance__state--unavailable { border-color: var(--rule-strong); }
+.glance__more { margin-left: 8px; font-size: var(--fs-small); white-space: nowrap; }
+.glance__wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--surface); }
+.glance { width: 100%; border-collapse: collapse; font-size: var(--fs-body); }
+.glance th, .glance td { text-align: left; vertical-align: top; padding: 10px var(--lx-pad); border-top: 1px solid var(--rule); }
+.glance thead th { border-top: 0; font-size: var(--fs-small); font-weight: 600; color: var(--muted); background: var(--sunk); }
+.glance tbody th { font-weight: 700; white-space: nowrap; width: 1%; }
+.glance td { width: 49.5%; }
+.glance__v { font-weight: 600; color: var(--ink); }
+.glance__term { color: var(--ink-soft); }
+.glance__when { color: var(--muted); font-size: var(--fs-small); }
+.glance__rec { font-size: var(--fs-small); white-space: nowrap; }
+.glance__runs { list-style: none; margin: 0; padding: 0; }
+.glance__runs li + li { margin-top: 4px; }
+.glance__note { margin: 10px 0 0; max-width: 100ch; font-size: var(--fs-small); color: var(--muted); }
+
+/* the Lean statement beside the paper statement */
+.lxs-cmp { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 var(--lx-gap-lg); }
+.lxs-cmp > .band { min-width: 0; }
+.lean__tools > .copy { margin: 0 0 6px auto; }
+.lxs-cmp .join, .lxs-cmp .alts, .lxs-cmp .join__words, .lxs-cmp .join__how { max-width: none; }
+
+/* the run reports and the assessments as cards */
+.runs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr)); gap: var(--lx-pad); margin: 12px 0; }
+.runs .run { margin: 0; max-width: none; padding: 12px var(--lx-pad); background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); }
+.runs .run__list li:first-child { border-top: 0; padding-top: 4px; }
+.runs .run__list li { padding: 8px 0; }
+.runs__scope { margin: 0 0 12px; max-width: 100ch; }
+.page--lean .readings { max-width: none; grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr)); gap: var(--lx-pad); }
+.page--lean .reading { padding: 12px var(--lx-pad); border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--surface); }
+.page--lean .lead-sentence { max-width: 90ch; margin: 0 0 8px; }
+.page--lean .band > .intro { max-width: 90ch; }
+.page--lean .band > .note { max-width: 90ch; }
+
+/* the share card beside the recorded comparisons */
+.lxs-pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 var(--lx-gap-lg); }
+.lxs-pair > .band { min-width: 0; }
+
+@media (min-width: 1100px) {
+  .lxs-cmp { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .lxs-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (min-width: 1280px) {
+  .lxs { grid-template-columns: minmax(0, 1fr) var(--lx-side); grid-template-rows: auto 1fr; }
+  .lxs-head { grid-column: 1; grid-row: 1; }
+  .lxs-main { grid-column: 1; grid-row: 2; }
+  .lxs-side { grid-column: 2; grid-row: 1 / span 2; align-self: start; position: sticky; top: calc(var(--top-h, 64px) + 16px);
+    max-height: calc(100vh - var(--top-h, 64px) - 32px); overflow: auto; overscroll-behavior: contain; padding-top: 4px; }
+  .lxs-toc { display: block; }
+}
+@media (max-width: 1279px) {
+  .lxs-side { margin-top: var(--lx-gap); }
+  .lxs-facts { margin-top: 0; }
+  .lxs-facts .dl { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 0 32px; }
+}
+/* phones: the table becomes one card per group */
+@media (max-width: 700px) {
+  .glance, .glance tbody, .glance tr, .glance th, .glance td { display: block; width: auto; }
+  .glance thead { display: none; }
+  .glance tbody tr { padding: 10px var(--lx-pad); border-top: 1px solid var(--rule); }
+  .glance tbody tr:first-child { border-top: 0; }
+  .glance tbody th, .glance td { padding: 0; border: 0; white-space: normal; }
+  .glance td { margin-top: 6px; }
+  .glance td::before { content: attr(data-k); display: block; font-size: var(--fs-small); color: var(--muted); }
+}
+/* what a run establishes: the scope and the configuration's box, side by side */
+.runs-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--lx-pad); align-items: stretch; margin: 0 0 8px; }
+.runs-notes > * { margin: 0; max-width: none; }
+.runs-notes > .runs__scope { padding: 12px var(--lx-pad); border-radius: var(--r-md); }
+.page--lean .runs-notes > .note { max-width: none; }
+.lxs-pair > .band { margin-top: 0; padding-top: 22px; border-top: 1px solid var(--rule); }
+.lxs-pair > .band > .h2:first-child { margin-top: 0; }
+/* The "?" that opens the site guide at a step (atlas.css styles it; this is a
+   zero-specificity fallback so it never shows as a default button). */
+:where(.page--lean .help-q) { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin-left: 6px;
+  vertical-align: middle; font: 600 var(--fs-small)/1 var(--sans); color: var(--muted); background: none; border: 1px solid var(--rule-strong); border-radius: 50%; cursor: pointer; }

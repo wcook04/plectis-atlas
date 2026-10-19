@@ -144,9 +144,9 @@ TXT = {
     "family_n": "family {n}",
     "headline_note": "Of the papers’ main statements, this one shares the most words with OpenAI’s description of {families}. Atlas therefore selects it as a possible match to that description, with no recorded review confirming the choice.",
     "lean_proof": "Reports of running Comparator against this Lean statement:",
-    "lean_runs_n": "{n} independent groups report acceptance",
-    "lean_runs_1": "one independent group reports acceptance",
-    "lean_runs_0": "no independent run recorded",
+    "lean_runs_n": "{n} groups report acceptance",
+    "lean_runs_1": "one group reports acceptance",
+    "lean_runs_0": "no Comparator run by a group recorded",
     "lean_holes_1": "one definition Comparator compares by name and type only",
     "lean_holes_n": "{n} definitions Comparator compares by name and type only",
     "listing_link": "Code listing {file}: open it in the release",
@@ -157,6 +157,26 @@ TXT = {
     "fn_label": "Note {n}",
     "description": "Reading view of {title}, converted from its TeX source.",
     "title_dated": "{title} ({date})",
+    # The side panel beside the text on a wide screen: the family, its Lean statements
+    # and what each group reports (build_site's records, said in words).
+    "side_label": "This paper’s family, Lean statements and the groups’ reports",
+    "side_family": "Family {id}",
+    "side_open_family": "Open the family page",
+    "side_lean_h": "Lean statements",
+    "side_lean_none": "The family has no Lean statement.",
+    "side_match_here": "Possible match: {ref}, in this paper",
+    "side_match_there": "Possible match: {ref}, in another paper of the family",
+    "side_match_none": "No confident match with a paper statement",
+    "side_match_state": {
+        "candidate-pairing": "not reviewed",
+        "producer-cited-association": "cited in the Lean source, not reviewed",
+        "producer-declared-binding": "linked by OpenAI’s release, not reviewed",
+    },
+    "side_runs_none": "No Comparator run by a group recorded.",
+    "side_runs_k": "Comparator:",
+    "side_readings_h": "Do the family’s Lean statements state the advertised result?",
+    "side_readings_none": "No group’s assessment recorded.",
+    "side_note": "Each group’s term is quoted. Atlas has not repeated the runs.",
 }
 
 
@@ -4899,6 +4919,76 @@ def banner_items(row) -> list[str]:
     return out
 
 
+def side_panel_html(m: dict, fam: dict | None, root: str) -> str:
+    """Beside the text on a wide screen (after it on a phone): the paper's family, each
+    of its Lean statements with its possible match and the groups' Comparator runs, and
+    each group's assessment of the family, in the group's own term. Every value is the
+    backend's record as build_site reads it; nothing is scored here."""
+    import evidence as ev
+    esc = S.esc
+    if not fam:
+        return ""
+    r = S.RD()
+    try:
+        doc = r.family("f:" + fam["id"]) or {}
+    except Exception:  # noqa: BLE001  (a family the backend does not hold)
+        doc = {}
+    out = [f'<aside class="pr-side" aria-label="{esc(TXT["side_label"])}">',
+           f'<p class="pr-side__k">{esc(TXT["side_family"].format(id=fam["id"]))}</p>',
+           f'<p class="pr-side__fam"><a href="{root}families/{fam["id"]}.html">{S.fam_title_html(fam)}</a></p>',
+           f'<h2 class="pr-side__h">{esc(TXT["side_lean_h"])}</h2>']
+    items = []
+    for rec in doc.get("lean") or []:
+        lid = rec["id"][2:]
+        pinfo = S.lean_pairing(doc, rec["id"])
+        if pinfo["state"] in S.PAIRED_STATES and pinfo.get("target"):
+            pm, pst, prec = S.ms_statement(doc, pinfo["target"])
+            name = S.backend_printed(prec, pst) if pst else pinfo["target"]
+            href = (root + prec["reading_page"]) if prec and prec.get("reading_page") else None
+            here = bool(pm) and pm["id"] == m["id"]
+            if here and href and "#" in href:
+                href = "#" + href.split("#", 1)[1]
+            ref = f'<a href="{esc(href)}">{esc(name)}</a>' if href else esc(name)
+            match = (esc(TXT["side_match_here" if here else "side_match_there"]).replace("{ref}", ref)
+                     + f' <span class="pr-side__state">{esc(TXT["side_match_state"].get(pinfo["state"], ""))}</span>')
+        else:
+            match = esc(TXT["side_match_none"])
+        runs = {x["id"]: x for x in rec.get("runs") or []}
+        bits = []
+        for g in rec.get("run_groups") or []:
+            rows = [runs[i] for i in g.get("run_ids") or [] if i in runs]
+            if not rows:
+                continue
+            nm = S.prose_credit((rows[0].get("credit") or {}).get("name") or g["source"])
+            states = "; ".join(f'{S.run_state_words(x)} (“{x.get("source_term") or ""}”)' for x in rows)
+            bits.append(f'<li><span class="pr-side__who">{esc(nm)}</span> {esc(states)}</li>')
+        runs_html = (f'<p class="pr-side__rk">{esc(TXT["side_runs_k"])}</p><ul class="pr-side__runs">{"".join(bits)}</ul>' if bits
+                     else f'<p class="pr-side__none">{esc(TXT["side_runs_none"])}</p>')
+        items.append(f'<li class="pr-side__lean"><a class="pr-side__lid" href="{root}statements/{quote(lid)}.html"><code>{esc(lid)}</code></a>'
+                     f'<p class="pr-side__match">{match}</p>{runs_html}</li>')
+    out.append(f'<ul class="pr-side__list">{"".join(items)}</ul>' if items else f'<p class="pr-side__none">{esc(TXT["side_lean_none"])}</p>')
+    readings = {x["source"]: x for x in doc.get("readings") or []}
+    out.append(f'<h2 class="pr-side__h">{esc(TXT["side_readings_h"])}</h2>')
+    if readings:
+        lis = []
+        for src in ev.reader_order(set(readings)):
+            rd = readings.get(src)
+            if not rd:
+                continue
+            nm = S.prose_credit((rd.get("credit") or {}).get("name") or src)
+            tone = ev.TONE.get(rd.get("state"), "none")
+            url = (rd.get("source_value") or {}).get("url")
+            term = f'“{esc(rd.get("source_term") or "")}”'
+            term = f'<a class="ext" href="{esc(url)}" rel="noopener">{term}</a>' if url else term
+            lis.append(f'<li><span class="pr-side__who">{esc(nm)}</span> {esc(S.cap(ev.say("tone." + tone)))}, {term}</li>')
+        out.append(f'<ul class="pr-side__runs">{"".join(lis)}</ul>')
+    else:
+        out.append(f'<p class="pr-side__none">{esc(TXT["side_readings_none"])}</p>')
+    out.append(f'<p class="pr-side__note">{esc(TXT["side_note"])} '
+               f'<a href="{root}families/{fam["id"]}.html">{esc(TXT["side_open_family"])}</a></p></aside>')
+    return "".join(out)
+
+
 def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
     m = p.m
     root = "../"
@@ -4959,8 +5049,11 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
                     f'id="pr-abstract-h">{esc(site_copy("paper.abstract", TXT["abstract"]))}</h2>{p.abstract_html}</section>')
     toc = ""
     if p.toc_html:
+        # Beside the text on a wide screen it stays in view, open (paper.js); above the
+        # text on a narrow one it is a disclosure, so the paper starts on the first screen.
         toc = (f'<nav class="pr-toc" aria-label="{esc(TXT["contents"])}"><details><summary>{esc(TXT["contents"])}</summary>'
                f'{p.toc_html}</details></nav>')
+    side = side_panel_html(m, fam, root)
     notes_html = ""
     if p.footnotes:
         lis = "".join(f'<li id="{esc(p.ids.get(fn["ctx"]["i"], ""))}" class="pr-fn"><span class="pr-fn-n">{esc(fn["num"])}</span>'
@@ -4980,23 +5073,28 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
     macros_json = json.dumps(p.katex, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     attrs = ' data-leqno="1"' if p.leqno else ""
     attrs += ' data-fleqn="1"' if p.fleqn else ""
-    body = f"""<div class="frame page pr-page">
+    body = f"""<div class="frame page pr-page{' pr-page--toc' if toc else ''}{' pr-page--side' if side else ''}">
 {trail}
+<div class="pr-grid">
 <header class="phead pr-head">
  <p class="phead__kicker">{esc(TXT['kicker'])}</p>
  <h1 class="phead__title">{S.ms_title_html(m)}</h1>
  <p class="phead__facts pr-facts">{', '.join(facts)}</p>
  <p class="actions">{''.join(actions)}</p>
 </header>
+{toc}
+<div class="pr-col">
 {lede}
 {notes}
 {status}
 {abstract}
-{toc}
 <article class="paper" id="pr-paper" lang="en" data-paper="{esc(m['id'])}" data-math-failed="{esc(TXT['math_failed'])}" data-url="{esc(S.BASE_URL + rel)}"{attrs}>
 {body_html}
 </article>
 {notes_html}
+</div>
+{side}
+</div>
 </div>
 <script type="application/json" id="pr-macros">{macros_json}</script>
 <script type="application/json" id="pr-words">{json.dumps(TXT["ui"], ensure_ascii=False)}</script>"""

@@ -3237,9 +3237,8 @@ def lean_runs_html(rec, root) -> str:
         method_html = (f'<details class="run__method"><summary>{esc(LW("runs.method"))}</summary><p class="small">{esc(curly(method))}</p></details>'
                        if method else "")
         groups.append(f'<div class="run"><h3 class="h3">{who}</h3>{method_html}<ul class="run__list">{"".join(lis)}</ul></div>')
-    body = "".join(groups) or f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
-    return (f'<p class="lead-sentence">{esc(curly(lead))} {esc(LW("runs.reported"))}</p>'
-            f'<p class="runs__scope">{esc(LW("runs.scope"))}</p>{body}')
+    body = f'<div class="runs">{"".join(groups)}</div>' if groups else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
+    return (f'<p class="lead-sentence">{esc(cap(curly(lead)))} {esc(LW("runs.reported"))}</p>{body}')
 
 
 def family_readings_html(fid, doc, root) -> str:
@@ -3293,6 +3292,79 @@ def scope_draft_html(fid, doc, rec) -> str:
     if cls:
         parts.append(f'<p class="scope__draft">{esc(C("statement.draft_line", cls=cover_label(cls)))}</p>')
     return '<div class="scope">' + "".join(parts) + "</div>"
+
+
+def lean_glance_html(fam, fid, doc, rec, pinfo, paper_ok, root) -> str:
+    """The page's answer first: the family, the paper statement and the state of the
+    match, then one row per group with its two answers in its own terms: does the
+    family's Lean state the advertised result, and did OpenAI's proof pass Comparator
+    for this Lean statement. Every value is the backend's; nothing is scored here."""
+    import evidence as _ev
+    facts = []
+    if fam:
+        facts.append((LW("glance.family"), f'<a href="{root}families/{fam["id"]}.html">{esc(LW("glance.family_id", id=fam["id"]))} '
+                                            f'{fam_title_html(fam)}</a>'))
+    state = pinfo["state"] if pinfo["state"] in PAIRED_STATES and paper_ok else "unavailable"
+    if pinfo.get("target") and paper_ok:
+        ref = statement_ref_html(doc, pinfo["target"], root)
+        if len(pinfo.get("targets") or []) > 1:
+            ref += " " + esc(LW("pairing.and_more", n=say(len(pinfo["targets"]) - 1)))
+    else:
+        ref = esc(LW("glance.no_match"))
+    facts.append((LW("glance.paper"), f'{ref} <span class="glance__state glance__state--{"cited" if state in ("producer-cited-association", "producer-declared-binding") else state}">'
+                                      f'{esc(LW("glance.match." + state))}</span> <a class="glance__more" href="#h-claim">{esc(LW("glance.see_match"))}</a>'))
+    facts_html = "".join(f"<div><dt>{esc(k)}</dt><dd>{v}</dd></div>" for k, v in facts)
+    # One row per group: its family-level assessment, then its runs for this statement.
+    readings = {r_["source"]: r_ for r_ in (doc or {}).get("readings") or []}
+    runs = [x for x in (rec or {}).get("runs") or []]
+    run_by = defaultdict(list)
+    for g in (rec or {}).get("run_groups") or []:
+        ids = set(g.get("run_ids") or [])
+        run_by[g["source"]].extend(x for x in runs if x["id"] in ids)
+    order = _ev.reader_order(set(readings))
+    order = [s for s in order if s in readings] + [s for s in run_by if s not in readings]
+    rows = []
+    for src in order:
+        rd = readings.get(src)
+        rr = run_by.get(src) or []
+        credit = (rd or {}).get("credit") or (rr[0].get("credit") if rr else {}) or {}
+        nm = prose_credit(credit.get("name") or src)
+        who = term_link(src, esc(nm)) if src in GLOSSARY else esc(nm)
+        if rd:
+            sv = rd.get("source_value") or {}
+            tone = _ev.TONE.get(rd.get("state"), "none")
+            link = f' <a class="ext glance__rec" href="{esc(sv["url"])}" rel="noopener">{esc(LW("glance.record"))}</a>' if sv.get("url") else ""
+            read_cell = (f'<span class="glance__v glance__v--{tone}">{esc(cap(_ev.say("tone." + tone)))}</span> '
+                         f'<span class="glance__term">{esc(LW("glance.their_term", term=rd.get("source_term") or ""))}</span>{link}')
+        else:
+            read_cell = f'<span class="muted">{esc(LW("glance.no_reading"))}</span>'
+        if rr:
+            items = []
+            for x in rr:
+                when = date_words(x["date"]) if x.get("date") else LW("runs.undated")
+                pin = "" if x.get("pin_state") == "current" else " " + LW("glance.pin_other", pin=str(x.get("pin") or "")[:7])
+                link = f' <a class="ext glance__rec" href="{esc(x["receipt"])}" rel="noopener">{esc(LW("glance.report"))}</a>' if x.get("receipt") else ""
+                items.append(f'<li><span class="glance__v glance__v--run-{esc(x.get("state") or "unknown")}">{esc(cap(run_state_words(x)))}</span> '
+                             f'<span class="glance__term">{esc(LW("glance.their_term", term=x.get("source_term") or ""))}</span> '
+                             f'<span class="glance__when">{esc(when + pin)}</span>{link}</li>')
+            run_cell = f'<ul class="glance__runs">{"".join(items)}</ul>'
+        else:
+            run_cell = f'<span class="muted">{esc(LW("glance.no_run"))}</span>'
+        rows.append(f'<tr><th scope="row">{who}</th><td data-k="{esc(LW("glance.col_reading_short"))}">{read_cell}</td>'
+                    f'<td data-k="{esc(LW("glance.col_runs_short"))}">{run_cell}</td></tr>')
+    comparator = term_link("comparator", "Comparator") if "comparator" in GLOSSARY else "Comparator"
+    col_runs = esc(LW("glance.col_runs", comparator="\x00")).replace("\x00", comparator)
+    fam_id = fam["id"] if fam else (fid or "f:")[2:]
+    table = (f'<div class="glance__wrap"><table class="glance">'
+             f'<caption class="vh">{esc(LW("glance.caption"))}</caption>'
+             f'<thead><tr><th scope="col">{esc(LW("glance.col_group"))}</th>'
+             f'<th scope="col">{esc(LW("glance.col_reading", id=fam_id))}</th><th scope="col">{col_runs}</th></tr></thead>'
+             f'<tbody>{"".join(rows)}</tbody></table></div>') if rows else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
+    note = esc(LW("glance.note", comparator="\x00")).replace("\x00", comparator)
+    return (f'<section class="band band--tight lxs-glance" aria-labelledby="h-glance">'
+            f'<h2 class="h2" id="h-glance">{esc(LW("glance.heading"))} <button type="button" class="help-q" data-help="questions" aria-label="{esc(LW("glance.help_label"))}">?</button></h2>'
+            f'<dl class="glance__facts">{facts_html}</dl>{table}'
+            f'<p class="glance__note">{note} <a href="#h-runs">{esc(LW("glance.full_reports"))}</a></p></section>')
 
 
 _PAPER_MARKS = None
@@ -3518,20 +3590,33 @@ def build_statement(stmt):
  <p><a href="{root}families/{esc(fid[2:])}.html#h-readings">{esc(LW('page.readings_link'))}</a></p>
  {scope_draft_html(fid, doc, lrec)}
 </section>"""
+    glance = lean_glance_html(fam, fid, doc, lrec, pinfo, bool(paper_st), root)
+    # The contents rail beside the page on a wide screen: each section in reading order.
+    toc_items = [("h-glance", LW("toc.glance")), ("h-lean-read", LW("toc.lean")), ("h-claim", LW("toc.claim")),
+                 ("h-runs", LW("toc.runs"))]
+    if readings_section:
+        toc_items.append(("h-readings", LW("toc.readings")))
+    toc_items += [("h-file", LW("toc.file")), ("h-share", LW("toc.share")), ("h-checks", LW("toc.checks"))]
+    toc = (f'<nav class="lxs-toc" aria-labelledby="lxs-toc-h"><p class="lxs-side__h" id="lxs-toc-h">{esc(LW("toc.heading"))}</p><ol>'
+           + "".join(f'<li><a href="#{i}">{esc(t)}</a></li>' for i, t in toc_items) + '</ol></nav>')
     body = f"""<div class="frame page page--lean">
 {trail(root, trail_items)}
 {sibling_nav("lean", lean_siblings(sid, root))}
-<header class="phead">
+<div class="lxs">
+<header class="phead lxs-head">
  <p class="phead__kicker">{esc(LW('page.kicker'))}</p>
  <h1 class="phead__title md-math">{esc(label)}</h1>
- <p class="intro">{esc(LW('page.intro'))}</p>
  {subtitle}
  <p class="phead__where">{src_link}{map_link}<span class="phead__meta">{esc(" ".join(meta + [main_line]))}</span></p>
+ <p class="intro">{ctext(LW('page.intro'))}</p>
  {action_group}
 </header>
+<div class="lxs-main">
+{glance}
 {('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}
+<div class="lxs-cmp">
 <section class="band band--tight claim claim--lean" aria-labelledby="h-lean-read">
- <h2 class="h2" id="h-lean-read">{esc(LW('page.lean_heading'))}</h2>
+ <h2 class="h2" id="h-lean-read">{esc(LW('page.lean_heading'))} <button type="button" class="help-q" data-help="lean" aria-label="{esc(LW('page.lean_help_label'))}">?</button></h2>
  <p class="intro">{esc(lean_intro)}</p>
  <div class="lean__tools"><button class="btn btn--quiet copy" type="button" data-copy-text="{esc(lean_copy)}">{esc(LW('page.copy_lean'))}</button><pre class="lean lean--snippet lean--read"><code>{snippet_full}</code></pre></div>
  <p class="leanc__note">{ctext(lean_note)}</p>
@@ -3542,18 +3627,19 @@ def build_statement(stmt):
 <section class="band band--tight claim claim--paper" aria-labelledby="h-claim">
  {paper_read}
 </section>
+</div>
 <section class="band band--tight" aria-labelledby="h-runs">
  <h2 class="h2" id="h-runs">{esc(LW('page.formal_heading'))}</h2>
  {runs_section}
- {comparator_box_html(stmt)}
+ <div class="runs-notes"><p class="runs__scope">{esc(LW("runs.scope"))}</p>{comparator_box_html(stmt)}</div>
 </section>
 {readings_section}
 <section class="band supporting" aria-labelledby="h-support">
  <h2 class="h2" id="h-support">{esc(C('statement.support_heading'))}</h2>
  {file_section}
  <details class="more" id="sbs"><summary><span class="h3" id="h-sbs">{esc(C('statement.paper_heading'))}</span></summary><p class="intro">{esc(C('statement.paper_intro'))}</p><div class="sbs__all">{''.join(paper_cols)}</div></details>
- <details class="more"><summary><span class="h3">{esc(C('statement.facts_heading'))}</span></summary><dl class="dl">{dl}</dl></details>
 </section>
+<div class="lxs-pair">
 <section class="band band--card" aria-labelledby="h-share">
  <h2 class="h2" id="h-share">{esc(C('statement.card_heading'))}</h2>
  <p class="intro">{esc(C('statement.card_intro'))}</p>
@@ -3569,6 +3655,13 @@ def build_statement(stmt):
  {reasons_html}
  <p class="actions"><a class="btn btn--ghost ext" href="{esc(check_url(sid))}" rel="noopener">{esc(C('statement.check_button'))}</a><a class="btn btn--ghost ext" href="{esc(replay_url)}" rel="noopener">{esc(C('statement.replay_button'))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p>
 </section>
+</div>
+</div>
+<aside class="lxs-side" aria-label="{esc(LW('toc.side_label'))}">
+{toc}
+<section class="lxs-facts" aria-labelledby="h-facts"><h2 class="lxs-side__h" id="h-facts">{esc(C('statement.facts_heading'))}</h2><dl class="dl">{dl}</dl></section>
+</aside>
+</div>
 </div>
 {macros_script(list(dict.fromkeys(([paper_ms['id']] if paper_ms else []) + list(stmt.get('papers') or []))))}"""
     desc = f"{label}. " + (f"{human_name}. " if human_name and human_name != label else "") + main_line + " " + cap(evidence.say("pairing_short." + pinfo["state"])) + "."

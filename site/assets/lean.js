@@ -196,3 +196,25 @@
   var pane = box.querySelector('.lxp');
   if (pane) pane.addEventListener('scroll', hideShown, { passive: true });
 })();
+
+/* The contents rail beside a wide page: the section being read is marked with
+   aria-current, from the last heading above a line a third of the way down. */
+(function () {
+  'use strict';
+  var nav = document.querySelector('.lxs-toc');
+  if (!nav) return;
+  var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+  var targets = links.map(function (a) { return document.getElementById(decodeURIComponent(a.hash.slice(1))); });
+  var queued = false;
+  function mark() {
+    queued = false;
+    if (!nav.offsetParent) return;
+    var line = window.innerHeight / 3, cur = 0;
+    targets.forEach(function (t, i) { if (t && t.getBoundingClientRect().top <= line) cur = i; });
+    links.forEach(function (a, i) { if (i === cur) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+  }
+  function queue() { if (!queued) { queued = true; requestAnimationFrame(mark); } }
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', queue);
+  mark();
+})();

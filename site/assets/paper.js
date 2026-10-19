@@ -323,3 +323,78 @@
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', addTools); else addTools();
   if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', start); else start();
 })();
+
+/* The contents beside the text on a wide screen: open, in view, and marking the
+   section being read (aria-current) from the last heading above a line a third of
+   the way down. On a narrower screen it stays the disclosure the page was built with. */
+(function () {
+  'use strict';
+  var nav = document.querySelector('.pr-grid > .pr-toc');
+  if (!nav || !window.matchMedia) return;
+  var det = nav.querySelector('details');
+  var wide = window.matchMedia('(min-width: 1280px)');
+  var links = Array.prototype.slice.call(nav.querySelectorAll('a[href^="#"]'));
+  var targets = links.map(function (a) { return document.getElementById(decodeURIComponent(a.hash.slice(1))); });
+  var userOpen = det ? det.open : false;
+  function sync() {
+    if (!det) return;
+    if (wide.matches) { det.open = true; } else { det.open = userOpen; }
+  }
+  if (det) det.addEventListener('toggle', function () { if (!wide.matches) userOpen = det.open; });
+  if (wide.addEventListener) wide.addEventListener('change', sync); else if (wide.addListener) wide.addListener(sync);
+  sync();
+  var queued = false, last = -1;
+  function mark() {
+    queued = false;
+    if (!wide.matches) return;
+    var line = window.innerHeight / 3, cur = -1;
+    for (var i = 0; i < targets.length; i++) {
+      var t = targets[i];
+      if (!t) continue;
+      if (t.getBoundingClientRect().top <= line) cur = i; else break;
+    }
+    if (cur === last) return;
+    if (last >= 0) links[last].removeAttribute('aria-current');
+    if (cur >= 0) {
+      links[cur].setAttribute('aria-current', 'true');
+      var r = links[cur].getBoundingClientRect(), n = nav.getBoundingClientRect();
+      if (r.top < n.top || r.bottom > n.bottom) nav.scrollTop += r.top - n.top - n.height / 3;
+    }
+    last = cur;
+  }
+  function queue() { if (!queued) { queued = true; requestAnimationFrame(mark); } }
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', queue);
+  mark();
+})();
+
+/* An inline formula wider than the reading column (on a phone, a long formula with
+   no break point) scrolls inside its own box instead of widening the page. Checked
+   once the paper's formulas are typeset, and again when the window is resized:
+   one pass of reads, then one of writes. */
+(function () {
+  'use strict';
+  var col = document.querySelector('.pr-col');
+  if (!col) return;
+  function fit() {
+    var right = col.getBoundingClientRect().right + 1;
+    var all = col.querySelectorAll('.pr-m--ok:not([data-d="1"])');
+    var wide = [];
+    for (var i = 0; i < all.length; i++) {
+      var n = all[i];
+      if (n.classList.contains('pr-m--wide')) { wide.push([n, true]); continue; }
+      if (n.getBoundingClientRect().right > right) wide.push([n, false]);
+    }
+    wide.forEach(function (w) { if (!w[1]) w[0].classList.add('pr-m--wide'); });
+  }
+  function whenReady() {
+    if (document.documentElement.hasAttribute('data-paper-math')) { fit(); return; }
+    var mo = new MutationObserver(function () {
+      if (document.documentElement.hasAttribute('data-paper-math')) { mo.disconnect(); fit(); }
+    });
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-paper-math'] });
+  }
+  var t = null;
+  window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fit, 250); });
+  whenReady();
+})();
