@@ -59,8 +59,10 @@ jobs:
           python3 scripts/tests/test_check_paper_links.py
       - name: Previous and next links follow each parent page's order
         run: python3 scripts/tests/test_sibling_nav.py
-      - name: The header's how-to-use guide and the footer are on every page
-        run: python3 scripts/tests/test_help_guide.py
+      - name: The header's how-to-use guide, the footer and one breadcrumb grammar are on every page
+        run: |
+          python3 scripts/tests/test_help_guide.py
+          python3 scripts/tests/test_breadcrumbs.py
       - name: The contribution checker rejects what it should
         run: python3 scripts/check_contributions.py --self-test
       - name: Contributions are well formed

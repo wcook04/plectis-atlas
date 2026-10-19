@@ -45,8 +45,9 @@ class HelpGuide(unittest.TestCase):
         self.assertIn(S.esc(S.C("help.limit")), d)
         self.assertIn('href="../help.html"', d)
 
-    def test_hint_only_on_the_map(self):
-        self.assertIn('id="first-hint"', S.header("index.html", "map"))
+    def test_no_floating_hint_covers_the_map(self):
+        # The map's own panel offers the guide and the example; no card floats over the canvas.
+        self.assertNotIn('id="first-hint"', S.header("index.html", "map"))
         self.assertNotIn('id="first-hint"', S.header("explain.html", "explain"))
 
     def test_footer_links(self):
