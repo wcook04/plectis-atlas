@@ -14,6 +14,78 @@
   'use strict';
   var doc = document;
 
+  /* ---- Tabs ---------------------------------------------------------------
+     One reading question per panel: the result and its papers, the Lean and the
+     groups' reports, connections, what people have said, how to contribute. The
+     inline script after the panels has already shown the one the address names; this
+     keeps tabs, links into a hidden panel, Back and Forward in step with it. */
+  var fxTabs = doc.querySelectorAll('[data-fx-tab]');
+  var fxPanels = doc.querySelectorAll('[data-fx-panel]');
+  if (fxTabs.length > 1) {
+    var fxRoot = doc.querySelector('.fx');
+    var tabBar = doc.querySelector('.fx-tabs');
+    fxRoot.classList.add('fx--tabbed');
+    var activePanel = null;
+    var panelOf = function (id) {
+      var el = id ? doc.getElementById(id) : null;
+      if (!el) return null;
+      return el.hasAttribute('data-fx-panel') ? el : el.closest('[data-fx-panel]');
+    };
+    var activate = function (id) {
+      if (activePanel === id) return;
+      activePanel = id;
+      for (var i = 0; i < fxPanels.length; i++) fxPanels[i].hidden = fxPanels[i].id !== id;
+      for (var j = 0; j < fxTabs.length; j++) {
+        var on = fxTabs[j].getAttribute('data-fx-tab') === id;
+        fxTabs[j].setAttribute('aria-selected', on ? 'true' : 'false');
+        fxTabs[j].tabIndex = on ? 0 : -1;
+      }
+    };
+    // A chosen tab starts its panel at the tab bar, never mid-way down the last one.
+    var toTabs = function () {
+      var r = tabBar.getBoundingClientRect();
+      if (r.top < 0 || r.top > window.innerHeight * 0.6) window.scrollTo(0, window.scrollY + r.top);
+    };
+    var fromHash = function (initial) {
+      var id = '';
+      try { id = decodeURIComponent(location.hash.slice(1)); } catch (e) { id = ''; }
+      var p = panelOf(id);
+      if (!p) { if (initial) activate(fxPanels[0].id); return; }
+      activate(p.id);
+      var el = doc.getElementById(id);
+      if (el === p) { if (!initial) toTabs(); } else el.scrollIntoView({ block: 'start' });
+    };
+    for (var k = 0; k < fxTabs.length; k++) {
+      fxTabs[k].addEventListener('click', function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+        e.preventDefault();
+        var id = this.getAttribute('data-fx-tab');
+        activate(id);
+        if (history.replaceState) history.replaceState(null, '', '#' + id);
+        toTabs();
+      });
+      fxTabs[k].addEventListener('keydown', function (e) {
+        var dir = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (!dir) return;
+        e.preventDefault();
+        var list = Array.prototype.slice.call(fxTabs), at = list.indexOf(this);
+        var next = list[(at + dir + list.length) % list.length];
+        next.focus();
+        next.click();
+      });
+    }
+    // A link to anything inside a hidden panel opens that panel first; the browser's own
+    // jump then lands on the target.
+    doc.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || a.hasAttribute('data-fx-tab')) return;
+      var p = panelOf(decodeURIComponent(a.getAttribute('href').slice(1)));
+      if (p) activate(p.id);
+    }, true);
+    window.addEventListener('hashchange', function () { fromHash(false); });
+    fromHash(true);
+  }
+
   /* ---- Choosing a Lean statement ------------------------------------------ */
   var host = doc.querySelector('[data-cmp-host]');
   var tabs = host ? host.querySelectorAll('[data-cmp-tab]') : [];

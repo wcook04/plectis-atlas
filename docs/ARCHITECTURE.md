@@ -302,8 +302,11 @@ The paper reader pair, `reader-light.jpg` and `reader-dark.jpg`, shows
 [the successful Pages build](https://github.com/wcook04/plectis-atlas/actions/runs/38424773534).
 It uses the actual output of `scripts/build_papers.py`, `site/assets/paper.css`
 and the shared typography, fonts and theme control, at a 1440 × 900 CSS pixel
-viewport. The PDF remains the reference. The family board uses
-`family-light.png` and `family-dark.png`.
+viewport. The PDF remains the reference. The family page pair,
+`family-light.png` and `family-dark.png`, shows family 003's first screen: the
+catalogue's claim beside what each group found, above the tabs. It was captured
+on 19 October 2026 from a local build of the redesign branch at a 1440 × 900 CSS
+pixel viewport.
 
 The old map pair (`map-light.png` and `map-dark.png`) remains historical imagery.
 It was captured on 12 October 2026 from the local `reader-v2` build at `d32c790`,

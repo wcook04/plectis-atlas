@@ -699,7 +699,7 @@ def head_html(c: Ctx) -> str:
     trail = (f'<nav class="trail fx-trail" aria-label="{esc(S.C("nav.breadcrumb"))}"><a href="{root}index.html">{esc(W("trail.map"))}</a>'
              f'{S.TRAIL_SEP}<a href="{root}index.html#o=d%3A{S.DISC_SLUG[di]}">{esc(disc)}</a>'
              f'{S.TRAIL_SEP}<span aria-current="page">{esc(W("trail.family", num=c.num))}</span></nav>')
-    tools = (f'<p class="fx-tools"><a class="btn btn--small" href="{root}index.html#o=f%3A{c.num}">{esc(W("actions.plate"))}</a>'
+    tools = (f'<p class="fx-tools"><a class="btn btn--small" href="{root}index.html#o=d%3A{S.DISC_SLUG[di]}">{esc(W("actions.plate"))}</a>'
              f'<button class="btn btn--small" type="button" data-copy-text="{esc(c.page_url)}" data-copied="{esc(W("actions.copied"))}">{esc(W("actions.copy"))}</button></p>')
     title_plain = S.tex_plain(f["title"])
     # The catalogue's bare "(Lean)" link says where it goes.
@@ -708,7 +708,8 @@ def head_html(c: Ctx) -> str:
     quote = (f'<figure class="fx-quote" id="h-desc"><figcaption class="fx-quote__src">{W("head.quote_credit", link=catalogue_link(c))}</figcaption>'
              f'<blockquote class="fx-quote__q"><p class="tex-auto">{S.glue(S.rich(curly_tex(lead), "", root, link_results=True))}</p>{more}</blockquote></figure>')
     context = f'<p class="fx-fact">{esc(W("head.context"))}</p>' if c.ev.has_lean else ""
-    extra = [verdict_line(c), papers_line(c)]
+    # The verdict is said once, as the lead of the glance beside this column.
+    extra = [papers_line(c)]
     erd = S.sourced(f, "erdos_problems")
     if erd and erd.get("value"):
         probs_ = [f'<a class="ext" href="{esc(p["url"])}" rel="noopener">{esc(W("head.erdos_number", n=p["number"]))}</a>' for p in erd["value"]]
@@ -719,12 +720,114 @@ def head_html(c: Ctx) -> str:
         p = W("head.problems_one") if len(probs) == 1 else W("head.problems_many", n=cap(S.say(len(probs))))
         extra.append(f'<a href="#problems">{esc(p)}</a>')
     facts = "".join(f'<p class="fx-fact{" fx-fact--lede" if i < 2 else ""}">{x}</p>' for i, x in enumerate(extra) if x)
+    brief = brief_html(c)
     return f"""<header class="fx-head">
  <div class="fx-bar">{trail}{tools}</div>
  {S.sibling_nav("family", S.family_siblings(c.num, root), discipline=disc)}
  <h1 class="fx-title{' fx-title--long' if len(title_plain) > 64 else ''}"><span class="tex-auto">{S.rich(curly_tex(f["title"]))}</span></h1>
- {quote}{context}{facts}
-</header>"""
+</header>
+<div class="fx-overview{'' if (c.leans or c.readings) else ' fx-overview--single'}">
+ <div class="fx-overview__claim">{quote}{context}{facts}{brief}</div>
+ {glance_html(c)}
+</div>"""
+
+
+BRIEF_KEEP = 5
+
+
+def brief_html(c: Ctx) -> str:
+    """Under the claim, what the family holds, each a direct link: its current papers
+    (reading page and date) and the Lean statements selected for checking. It fills the
+    column beside the glance with routes, never with space."""
+    S, root = c.S, c.root
+    cur = [S.MS[h["id"][2:]] for h in c.doc.get("paper_history") or [] if h.get("status") == "current" and h["id"][2:] in S.MS]
+
+    def more(n, href):
+        return f'<li class="fx-brief__more"><a href="{href}" data-fx-go>{esc(W("brief.more", n=S.say(n)))}</a></li>' if n > 0 else ""
+    papers = "".join(f'<li><a href="{root}papers/{esc(m["id"])}.html"><span class="tex-auto">{S.rich(curly_tex(m["title"]))}</span></a>'
+                     f' <span class="fx-brief__m">{esc(S.date_words(m.get("date")) or "")}</span></li>' for m in cur[:BRIEF_KEEP])
+    papers += more(len(cur) - BRIEF_KEEP, "#papers")
+    leans = "".join(f'<li><a href="{root}statements/{esc(l["id"][2:])}.html"><code translate="no">{esc(l["id"][2:])}</code></a>'
+                    + (f' <span class="fx-brief__m md-math">{esc(curly_tex(l["name"]))}</span>' if l.get("name") and l["name"] != l["id"][2:] else "")
+                    + "</li>" for l in c.leans[:BRIEF_KEEP])
+    leans += more(len(c.leans) - BRIEF_KEEP, "#compare")
+    parts = []
+    if papers:
+        parts.append(f'<h2 class="fx-brief__h">{esc(W("brief.papers_one") if len(cur) == 1 else W("brief.papers_many", n=cap(S.say(len(cur)))))}</h2><ul class="fx-brief__l">{papers}</ul>')
+    if leans:
+        parts.append(f'<h2 class="fx-brief__h">{esc(W("brief.lean_one") if len(c.leans) == 1 else W("brief.lean_many", n=cap(S.say(len(c.leans)))))}</h2><ul class="fx-brief__l">{leans}</ul>')
+    return f'<div class="fx-brief">{"".join(parts)}</div>' if parts else ""
+
+
+def glance_html(c: Ctx) -> str:
+    """What each group says, side by side on the first screen: for every outside group,
+    its own word for how much of the advertised result the Lean states, the gap it names,
+    and its own word for whether OpenAI's proof passed Comparator. Each cell is that
+    group's record, linked; the full reasons follow under "Lean and the reports"."""
+    S, ev = c.S, c.ev
+    head = f'<h2 class="fx-glance__h" id="glance-h">{esc(W("glance.heading"))}</h2>'
+    if not c.leans and not c.readings:
+        return (f'<section class="fx-glance" aria-labelledby="glance-h">{head}'
+                f'<p class="fx-glance__lead">{esc(W("glance.nolean"))}</p></section>')
+    order = [rd.source for rd in ev.readers]
+    names = {rd.source: c.disp(rd.name) for rd in ev.readers}
+    runs: dict = {}
+    for l in c.leans:
+        by_id = {ru["id"]: ru for ru in l.get("runs") or []}
+        for g in l.get("run_groups") or []:
+            for rid in g.get("run_ids") or []:
+                ru = by_id.get(rid)
+                if not ru:
+                    continue
+                src = ru.get("source") or g.get("source")
+                runs.setdefault(src, []).append((l["id"][2:], ru))
+                names.setdefault(src, c.disp((ru.get("credit") or {}).get("name") or src))
+                if src not in order:
+                    order.append(src)
+    n = len(c.leans)
+    rows = []
+    for src in order:
+        rd = next((x for x in ev.readers if x.source == src), None)
+        rec = c.readings.get(src)
+        if rec and rd:
+            sv = rec.get("source_value") or {}
+            note = sv.get("gap") or sv.get("note") or ""
+            note = S.short(first_sentence(drop_file_refs(note)), 220) if note else ""
+            link = (f' <a class="ext fx-gt__go" href="{esc(sv["url"])}" rel="noopener" aria-label="{esc(W("glance.record_label", who=names[src]))}">{esc(W("glance.record"))}</a>'
+                    if sv.get("url") else "")
+            dot_tone = {"full": "all", "part": "part", "other": "other"}.get(rd.tone, "none")
+            scope = (f'<p class="fx-gt__term"><span class="u-dot u-dot--{dot_tone}" aria-hidden="true"></span>'
+                     f'“{esc(rd.term or "")}”</p>'
+                     f'<p class="fx-gt__says">{esc(cap(W("readings.state").get(rd.state or "", sayc("tone." + rd.tone))))}.'
+                     + (f' <span class="md-math">{code_spans(note)}</span>' if note else "") + f'{link}</p>')
+        elif rd:
+            scope = f'<p class="fx-gt__none">{esc(W("glance.not_read"))}</p>'
+        else:
+            scope = f'<p class="fx-gt__none">{esc(W("glance.no_scope"))}</p>'
+        mine = runs.get(src) or []
+        if mine:
+            terms = list(dict.fromkeys(ru.get("source_term") or "" for _, ru in mine))
+            which = (W("glance.runs_all", n=S.say(n)) if len(mine) == n and n > 1 else ""
+                     if n == 1 else W("glance.runs_some", names=", ".join(name for name, _ in mine)))
+            proof = (f'<p class="fx-gt__term">{esc(", ".join("“" + t + "”" for t in terms if t))}</p>'
+                     + (f'<p class="fx-gt__says">{esc(which)}</p>' if which else ""))
+        else:
+            proof = f'<p class="fx-gt__none">{esc(W("glance.runs_none"))}</p>'
+        rows.append(f'<tr><th scope="row">{esc(names.get(src, src))}</th>'
+                    f'<td data-label="{esc(W("glance.col_scope"))}">{scope}</td>'
+                    f'<td data-label="{esc(W("glance.col_proof"))}">{proof}</td></tr>')
+    lead = esc(ev.agreement_sentence()) if c.readings else ""
+    pv = (c.doc.get("producer_scope") or {}).get("value") or {}
+    openai = (f'<a class="ext" href="{esc(pv["url"])}" rel="noopener">{esc(W("glance.openai_note"))}</a>' if pv.get("url") else "")
+    more = f'<a href="#readings" data-fx-go>{esc(W("glance.more"))}</a>'
+    foot = " ".join(x for x in (more, openai) if x)
+    return (f'<section class="fx-glance" aria-labelledby="glance-h">{head}'
+            + (f'<p class="fx-glance__lead">{lead}</p>' if lead else "")
+            + f'<table class="fx-gt"><thead><tr><th scope="col">{esc(W("glance.col_who"))}</th>'
+            f'<th scope="col">{esc(W("glance.col_scope"))}</th><th scope="col">{esc(W("glance.col_proof"))}</th></tr></thead>'
+            f'<tbody>{"".join(rows)}</tbody></table>'
+            f'<p class="fx-glance__note">{esc(W("glance.note"))}</p>'
+            f'<p class="fx-glance__foot">{foot}</p></section>')
 
 
 def tone_class(c: Ctx) -> str:
@@ -1634,22 +1737,29 @@ def checks_intro(c: Ctx, cards) -> str:
 
 def checked_html(c: Ctx) -> str:
     """Who has checked it: the outside readers, the re-runs, checks by another method,
-    problems reported by others, notes on the records, and explanations by others."""
+    problems reported by others and notes on the records."""
     probs = c.problems()
     finds = c.doc.get("findings") or []
-    ex = c.cfind.get("explanation") or []
     parts = [readings_html(c), reruns_html(c), other_checks_html(c)]
     if probs:
         parts.append(f'<h3 class="fx-h3" id="problems"><span class="fx-alias" id="h-problems"></span>{esc(W("checks.problems_heading"))}</h3>'
                      f'<p class="fx-intro">{esc(W("checks.problems_intro"))}</p>{finds_list(c, probs)}')
-    if ex:
-        parts.append(f'<h3 class="fx-h3" id="explanations">{esc(W("claim.explanations_heading"))}</h3>'
-                     f'<p class="fx-intro">{esc(W("claim.explanations_intro"))}</p>{finds_list(c, ex)}')
     if finds:
         items = "".join(f'<li><code translate="no">{esc(x.get("row_id") or "")}</code>: {code_spans(x.get("message") or "")}</li>' for x in finds)
         parts.append(f'<h3 class="fx-h3" id="findings">{esc(W("checks.findings_heading"))}</h3><p class="fx-intro">{esc(W("checks.findings_intro"))}</p><ul class="fx-plain">{items}</ul>')
     return (f'<section class="fx-sec" id="checks" aria-labelledby="checks-h"><span class="fx-alias" id="h-checks"></span>'
             f'<h2 class="fx-h2" id="checks-h">{esc(W("checked.heading"))}</h2>{"".join(p for p in parts if p)}</section>')
+
+
+def others_explain_html(c: Ctx) -> str:
+    """Explanations others have published of this family's results: their own section,
+    beside what people have said, rather than under the proof-check reports."""
+    ex = c.cfind.get("explanation") or []
+    if not ex:
+        return ""
+    return (f'<section class="fx-sec" id="others-explain" aria-labelledby="explanations">'
+            f'<h2 class="fx-h2" id="explanations">{esc(W("claim.explanations_heading"))}</h2>'
+            f'<p class="fx-intro">{esc(W("claim.explanations_intro"))}</p>{finds_list(c, ex)}</section>')
 
 
 # ---- what is left to check ----------------------------------------------------------------
@@ -1954,6 +2064,19 @@ def rail_html() -> str:
             f'<button class="ins-rail__close" type="button">{esc(W("inspect.close"))}</button></div><div class="ins-rail__body"></div></section>')
 
 
+# Before the first paint, show only the panel the address names (or the first), so a
+# scripted page never flashes every panel and then collapses; family.js takes over.
+TAB_PAINT_SCRIPT = ("<script>(function(){var d=document,a=d.querySelectorAll('[data-fx-panel]');if(a.length<2)return;"
+                    "var h='';try{h=decodeURIComponent(location.hash.slice(1));}catch(x){}"
+                    "var e=h&&d.getElementById(h),p=e&&(e.matches('[data-fx-panel]')?e:e.closest('[data-fx-panel]'))||a[0],i;"
+                    "d.querySelector('.fx').classList.add('fx--tabbed');"
+                    "for(i=0;i<a.length;i++)a[i].hidden=a[i]!==p;"
+                    "var t=d.querySelectorAll('[data-fx-tab]');for(i=0;i<t.length;i++){var on=t[i].getAttribute('data-fx-tab')===p.id;"
+                    "t[i].setAttribute('aria-selected',on?'true':'false');t[i].tabIndex=on?0:-1;}})();</script>")
+TAB_GROUPS = (("result", ("claim", "papers")), ("lean", ("compare",)), ("checks", ("checks",)), ("cites", ("cites",)),
+              ("said", ("said", "others")), ("contribute", ("explain", "left")))
+
+
 def build(S, f) -> None:
     """Write families/<id>.html."""
     c = Ctx(S, f)
@@ -1961,18 +2084,28 @@ def build(S, f) -> None:
     head = head_html(c)
     # The claim, then the papers it comes from, the Lean, the checks and the connections;
     # the forms for what is left to check close the page.
-    sections = [("claim", theorem_html(c)), ("papers", papers_html(c)), ("compare", comparison_html(c)),
-                ("checks", checked_html(c)), ("cites", connections_html(c)), ("explain", explain_html(c)),
-                ("said", said_html(c)), ("left", left_html(c))]
-    present = [k for k, h in sections if h]
-    head, main = link_first_terms(head + "\x00" + "".join(h for _, h in sections)).split("\x00", 1)
+    sections = dict([("claim", theorem_html(c)), ("papers", papers_html(c)), ("compare", comparison_html(c)),
+                     ("checks", checked_html(c)), ("cites", connections_html(c)), ("explain", explain_html(c)),
+                     ("said", said_html(c)), ("others", others_explain_html(c)), ("left", left_html(c))])
+    # One reading question per tab, so no answer sits eight screens down the page. Without
+    # scripts every panel shows in turn and the tabs are links to them.
+    groups = [(k, [x for x in keys if sections.get(x)]) for k, keys in TAB_GROUPS]
+    groups = [(k, keys) for k, keys in groups if keys]
+    panels = "\x01".join("".join(sections[x] for x in keys) for _, keys in groups)
+    head, main = link_first_terms(head + "\x00" + panels).split("\x00", 1)
+    parts = main.split("\x01")
+    tabs = "".join(f'<li role="presentation"><a class="fx-tab" role="tab" id="t-{k}" href="#p-{k}" data-fx-tab="p-{k}" aria-controls="p-{k}">'
+                   f'{esc(W("tabs." + k))}</a></li>' for k, _ in groups)
+    body_panels = "".join(f'<div class="fx-panel" id="p-{k}" role="tabpanel" aria-labelledby="t-{k}" data-fx-panel>{html}</div>'
+                          for (k, _), html in zip(groups, parts))
     body = f"""<div class="frame page fx">
 {head}
+<nav class="fx-tabs" aria-label="{esc(W('tabs.label'))}"><ul class="fx-tabs__list" role="tablist">{tabs}</ul></nav>
 <div class="fx-body">
  <div class="fx-main">
-{main}
+{body_panels}{TAB_PAINT_SCRIPT if len(groups) > 1 else ""}
  </div>
- <aside class="fx-aside" aria-label="{esc(W('toc.label'))}"><div class="fx-aside__in">{rail_html()}{toc_html(c, present)}</div></aside>
+ <aside class="fx-aside" aria-label="{esc(W('inspect.pinned'))}"><div class="fx-aside__in">{rail_html()}</div></aside>
 </div>
 </div>
 {c.templates()}

@@ -550,11 +550,13 @@ async function main() {
   c.canvas = { addEventListener: (name, fn) => { handlers[name] = fn; } };
   const selected = [];
   c.select = key => selected.push(key);
+  // A family dot opens the family's page; the press still decides which family.
+  c.openPage = o => selected.push(o.key);
   vm.runInContext(click, c);
   const event = (x, y) => ({ x, y, button: 0, isPrimary: true, pointerType: 'mouse' });
   const handler = (e) => handlers.click(e);
   handler(event(20, 20));
-  assert.deepEqual(selected, ['f:a'], 'moving-dot click selects its displayed family');
+  assert.deepEqual(selected, ['f:a'], 'moving-dot click opens its displayed family');
   handler({ x: 200, y: 200 });
   assert.equal(c.backCalls, 0, 'moving empty ground must not accidentally navigate back');
   c.chart.start = 0;

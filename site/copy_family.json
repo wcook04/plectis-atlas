@@ -36,7 +36,7 @@
    "editions_many": "{n} replaced by later editions",
    "joined": "{current}; {rest}."
   },
-  "context": "Lean is a language for mathematical statements and proofs that a computer can verify. The assessments below ask whether those statements express the result OpenAI describes here."
+  "context": "Lean is a language for mathematical statements and proofs that a computer can verify. Outside groups have compared the release’s Lean statements with this description; what each found is set out in the table."
  },
  "actions": {
   "compare": "Compare the paper and Lean statements",
@@ -387,5 +387,41 @@
   "issue_claim": "Explain family {id}: {title}",
   "issue_credit": "Credit for family {id}: {title}",
   "issue_name": "family {id}, {title}"
+ },
+ "glance": {
+  "_note": "The first-screen comparison of what each outside group found, in their own words.",
+  "heading": "What each group found",
+  "col_who": "Group",
+  "col_scope": "Does the Lean state the advertised result?",
+  "col_proof": "Did OpenAI’s proof pass Comparator?",
+  "not_read": "Not assessed.",
+  "no_scope": "Did not assess this.",
+  "runs_none": "No run reported.",
+  "runs_all": "For all {n} Lean statements.",
+  "runs_some": "For {names}.",
+  "record": "Their assessment",
+  "record_label": "Read {who}’s original assessment",
+  "note": "Words in quotation marks are each group’s own. A passing run checks OpenAI’s proof of the Lean statement; it does not show that the statement says what the paper says. Atlas links these reports and has not repeated them.",
+  "more": "Compare their reasons in full",
+  "openai_note": "OpenAI’s note on what its Lean covers",
+  "nolean": "The release has no Lean statement for this family, so no group has compared one with the paper or re-run a proof."
+ },
+ "tabs": {
+  "_note": "Each tab answers one reading question about the family.",
+  "label": "Parts of this family’s page",
+  "result": "The result and its papers",
+  "lean": "Lean statements",
+  "checks": "What the groups found",
+  "cites": "Connections",
+  "said": "Discussion and explanations",
+  "contribute": "Contribute"
+ },
+ "brief": {
+  "_note": "Under the claim: the family's current papers and selected Lean statements, each linked.",
+  "papers_one": "The paper",
+  "papers_many": "{n} papers",
+  "lean_one": "The Lean statement selected for checking",
+  "lean_many": "{n} Lean statements selected for checking",
+  "more": "and {n} more"
  }
 }

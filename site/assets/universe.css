@@ -453,6 +453,15 @@ main.u-main { padding: 0; max-width: none; }
 .u-mapbar { position: absolute; left: 14px; right: 14px; top: 10px; display: flex; align-items: center; gap: 8px 14px; pointer-events: none; }
 .u-mapbar > * { pointer-events: auto; }
 .u-cap { margin: 0; max-width: 78ch; font: 400 var(--fs-small)/1.4 var(--sans); color: var(--ink-soft); text-wrap: pretty; }
+/* What the pointer names takes the caption's place, in the same grid cell, so the bar
+   keeps its height and nothing ever floats over the dots being reached for. */
+.u-capbox { display: grid; min-width: 0; }
+.u-capbox > .u-cap { grid-area: 1 / 1; }
+.u-cap--hover { visibility: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: var(--ink); }
+.u-cap__name { font: 600 var(--fs-body)/1.3 var(--serif); color: var(--ink); margin-right: 4px; }
+.u-cap--hover .u-dot { display: inline-block; vertical-align: 0.05em; margin: 0 2px 0 4px; }
+.is-hovering .u-cap--hover { visibility: visible; }
+.is-hovering .u-cap:not(.u-cap--hover) { visibility: hidden; }
 .u-edge-guide { display: block; margin-top: 5px; }
 .u-edge-key { display: inline-flex; align-items: baseline; gap: 4px; margin-right: 10px; font-weight: 600; white-space: nowrap; }
 .u-edge-key--out { color: var(--u-cites); }

@@ -14,7 +14,7 @@ import json
 import sys
 import tempfile
 from collections import Counter
-from html import unescape
+from html import escape as _esc, unescape
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -74,6 +74,19 @@ def main() -> int:
               .split("<main", 1)[-1].split("Their method", 1)[0], "an em dash in the page's own words")
         for what in compare_buttons(fid, html):
             check(False, what)
+        # The first screen compares the groups; the rest of the page is one tab per question.
+        check('class="fx-glance"' in html, "no comparison of what each group found")
+        if doc.get("readings"):
+            for rd in doc["readings"]:
+                term = rd.get("source_term")
+                if term:
+                    glance = html.split('class="fx-glance"', 1)[1].split("</section>", 1)[0]
+                    check(_esc(term, quote=False) in glance, f"the glance omits {rd['source']}'s term")
+        tabs = re.findall(r'data-fx-tab="([^"]+)"', html)
+        panels = re.findall(r'id="(p-[a-z]+)" role="tabpanel"', html)
+        check(tabs == panels and tabs and tabs[0] == "p-result", f"tabs {tabs} do not match panels {panels}")
+        check("index.html#o=f%3A" not in html, "a map link to the family, which now opens this page")
+    fails += tone_tokens_equal()
     fails += status_group_counts()
     fails += tied_order()
     fails += definition_only_statement(tmp)
@@ -83,6 +96,16 @@ def main() -> int:
         print("FAIL", f)
     print(f"family page: {len(SPECIMENS)} specimens, {len(fails)} failures")
     return 1 if fails else 0
+
+
+def tone_tokens_equal() -> list:
+    """The glance's tone inks are copies of the map's (universe.css); they must stay equal."""
+    root = Path(__file__).resolve().parents[2] / "site" / "assets"
+    def tokens(css: str) -> list:
+        return re.findall(r"--u-t-(all|part|other|split|none|unread): (#[0-9a-f]{6})", css)
+    uni = tokens((root / "universe.css").read_text(encoding="utf-8"))
+    fam = tokens((root / "family.css").read_text(encoding="utf-8"))
+    return [] if fam and fam == uni[:len(fam)] and len(fam) == 18 else [f"family.css tone inks drift from universe.css: {fam} vs {uni[:18]}"]
 
 
 def attributed_source_note() -> list:

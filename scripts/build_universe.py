@@ -1328,7 +1328,10 @@ def page_body(M, gen, data_version=None) -> str:
   <div class="u-board" data-u-board role="region" aria-label="{esc(U('board.label'))}"></div>
   <div class="u-mapbar" data-u-bar>
    <button type="button" class="u-mapkey-btn" data-u-mapkey aria-expanded="false" aria-controls="u-mapkey">{esc(U('mapkey.button'))}</button>
-   <p class="u-cap" data-u-cap>{esc(U('chart.release_cap', families=len(M.data['families']), disciplines=len(M.data['disciplines'])))}</p>
+   <div class="u-capbox">
+    <p class="u-cap" data-u-cap>{esc(U('chart.release_cap', families=len(M.data['families']), disciplines=len(M.data['disciplines'])))}</p>
+    <p class="u-cap u-cap--hover" data-u-hovercap aria-hidden="true"></p>
+   </div>
   </div>
   <div class="u-mapkey" id="u-mapkey" data-u-mapkey-panel hidden></div>
  </div>
@@ -1474,7 +1477,7 @@ All numeric references below are zero-based array indices in the two packets fet
 
 Keep `lean[i].pairing` with a pairing edge. `candidate-pairing` is unreviewed. Keep `acc` as the attributed sources reporting accepted replays, not an Atlas verification claim. Read the family or Lean page for the precise evidence and limits.
 
-Resolve each non-null `href` relative to `{base}`, including its fragment. Some nodes can have a null `href`; use the parent family or the paper's `pdf` instead of inventing a URL. Open a map node with `{base}#o=` followed by its URL-encoded `id`. Readable page URLs are preferable when a client cannot execute JavaScript.
+Resolve each non-null `href` relative to `{base}`, including its fragment. Some nodes can have a null `href`; use the parent family or the paper's `pdf` instead of inventing a URL. Open a subject on the map with `{base}#o=` followed by its URL-encoded `id` (`d:…`); the same address with a family, paper, result or Lean `id` opens that object's own page. Readable page URLs are preferable when a client cannot execute JavaScript.
 
 ## A small traversal
 
