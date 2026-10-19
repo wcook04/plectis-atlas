@@ -3,7 +3,6 @@
    numbered statements, proofs, displays that scroll sideways when wide, figure
    placeholders and the banner of a partial page. Every class is prefixed pr-. */
 
-.pr-page { width: min(860px, calc(100% - 32px)); }
 .pr-head { margin-bottom: 14px; }
 .pr-facts { color: var(--muted); font-size: var(--fs-meta); }
 .pr-facts .pr-m { font-size: 1em; }
@@ -179,7 +178,6 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
 
 /* Phones */
 @media (max-width: 600px) {
-  .pr-page { width: calc(100% - 32px); }
   .paper, .pr-abstract, .pr-notes { font-size: 1rem; line-height: 1.58; }
   .pr-thm { padding-left: 10px; }
   .pr-list > li { grid-template-columns: minmax(1.8em, max-content) minmax(0, 1fr); column-gap: 0.4em; }
@@ -219,3 +217,76 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
 .pr-pop__msg { font-weight: 400; margin: 0; }
 @media print { .pr-tools, .pr-pop { display: none !important; } }
 @media (max-width: 600px) { .pr-tools { float: none; display: flex; justify-content: flex-start; margin: 0 0 0.2em; } }
+
+/* ---- The page laid out for the screen (UX pass, 19 October) -------------------
+   The text keeps its reading measure (paragraphs at 40em). On a wide screen the
+   contents stay in view on the left and the family panel (its Lean statements and
+   what each group reports) on the right, so the margins carry navigation instead of
+   empty space. Between 1000 and 1279px only the panel sits beside the text; below
+   1000px everything is one column, the contents a disclosure above the text and the
+   panel after it. */
+.pr-page { --pr-col: 46rem; --pr-toc: 15rem; --pr-side: 19rem; --pr-gap: 40px; padding-bottom: 24px; }
+.pr-grid { display: grid; grid-template-columns: minmax(0, var(--pr-col)); justify-content: center; gap: 0 var(--pr-gap);
+  grid-template-areas: "head" "toc" "main" "side"; }
+.pr-head { grid-area: head; max-width: none; }
+.pr-grid > .pr-toc { grid-area: toc; }
+.pr-col { grid-area: main; min-width: 0; }
+.pr-side { grid-area: side; min-width: 0; }
+.pr-col > .pr-abstract, .pr-col > .pr-status, .pr-col > .pr-banner { max-width: 40em; }
+/* A display or table wider than the column scrolls inside its own box. */
+.pr-col .pr-eq, .pr-col .pr-tbl, .pr-col .pr-verb { max-width: 100%; }
+.pr-col .pr-m[data-d="1"] { max-width: 100%; }
+.pr-col .katex-display { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+
+/* the family panel */
+.pr-side { font-family: var(--sans); font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft);
+  padding: 14px 16px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); margin-top: 28px; }
+.pr-side p { margin: 0; }
+.pr-side__k { font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+.pr-side__fam { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.3; margin: 2px 0 10px !important; }
+.pr-side__fam a { color: var(--ink); text-decoration: none; }
+.pr-side__fam a:hover { text-decoration: underline; }
+.pr-side__h { font-family: var(--sans); font-size: var(--fs-small); font-weight: 700; color: var(--ink); margin: 14px 0 6px; line-height: 1.35; }
+.pr-side__list, .pr-side__runs { list-style: none; margin: 0; padding: 0; }
+.pr-side__lean { padding: 8px 0; border-top: 1px solid var(--rule); }
+.pr-side__lean:first-child { border-top: 0; padding-top: 0; }
+.pr-side__lid code { font-family: var(--lean-mono, var(--mono)); font-size: 0.95em; color: var(--steel-text); font-weight: 600; overflow-wrap: anywhere; }
+.pr-side__match { margin: 2px 0 4px !important; }
+.pr-side__state { color: var(--muted); }
+.pr-side__state::before { content: "("; }
+.pr-side__state::after { content: ")"; }
+.pr-side__rk { color: var(--muted); }
+.pr-side__runs li { margin: 2px 0; }
+.pr-side__who { font-weight: 600; color: var(--ink); }
+.pr-side__none { color: var(--muted); }
+.pr-side__note { margin-top: 12px !important; padding-top: 8px; border-top: 1px solid var(--rule); color: var(--muted); }
+.pr-side a { color: var(--accent); }
+
+/* the contents beside the text */
+.pr-grid > .pr-toc a[aria-current="true"] { color: var(--ink); font-weight: 600; }
+
+@media (min-width: 1000px) {
+  .pr-grid { grid-template-columns: minmax(0, var(--pr-col)) var(--pr-side);
+    grid-template-areas: "head side" "toc side" "main side"; grid-template-rows: auto auto 1fr; }
+  .pr-side { align-self: start; position: sticky; top: calc(var(--top-h, 64px) + 16px); margin-top: 0;
+    max-height: calc(100vh - var(--top-h, 64px) - 32px); overflow: auto; overscroll-behavior: contain; }
+}
+@media (min-width: 1280px) {
+  .pr-page--toc .pr-grid { grid-template-columns: var(--pr-toc) minmax(0, var(--pr-col)) var(--pr-side);
+    grid-template-areas: "toc head side" "toc main side"; grid-template-rows: auto 1fr; }
+  .pr-page--toc:not(.pr-page--side) .pr-grid { grid-template-columns: var(--pr-toc) minmax(0, var(--pr-col));
+    grid-template-areas: "toc head" "toc main"; }
+  .pr-grid > .pr-toc { align-self: start; position: sticky; top: calc(var(--top-h, 64px) + 16px); margin: 0;
+    max-height: calc(100vh - var(--top-h, 64px) - 32px); overflow: auto; overscroll-behavior: contain; font-size: var(--fs-small); padding-right: 4px; }
+  .pr-grid > .pr-toc summary { font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); pointer-events: none; list-style: none; }
+  .pr-grid > .pr-toc summary::-webkit-details-marker { display: none; }
+  .pr-grid > .pr-toc .pr-toc-list { margin-top: 2px; }
+  .pr-grid > .pr-toc li { margin: 0; }
+  .pr-grid > .pr-toc a { display: block; padding: 3px 8px; border-left: 2px solid var(--rule); color: var(--ink-soft); line-height: 1.35; }
+  .pr-grid > .pr-toc a:hover { color: var(--ink); text-decoration: none; border-left-color: var(--rule-strong); }
+  .pr-grid > .pr-toc a[aria-current="true"] { border-left-color: var(--steel); }
+  .pr-grid > .pr-toc .pr-toc-sub { margin: 0 0 0 10px; }
+  .pr-grid > .pr-toc .pr-toc-n { min-width: 2em; }
+}
+@media (min-width: 1700px) { .pr-page { --pr-col: 48rem; --pr-toc: 17rem; --pr-side: 22rem; --pr-gap: 56px; } }
+.pr-m--wide { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: bottom; }
