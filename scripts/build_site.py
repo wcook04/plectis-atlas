@@ -1457,6 +1457,7 @@ def header(rel: str, current: str | None) -> str:
   <a class="brand" href="{root}index.html" aria-label="{esc(C('nav.brand_label'))}">{MARK_SVG}<span class="brand__name" translate="no">{esc(C('site.name'))}</span></a>
   <nav class="nav" id="site-nav" aria-label="{esc(C('nav.site_nav'))}">{''.join(links)}</nav>
   <div class="top__tools">
+   <a class="plectis-link ext" href="{esc(CFG['author_url'])}" rel="noopener" title="{esc(C('nav.plectis_title'))}">{esc(C('nav.plectis'))}</a>
    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg><span>{esc(C('nav.menu'))}</span></button>
    <a class="search-open" href="{root}explain.html" aria-label="{esc(C('nav.search'))}" aria-haspopup="dialog" aria-controls="search-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg><span class="search-open__label">{esc(C('nav.search'))}</span><kbd aria-hidden="true">/</kbd></a>
    <button class="help-open" type="button" aria-label="{esc(C('nav.help'))}" title="{esc(C('nav.help'))}" aria-haspopup="dialog" aria-controls="help-dialog"><span aria-hidden="true">?</span></button>
@@ -1556,6 +1557,7 @@ def footer(rel: str) -> str:
   <div class="foot__lead">
    <p class="foot__name">{MARK_SVG}<span translate="no">{esc(C('site.name'))}</span></p>
    <p>{esc(C('site.independence', author=CFG['author']))}</p>
+   <p class="foot__plectis">{esc(C('site.plectis_lead'))} <a class="ext" href="{esc(CFG['author_url'])}" rel="noopener">{esc(C('site.plectis_link'))}</a></p>
    <p>{esc(C('site.licence', upstream='openai/math', commit_short=COMMIT_SHORT))}</p>
   </div>
   <nav class="foot__nav" aria-label="{esc(C('site.foot_nav'))}">

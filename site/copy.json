@@ -15,7 +15,9 @@
   "foot_nav": "More of the Atlas",
   "foot_atlas": "The Atlas",
   "foot_lists": "Lists and credits",
-  "foot_source": "Source"
+  "foot_source": "Source",
+  "plectis_lead": "The Atlas is one of Will Cook's projects.",
+  "plectis_link": "See them all on Plectis"
  },
  "nav": {
   "atlas": "Atlas",
@@ -44,7 +46,9 @@
   "glossary": "Glossary",
   "map": "Map",
   "menu": "Menu",
-  "help": "How to use the Atlas"
+  "help": "How to use the Atlas",
+  "plectis": "Plectis",
+  "plectis_title": "Plectis: Will Cook's mathematics and projects, of which the Atlas is one"
  },
  "help": {
   "_note": "The how-to-use guide behind the ? button in every page's header, on help.html, and the 404 page's route (build_site.help_dialog). It teaches through one worked example (family 017, the site's example) before the general route, then the words in the order a reader meets them. __ROOT__ in a link is the page's root. Every quoted group term in the example is checked against the data by scripts/tests/test_help_guide.py. Each step has an id so a page can open the guide at it with data-help=\"<id>\".",
