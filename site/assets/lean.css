@@ -297,13 +297,9 @@
 .page--lean .band > .intro { max-width: 90ch; }
 .page--lean .band > .note { max-width: 90ch; }
 
-/* the share card beside the recorded comparisons */
-.lxs-pair { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 var(--lx-gap-lg); }
-.lxs-pair > .band { min-width: 0; }
 
 @media (min-width: 1100px) {
   .lxs-cmp { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .lxs-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 @media (min-width: 1280px) {
   .lxs { grid-template-columns: minmax(0, 1fr) var(--lx-side); grid-template-rows: auto 1fr; }
@@ -333,9 +329,68 @@
 .runs-notes > * { margin: 0; max-width: none; }
 .runs-notes > .runs__scope { padding: 12px var(--lx-pad); border-radius: var(--r-md); }
 .page--lean .runs-notes > .note { max-width: none; }
-.lxs-pair > .band { margin-top: 0; padding-top: 22px; border-top: 1px solid var(--rule); }
-.lxs-pair > .band > .h2:first-child { margin-top: 0; }
 /* The "?" that opens the site guide at a step (atlas.css styles it; this is a
    zero-specificity fallback so it never shows as a default button). */
 :where(.page--lean .help-q) { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin-left: 6px;
   vertical-align: middle; font: 600 var(--fs-small)/1 var(--sans); color: var(--muted); background: none; border: 1px solid var(--rule-strong); border-radius: 50%; cursor: pointer; }
+
+/* ---- Teaching order (UX pass round 2, 19 October) ---------------------------
+   The page reads as a sequence of questions: what is known so far, what the Lean
+   says (with a key to its notation), which paper theorem it may state, what the
+   groups conclude and why, which proof was checked, what is unchecked, where to
+   read more. Each section opens with its answer (.answer, .lead-sentence). */
+.page--lean .phead__what { margin: 0 0 8px; max-width: 78ch; color: var(--ink-soft); font-size: var(--fs-body); line-height: 1.5; text-wrap: pretty; }
+.brief { display: grid; grid-template-columns: minmax(10rem, 15rem) minmax(0, 1fr); margin: 0; border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--surface); }
+.brief > div { display: contents; }
+.brief dt, .brief dd { padding: 10px var(--lx-pad); border-top: 1px solid var(--rule); }
+.brief > div:first-child dt, .brief > div:first-child dd { border-top: 0; }
+.brief dt { font-weight: 600; color: var(--ink); background: var(--sunk); font-size: var(--fs-body); }
+.brief dd { margin: 0; font-size: var(--fs-body); color: var(--ink); line-height: 1.5; text-wrap: pretty; max-width: none; }
+@media (max-width: 700px) {
+  .brief { grid-template-columns: minmax(0, 1fr); }
+  .brief dt { padding-bottom: 4px; }
+  .brief dd { border-top: 0; padding-top: 4px; }
+}
+.claim .answer { margin: 0 0 12px; font-family: var(--serif); font-size: var(--fs-lede); line-height: 1.45; color: var(--ink); text-wrap: pretty; }
+.claim--paper .join { margin-top: 14px; }
+.claim--lean .scope { margin: 0 0 12px; }
+.claim--lean .scope__src { margin: 0 0 4px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.claim--lean .scope .quote { margin: 0 0 6px; }
+.claim--lean .scope__draft { margin: 0; font-size: var(--fs-small); color: var(--muted); }
+/* the key to the notation, beside the code it explains */
+.lsym { margin: 14px 0 0; padding: 12px var(--lx-pad); background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); }
+.lsym__h { margin: 0 0 6px; font-weight: 700; font-size: var(--fs-body); color: var(--ink); }
+.lsym__list { margin: 0; padding: 0 0 0 1.1em; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
+.lsym__list li { margin: 3px 0; }
+.lsym__list code, .lsym__more code { font-family: var(--lean-mono); font-size: 0.95em; color: var(--ink); }
+.lsym__more { margin: 6px 0 0; font-size: var(--fs-small); color: var(--muted); }
+/* the groups' comparison: their reasons in their own words inside each cell */
+.lxs-groups .glance td > p { margin: 0 0 6px; }
+.lxs-groups .glance td > p:last-child { margin-bottom: 0; }
+.glance__rule { color: var(--ink-soft); }
+.glance__why { color: var(--ink-soft); font-size: var(--fs-small); overflow-wrap: anywhere; }
+.glance__k { font-weight: 600; color: var(--ink); }
+.anchor-alias { display: block; height: 0; scroll-margin-top: calc(var(--top-h, 64px) + 16px); }
+/* what is unchecked; the records beside each other */
+.left { margin: 4px 0 12px; padding-left: 1.2em; max-width: 90ch; }
+.left li { margin: 6px 0; }
+.left-records { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 0 var(--lx-gap-lg); }
+.left-records .h3 { margin-top: 14px; }
+/* where to read more */
+.next { list-style: none; margin: 4px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); gap: 8px var(--lx-pad); }
+.next li { padding: 10px var(--lx-pad); border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--surface); }
+.next li a { font-weight: 600; }
+.next li .muted { display: block; margin-top: 2px; font-size: var(--fs-small); }
+/* The code reads at a size that matches the prose beside it, in the Lean face. */
+.page--lean .lean--read { max-width: none; padding: 14px 0; font-family: var(--lean-mono); font-size: var(--lx-fs); line-height: 1.7; }
+.page--lean .lean__tools { display: flex; flex-direction: column; }
+.page--lean .leanc__note { margin: 0 0 10px; max-width: 70ch; color: var(--ink-soft); font-size: var(--fs-small); }
+/* the notation key as rows of a ruled table: the symbol, then its reading */
+.lsym__list { list-style: none; padding: 0; }
+.lsym__list li { margin: 0; padding: 6px 0; border-top: 1px solid var(--rule); }
+.lsym__list li:first-child { border-top: 0; padding-top: 2px; }
+@media (min-width: 1600px) {
+  .page--lean { --lx-side: 18rem; }
+  .page--lean .lean--read { font-size: 0.875rem; }
+  .brief { grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr); }
+}

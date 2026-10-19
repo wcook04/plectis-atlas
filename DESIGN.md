@@ -505,6 +505,31 @@ is reading, delay the mathematics, or run in a loop.
   disclosure above the text, the panel after it.
 - **A wide display scrolls in its own box**, never past the reading column.
 
+Round 2 (teaching order, 19 October 2026): Will asked for pages that teach any
+reader, not emptier ones.
+
+- **Headings are the reader's questions, in order.** A Lean page reads: what is
+  known so far; what does the Lean statement say; which paper theorem might it
+  state; what do the groups conclude, and why; which proof did Comparator accept,
+  and what does that show; what is still unchecked, and how can you help; where to
+  read more. Skimming the headings gives the argument. Each section's first
+  sentence is its answer. "At a glance" became "What is known so far": four
+  questions answered in a sentence each.
+- **The groups' reasons sit beside their labels.** The comparison table carries
+  each group's rule text and note in its own words, next to its Comparator run, so
+  "full" against "NARROWER — DECLARED" can be read with the shared Flint–Hills
+  omission that explains it. The separate assessments section went; its anchor
+  `h-readings` survives on the table.
+- **Notation is explained where it is read.** OpenAI's own note sits above the
+  code as its plain reading, the `sorry` note before it, and a key lists only the
+  symbols the shown lines use (copy_lean.json `symbols`, matched by pattern).
+- **A paper says where it fits before its text.** "Before you read" answers which
+  family, which of its theorems have a Lean statement (and which main statements
+  have none, such as 017's Flint–Hills corollary), what the groups report in their
+  linked terms, and where to go next.
+- **One trail**: Map / Subject / Family N: short title / Lean statement Name, or
+  the paper's short title ("The paper" when it repeats the family's title).
+
 ## The map sidebar at each selection level
 
 On desktop, the colour key stands on the map at the release and in a subject;

@@ -21,7 +21,7 @@
  "agreement": {
   "agree": "MathVet and cert-machine agree on how much of the advertised result the Lean statements express.",
   "disagree": "MathVet and cert-machine disagree on how much of the advertised result the Lean statements express.",
-  "unknown": "Atlas has no independent comparison of these Lean statements with OpenAI’s description of the result."
+  "unknown": "Atlas records no group’s comparison of these Lean statements with OpenAI’s description of the result."
  },
  "pairing": {
   "candidate-pairing": "Atlas selected this possible match because the two statements share words. No review of whether they mean the same thing is recorded.",
@@ -30,28 +30,28 @@
   "unavailable": "No paper theorem is paired with this Lean statement."
  },
  "pairing_short": {
-  "candidate-pairing": "candidate pairing",
+  "candidate-pairing": "possible match",
   "producer-cited-association": "cited in the Lean source",
   "producer-declared-binding": "declared by the release",
-  "unavailable": "no pairing"
+  "unavailable": "no possible match"
  },
  "claim": {
   "candidate": "Possible match to the theorem OpenAI’s catalogue describes: of the papers’ main statements, it shares the most words with that description. Atlas records no review confirming the choice.",
   "unresolved": "No single theorem in the papers has been identified as the one the catalogue describes. These share the most words with it."
  },
  "scope_context": {
-  "family-readings": "The independent assessments compare the family’s Lean statements with the whole result OpenAI describes in its catalogue.",
-  "supporting-or-different": "The outside readers find that the release’s Lean states a supporting or different result, so the theorem it is paired with is shown under its own heading."
+  "family-readings": "The groups’ assessments compare the family’s Lean statements with the whole result OpenAI describes in its catalogue.",
+  "supporting-or-different": "The groups find that the release’s Lean states a supporting or different result, so the theorem it is paired with is shown under its own heading."
  },
  "reruns": {
-  "none": "Atlas has no report of an independent group using Comparator to verify OpenAI’s proof of this Lean statement at the version shown here.",
-  "one": "One independent group reports that Comparator accepted a run for this Lean statement file: {names}.",
-  "many": "{n} independent groups report that Comparator accepted runs for this Lean statement file: {names}.",
+  "none": "Atlas has no report of a group using Comparator to verify OpenAI’s proof of this Lean statement at the version shown here.",
+  "one": "One group reports that Comparator accepted OpenAI’s solution for this Lean statement: {names}.",
+  "many": "{n} groups report that Comparator accepted OpenAI’s solution for this Lean statement: {names}.",
   "what_it_checks": "For a configured theorem, Comparator tests whether OpenAI’s proof proves the Lean statement using only the allowed axioms. Some files configure definitions only, which Comparator compares by name and type. Acceptance does not establish that a Lean statement means the same thing as the paper’s theorem.",
   "names_joiner": "; ",
   "source_term": "{name} records it as “{term}”."
  },
- "other_checks": "Independent reports using other methods: {kinds}.",
+ "other_checks": "Reports from groups using other methods: {kinds}.",
  "check_kind": {
   "hol_checks": "proofs of selected steps in HOL Light",
   "finite_checks": "exact calculations for finite claims"
@@ -75,7 +75,7 @@
   "agree:agree": "MathVet and cert-machine agree on how much of the advertised result the Lean statements express.",
   "different-scope-descriptions:agree": "Neither group finds that the Lean statements express or imply the whole advertised result. They describe what the statements express in different terms.",
   "different-scope-descriptions:disagree": "MathVet and cert-machine disagree on how much of the advertised result the Lean statements express.",
-  "unavailable:unknown": "Atlas has no independent comparison of these Lean statements with OpenAI’s description of the result."
+  "unavailable:unknown": "Atlas records no group’s comparison of these Lean statements with OpenAI’s description of the result."
  },
  "no_lean": "The release has no Lean statement for this family. The papers remain available to read and assess.",
  "_draft_class_note": "An AI agent's unreviewed draft class for one Lean statement (scope_draft.value.class), in the same words on the family page, the Lean statement's page and the numbers page. The draft judges each statement against a theorem of one of its papers, which need not be the theorem the statement is paired with or the theorem the catalogue describes, so no class is worded as the headline.",
