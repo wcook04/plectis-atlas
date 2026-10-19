@@ -370,7 +370,7 @@
     var capEl = root.querySelector('[data-u-cap]'), barEl = root.querySelector('[data-u-bar]');
     function chromeBoxes() {
       var out = [], sr = canvas.getBoundingClientRect();
-      [barEl, root.querySelector('[data-u-mapkey-panel]')].forEach(function (el) {
+      [barEl, hoverLineBox()].forEach(function (el) {
         if (!el || el.hidden || !el.offsetParent) return;
         Array.prototype.forEach.call(el === barEl ? el.children : [el], function (c) {
           if (c.hidden || !c.offsetParent) return;
@@ -380,12 +380,20 @@
       });
       return out;
     }
+    function hoverLineBox() { return root.querySelector('[data-u-hoverline]'); }
     var chrome = [];
     // The band the bar (Map key and the caption) takes at the top of the stage.
     function topBand() {
       if (!barEl || !barEl.offsetParent) return 12;
       var sr = canvas.getBoundingClientRect(), b = barEl.getBoundingClientRect();
       return Math.max(12, Math.round(b.bottom - sr.top + 10));
+    }
+    // The band the hover line takes at the bottom of the stage (none where it is hidden).
+    function bottomBand() {
+      var el = hoverLineBox();
+      if (!el || !el.offsetParent) return 12;
+      var sr = canvas.getBoundingClientRect(), b = el.getBoundingClientRect();
+      return Math.max(12, Math.round(sr.bottom - b.top + 6));
     }
     function resize() {
       var rect = canvas.getBoundingClientRect();
@@ -436,10 +444,10 @@
     }
     // Seventeen circles, each as large as its families and name need, relaxed apart inside
     // the stage below its bar, then scaled up to the largest size that still fits.
-    function packRegions(top) {
+    function packRegions(top, bot) {
       var n = D.disciplines.length, pad = 8, gap = clamp(Math.min(W, H) * 0.012, 6, 14);
       var rho = D.disciplines.map(function (d) { return Math.sqrt(d.families.length + 16); });
-      var Hh = H - top - pad, cols = Math.max(1, Math.round(Math.sqrt(n * W / Math.max(1, Hh)))), rows = Math.ceil(n / cols);
+      var Hh = H - top - bot, cols = Math.max(1, Math.round(Math.sqrt(n * W / Math.max(1, Hh)))), rows = Math.ceil(n / cols);
       var init = function () {
         return rho.map(function (r, k) {
           var row = Math.floor(k / cols), cnt = row < rows - 1 ? cols : n - cols * (rows - 1), c = k - row * cols;
@@ -461,7 +469,7 @@
           for (var q = 0; q < n; q++) {
             P[q].x += (W / 2 - P[q].x) * pull; P[q].y += (top + Hh / 2 - P[q].y) * pull;
             P[q].x = clamp(P[q].x, pad + R[q], W - pad - R[q]);
-            P[q].y = clamp(P[q].y, top + R[q], H - pad - R[q]);
+            P[q].y = clamp(P[q].y, top + R[q], H - bot - R[q]);
           }
         }
         for (var a = 0; a < n; a++) for (var b = a + 1; b < n; b++) worst = Math.max(worst, R[a] + R[b] + gap - Math.hypot(P[b].x - P[a].x, P[b].y - P[a].y));
@@ -476,9 +484,9 @@
       return best;
     }
     function releaseLayout() {
-      var top = topBand(), key = 'r|' + W + 'x' + H + '|' + top;
+      var top = topBand(), bot = bottomBand(), key = 'r|' + W + 'x' + H + '|' + top + '|' + bot;
       if (layoutCache[key]) return layoutCache[key];
-      var pk = packRegions(top);
+      var pk = packRegions(top, bot);
       var nodes = new Array(fams.length), regions = [];
       D.disciplines.forEach(function (d, di) {
         var cx = pk.P[di].x, cy = pk.P[di].y, R = pk.R[di];
@@ -523,17 +531,21 @@
       return Math.ceil(topBand() + d + (rows - 1) * d * 0.866 + pad + 4);
     }
     function discLayout(di) {
-      var top = topBand(), key = 'd' + di + '|' + W + 'x' + H + '|' + top;
+      var top = topBand(), bot = bottomBand(), key = 'd' + di + '|' + W + 'x' + H + '|' + top + '|' + bot;
       if (layoutCache[key]) return layoutCache[key];
       var base = releaseLayout(), list = D.disciplines[di].families, n = list.length, pad = 12;
-      var g = discGrid(n, W - 2 * pad, Math.max(60, H - top - pad));
+      var avail = Math.max(60, H - top - bot);
+      var g = discGrid(n, W - 2 * pad, avail);
       var d = g.d, rows = g.rows, c = g.c;
-      var blockH = d + (rows - 1) * d * 0.866, y0 = top + (H - top - pad - blockH) / 2 + d / 2;
+      // Rows spread down the stage (up to a full diameter apart) instead of leaving a band
+      // of empty ground above and below the block; any remainder stays at the bottom.
+      var step = rows > 1 ? clamp((avail - d) / (rows - 1), d * 0.866, d) : 0;
+      var y0 = top + d / 2;
       var nodes = base.nodes.map(function (b) { return { x: b.x, y: b.y, r: b.r, a: 0 }; });
       list.forEach(function (fi, k) {
         var row = Math.floor(k / c), cnt = row < rows - 1 ? c : n - c * (rows - 1), col = k - row * c;
         var rowW = (cnt - 1) * d, off = rows > 1 && row % 2 ? d / 4 : rows > 1 ? -d / 4 : 0;
-        var x = W / 2 - rowW / 2 + col * d + off, y = y0 + row * d * 0.866;
+        var x = W / 2 - rowW / 2 + col * d + off, y = y0 + row * step;
         nodes[fi] = { x: x, y: y, r: d / 2 * 0.94 * (0.86 + 0.14 * famWeight[fi]), a: 1 };
       });
       var regions = base.regions.map(function (r) { return { x: r.x, y: r.y, r: r.r, a: 0, lab: r.lab, ly: r.ly }; });
@@ -543,8 +555,8 @@
     function famLayout(fi) {
       var b = discLayout(fams[fi].d);
       var nodes = b.nodes.map(function (q, i) { return { x: q.x, y: q.y, r: q.r, a: i === fi ? 1 : 0 }; });
-      var top = topBand();
-      nodes[fi] = { x: W / 2, y: (top + H) / 2, r: Math.max(20, Math.min(W, H - top) * 0.46), a: 1 };
+      var top = topBand(), bot = bottomBand();
+      nodes[fi] = { x: W / 2, y: (top + H - bot) / 2, r: Math.max(20, Math.min(W, H - top - bot) * 0.46), a: 1 };
       return { level: 'fam', fi: fi, nodes: nodes, regions: b.regions };
     }
     function chartTarget() {
@@ -692,7 +704,7 @@
       var tokens = labelTokens(D.families[fi].title, r), out = null, last = null;
       for (var size = clamp(r * 0.18, 11, 17); size >= 11 && !out; size = Math.max(10.5, size - 0.5)) {
         var font = '500 ' + size.toFixed(1) + 'px ' + SERIF, lead = size * 1.17;
-        for (var n = 1; n <= tokens.length && n * lead < r * 1.7 && !out; n++) {
+        for (var n = 1; n <= tokens.length && n * lead < r * 1.5 && !out; n++) {
           var got = wrapInCircle(tokens, font, lead, r, n);
           var label = got && { lines: got.lines, font: font, lead: lead, size: size };
           if (got && got.k === tokens.length) out = label;
@@ -1168,6 +1180,22 @@
     /* The hover caption lies over the standing caption in the same grid cell, so the
        bar never changes height and the drawing never moves while the pointer sweeps. */
     var hoverCapEl = root.querySelector('[data-u-hovercap]'), hoverCapKey = '';
+    var hoverLineEl = root.querySelector('[data-u-hoverline]'), hoverIdleEl = root.querySelector('[data-u-hoveridle]');
+    var keyStripEl = root.querySelector('[data-u-keystrip]');
+    var KEY_TONES = ['all', 'part', 'other', 'split', 'none', 'unread'];
+    // The colour key standing on the map: a short name for each colour drawn at this
+    // level and how many of the families shown carry it; the full sentence is its title.
+    function updateKeyStrip(o) {
+      if (!keyStripEl) return;
+      var list = o && o.kind === 'd' ? D.disciplines[o.i].families : D.families.map(function (f, i) { return i; });
+      var n = {};
+      list.forEach(function (fi) { var t = D.families[fi].tone || 'none'; n[t] = (n[t] || 0) + 1; });
+      keyStripEl.innerHTML = '<span class="u-keystrip__lead">' + escapeHtml(T('keyshort.lead')) + '</span><ul class="u-keystrip__list">' +
+        KEY_TONES.filter(function (t) { return n[t]; }).map(function (t) {
+          return '<li class="u-chip-k" title="' + escapeHtml(T('key.' + t)) + '">' + dot(t) + escapeHtml(T('keyshort.' + t)) +
+            ' <span class="u-chip-k__n">' + fmtNum(n[t]) + '</span></li>';
+        }).join('') + '</ul>';
+    }
     function hoverCapHtml(o) {
       var strong = function (html) { return '<strong class="u-cap__name">' + html + '</strong> '; };
       if (o.kind === 'd') {
@@ -1183,19 +1211,21 @@
         dot(f.tone) + ' ' + escapeHtml(T('key.' + f.tone) + '. ' + T('chart.hover_family'));
     }
     function updateHoverCap() {
-      if (!hoverCapEl || !barEl) return;
+      if (!hoverCapEl || !hoverLineEl) return;
       var o = hover && D ? obj(hover) : null;
       var show = !!(o && (o.kind === 'd' || o.kind === 'f') && hover !== sel);
       var key = show ? hover + (detail(o) ? '+' : '') : '';
       if (key === hoverCapKey) return;
       hoverCapKey = key;
-      if (!show) { barEl.classList.remove('is-hovering'); return; }
+      if (!show) { hoverLineEl.classList.remove('is-hovering'); return; }
       hoverCapEl.innerHTML = hoverCapHtml(o);
       if (window.atlasRenderMath) window.atlasRenderMath(hoverCapEl);
-      barEl.classList.add('is-hovering');
+      hoverLineEl.classList.add('is-hovering');
     }
     // The words standing with the drawing: what it shows and what choosing does.
     function updateCap(o) {
+      updateKeyStrip(o);
+      if (hoverIdleEl) hoverIdleEl.textContent = T(o && o.kind === 'd' ? 'chart.hover_idle_disc' : 'chart.hover_idle_release');
       if (!capEl) return;
       if (!o) capEl.textContent = T('chart.release_cap', { families: D.families.length, disciplines: D.disciplines.length });
       else if (o.kind === 'd') {
@@ -1247,14 +1277,12 @@
       if (listSwitch) listSwitch.textContent = T(o && o.kind !== 'd' ? 'switch.details' : 'switch.list');
       panelKey = sel || '';
       updateFit();
-      updateMapKey();
       updateCap(o);
       updateLegend(o && o.kind !== 'd' ? famOf(o) : -1);
       if (trailEl) trailEl.innerHTML = trailHtml();
       if (trailEl) trailEl.hidden = !o;
       renderStepper(o);
-      var groundEl = root.querySelector('[data-u-ground]');
-      if (groundEl) groundEl.hidden = !!o;
+      Array.prototype.forEach.call(root.querySelectorAll('[data-u-ground]'), function (el) { el.hidden = !!o; });
       var html = '';
       if (!o) html = releaseHtml();
       else if (o.kind === 'd') html = disciplineHtml(o.i);
@@ -1432,14 +1460,17 @@
     var failedShards = {};
 
     /* A discipline: its families as plain entries a person can read. */
+    // One short line per family: its size, then the colour's short name (the full
+    // sentence is the dot's meaning in the key on the map and in the release's list).
     function statusLine(f) {
-      return count('papers', f.papers.length) + '. ' + T('key.' + f.tone) + (f.lean.length ? '. ' + count('lean', f.lean.length) : '') + '.';
+      return count('papers', f.papers.length) + (f.lean.length ? ', ' + count('lean', f.lean.length) : '') + ' · ' + T('keyshort.' + f.tone);
     }
     function entryHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
       return '<li><a class="u-entry" href="' + escapeHtml(f.href) + '" data-go="' + escapeHtml(f.id) + '">' +
         '<span class="u-entry__t">' + dot(f.tone) + '<span class="tex-auto">' + (det ? det.titleHtml : escapeHtml(f.title)) + '</span></span>' +
-        '<span class="u-entry__s">' + escapeHtml(statusLine(f)) + '</span>' +
+        '<span class="u-entry__s"><span class="u-entry__num">' + escapeHtml(f.num) + '</span> ' + escapeHtml(statusLine(f)) +
+        '<span class="u-visually-hidden">. ' + escapeHtml(T('key.' + f.tone)) + '.</span></span>' +
         (det ? '<span class="u-entry__more">' +
           (det.first ? '<span class="u-entry__c"><span class="u-role">' + escapeHtml(T('family.catalogue')) + '</span> <span class="tex-auto">' + det.first + '</span></span>' : '') +
           '<span class="u-entry__e">' + escapeHtml(det.evidence) + '</span></span>' : '') + '</a></li>';
@@ -1464,7 +1495,6 @@
     // inside the list stays stationary; keyboard focus follows the same reading edge.
     function syncActive() {
       if (!viewEl) return;
-      if (typeof updateMapKey === 'function' && mapKeyEl && !mapKeyEl.hidden) updateMapKey();
       var hk = hover ? obj(hover) : null, fk = hk ? D.families[famOf(hk)] : null;
       Array.prototype.forEach.call(viewEl.querySelectorAll('.u-entry'), function (e) {
         var active = !!fk && e.getAttribute('data-go') === fk.id;
@@ -1691,40 +1721,6 @@
       return h;
     }
 
-    /* The map key, for the release and a discipline: only the encodings drawn there,
-       in words, with citation inks named for the scope in hand. */
-    var mapKeyBtn = root.querySelector('[data-u-mapkey]'), mapKeyEl = root.querySelector('[data-u-mapkey-panel]');
-    function updateMapKey() {
-      if (!mapKeyBtn) return;
-      var o = sel ? obj(sel) : null, famState = o && o.kind !== 'd';
-      mapKeyBtn.hidden = !!famState;
-      if (famState) { mapKeyEl.hidden = true; mapKeyBtn.setAttribute('aria-expanded', 'false'); }
-      var rows = ['all', 'part', 'other', 'split', 'none'].map(function (t) {
-        return '<li>' + dot(t) + '<span>' + escapeHtml(T('key.' + t)) + '</span></li>';
-      }).join('');
-      var hk = hover ? obj(hover) : null;
-      var inks = o && o.kind === 'd' ? (hk && hk.kind === 'f' ? T('mapkey.fam_inks', { name: D.families[hk.i].title }) : T('mapkey.disc_inks', { name: D.disciplines[o.i].name })) : T('mapkey.release_inks');
-      mapKeyEl.innerHTML = '<p class="u-mapkey__p">' + escapeHtml(T('mapkey.colour')) + '</p><ul>' + rows + '</ul>' +
-        '<p class="u-mapkey__p">' + escapeHtml(T('mapkey.size')) + '</p>' +
-        '<p class="u-mapkey__p"><span class="u-arrow" aria-hidden="true"></span>' + escapeHtml(T('mapkey.arrow')) + ' ' + escapeHtml(inks) + '</p>';
-    }
-    // Pointing at the button previews the key; clicking pins it open; Escape or a second
-    // click closes it. The open key can itself be pointed at.
-    var mapKeyPinned = false, mapKeyTimer = 0;
-    function showMapKey(open) {
-      if (!mapKeyEl || mapKeyEl.hidden === !open) return;
-      if (open) updateMapKey();
-      mapKeyEl.hidden = !open;
-      mapKeyBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-      chrome = chromeBoxes(); draw();
-    }
-    if (mapKeyBtn) {
-      mapKeyBtn.addEventListener('click', function () { mapKeyPinned = !mapKeyPinned || mapKeyEl.hidden; showMapKey(mapKeyPinned); });
-      [mapKeyBtn, mapKeyEl].forEach(function (el) {
-        el.addEventListener('pointerenter', function () { clearTimeout(mapKeyTimer); showMapKey(true); });
-        el.addEventListener('pointerleave', function () { mapKeyTimer = setTimeout(function () { if (!mapKeyPinned) showMapKey(false); }, 250); });
-      });
-    }
     /* ---- Search ----------------------------------------------------------- */
     function loadSearch() {
       if (searchRows) return Promise.resolve(searchRows);
@@ -1933,7 +1929,6 @@
       hover = h; hoverVia = e.pointerType === 'touch' ? 'touch' : 'map';
       canvas.classList.toggle('is-over', !!h);
       syncActive();
-      if (sel && obj(sel) && obj(sel).kind === 'd' && mapKeyEl && !mapKeyEl.hidden) updateMapKey();
       draw();
     });
     canvas.addEventListener('pointerleave', function () {
@@ -2135,7 +2130,6 @@
       var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable);
       if (e.key === 'Escape') {
         if (document.querySelector('dialog[open], .nav-toggle[aria-expanded="true"]')) return;
-        if (mapKeyEl && !mapKeyEl.hidden) { e.preventDefault(); mapKeyPinned = false; showMapKey(false); mapKeyBtn.focus(); return; }
         // The input clears its query before a later Escape steps out of the map selection.
         if (e.target === searchIn && searchIn.value) return;
         if (sel) { e.preventDefault(); stepBack(); focusArrival(); }

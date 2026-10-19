@@ -7,7 +7,8 @@
   "redirect_text": "The map of the release is now the front page.",
   "redirect_link": "Open the map",
   "independent": "An independent guide to OpenAI’s papers, not affiliated with OpenAI.",
-  "nojs": "The interactive map needs JavaScript. The list below links to every group of related papers. The Agent navigation link opens instructions for reading the map as JSON."
+  "nojs": "The interactive map needs JavaScript. The list below links to every group of related papers. The Agent navigation link opens instructions for reading the map as JSON.",
+  "job": "Find a result, see which Lean statement was chosen for computer checking, and read what each outside group says about it."
  },
  "release": {
   "s1": "OpenAI published {manuscripts_current} current papers across {disciplines} disciplines. It groups related papers into {families} “families”.",
@@ -15,7 +16,7 @@
   "s3": "OpenAI labels {statements_lean_main_results} of the {statements_lean} Lean statement files as main results in its Lean catalogue.",
   "s4": "The papers cite one another in {internal_citation_edges} directed pairs and cite {external_works_cited} works outside the release. OpenAI has withdrawn {manuscripts_withdrawn} papers and replaced {manuscripts_previous_editions} with later editions.",
   "s5": "Atlas links public contributions credited to {community_people} names and places {community_findings} reports beside the results they discuss.",
-  "disciplines_heading": "Disciplines"
+  "disciplines_heading": "Subjects"
  },
  "since": {
   "heading": "Since the release.",
@@ -80,7 +81,7 @@
   "label": "Previous and next at this level",
   "previous": "Previous",
   "next": "Next",
-  "field": "Discipline {n} of {of}",
+  "field": "Subject {n} of {of}",
   "family": "{n} of {of} families in {where}",
   "paper": "Paper {n} of {of} in this family",
   "result": "Result {n} of {of} in this family",
@@ -99,7 +100,7 @@
  },
  "search": {
   "label": "Find a family, paper, theorem or Lean statement",
-  "placeholder": "Find a family, theorem or Lean statement",
+  "placeholder": "Search families, theorems, Lean files",
   "loading": "Loading the search…",
   "failed": "The search could not load. The list of disciplines below names every family.",
   "none": "Nothing in the release matches.",
@@ -117,7 +118,8 @@
   "all": "All",
   "filter_label": "Show only",
   "in_paper": "in {title}",
-  "suggest": "Words in the titles that come close:"
+  "suggest": "Words in the titles that come close:",
+  "hint": "Search by title, theorem or Lean file name, or click a subject on the map."
  },
  "discipline": {
   "lede": "{counts}. Point at a family to find it on the map; click it to open its page, with the paper, the Lean statement and what each group found.",
@@ -235,6 +237,11 @@
   "heading": "Where to start",
   "items": [
    {
+    "family": "017",
+    "name": "The irrationality exponent of π is 2",
+    "why": "OpenAI’s catalogue describes a proof that π cannot be approximated by fractions much better than almost every number can. The two groups disagree about how much of this its Lean statement states."
+   },
+   {
     "family": "159",
     "name": "Erdős’s reciprocal-sum conjecture",
     "why": "Erdős conjectured that a set of positive integers whose reciprocals add up to infinity contains arithmetic progressions of every length. The family’s one paper claims a proof."
@@ -254,7 +261,9 @@
     "name": "Borsuk’s conjecture in dimension nine",
     "why": "Borsuk asked whether every bounded set in n dimensions splits into n + 1 pieces of smaller diameter. The paper constructs a set in dimension nine that does not."
    }
-  ]
+  ],
+  "disagree": "{n} families where the groups disagree",
+  "disagree_label": "Show the {n} families where MathVet and cert-machine disagree on the Families list"
  },
  "bands": {
   "index_heading": "Every family, by discipline",
@@ -292,10 +301,12 @@
  },
  "chart": {
   "_note": "The words standing with the drawing at the release and at a discipline.",
-  "release_cap": "Each large circle is a subject, and each dot inside it is one family: a group of related papers on one result. {families} families in {disciplines} subjects. Click a dot to open its family’s page, or a subject’s name to see its families labelled.",
+  "release_cap": "Big circles are subjects; each dot is a family, a group of related papers on one result. Click a dot to open its family, or a subject to see its families labelled.",
   "disc_cap": "{name}: {counts}. Each circle is one family; click it to open the family’s page.",
   "hover_disc": "Click to see its families labelled.",
-  "hover_family": "Click to open its page."
+  "hover_family": "Click to open its page.",
+  "hover_idle_release": "Point at a dot or a subject to name it here.",
+  "hover_idle_disc": "Point at a circle to name it here, with its papers and what the groups found."
  },
  "board": {
   "_note": "The citation inks named in the caption at a discipline.",
@@ -327,5 +338,24 @@
   "open_result": "Read the full statement",
   "paper_counts": "{results} shown on the map",
   "family_counts": "{papers}, {lean}"
+ },
+ "stats": {
+  "_note": "The release in four figures at the top of the sidebar. The figures are plain text; one link says how they are counted.",
+  "papers": "papers",
+  "families": "families",
+  "with_lean": "families with Lean",
+  "lean": "Lean statements",
+  "define": "A family is a group of related papers on one result. Lean is a language in which a computer can check mathematical statements and proofs.",
+  "counted": "See how these are counted"
+ },
+ "keyshort": {
+  "_note": "The colour key standing on the map: a short name for each colour; the full sentence (key.*) is its tooltip and stands in the sidebar.",
+  "lead": "Colour: what MathVet and cert-machine found about the Lean",
+  "all": "Whole result",
+  "part": "Part of it",
+  "other": "A step or another result",
+  "split": "Groups disagree",
+  "none": "No Lean",
+  "unread": "Not compared"
  }
 }
