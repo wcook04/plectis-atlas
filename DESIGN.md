@@ -369,6 +369,7 @@ is reading, delay the mathematics, or run in a loop.
 | `statements/<id>.html` | Read the Lean statement whole, and what you must check |
 | `explain.html` | Every family as a list, with who has explained it |
 | `sources.html`, `glossary.html`, `numbers.html`, `contribute.html`, `about.html` | Credit, terms, counts with receipts, how to help, why it is built this way |
+| `help.html`, and the `?` guide in every header | How to use the Atlas: the route through one result and the words on the way |
 
 ## What the October rebuild taught
 
@@ -489,6 +490,35 @@ Discipline citation arrows carry a visible direction key. Arrowheads point to
 the cited family; the line does not assert a proof
 dependency. Fade unrelated circles and their labels enough to keep citations
 readable, while keeping those circles clickable.
+
+## The shell and the general pages
+
+- **One container.** Header, page head, sections and footer share the frame
+  (`--frame`, left edge at `--gutter`). No general page centres a narrow column:
+  About, Contribute, Glossary and the 404 page start at the same left edge as the
+  lists, so the title never jumps between pages.
+- **Use the width with grids, keep the measure in cards.** Lists of things are
+  `auto-fit` card grids (sources, numbers, cited works, ways to contribute); the
+  Glossary and About read in newspaper columns; an explanation sits beside its
+  record. Text keeps a readable line because it lives in a card or a column, not
+  because the rest of the screen is empty.
+- **One card, one scale.** A card is surface, a 1px `--rule`, `--r-md`, padding
+  `--sp-4`. Gaps come from `--sp-1` to `--sp-7` (4, 8, 12, 16, 24, 40, 56 px): 1-3
+  inside a component, 4-5 between blocks, 6-7 between sections. Page title, section
+  `.h2`, card `.h3`; nothing else sets a heading size.
+- **The list pages keep their controls in view.** The filter bar sticks to the top
+  as one grid row, and the table head sticks inside its own scroll box. A choice is
+  offered once: disagreement is the colour filter's "The groups disagree" (an old
+  `?c=disagree` link selects it). Both lists filter by Comparator runs.
+- **The `?` guide.** Beside Search in every header; the `?` key, `?help=1` and any
+  `data-help="<step>"` element open it (at that step). Its words live in
+  `copy.json` `help`, rendered into every page and into `help.html` for readers
+  without scripts; it ends by saying Atlas links reports and runs no checks. The
+  map alone shows a one-line first-visit hint, floating so the map's layout is
+  untouched, dismissed for good in `localStorage`.
+- **The footer** is the name, independence and licence, then three short labelled
+  lists (the Atlas, lists and credits, source). It sits directly after the page's
+  last section, with no stacked margins above it.
 
 ## Quality floor
 

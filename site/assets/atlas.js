@@ -287,8 +287,8 @@
     if (!table) return;
     var empty = doc.querySelector('.filters__empty');
     var reset = wrap.querySelector('.filters__reset');
-    var KEYS = ['d', 'c', 't', 'l', 'r', 'q'];
-    var state = { d: '', c: '', t: '', l: '', r: '', q: '' };
+    var KEYS = ['d', 'c', 't', 'l', 'r', 'g', 'p', 'q'];
+    var state = { d: '', c: '', t: '', l: '', r: '', g: '', p: '', q: '' };
     /* "Search all text": the site search, opened with the same words. */
     var searchAll = wrap.querySelector('[data-search-all]');
     function syncSearchAll() {
@@ -316,6 +316,8 @@
           (!state.t || row.getAttribute('data-t') === state.t) &&
           (!state.l || row.getAttribute('data-l') === state.l) &&
           (!state.r || row.getAttribute('data-r') === state.r) &&
+          (!state.g || row.getAttribute('data-g') === state.g) &&
+          (!state.p || row.getAttribute('data-p') === state.p) &&
           words.every(function (w) { return norm(q).indexOf(w) >= 0; });
         row.hidden = !ok;
         if (ok) n++;
@@ -359,6 +361,9 @@
     });
     if (reset) reset.addEventListener('click', function () { KEYS.forEach(function (k) { state[k] = ''; }); sync(); apply(); });
     var params = new URLSearchParams(location.search);
+    /* Disagreement used to be offered twice on the Families list; an old ?c=disagree link
+       now selects the one remaining control, the colour "The groups disagree". */
+    if (params.get('c') === 'disagree' && controls.t && controls.t.querySelector('option[value="split"]')) { params.delete('c'); params.set('t', 'split'); }
     KEYS.forEach(function (k) {
       var v = params.get(k) || '';
       var el = controls[k];
@@ -1216,19 +1221,34 @@
     return { id: 'l:' + id, kind: 'lean', name: row[0] || id, family_ids: row[1] || [], url: urlFor('l:' + id, 'lean'), paper: null };
   }
   /* How closely an entry's own name answers the query: 0 for the Lean statement the query
-     names exactly, 1 when its name holds every word (accents aside, so "erdos" ranks the
-     Erdős families as "Erdős" does; a word counts in any of the forms it stood for),
-     2 otherwise. */
+     names exactly; 1 when the name is the query itself, or holds it as one phrase; 2 when
+     the name holds every word as typed (accents aside, so "erdos" ranks the Erdős families
+     as "Erdős" does); 3 when it holds every word only in a longer form the word stood for
+     ("pi" as "Pixton"); 4 otherwise. So "pi" finds the paper on the exponent of pi before
+     Pixton's formula. */
+  /* A name prints Greek letters as letters ("π"); a reader types their names ("pi"). */
+  var GREEK = { 'α': 'alpha', 'β': 'beta', 'γ': 'gamma', 'δ': 'delta', 'ε': 'epsilon', 'ζ': 'zeta', 'η': 'eta', 'θ': 'theta',
+    'ι': 'iota', 'κ': 'kappa', 'λ': 'lambda', 'μ': 'mu', 'ν': 'nu', 'ξ': 'xi', 'π': 'pi', 'ρ': 'rho', 'σ': 'sigma', 'τ': 'tau',
+    'φ': 'phi', 'χ': 'chi', 'ψ': 'psi', 'ω': 'omega', 'Γ': 'gamma', 'Δ': 'delta', 'Θ': 'theta', 'Λ': 'lambda', 'Ξ': 'xi',
+    'Π': 'pi', 'Σ': 'sigma', 'Φ': 'phi', 'Ψ': 'psi', 'Ω': 'omega' };
+  function greekNames(s) { return String(s || '').replace(/[\u0391-\u03c9]/g, function (c) { return GREEK[c] ? ' ' + GREEK[c] + ' ' : c; }); }
   function nameRank(r, q, forms) {
     var words = searchTokens(bare(q));
+    r = { kind: r.kind, id: r.id, name: greekNames(r.name) };
     if (r.kind === 'lean' && casefold(r.id.slice(2)) === casefold(String(q == null ? '' : q).trim())) return 0;
-    if (!words.length) return 2;
+    if (!words.length) return 4;
     var own = searchTokens(bare(r.name)), fm = {};
+    /* Between names that answer equally, the one with fewer other words is closer. */
+    var near = Math.min(own.length, 99) / 100;
+    if (own.join(' ') === words.join(' ')) return 1;
+    var flat = function (x) { return ' ' + casefold(bare(String(x || ''))).replace(/[^\p{L}\p{N}]+/gu, ' ').trim() + ' '; };
+    if (words.length > 1 && flat(r.name).indexOf(flat(q)) >= 0) return 1 + near;
+    if (words.every(function (w) { return own.indexOf(w) >= 0; })) return 2 + near;
     (forms || []).forEach(function (f) { fm[bare(f[0])] = f; });
     return words.every(function (w) {
       var f = fm[w] || [w];
       return f.some(function (x) { return own.indexOf(bare(x)) >= 0; });
-    }) ? 1 : 2;
+    }) ? 3 + near : 4;
   }
   /* One order for every list of results, the dialog's and the front door's: the kinds in
      KIND_ORDER, and within a kind the closest names first, then the release's order. A
@@ -1641,4 +1661,72 @@
       openSearch(ev);
     }
   });
+})(typeof window !== 'undefined' ? window : globalThis);
+
+/* ---- How to use the Atlas (the header's ? guide) ------------------------------------ */
+/* The guide is server-rendered in every page (build_site.help_dialog); this opens and
+   closes it like the search dialog: the ? button, the ? key when not typing, ?help=1 in
+   the address, or any element with data-help="<step id>", which opens the guide at that
+   step. Escape, the Close button and a click on the backdrop close it, and focus returns
+   to where it was. On the map a one-line first-visit hint offers it until dismissed. */
+(function (g) {
+  'use strict';
+  var doc = g.document;
+  if (!doc) return;
+  var dlg = doc.getElementById('help-dialog');
+  if (!dlg) return;
+  var btn = doc.querySelector('.help-open');
+  var hint = doc.getElementById('first-hint');
+  var returnTo = null;
+  var KEY = 'atlas-help-hint';
+  function store(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+  function dismissHint() { if (hint) hint.hidden = true; store('off'); }
+  function openHelp(ev, step) {
+    if (ev) ev.preventDefault();
+    if (dlg.open) return;
+    returnTo = doc.activeElement;
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', '');
+    if (btn) btn.setAttribute('aria-expanded', 'true');
+    if (hint && !hint.hidden) dismissHint();
+    var target = step ? doc.getElementById('help-' + step) : null;
+    Array.prototype.forEach.call(dlg.querySelectorAll('.help__steps li'), function (li) { li.classList.toggle('is-on', li === target); });
+    var close = dlg.querySelector('.help__close');
+    if (target) { target.setAttribute('tabindex', '-1'); target.scrollIntoView({ block: 'center' }); target.focus({ preventScroll: true }); }
+    else if (close) close.focus();
+  }
+  function closeHelp() { if (dlg.open) { if (dlg.close) dlg.close(); else { dlg.removeAttribute('open'); dlg.dispatchEvent(new Event('close')); } } }
+  if (btn) { btn.setAttribute('aria-expanded', 'false'); btn.addEventListener('click', function (ev) { openHelp(ev); }); }
+  doc.addEventListener('click', function (ev) {
+    var t = ev.target && ev.target.closest ? ev.target.closest('[data-help], .hint__open') : null;
+    if (t) openHelp(ev, t.getAttribute('data-help') || '');
+  });
+  dlg.addEventListener('close', function () {
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+    if (returnTo && returnTo.focus) returnTo.focus();
+  });
+  dlg.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { ev.preventDefault(); ev.stopPropagation(); closeHelp(); } });
+  dlg.addEventListener('click', function (ev) { if (ev.target === dlg) closeHelp(); });
+  var closeBtn = dlg.querySelector('.help__close');
+  if (closeBtn) closeBtn.addEventListener('click', closeHelp);
+  doc.addEventListener('keydown', function (ev) {
+    var a = doc.activeElement || {};
+    if (ev.key !== '?' || ev.metaKey || ev.ctrlKey || ev.altKey) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName || '') || a.isContentEditable) return;
+    var other = doc.querySelector('dialog[open]:not(#help-dialog)');
+    if (other) return;
+    openHelp(ev);
+  });
+  if (hint) {
+    var off = null;
+    try { off = localStorage.getItem(KEY); } catch (e) {}
+    if (off !== 'off') hint.hidden = false;
+    var x = hint.querySelector('.hint__x');
+    if (x) x.addEventListener('click', dismissHint);
+    var ex = hint.querySelector('.hint__ex');
+    if (ex) ex.addEventListener('click', function () { store('off'); });
+  }
+  try {
+    var q = new URLSearchParams(g.location.search);
+    if (q.get('help') === '1') openHelp(null, q.get('step') || '');
+  } catch (e) {}
 })(typeof window !== 'undefined' ? window : globalThis);
