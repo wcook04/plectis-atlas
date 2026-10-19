@@ -10,20 +10,11 @@ function range(start, end) {
   assert.ok(a >= 0 && b > a, `production range missing: ${start}`);
   return source.slice(a, b);
 }
-const hit = range('    function hitAt(', '\n    /* ---- The card:');
-const previewGuard = range('    function guardPreviewClicks(el)', '    if (stage) {');
-const wires = range('    function drawWires()', '    function markBoard()');
+const hit = range('    function hitAt(', '\n    /* ---- Selection, trail and address');
 const load = range('    function loadParts()', '    function obj(');
 const select = range('    function select(key, opts)', '    // A paper, theorem or Lean statement');
-const click = range("    canvas.addEventListener('pointerdown',", '\n    if (cardEl)');
+const click = range("    canvas.addEventListener('pointerdown',", "\n    document.addEventListener('click', function (e) {");
 const shard = range('    function loadShard(di)', '    function detail(');
-// Isolate the production admission/retry prefix from board DOM rendering.
-const syncAdmission = range('    var boardShardWaiting = {};', '      // The neighbours\' titles') + '\n    }';
-const boardVisibility = range('    function showBoard()', '    // The chosen card gets');
-const boardPages = range('    function layoutPages()', '    function showBoard()');
-const boardSync = range('    function refreshBoardNeighbours()', '    function showBoard()');
-const boardPointer = range("    if (boardEl) {\n      boardEl.addEventListener('pointerdown'", "      boardEl.addEventListener('pointerover'") + '    }';
-const boardRepeat = range('    var boardClick = null, boardRepeatPress = null, boardDoubleOpened = false;', '    function selectFromBoard(key)');
 const documentKeys = range("    document.addEventListener('keydown', function (e) {", "    window.addEventListener('hashchange'");
 const stepperRender = range('    function renderStepper(o)', '    function scopeName(o)');
 const listPreview = range("    root.addEventListener('pointerover', function (e) {", '    function showView(v, restoring)');
@@ -34,7 +25,7 @@ const backSteps = range('    function stepBack()', '    function selectAncestor(
 const ancestorStep = range('    function selectAncestor(', '    function openPage(');
 const popstate = range("    window.addEventListener('popstate'", '    // Leaving for a paper or a family page');
 const pagehide = range("    window.addEventListener('pagehide'", '    function readHash()');
-const chartNavigation = range('    function copyLayout(l)', '    function chartAnimating()');
+const chartNavigation = range('    function copyLayout(l)', '    // Advance the move;');
 function deferred() {
   let resolve, reject;
   const promise = new Promise((a, b) => { resolve = a; reject = b; });
@@ -56,11 +47,11 @@ function context(extra = {}) {
       { x: 20, y: 20, r: 10, a: 1 }, { x: 60, y: 20, r: 10, a: 1 }
     ], regions: [] } },
     root: { getAttribute: () => 'map' }, window: { scrollTo() {} }, obj: key => objects.get(key),
-    sel: 'd:test', board: {}, pendingBoard: null, pendingViewSwitch: null,
+    sel: 'd:test', pendingViewSwitch: null,
     historyBackPending: null, historySelection: null,
-    pendingY: null, pin: -1, hover: null, hoverVia: '', cardDismissed: null,
+    pendingY: null, pin: -1, hover: null, hoverVia: '',
     ring: null, ringWanted: null, reduceMotion: false, trail: [], liveEl: { textContent: '' },
-    savedScrollPos: () => 0, boardPosition: () => null, viewPositions: () => ({}),
+    savedScrollPos: () => 0, viewPositions: () => ({}),
     restoreViewPositions() {}, setReading() {}, renderPanel() {}, updateHash() {},
     chartTo() {}, narrow: () => false, nameOf: o => o.key, draw() {}, addObj() {},
     localXY: e => [e.x, e.y], backCalls: 0,
@@ -92,15 +83,14 @@ async function main() {
     const rendered = [];
     const state = context({
       window: { history, location, addEventListener: (type, fn) => { listeners[type] = fn; }, scrollTo() {} },
-      sel: start, partsReady: true, board: {}, searchFolded: false, phoneViewY: { map: 0, list: 0 },
+      sel: start, partsReady: true, searchFolded: false, phoneViewY: { map: 0, list: 0 },
       historyBackPending: null, historySelection: null,
       root: { getAttribute: () => 'map' },
       readHash: () => location.hash ? decodeURIComponent(location.hash.slice(3)) : null,
       parentKey: () => 'd:test',
       savedScrollPos: () => 27, viewPositions: () => ({ map: 27, list: 0 }),
-      boardPosition: () => null,
       renderPanel: () => { rendered.push(state.sel); },
-      showView() {}, restoreSearch() {}, restorePending() {}, restoreBoardPosition() {},
+      showView() {}, restoreSearch() {}, restorePending() {},
       focusArrival: () => { focused++; }
     });
     vm.runInContext(hashState + select + backSteps + ancestorStep + popstate + pagehide, state);
@@ -173,8 +163,7 @@ async function main() {
       W: 200, H: 100, stage: null, chrome: [], CHART_MS: 280, nowMs: () => 100,
       chart: { level: from, di: -1, fi: -1, start: 0, shown: layout(from) },
       chartTarget: () => target, chromeBoxes: () => [],
-      releaseLayout: () => layout('release'), discLayout: () => layout('disc'), famLayout: () => layout('fam'),
-      board: { pending: false }, showBoard() {}
+      releaseLayout: () => layout('release'), discLayout: () => layout('disc'), famLayout: () => layout('fam')
     });
     vm.runInContext(chartNavigation, nav);
     nav.chartTo(true);
@@ -185,101 +174,6 @@ async function main() {
       assert.notEqual(nav.chart.shown.nodes, nav.chart.to.nodes, 'shown geometry is copied');
     }
   }
-  const attributes = new Map(), classes = new Set(['is-on']);
-  const boardState = context({
-    board: { on: true, pending: true, fi: 0, sig: 'old' },
-    boardEl: {
-      setAttribute: (k, v) => attributes.set(k, v), removeAttribute: k => attributes.delete(k),
-      classList: { add: k => classes.add(k), remove: k => classes.delete(k) }
-    },
-    root: { setAttribute() {}, removeAttribute() {} },
-    hideCard() {}, hideBoardCard() {}, layoutBoard() {}, ringBoard() {},
-    restoreBoardPosition() {}, revealBoardSelection() {}
-  });
-  vm.runInContext(boardVisibility, boardState);
-  boardState.hideBoard();
-  assert.equal(attributes.has('inert'), true, 'outgoing board immediately disables interaction');
-  assert.equal(classes.has('is-on'), false);
-  assert.equal(boardState.board.pending, false, 'hide cancels pending display');
-  boardState.showBoard();
-  assert.equal(attributes.has('inert'), true, 'canceled pending board cannot reopen');
-  boardState.board.pending = true;
-  boardState.showBoard();
-  assert.equal(attributes.has('inert'), false, 'fresh visible board regains interaction');
-  assert.equal(classes.has('is-on'), true);
-  boardState.board.on = false; boardState.board.pending = true;
-  boardState.hideBoard();
-  assert.equal(attributes.has('inert'), true, 'even not-yet-visible board becomes inert');
-  assert.equal(boardState.board.pending, false);
-  // Async detail replies can ask the board to lay out again; every column already
-  // shows, so a layout only records the selection it was drawn for.
-  let pageLayouts = 0;
-  const chosenPage = context({
-    board: { on: false, pending: true, fi: 0, per: 2, revealKey: null, selectionKey: 'd:test' },
-    layoutBoard: () => { pageLayouts++; }
-  });
-  vm.runInContext(boardPages, chosenPage);
-  chosenPage.sel = 'f:a';
-  chosenPage.layoutPages();
-  assert.ok(pageLayouts > 0, 'board layout still runs for asynchronous updates');
-  assert.equal(chosenPage.board.on, false, 'temporary layout visibility is restored');
-  assert.equal(chosenPage.board.selectionKey, 'f:a');
-
-  // A neighbour packet enriches only its side card. The whole board and its
-  // focused controls stay in place; the own-family packet may rebuild but
-  // restores the same card after replacement.
-  let rebuilds = 0, enriched = 0;
-  const title = { innerHTML: 'old title' };
-  const sideAttrs = { 'data-g': '1', 'data-bk': 'f:b' };
-  const sideCard = {
-    getAttribute: key => sideAttrs[key] || null,
-    setAttribute: (key, value) => { sideAttrs[key] = String(value); },
-    querySelector: key => key === '.u-bc__ft' ? title : null
-  };
-  const doc = { activeElement: null };
-  const replacement = {
-    getAttribute: key => key === 'data-bk' ? 'r:chosen' : null,
-    querySelectorAll: () => [], closest: () => null,
-    focus: () => { doc.activeElement = replacement; }
-  };
-  const oldCard = {
-    getAttribute: key => key === 'data-bk' ? 'r:chosen' : null,
-    closest: key => key === '[data-bk]' ? oldCard : null
-  };
-  const boardEl = {
-    scrollTop: 75,
-    set innerHTML(value) { rebuilds++; doc.activeElement = null; this.html = value; },
-    get innerHTML() { return this.html; },
-    contains: el => el === sideCard || el === oldCard,
-    querySelectorAll: key => key === '.u-bc--f' ? [sideCard] : key === '[data-bk]' ? [replacement] : []
-  };
-  const boardState2 = context({
-    D: { families: [{ id: 'f:a', cites: [[1, 1]], citedBy: [] }, { id: 'f:b', cites: [], citedBy: [] }] },
-    fams: [{ d: 0 }, { d: 1 }], sel: 'f:a', boardEl, document: doc,
-    board: { fi: 0, sig: '0|1', on: true, pending: false, per: 2,
-      selectionKey: 'f:a', ringKey: null },
-    shards: { 0: {} }, failedShards: { 1: true },
-    boardFamily: () => 0, boardHtml: () => '<replacement board>',
-    typesetBoard() {}, hideBoardCard() {}, markBoard() {}, layoutBoard() {},
-    ringBoard() {}, restoreBoardPosition() {}, revealBoardSelection() {},
-    katexIn: () => { enriched++; }, loadShard: () => Promise.resolve({})
-  });
-  vm.runInContext(boardSync, boardState2);
-  doc.activeElement = sideCard;
-  boardState2.syncBoard();
-  boardState2.shards[1] = { families: { 'f:b': { titleHtml: 'ready title' } } };
-  boardState2.syncBoard();
-  assert.equal(rebuilds, 0, 'neighbour readiness does not rebuild papers');
-  assert.equal(title.innerHTML, 'ready title');
-  assert.equal(sideAttrs['data-u-detail'], 'ready');
-  assert.equal(enriched, 1, 'new side title is typeset once');
-  assert.equal(doc.activeElement, sideCard, 'neighbour refresh retains card focus');
-  boardState2.board.sig = '0|0';
-  doc.activeElement = oldCard;
-  boardState2.syncBoard();
-  assert.equal(rebuilds, 1, 'own-family readiness refreshes board content');
-  assert.equal(doc.activeElement, replacement, 'own-family rebuild restores card focus');
-
   // A detail packet replaces the sidebar HTML after focus has already reached
   // a row. The callback must return focus to the matching new row, including the
   // second occurrence of a repeated key, without stealing unrelated focus.
@@ -424,7 +318,7 @@ async function main() {
   const arrowSelections = [];
   let dialogOpen = false;
   const arrowState = context({
-    sel: 'f:a', boardClick: null, boardRepeatPress: null,
+    sel: 'f:a',
     document: {
       addEventListener(type, fn, capture) { assert.equal(type, 'keydown'); assert.equal(capture, true); arrowDocumentKey = fn; },
       querySelector: () => dialogOpen ? {} : null
@@ -486,7 +380,7 @@ async function main() {
   const listState = context({
     root: { addEventListener: (type, fn) => { listHandlers[type] = fn; } },
     panelBody: { contains: element => element === row || element === otherRow },
-    hover: null, hoverVia: '', cardPtr: { x: 1 },
+    hover: null, hoverVia: '',
     syncActive: () => { listSyncs++; focusSequence.push('sync'); }, draw: () => { listDraws++; },
     revealEntry: () => { listReveals++; focusSequence.push('reveal'); }
   });
@@ -599,226 +493,6 @@ async function main() {
   c.chart.shown.nodes[0].a = 0.009;
   assert.equal(c.hitAt(20, 20, true), null, 'invisible circle is excluded');
 
-  const boardHandlers = {}, boardSelected = [];
-  let boardBacks = 0, boardOpens = 0;
-  const card = { getAttribute: key => key === 'data-bk' ? 'r:chosen' : null };
-  const cardText = {
-    closest: key => key === '[data-bk]' ? card : null,
-    matches: () => false
-  };
-  const ground = { closest: () => null, matches: () => true };
-  const boardPointerState = context({
-    boardPress: null, boardClick: null, boardRepeatPress: null, boardDoubleOpened: false,
-    board: { page: 0 }, sel: 'r:old',
-    boardEl: { addEventListener: (type, fn) => { boardHandlers[type] = fn; }, contains: () => true },
-    selectFromBoard: key => boardSelected.push(key),
-    stepBack: () => { boardBacks++; }, openFromBoard: () => { boardOpens++; },
-    hideBoardCard() {}, layoutBoard() {}
-  });
-  vm.runInContext(boardPointer, boardPointerState);
-  const boardEvent = (target, x, y) => ({
-    target, clientX: x, clientY: y, button: 0, isPrimary: true, detail: 1,
-    defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }
-  });
-  boardHandlers.pointerdown(boardEvent(cardText, 10, 10));
-  const textDrag = boardEvent(cardText, 40, 10);
-  boardHandlers.click(textDrag);
-  assert.equal(textDrag.defaultPrevented, true, 'dragged theorem text suppresses click');
-  assert.deepEqual(boardSelected, [], 'dragged theorem text does not select its card');
-  assert.equal(boardPointerState.boardPress, null, 'dragged press is consumed');
-  boardHandlers.pointerdown(boardEvent(ground, 10, 10));
-  const groundDrag = boardEvent(ground, 40, 10);
-  boardHandlers.click(groundDrag);
-  assert.equal(groundDrag.defaultPrevented, true);
-  assert.equal(boardBacks, 0, 'dragging empty board space does not step back');
-  boardHandlers.pointerdown(boardEvent(cardText, 10, 10));
-  boardHandlers.click(boardEvent(cardText, 12, 10));
-  assert.deepEqual(boardSelected, ['r:chosen'], 'short press still selects card');
-  boardHandlers.pointerdown(boardEvent(cardText, 10, 10));
-  boardHandlers.pointercancel();
-  boardHandlers.click(boardEvent(cardText, 40, 10));
-  assert.equal(boardSelected.length, 2, 'pointer cancel clears stale drag start');
-  boardHandlers.pointerdown(boardEvent(cardText, 10, 10));
-  const keyboard = boardEvent(card, 0, 0);
-  keyboard.key = 'Enter';
-  boardHandlers.keydown(keyboard);
-  assert.equal(keyboard.defaultPrevented, true);
-  assert.equal(boardPointerState.boardPress, null, 'keyboard activation clears stale drag start');
-  boardHandlers.click(boardEvent(cardText, 40, 10));
-  assert.equal(boardSelected.length, 4, 'keyboard activation and later click both select');
-  assert.equal(boardOpens, 0, 'none of these gestures double-open a result');
-
-  function shiftedBoardFixture() {
-    const rootHandlers = {}, boardHandlers = {}, selected = [], opened = [];
-    const card = key => ({ getAttribute: attr => attr === 'data-bk' ? key : null });
-    const target = key => ({
-      getAttribute: () => null,
-      closest: selector => selector === '[data-bk]' ? card(key) : null,
-      matches: () => false
-    });
-    const outside = { getAttribute: () => null, closest: () => null, matches: () => false };
-    const state = context({
-      root: { addEventListener: (type, fn, capture) => { assert.equal(capture, true); rootHandlers[type] = fn; } },
-      boardEl: { addEventListener: (type, fn) => { boardHandlers[type] = fn; }, contains: () => true },
-      board: { on: true, fi: 0, page: 0 }, boardPress: null, sel: 'r:old',
-      selectFromBoard: key => { selected.push(key); state.sel = key; },
-      openFromBoard: key => opened.push(key),
-      hideBoardCard() {}, layoutBoard() {}, stepBack() {}
-    });
-    vm.runInContext(boardRepeat + boardPointer, state);
-    const event = (which, x, y, time, more = {}) => ({
-      target: which, clientX: x, clientY: y, timeStamp: time,
-      button: 0, isPrimary: true, pointerType: 'mouse', detail: 1,
-      defaultPrevented: false, stopped: false,
-      preventDefault() { this.defaultPrevented = true; },
-      stopImmediatePropagation() { this.stopped = true; }, ...more
-    });
-    const dispatch = (type, e, withinBoard) => {
-      if (rootHandlers[type]) rootHandlers[type](e);
-      if (!e.stopped && withinBoard && boardHandlers[type]) boardHandlers[type](e);
-      return e;
-    };
-    const first = () => {
-      const a = target('r:first');
-      dispatch('pointerdown', event(a, 30, 40, 100), true);
-      dispatch('click', event(a, 30, 40, 110), true);
-      assert.deepEqual(selected, ['r:first'], 'first card click selects but does not open');
-      assert.deepEqual(opened, []);
-      return a;
-    };
-    return { state, selected, opened, target, outside, event, dispatch, first };
-  }
-  const shifted = shiftedBoardFixture();
-  shifted.first();
-  shifted.dispatch('pointerdown', shifted.event(shifted.outside, 31, 40, 230), false);
-  const shiftedSecond = shifted.dispatch('click', shifted.event(shifted.outside, 31, 40, 240, { detail: 2 }), false);
-  assert.deepEqual(shifted.opened, ['r:first'], 'second click over displaced sidebar opens the original card');
-  assert.deepEqual(shifted.selected, ['r:first'], 'capture handles the second click before sidebar handlers');
-  assert.equal(shiftedSecond.defaultPrevented, true);
-  assert.equal(shiftedSecond.stopped, true);
-
-  const otherCard = shiftedBoardFixture();
-  otherCard.first();
-  const secondTarget = otherCard.target('r:other');
-  otherCard.dispatch('pointerdown', otherCard.event(secondTarget, 30, 40, 230), true);
-  otherCard.dispatch('click', otherCard.event(secondTarget, 30, 40, 240, { detail: 2 }), true);
-  assert.deepEqual(otherCard.opened, ['r:first'], 'shifted hit over another card opens original key');
-  assert.deepEqual(otherCard.selected, ['r:first'], 'second card does not steal the double click');
-  otherCard.dispatch('dblclick', otherCard.event(secondTarget, 30, 40, 245, { detail: 2 }), true);
-  assert.deepEqual(otherCard.opened, ['r:first'], 'native dblclick cannot duplicate the capture open');
-
-  for (const [name, pointer, clickEvent] of [
-    ['drag', { x: 30, y: 40, time: 230 }, { x: 50, y: 40, time: 240 }],
-    ['modifier', { x: 30, y: 40, time: 230, metaKey: true }, { x: 30, y: 40, time: 240, metaKey: true }],
-    ['touch', { x: 30, y: 40, time: 230, pointerType: 'touch' }, { x: 30, y: 40, time: 240 }],
-    ['expiry', { x: 30, y: 40, time: 700 }, { x: 30, y: 40, time: 710 }]
-  ]) {
-    const rejected = shiftedBoardFixture();
-    rejected.first();
-    rejected.dispatch('pointerdown', rejected.event(rejected.outside, pointer.x, pointer.y, pointer.time, pointer), false);
-    rejected.dispatch('click', rejected.event(rejected.outside, clickEvent.x, clickEvent.y, clickEvent.time,
-      { detail: 2, ...clickEvent }), false);
-    assert.deepEqual(rejected.opened, [], `${name} cannot open a displaced board card`);
-  }
-  const changed = shiftedBoardFixture();
-  changed.first(); changed.state.sel = 'r:unrelated';
-  changed.dispatch('pointerdown', changed.event(changed.outside, 30, 40, 230), false);
-  changed.dispatch('click', changed.event(changed.outside, 30, 40, 240, { detail: 2 }), false);
-  assert.deepEqual(changed.opened, [], 'changed selection invalidates the old double-click target');
-  const cancelled = shiftedBoardFixture();
-  cancelled.first();
-  cancelled.dispatch('pointerdown', cancelled.event(cancelled.outside, 30, 40, 230), false);
-  cancelled.dispatch('pointercancel', cancelled.event(cancelled.outside, 30, 40, 235), false);
-  cancelled.dispatch('click', cancelled.event(cancelled.outside, 30, 40, 240, { detail: 2 }), false);
-  assert.deepEqual(cancelled.opened, [], 'cancelled second press cannot open a card');
-  const keyboardInterruption = shiftedBoardFixture();
-  const keyTarget = keyboardInterruption.first();
-  keyboardInterruption.dispatch('keydown', keyboardInterruption.event(keyTarget, 30, 40, 220, { key: 'Escape' }), true);
-  keyboardInterruption.dispatch('pointerdown', keyboardInterruption.event(keyboardInterruption.outside, 30, 40, 230), false);
-  keyboardInterruption.dispatch('click', keyboardInterruption.event(keyboardInterruption.outside, 30, 40, 240, { detail: 2 }), false);
-  assert.deepEqual(keyboardInterruption.opened, [], 'keyboard interaction clears stale first-click latch');
-  const shortcutInterruption = shiftedBoardFixture();
-  const shortcutTarget = shortcutInterruption.first();
-  let documentKey;
-  shortcutInterruption.state.document = { addEventListener: (_type, fn) => { documentKey = fn; }, querySelector: () => null };
-  shortcutInterruption.state.searchIn = { focus() {}, select() {} };
-  vm.runInContext(documentKeys, shortcutInterruption.state);
-  documentKey(shortcutInterruption.event(shortcutTarget, 30, 40, 220, { key: '/' }));
-  shortcutInterruption.dispatch('pointerdown', shortcutInterruption.event(shortcutInterruption.outside, 30, 40, 230), false);
-  shortcutInterruption.dispatch('click', shortcutInterruption.event(shortcutInterruption.outside, 30, 40, 240, { detail: 2 }), false);
-  assert.deepEqual(shortcutInterruption.opened, [], 'search shortcut cancels the gesture before board key handlers run');
-
-  // The preview guard is registered before both map and board click handlers.
-  // A text drag must stop their selection handler, then release the next click.
-  const previewListeners = {};
-  const previewCard = {
-    addEventListener(type, fn) { (previewListeners[type] ||= []).push(fn); }
-  };
-  const preview = vm.createContext({ Math });
-  vm.runInContext(previewGuard, preview);
-  preview.guardPreviewClicks(previewCard);
-  const previewSelections = [];
-  previewCard.addEventListener('click', () => previewSelections.push('selected'));
-  const previewEvent = (x, y, extra = {}) => ({
-    clientX: x, clientY: y, button: 0, isPrimary: true, detail: 1,
-    defaultPrevented: false, stopped: false,
-    preventDefault() { this.defaultPrevented = true; },
-    stopImmediatePropagation() { this.stopped = true; }, ...extra
-  });
-  const dispatchPreview = (type, event) => {
-    for (const listener of previewListeners[type] || []) {
-      listener(event);
-      if (event.stopped) break;
-    }
-    return event;
-  };
-  dispatchPreview('pointerdown', previewEvent(10, 10));
-  const previewDrag = dispatchPreview('click', previewEvent(30, 10));
-  assert.equal(previewDrag.defaultPrevented, true, 'dragged preview text suppresses default click');
-  assert.deepEqual(previewSelections, [], 'drag never reaches downstream preview selection');
-  dispatchPreview('pointerdown', previewEvent(10, 10));
-  dispatchPreview('click', previewEvent(12, 10));
-  assert.deepEqual(previewSelections, ['selected'], 'ordinary click reaches preview selection');
-  dispatchPreview('pointerdown', previewEvent(10, 10));
-  dispatchPreview('pointercancel', previewEvent(10, 10));
-  assert.equal(dispatchPreview('click', previewEvent(10, 10)).defaultPrevented, true,
-    'cancelled gesture never reaches preview selection');
-  dispatchPreview('pointerdown', previewEvent(10, 10));
-  dispatchPreview('click', previewEvent(10, 10));
-  assert.deepEqual(previewSelections, ['selected', 'selected'], 'next clean click works after cancellation');
-  assert.equal(dispatchPreview('click', previewEvent(10, 10, { metaKey: true })).defaultPrevented, true,
-    'modified preview click stays with the browser');
-  assert.equal(dispatchPreview('click', previewEvent(10, 10, { button: 2 })).defaultPrevented, true,
-    'secondary preview click does not navigate');
-  dispatchPreview('pointerdown', previewEvent(10, 10));
-  dispatchPreview('click', previewEvent(10, 10, { detail: 0 }));
-  assert.equal(previewSelections.length, 3, 'keyboard click clears any older pointer gesture');
-
-  const dimensions = { width: 1280, height: 900 };
-  const wireAttrs = {};
-  const wireSvg = { setAttribute(name, value) { wireAttrs[name] = value; }, innerHTML: '' };
-  const wireInner = {
-    get clientWidth() { return dimensions.width; }, get clientHeight() { return dimensions.height; },
-    scrollWidth: 1280, scrollHeight: 900,
-    getBoundingClientRect: () => ({ left: 0, top: 0 }),
-    querySelector: selector => selector === '[data-u-wires]' ? wireSvg : null,
-    querySelectorAll: () => []
-  };
-  const wireState = vm.createContext({
-    boardEl: { querySelector: () => wireInner }, board: { on: true },
-    getComputedStyle: () => ({ fontSize: '16px' }), Math
-  });
-  vm.runInContext(wires, wireState);
-  wireState.drawWires();
-  assert.deepEqual(wireAttrs, { width: 1280, height: 900 });
-  dimensions.width = 963; dimensions.height = 768;
-  wireState.drawWires();
-  assert.deepEqual(wireAttrs, { width: 963, height: 768 },
-    'old SVG overflow cannot hold wires at its stale scroll dimensions');
-  dimensions.width = 810; dimensions.height = 600;
-  wireState.drawWires();
-  assert.deepEqual(wireAttrs, { width: 810, height: 600 }, 'wires follow a further board resize');
-
   let requests = 0;
   const caches = [];
   const retry = context({ fetchJson: (url, cache) => {
@@ -874,29 +548,19 @@ async function main() {
     let detailRequests = 0;
     const detailCaches = [];
     const detailState = context({
-      partsReady: true, shards: {}, shardLoading: {}, failedShards: {},
-      boardEl: {}, boardFamily: () => 0, hideBoard() {}, discOf: () => 0,
+      partsReady: true, shards: {}, shardLoading: {}, failedShards: {}, discOf: () => 0,
       fetchJson: (url, cache) => {
         detailCaches.push(cache);
         detailRequests++;
-        // Bound a broken recursive retry so this regression cannot itself hang Node.
-        if (detailRequests > 5) return new Promise(() => {});
         if (detailRequests === 1) return failure === 'network' ?
           Promise.reject(new Error('offline detail')) : Promise.resolve({ generation_id: 'old' });
         return Promise.resolve({ generation_id: 'g' });
       }
     });
-    detailState.fams[0].d = 0;
-    vm.runInContext(shard + syncAdmission + select, detailState);
+    vm.runInContext(shard + select, detailState);
     await assert.rejects(detailState.loadShard(0));
     assert.equal(detailState.failedShards[0], true, `${failure} is classified as failed detail`);
     assert.equal(detailState.shardLoading[0], null, 'rejected detail promise is released');
-    detailState.syncBoard();
-    detailState.syncBoard();
-    detailState.syncBoard();
-    await flush();
-    assert.equal(detailRequests, 1, 'board redraw does not automatically retry failed detail');
-    detailState.renderPanel = () => detailState.syncBoard();
     detailState.select('f:a', { trail: true });
     await flush();
     assert.equal(detailRequests, 2, 'explicit selection admits exactly one detail retry');

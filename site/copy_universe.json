@@ -216,18 +216,8 @@
   "shown_pair": "Shown on the map"
  },
  "card": {
-  "_note": "The card beside what the pointer names on the map (DESIGN.md, Motion and hover). The family, paper, result and Lean lines reuse family.kicker, paper.kicker, result.in_paper, lean.kicker and the colour key.",
-  "counts": "{papers}, {lean}",
-  "result_candidate": "Possible Lean match: {name}, selected because the statements share words. No comparison of their mathematical meaning is recorded.",
-  "result_candidate_many": "Possible Lean matches: {name}, selected because the statements share words. No comparison of their mathematical meaning is recorded.",
-  "result_cited": "Linked to {name}: the Lean source cites this theorem. No review of whether the statements mean the same thing is recorded.",
-  "result_declared": "OpenAI links this theorem to {name}. Atlas records no review of whether the statements mean the same thing.",
-  "result_mixed": "Linked to {name} through citations, OpenAI’s links or shared wording. No comparison of their mathematical meaning is recorded.",
-  "result_none": "Atlas has no recorded pairing between it and a selected Lean statement.",
-  "lean_candidate": "Possible paper match: {name}, selected because the statements share words. No comparison of their mathematical meaning is recorded.",
-  "lean_cited": "Linked to {name}: the Lean source cites that theorem. No review of whether the statements mean the same thing is recorded.",
-  "lean_declared": "OpenAI links this Lean statement to {name}. Atlas records no review of whether the statements mean the same thing.",
-  "result_in": "{name} in “{paper}”"
+  "_note": "Counts said with a family on the map, in its disc and in the hover caption (DESIGN.md, Motion and hover).",
+  "counts": "{papers}, {lean}"
  },
  "plate": {
   "lean_ring": "Lean statements",
@@ -308,27 +298,9 @@
   "hover_family": "Click to open its page."
  },
  "board": {
-  "_note": "Inside a family the map is a board of cards: its papers in columns with each result's statement, the Lean statements beside the results they state, the families citing it on the left and those it cites on the right.",
-  "label": "The family's papers, results and Lean statements",
+  "_note": "The citation inks named in the caption at a discipline.",
   "cited_by": "Cited by",
-  "cites": "Cites",
-  "none_in": "No other family’s papers cite it.",
-  "none_out": "Its papers cite no other family.",
-  "citations_one": "1 citation",
-  "citations": "{n} citations",
-  "readers": "Independent assessments of the Lean statements:",
-  "unpaired_heading": "Lean statements with no clear paper match",
-  "unpaired": "Atlas could not select a paper theorem from the wording alone.",
-  "also": "Also paired with {names}.",
-  "also_ref": "Also paired with this theorem; its card is under {name}.",
-  "pair_candidate": "Selected from shared wording. No review of whether the statements mean the same thing is recorded.",
-  "pair_cited": "The Lean source cites this theorem. No review of whether the statements mean the same thing is recorded.",
-  "pair_declared": "OpenAI links the two statements. No review of whether they mean the same thing is recorded.",
-  "no_statement": "The atlas has no text for this statement.",
-  "loading": "Loading the statement…",
-  "dashed": "A dashed line is a possible match from shared wording, not a reviewed comparison of the statements.",
-  "results_one": "1 result",
-  "results": "{n} results"
+  "cites": "Cites"
  },
  "mapkey": {
   "button": "Map key",

@@ -79,22 +79,19 @@ map for where things are, the list for reading them.
   three related. A family, paper, theorem or Lean statement chosen anywhere on
   the map now opens its own page, and an older `#o=f:…`, `#o=p:…`, `#o=r:…` or
   `#o=l:…` address is replaced by that page. The map holds only the release and
-  its subjects. The board code below is dormant and due for removal.
+  its subjects.
 - **Hover never covers the drawing** (19 October 2026). A floating card beside
   a hovered subject sat on the very dots the reader was reaching for. What the
   pointer names is written in the caption above the drawing, in the same grid
   cell as the standing caption so the bar never changes height.
-- **Formerly, a family board of cards** in the Zenith Code Map Focus grammar. Its
-  papers are columns in date order (short title, date, "Read the paper");
-  under each, a card per result with its printed number and the whole
-  statement typeset with the paper's macros; under a result, the Lean statement
-  paired with it (label, identifier, the pairing in words, the re-run
-  sentence), joined by a connector, dashed for a candidate. "Cited by" families
-  on the left, "Cites" on the right. One line at the foot says what a dashed
-  line means; there is no key. On a phone the board is one column of the same
-  cards. A click always leads to mathematics, never to a status page.
-  Every paper appears on the board, with columns that wrap and no paper pager.
-  Previous and next under the breadcrumbs move between siblings at the current
+- **Formerly, a family board of cards** in the Zenith Code Map Focus grammar:
+  its papers as columns of results, each statement typeset, the Lean statements
+  paired with them joined beneath, "Cited by" families on the left and "Cites"
+  on the right, with a hover card beside whatever the pointer named. Both were
+  retired on 19 October 2026 and their code removed the same day; a family is
+  read on its own page, and a click still always leads to mathematics, never to
+  a status page.
+- Previous and next under the breadcrumbs move between siblings at the current
   level; arrow keys do the same and keep a visible keyboard focus target.
 - Hover explains in the caption, click opens, Escape steps back. Selection
   lives in the URL (`#o=d%3Anumber-theory`); Back and Forward restore it;
@@ -127,13 +124,9 @@ give space and emphasis to what the current task needs, at each depth.
   map when stepping up. A click during a pending return is retained.
 - An arrow overlay follows its content box, so moving to a narrower panel or
   shorter paper page removes obsolete scrolling space.
-- While a detail packet loads, the board and sidebar each retain one completion
-  subscriber per discipline. Only the current board and latest sidebar visit
-  refresh when it arrives; revisiting a node cannot queue repeated typesetting
-  or layout work.
-- A pointer double-click retains the first card through reading-panel reflow.
-  Its second click opens that card even if the sidebar has moved beneath it;
-  dragging, cancelled gestures and modified clicks do not open it.
+- While a detail packet loads, the sidebar retains one completion subscriber
+  per discipline. Only its latest visit refreshes when it arrives; revisiting a
+  node cannot queue repeated typesetting or layout work.
 
 ## The thread
 
@@ -351,8 +344,8 @@ text fades or slides in as it is scrolled to.
 | Moment | What answers | Time |
 |---|---|---|
 | Pointing at a link, button, row or card | Colour, border or background; a card's border darkens | `--t-hover`, 120 ms |
-| Pointing at a discipline, family or board card on the map | A card beside it names it in words (title, family, discipline, counts, the evidence line, a statement's opening); it is placed where it covers the fewest other names and never the pointed object; the rest of the map steps back and its row in the list lights | fades in `--t-hover` after a 70 ms pause; map alphas ease over about 150 ms |
-| Moving between levels on the map | Each disc moves from where it was to where it goes; a family's disc grows to fill the stage and its board fades in 8 px; the chosen card gets one ring once; the panel's new content rises 6 px into place | discs 640 ms, slow in and out; board `--t-open`; panel `--t-state` |
+| Pointing at a discipline or family on the map | The caption above the drawing names it in words (title, family, discipline, counts, the evidence line), covering nothing on the drawing; the rest of the map steps back and its row in the list lights | the caption swaps at once; map alphas ease over about 150 ms |
+| Moving between levels on the map | Each disc moves from where it was to where it goes; a chosen discipline gets one ring once; the panel's new content rises 6 px into place | discs 640 ms, slow in and out; panel `--t-state` |
 | Opening the Details rail or a preview | The rail slides 8 px in from its side (a sheet rises on a phone); a preview fades in | `--t-open`, 240 ms; preview `--t-hover` |
 | Choosing a comparison tab | The tab's mark moves; the panels swap without a jump | `--t-state` |
 | Arriving at a paper theorem | Its highlight fades out once | 2.4 s, once |
@@ -361,13 +354,7 @@ text fades or slides in as it is scrolled to.
 
 Easing: arrivals use `--ease-out`; anything that travels uses `--ease-move`.
 Under reduced motion every transition is instant, discs jump and the ring is
-not drawn. Touch screens get no hover card; tapping
-selects.
-
-Moving within a board card keeps its preview in place without measuring every
-other card again. A width or font change places the preview again beside its
-source, within the current stage. Two citation cards can name the same family
-on opposite sides; each keeps its own preview position.
+not drawn. On a touch screen, tapping selects.
 
 What motion must never do: make a candidate look settled, move text a reader
 is reading, delay the mathematics, or run in a loop.
@@ -458,9 +445,7 @@ attributed assessments, including when they appear under one selected result.
 Keep paper titles and Lean identifiers in the selection heading once. Family result counts mean results drawn on this map.
 Section buttons move within the sidebar without changing the selected object,
 map position or URL. The sidebar has one vertical scrollbar, including long
-Lean snippets; source code may still scroll horizontally. Compact map cards
-stop before an omitted formula instead of carrying on after it; a numbered
-list marker alone is not a sentence or a useful preview.
+Lean snippets; source code may still scroll horizontally.
 
 On desktop, pointing at a family in a discipline brings its expanded sidebar
 entry to the top of the reading area immediately. Keyboard focus uses the same
@@ -481,11 +466,8 @@ Pressing a moving circle reserves that circle until release; motion must not
 turn the same click into a miss, another family, or Back. Drags and cancelled
 gestures must not reuse a reserved selection. Painted discs share the same
 visibility threshold with hit testing.
-An outgoing board loses mouse and keyboard interaction immediately.
 Returning from a family reveals the finished map immediately, with stable
-circle positions and no outgoing board covering it.
-Family boards open as soon as their data is available; they do not wait for a
-decorative zoom. Discipline transitions stay brief. Fit labels at the destination
+circle positions. Discipline transitions stay brief. Fit labels at the destination
 radius once and scale them during motion, rather than wrapping every animation
 frame. Retain only the current fit per family and discard old viewport caches.
 A failed or stale detail packet stops loading and reports the failure. Redrawing
@@ -495,25 +477,16 @@ Draw the map when its baseline data is ready; font downloads must not hold up
 navigation. Refresh text measurements when fonts arrive. When a chosen family
 needs both the parts index and its discipline details, request them together.
 Keep shared requests and cached details; do not preload every discipline.
-Board layout must not recursively rebuild its own content. Reserve scrollbar
-space so overflow does not alternate the column count. Resize and pagination
-refresh only the visible excerpts, with bounded fitting work. Verify boards
-near a column breakpoint, including the 14-paper log-abundance family.
-Detail arriving for a neighbouring family updates that family's title in place.
-It must not rebuild the paper board, move its page, or discard keyboard focus.
-An own-detail refresh preserves the board's page, scroll and focused control.
-The sidebar likewise preserves focus on its navigation rows as details arrive.
+The sidebar preserves focus on its navigation rows as details arrive.
 Excerpt fitting is cached for unchanged width, budget and font metrics, including
 when the fitting limit was reached. Fresh desktop selections bring the map's
 heading and breadcrumbs back into view; scrolling a sidebar must not leave the
 next selection cropped above the screen.
-Dragging across board text selects text without selecting a record or stepping
-back. Board pointer clicks use the same movement tolerance as map circles.
 Map statements use the paper reader's printed reference numbers and anchors.
 Packet URLs change with the rendered packet bytes, even at the same backend
 generation, so a corrected preview is not hidden by an old cached response.
 Discipline citation arrows carry a visible direction key. Arrowheads point to
-the cited family, including on the board; the line does not assert a proof
+the cited family; the line does not assert a proof
 dependency. Fade unrelated circles and their labels enough to keep citations
 readable, while keeping those circles clickable.
 

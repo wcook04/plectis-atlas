@@ -356,8 +356,7 @@ class Model:
                                   "main": bool(l.get("main_result")), "results": [], "pairing": state,
                                   "href": f"statements/{quote(l['id'][2:])}.html"})
                 # A Lean statement paired with several theorems hangs under each of them,
-                # the clearest first (the board draws its card there and a reference
-                # under the others).
+                # the clearest first.
                 for lid, (sids, state) in targets.items():
                     for sid in sids:
                         if sid in res_of and lid in lean_of and results[res_of[sid]]["f"] == fi:
@@ -526,8 +525,8 @@ def family_map(model, fi, centre_of):
         g = hi if fi == lo else lo
         out_w, in_w = (a, b) if fi == lo else (b, a)
         ends[g] = {"g": g, "way": (1 if out_w else 0) | (2 if in_w else 0), "papers": f["papers"][:1]}
-    # Which of this family's papers carry each citation (the board draws its lines to
-    # them): papers citing that family's papers, and papers its papers cite.
+    # Which of this family's papers carry each citation: papers citing that family's
+    # papers, and papers its papers cite.
     own = {model["papers"][p]["id"]: k for k, p in enumerate(f["papers"])}
     for g, e in ends.items():
         theirs = {model["papers"][p]["id"] for p in model["families"][g]["papers"]}
@@ -1325,7 +1324,6 @@ def page_body(M, gen, data_version=None) -> str:
   <canvas class="u-canvas" role="img" aria-label="{esc(canvas_label)}" tabindex="0" data-u-canvas></canvas>
   <div class="u-visually-hidden" aria-live="polite" data-u-live></div>
   <div class="u-maplegend" data-u-legend hidden></div>
-  <div class="u-board" data-u-board role="region" aria-label="{esc(U('board.label'))}"></div>
   <div class="u-mapbar" data-u-bar>
    <button type="button" class="u-mapkey-btn" data-u-mapkey aria-expanded="false" aria-controls="u-mapkey">{esc(U('mapkey.button'))}</button>
    <div class="u-capbox">
