@@ -34,6 +34,7 @@ through the same static map packets built here.
 | Tool | Responsibility |
 |---|---|
 | [fetch_upstream.sh](fetch_upstream.sh) | Fetches the OpenAI commit recorded in `upstream.json`. |
+| [upstream_changes.py](upstream_changes.py) | Says whether a newer OpenAI commit changes anything the atlas reads; the weekly upstream job keeps the pin when it does not. |
 | [build_data.py](build_data.py) | Extracts baseline JSON indexes from the pinned sources. |
 | [build_lean_claims.py](build_lean_claims.py), [build_lean_xref.py](build_lean_xref.py) | Extract Lean declaration records and cross-references. |
 | [ingest/](ingest/) | Imports source-specific outside findings. |

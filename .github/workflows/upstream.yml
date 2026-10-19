@@ -1,6 +1,7 @@
 name: upstream
-# Follow openai/math: when it changes (new results, withdrawals, repairs,
-# formalisations), rebuild the data and open a pull request for review.
+# Follow openai/math: when it changes anything the atlas reads (new results,
+# withdrawals, repairs, formalisations), say what changed; once Statement Map's
+# export at that commit is in backend/, rebuild the data and open a pull request.
 on:
   schedule:
     - cron: "17 6 * * 1"
@@ -16,14 +17,40 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
+      - name: Remember the commit the atlas reads now
+        run: echo "OLD_PIN=$(python3 -c 'import json; print(json.load(open("upstream.json"))["commit"])')" >> "$GITHUB_ENV"
       - name: Fetch the latest upstream commit
         run: sh scripts/fetch_upstream.sh --latest --lean-library "$RUNNER_TEMP/openai-math"
+      # A new upstream commit that touches nothing the atlas reads (a workflow file, a
+      # repository setting) changes nothing on the site: keep the pin and stop here.
+      - name: Did anything the atlas reads change?
+        id: changes
+        run: |
+          set -o pipefail
+          python3 scripts/upstream_changes.py --upstream "$RUNNER_TEMP/openai-math" --from "$OLD_PIN" \
+            --github-output "$GITHUB_OUTPUT" | tee "$RUNNER_TEMP/changes.txt"
+          { echo "## openai/math"; echo; echo '```'; cat "$RUNNER_TEMP/changes.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      # The site reads Statement Map's export, pinned to one upstream commit
+      # (scripts/reader.py refuses any other). Following openai/math therefore starts
+      # with Statement Map's export at the new commit, imported by scripts/vendor_backend.py.
+      - name: Is Statement Map's export at the new commit?
+        if: steps.changes.outputs.relevant == 'true'
+        id: backend
+        run: |
+          have=$(python3 -c 'import json; print(json.load(open("backend/EXPORT.json"))["pin"])')
+          if [ "$have" = "${{ steps.changes.outputs.new }}" ]; then echo "ready=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          msg="openai/math changed ${{ steps.changes.outputs.count }} file(s) the atlas reads (${OLD_PIN:0:12} to ${{ steps.changes.outputs.new }}). Export Statement Map at that commit, import it with scripts/vendor_backend.py, then rebuild (docs/ARCHITECTURE.md). backend/ is at ${have:0:12}."
+          echo "::error title=Statement Map export needed::$msg"
+          { echo; echo "**Action needed.** $msg"; } >> "$GITHUB_STEP_SUMMARY"
+          exit 1
       - name: Rebuild data and README
+        if: steps.backend.outputs.ready == 'true'
         run: |
           python3 scripts/build_data.py --upstream "$RUNNER_TEMP/openai-math" --quiet
           python3 scripts/build_lean_claims.py --upstream "$RUNNER_TEMP/openai-math"
           python3 scripts/sync_readme.py
       - uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6
+        if: steps.backend.outputs.ready == 'true'
         with:
           branch: upstream-bump
           title: "Follow openai/math to its latest commit"
