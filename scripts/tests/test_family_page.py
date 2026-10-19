@@ -82,6 +82,17 @@ def main() -> int:
                 if term:
                     glance = html.split('class="fx-glance"', 1)[1].split("</section>", 1)[0]
                     check(_esc(term, quote=False) in glance, f"the glance omits {rd['source']}'s term")
+        # What the groups found: one card per group, holding its assessment and its runs.
+        c = family_page.Ctx(S, S.FAM[fid])
+        for src in (family_page.group_order(c) if (c.leans or c.readings) else []):
+            check(f'id="{family_page.group_id(src)}"' in html, f"no card for the group {src}")
+        for l in doc.get("lean") or []:
+            for ru in l.get("runs") or []:
+                if any(ru["id"] in (g.get("run_ids") or []) for g in l.get("run_groups") or []):
+                    check(f'id="{family_page.run_id(ru["source"], l["id"][2:])}"' in html, f"{ru['source']}'s run of {l['id']} is not on its card")
+        if doc.get("lean") and doc.get("remaining_checks"):
+            check('class="fx-glance__left"' in html, "the glance does not say what is left to check")
+        check('class="fx-cmp fx-cmp--rest"' not in html, "a Lean comparison is hidden behind another")
         tabs = re.findall(r'data-fx-tab="([^"]+)"', html)
         panels = re.findall(r'id="(p-[a-z]+)" role="tabpanel"', html)
         check(tabs == panels and tabs and tabs[0] == "p-result", f"tabs {tabs} do not match panels {panels}")
@@ -92,6 +103,7 @@ def main() -> int:
     fails += definition_only_statement(tmp)
     fails += complete_theorem_snippets(tmp)
     fails += attributed_source_note()
+    fails += producer_left_out_quoted()
     for f in fails:
         print("FAIL", f)
     print(f"family page: {len(SPECIMENS)} specimens, {len(fails)} failures")
@@ -106,6 +118,17 @@ def tone_tokens_equal() -> list:
     uni = tokens((root / "universe.css").read_text(encoding="utf-8"))
     fam = tokens((root / "family.css").read_text(encoding="utf-8"))
     return [] if fam and fam == uni[:len(fam)] and len(fam) == 18 else [f"family.css tone inks drift from universe.css: {fam} vs {uni[:18]}"]
+
+
+def producer_left_out_quoted() -> list:
+    """The glance quotes, exactly, OpenAI's own sentence on what its Lean leaves out (017: the
+    Flint-Hills consequence is outside the checked statement PiExponent)."""
+    c = family_page.Ctx(S, S.FAM["017"])
+    out = family_page.producer_left_out(c)
+    scope = " ".join(((c.doc.get("producer_scope") or {}).get("value") or {}).get("scope", "").split())
+    if not out or "Flint" not in out[0] or out[0] not in scope:
+        return [f"017: the glance does not quote OpenAI's sentence on what PiExponent leaves out: {out}"]
+    return []
 
 
 def attributed_source_note() -> list:
