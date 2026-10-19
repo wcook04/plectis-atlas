@@ -179,6 +179,28 @@ without scripts every panel shows in turn. This is the Atlas film's route
 (find a result, see its claims, compare the groups' labels and reasons, see
 which proof was checked) laid out so it needs no scrolling.
 
+**Every tab uses the screen** (19 October 2026, second pass). Will: "just so
+disorganised"; every panel sat in an 830px column beside a 280px column reserved
+for a Details pane that was usually closed, so 55 to 80% of a wide screen was
+empty. Now the panels take the frame's whole width and Details opens over the
+right of the page. One card (surface, one rule, medium radius, one padding), one
+heading scale and three spacing steps (section, block, tight) serve every tab.
+Information is grouped by what the reader compares: **What the groups found** is
+one card per group, side by side and of equal height, holding its scope term,
+gap, definition, method, links and its Comparator run of every Lean statement
+(or "No run reported"), then OpenAI's note and the AI drafts as two cards, then
+other reports and calculations as one grid. **Lean statements** shows every
+statement as one wide row (paper theorem beside Lean, the groups' runs as chips
+in its head) under a grid of small summary cards; Comparator is one line and a
+glossary link. Discussion, connections and contribute are card grids; a few
+cards stand in one equal row, many flow in balanced columns, and kinds with
+nothing to show are said together in one line. Each section leads with its
+answer in one sentence and one quiet line on how to read it. The glance links
+each group's term to its definition and its run word to its card, and ends with
+what is left to check, quoting OpenAI's own sentence on what its Lean leaves out
+(017: the Flint–Hills consequence). A family with no Lean gets a quiet Lean tab
+of one line.
+
 - **Head**: the trail; the family's name; OpenAI's catalogue description as a
   credited quotation, with its mathematics typeset.
 - **The theorem**: the page's centrepiece, set large as printed (number, paper,
