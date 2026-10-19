@@ -75,12 +75,12 @@ def main() -> int:
         for what in compare_buttons(fid, html):
             check(False, what)
         # The first screen compares the groups; the rest of the page is one tab per question.
-        check('class="fx-glance"' in html, "no comparison of what each group found")
+        check(re.search(r'class="fx-glance[ "]', html) is not None, "no comparison of what each group found")
         if doc.get("readings"):
             for rd in doc["readings"]:
                 term = rd.get("source_term")
                 if term:
-                    glance = html.split('class="fx-glance"', 1)[1].split("</section>", 1)[0]
+                    glance = re.split(r'class="fx-glance[ "]', html, maxsplit=1)[1].split("</section>", 1)[0]
                     check(_esc(term, quote=False) in glance, f"the glance omits {rd['source']}'s term")
         # What the groups found: one card per group, holding its assessment and its runs.
         c = family_page.Ctx(S, S.FAM[fid])
@@ -152,7 +152,8 @@ def attributed_source_note() -> list:
         for link in value["atlas_source_note"]["links"]:
             if link["url"] not in rendered:
                 fails.append(f"017 {where}: pinned source link lost")
-    if family_page.W("compare.heading_one") != "One selected Lean statement for checking":
+    selected = family_page.W("compare.selected_one", name="PiExponent", role="r")
+    if "selected" not in selected or " all " in selected:
         fails.append("017: selected-check count is described as all Lean statements")
     comparison = family_page.comparison_html(c)
     plain_comparison = unescape(re.sub(r"<[^>]*>", "", comparison))

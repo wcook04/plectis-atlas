@@ -2,7 +2,8 @@
  "_note": "Words for the family page (scripts/family_page.py). Evidence states take their words from copy_evidence.json; these are the page's own labels and sentences. Every state is said in words; no symbol needs a key. Sentence case, plain, no em dashes.",
  "trail": {
   "map": "Map",
-  "family": "Family {num}"
+  "family": "Family {num}",
+  "family_titled": "Family {num}: {title}"
  },
  "head": {
   "quote_credit": "OpenAI groups related papers into a “family”. {link} describes this one:",
@@ -35,8 +36,7 @@
    "editions_one": "one replaced by a later edition",
    "editions_many": "{n} replaced by later editions",
    "joined": "{current}; {rest}."
-  },
-  "context": "Lean is a language for mathematical statements and proofs that a computer can verify. The groups have compared the release’s Lean statements with this description; what each found is in the table."
+  }
  },
  "actions": {
   "compare": "Compare the paper and Lean statements",
@@ -84,7 +84,7 @@
   "claim_unresolved": "What the papers state"
  },
  "claim": {
-  "heading_unresolved": "What the papers state",
+  "heading_unresolved": "What do the papers claim?",
   "printed": "{kind} {number}",
   "unnumbered": "{kind} (the paper prints no number)",
   "unavailable": "{kind} (number unavailable)",
@@ -118,15 +118,17 @@
   "state_main": "The paper’s main theorem is shown as a possible match to OpenAI’s description. No review confirming the selection is recorded.",
   "state_words": "Possible match to OpenAI’s description, selected because it shares the most wording. No review confirming the selection is recorded.",
   "two_note": "The release does not say which paper theorem its catalogue describes. Both statements above are shown whole: the paper’s main theorem first, then the statement that shares the most wording with the description. The atlas has not reviewed either choice.",
-  "two_note_same": "The release does not say which paper theorem its catalogue describes. Both statements above are shown whole, the closer match to the description’s wording first. The atlas has not reviewed either choice."
+  "two_note_same": "The release does not say which paper theorem its catalogue describes. Both statements above are shown whole, the closer match to the description’s wording first. The atlas has not reviewed either choice.",
+  "heading_one": "What does the paper claim?",
+  "heading_many": "What do the papers claim?"
  },
  "compare": {
-  "heading": "Statements written in Lean",
+  "heading": "What did OpenAI write in Lean?",
   "intro": "Lean is a language for mathematical statements and proofs that a computer can verify. Each Lean statement appears beside the paper theorem it is a possible match for, with the reason they were linked.",
   "supporting_heading": "What the release’s Lean states, and the theorem it is paired with",
   "index_intro": "Each Lean statement below stands beside the paper theorem it is a possible match for, with the groups’ Comparator runs above it.",
-  "index_main": "main result",
-  "index_support": "supporting statement",
+  "index_main": "a main result in OpenAI’s release",
+  "index_support": "a supporting statement in OpenAI’s release",
   "index_paper": "Paper theorem",
   "index_runs": "Comparator runs",
   "paper_side": "The paper states",
@@ -146,13 +148,13 @@
   "no_pair": "No paper theorem is paired with this Lean statement.",
   "no_pair_reason": "{reason}",
   "no_pair_alternatives": "Statements it shares words with:",
-  "shared": "The words they share: {words}.",
-  "shared_many": "The words it shares {each}.",
+  "shared": "Why Atlas thinks these may match: both mention {words}. This shows shared words only, not that the meanings agree.",
+  "shared_many": "Why Atlas thinks these may match: it shares {each}. This shows shared words only, not that the meanings agree.",
   "shared_each": "with {label}: {words}",
   "paired_many": "It is paired with {labels}, each shown below.",
   "label_in": "{label} of {paper}",
-  "lean_main": "the release lists it as a main result",
-  "lean_support": "the release lists it as a supporting statement",
+  "lean_main": "OpenAI’s release lists it as a main result",
+  "lean_support": "OpenAI’s release lists it as a supporting statement",
   "lean_open": "Read the complete Lean statement",
   "lean_more_one": "The file states one more theorem:",
   "lean_more_many": "The file states {n} more theorems:",
@@ -162,19 +164,22 @@
   "nolean": "The release has no Lean statement for this family. Its papers remain available to read, and contributors can propose a formal statement of a result.",
   "runs_link": "The groups’ Comparator runs",
   "sorry": "This file states the theorem with <code>sorry</code>, a placeholder, in place of its proof. OpenAI supplies a separate proof file. Comparator tests whether that proof proves the statement here.",
-  "heading_one": "One selected Lean statement for checking",
   "source_notes_heading": "Lean source and the scope of the reports",
-  "heading_many": "{n} selected Lean statements for checking",
-  "intro_one": "The Lean statement stands beside the paper theorem it is a possible match for, with the groups’ Comparator runs above it.",
+  "intro_one": "{name} stands beside the paper theorem it is paired with: {pair} The groups’ Comparator runs of it are listed above the two statements.",
   "row_candidate": "Possible match for {label} in {paper}, found from shared wording; not reviewed.",
   "row_cited": "Its source cites {label} in {paper}; the match is not reviewed.",
   "row_declared": "OpenAI links it to {label} in {paper}; no review of whether the statements mean the same thing is recorded.",
   "row_none": "No paper theorem is paired with it.",
   "comparator_once": "A passing [[comparator|Comparator]] run shows that OpenAI’s proof proves the exact Lean statement; it does not show that the statement means the same as the paper’s theorem.",
-  "runs_h": "Comparator runs reported by the groups"
+  "runs_h": "Comparator runs reported by the groups",
+  "intro_one_none": "No paper theorem is paired with {name}. The groups’ Comparator runs of it are listed above it.",
+  "selected_one": "The Lean statement OpenAI selected for this family is {name}; {role}.",
+  "selected_many": "OpenAI selected {n} Lean statements for this family.",
+  "runs_tab": "Each group’s Comparator run of {name} (opens the groups tab)"
  },
  "checked": {
-  "heading": "What the groups found"
+  "heading": "What did each group find, and which proof was checked?",
+  "heading_differ": "Why do the groups differ, and which proof was checked?"
  },
  "readings": {
   "heading": "Does the Lean express the advertised result?",
@@ -285,10 +290,10 @@
   "kind_replay": "Another Comparator run"
  },
  "left": {
-  "heading": "Questions awaiting review",
+  "heading": "What is still unchecked",
   "reader_note_ref": "its request is printed in full under {link}.",
   "reader_note_link": "the group’s assessment",
-  "intro": "Each item identifies a statement, definition or report that needs further review. Its link opens a GitHub form with the source version already recorded.",
+  "intro": "Each item names the statement, definition or report to review. Its link opens a GitHub form with the source version already recorded.",
   "kinds": {
    "scope-review": "Read the Lean statement against the paper",
    "pairing-review": "Compare the proposed paper and Lean matches",
@@ -313,10 +318,13 @@
    "No imported accepted Comparator report bound to the current pin.": "Atlas records no independent report that Comparator accepted the proof at the release version shown here.",
    "An AI scope draft has no named human review.": "An AI agent drafted an assessment of which part of the paper this Lean statement expresses. No named human review is recorded."
   },
-  "reason_fallback": "No completed review of this item is recorded."
+  "reason_fallback": "No completed review of this item is recorded.",
+  "ans_one": "One question has no recorded review yet; you can take it on.",
+  "ans_many": "{n} questions have no recorded review yet; you can take any of them on.",
+  "help_heading": "How can I help?"
  },
  "papers": {
-  "heading": "Papers",
+  "heading": "The papers, to read here or as PDFs",
   "previous": "Previous editions",
   "refs_intro": "Each paper’s outside references are listed with it on its reading page, where each citation is placed. Every outside work cited in the release:",
   "pdf": "PDF",
@@ -324,10 +332,11 @@
   "intro": "Each paper opens as a [[reading-page|reading page]] in the browser, with the PDF beside it. The statements each paper opens with are on its reading page."
  },
  "said": {
-  "heading": "What people have said",
+  "heading": "Commentary",
   "intro": "Commentary on this family by others, dated and credited. It is commentary, not a finding.",
   "from_site": "From {site}",
-  "no_author": "The record names no author"
+  "no_author": "The record names no author",
+  "question": "What have other people written?"
  },
  "followups": {
   "heading": "Follow-up work by others"
@@ -375,7 +384,7 @@
   "label": "The cited passage, from the paper"
  },
  "cites": {
-  "heading": "What these papers cite in the release, and what cites them",
+  "heading": "Where can I read more?",
   "within_heading": "Within this family",
   "within_cites": "{citing} cites {cited}.",
   "cites_heading": "Papers elsewhere in the release that this family’s papers cite",
@@ -384,7 +393,8 @@
   "cited_none": "No paper elsewhere in the release cites this family’s papers.",
   "cited_by_row": "Cited by {papers}.",
   "cites_row": "Cites {papers}.",
-  "none_both": "This family’s papers cite no paper elsewhere in the release, and no paper elsewhere in the release cites them."
+  "none_both": "This family’s papers cite no paper elsewhere in the release, and no paper elsewhere in the release cites them.",
+  "ans": "Follow-up work by others first, then the papers in the release that these papers cite or are cited by, and each paper’s outside references."
  },
  "explain": {
   "issue_claim": "Explain family {id}: {title}",
@@ -393,51 +403,64 @@
  },
  "glance": {
   "_note": "The first-screen comparison of what each outside group found, in their own words.",
-  "heading": "What each group found",
   "col_who": "Group",
-  "col_scope": "Does the Lean state the advertised result?",
-  "col_proof": "Did OpenAI’s proof pass [[comparator|Comparator]]?",
   "not_read": "Not assessed.",
   "no_scope": "Did not assess this.",
   "runs_none": "No run reported.",
-  "runs_all": "For all {n} Lean statements.",
-  "runs_some": "For {names}.",
   "record": "Their assessment",
   "record_label": "Read {who}’s original assessment",
-  "note": "Words in quotation marks are each group’s own; select one to read what it means. The dot is the family’s colour on the map. Atlas links these reports and has not repeated them.",
-  "more": "Compare their reasons in full",
-  "openai_note": "OpenAI’s note on what its Lean covers",
+  "note": "Quoted words are each group’s own; point at a label to read its meaning. The dot is the family’s colour on the map.",
+  "more": "Read the groups’ reasons (opens the groups tab)",
   "nolean": "The release has no Lean statement for this family, so no group has compared one with the paper or made a Comparator run.",
-  "col_proof_plain": "Did OpenAI’s proof pass Comparator?",
-  "pass": "A passing Comparator run checks OpenAI’s proof of the Lean statement; it does not show that the statement says what the paper says.",
+  "pass": "Comparator tests OpenAI’s proof against the Lean statement, allowing only the standard axioms. A pass checks the proof of that statement; it does not show that the statement says everything the paper says.",
   "term_title": "What {who}’s term means, in their words",
-  "left_h": "Left to check:",
   "left_pairing": "No review of whether the paired Lean statement means the same as the paper’s theorem is recorded.",
   "left_openai": "OpenAI’s note on its Lean:",
-  "left_one": "One question awaiting review",
-  "left_many": "{n} questions awaiting review"
+  "left_one": "One open question you can help with",
+  "left_many": "{n} open questions you can help with",
+  "col_label": "Their label, in plain words",
+  "col_reason": "What each group says is missing, in their words",
+  "reasons": "Their reasons say more than the labels alone.",
+  "term_tip": "“{term}”, in {who}’s words: {text}",
+  "no_reason": "Their record names nothing missing.",
+  "left_pairing_one": "No review is recorded of whether {lean} means the same as the paper’s theorem.",
+  "left_atlas": "Atlas links these reports and has not repeated any run.",
+  "who_one": "One outside group compared the Lean with the {advertised}, the claim quoted here.",
+  "who_many": "{n} outside groups compared the Lean with the {advertised}, the claim quoted here.",
+  "advertised": "advertised result",
+  "dot": "The family’s colour on the map",
+  "yes": "Yes, accepted",
+  "no_accept": "No acceptance reported",
+  "for": "for {which}",
+  "for_all": "for all {n} Lean statements",
+  "not_run": "no run reported for {which}",
+  "nolean_do": "You can still {papers}, or {explain}.",
+  "nolean_papers": "read the papers",
+  "nolean_explain": "explain a result or propose a Lean statement for it"
  },
  "tabs": {
   "_note": "Each tab answers one reading question about the family.",
   "label": "Parts of this family’s page",
-  "result": "The result and its papers",
-  "lean": "Lean statements",
-  "checks": "What the groups found",
-  "cites": "Connections",
-  "said": "Discussion and explanations",
-  "contribute": "Contribute"
+  "result": "What the paper claims",
+  "lean": "OpenAI’s Lean",
+  "checks": "The groups’ reasons",
+  "cites": "Read more",
+  "said": "What others wrote",
+  "contribute": "How to help",
+  "none": "(none in the release)"
  },
  "brief": {
   "_note": "Under the claim: the family's current papers and selected Lean statements, each linked.",
-  "papers_one": "The paper",
-  "papers_many": "{n} papers",
-  "lean_one": "The Lean statement selected for checking",
-  "lean_many": "{n} Lean statements selected for checking",
-  "more": "and {n} more"
+  "papers_one": "Read the paper",
+  "papers_many": "Read the {n} papers",
+  "more": "and {n} more",
+  "lean_ans_one": "OpenAI’s release selects one Lean statement for computer checking, {name}.",
+  "lean_ans_many": "OpenAI’s release selects {n} Lean statements for computer checking.",
+  "lean_def": "A Lean statement is a theorem written in [[lean|Lean]], a language in which a computer verifies every step of a proof."
  },
  "groups": {
   "_note": "The groups tab: one card per outside group.",
-  "heading": "Each group’s assessment and Comparator runs",
+  "heading": "Each group’s label, reason and Comparator runs",
   "scope_k": "Does the Lean state the advertised result?",
   "runs_k": "Their [[comparator|Comparator]] runs of OpenAI’s proof",
   "finds": "They find that {finds}.",
@@ -447,5 +470,22 @@
   "_note": "Labels for the site guide's question-mark openers (atlas.js).",
   "column": "What this column means",
   "tabs": "How the tabs are organised"
+ },
+ "first": {
+  "_note": "The first screen as one argument: each heading is the reader's question, each first sentence its answer.",
+  "claimed": "What is claimed?",
+  "lean": "Which Lean statement was selected?",
+  "scope": "Does the Lean state the whole claim?",
+  "proof": "Did OpenAI’s proof pass [[comparator|Comparator]], the checking program?",
+  "left": "Not yet checked by anyone",
+  "proof_one_by_one": "{names} reports that Comparator accepted OpenAI’s proof of {lean}.",
+  "proof_one_by_many": "{names} report that Comparator accepted OpenAI’s proof of {lean}.",
+  "proof_none_one": "No group reports that Comparator accepted OpenAI’s proof of {lean}.",
+  "proof_other_one": "{names} reports no acceptance; its account is below.",
+  "proof_other_many": "{names} report no acceptance; their accounts are below.",
+  "proof_none_many": "No group reports that Comparator accepted OpenAI’s proof of any of the {n} Lean statements.",
+  "proof_all_least_one": "Groups report that Comparator accepted OpenAI’s proofs of all {n} Lean statements, at least one group for each.",
+  "proof_all_least_many": "Groups report that Comparator accepted OpenAI’s proofs of all {n} Lean statements, at least {k} groups for each.",
+  "proof_some": "Groups report that Comparator accepted OpenAI’s proofs of {k} of the {n} Lean statements: {which}."
  }
 }
