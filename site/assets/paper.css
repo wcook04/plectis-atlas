@@ -290,3 +290,23 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
 }
 @media (min-width: 1700px) { .pr-page { --pr-col: 48rem; --pr-toc: 17rem; --pr-side: 22rem; --pr-gap: 56px; } }
 .pr-m--wide { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: bottom; }
+
+/* ---- Before the text (UX pass round 2, 19 October): what the paper is, which result
+   it belongs to, which of its theorems have a Lean statement and what the groups report,
+   as questions answered in a sentence each (build_papers.orient_html). */
+.pr-what { margin: 4px 0 10px; max-width: 46em; color: var(--ink-soft); font-size: var(--fs-meta); line-height: 1.5; text-wrap: pretty; }
+.pr-orient { margin: 0 0 22px; }
+.pr-orient__h { margin: 0 0 8px; font-family: var(--serif); font-size: 1.1875rem; font-weight: 600; color: var(--ink); }
+.pr-brief { display: grid; grid-template-columns: minmax(8.5rem, 12rem) minmax(0, 1fr); margin: 0; border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--surface); font-family: var(--sans); }
+.pr-brief > div { display: contents; }
+.pr-brief dt, .pr-brief dd { padding: 9px 14px; border-top: 1px solid var(--rule); font-size: var(--fs-meta); line-height: 1.5; }
+.pr-brief > div:first-child dt, .pr-brief > div:first-child dd { border-top: 0; }
+.pr-brief dt { font-weight: 600; color: var(--ink); background: var(--sunk); }
+.pr-brief dd { margin: 0; color: var(--ink); text-wrap: pretty; }
+.pr-brief code { font-size: 0.92em; }
+.pr-orient__go { white-space: nowrap; font-size: var(--fs-small); }
+@media (max-width: 640px) {
+  .pr-brief { grid-template-columns: minmax(0, 1fr); }
+  .pr-brief dt { padding-bottom: 3px; }
+  .pr-brief dd { border-top: 0; padding-top: 3px; }
+}

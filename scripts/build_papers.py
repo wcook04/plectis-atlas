@@ -74,9 +74,32 @@ sys.setrecursionlimit(20000)
 
 # Every human-facing sentence this script writes. British spelling, no em dashes.
 TXT = {
-    "kicker": "Reading view",
+    "kicker": "Paper",
+    "what": "The full text of a paper from OpenAI’s release, converted from its TeX source so that it can be read here with its theorems linked to their Lean statements. The PDF stays the reference.",
+    "crumb_paper": "The paper",
+    "orient_h": "Before you read",
+    "orient_family_q": "Which result is it part of?",
+    "orient_family_id": "Family {id}:",
+    "orient_family_one": "The only paper in {family}.",
+    "orient_family_many": "One of {n} papers in {family}.",
+    "orient_family_go": "See the family",
+    "orient_lean_q": "Which of its theorems have a Lean statement?",
+    "orient_lean_item": "{theorem} may be stated by the Lean statement {lean}",
+    "orient_lean_marked_one": "The text below marks the theorem in place; nobody has recorded checking the match.",
+    "orient_lean_marked_many": "The text below marks each theorem in place; nobody has recorded checking the matches.",
+    "orient_lean_none": "None: the release has no Lean statement for this family.",
+    "orient_lean_elsewhere_one": "None in this paper. The family’s one Lean statement matches a theorem in another paper, or none clearly; the panel beside the text shows it.",
+    "orient_lean_elsewhere_many": "None in this paper. The family’s {n} Lean statements match theorems in its other papers, or none clearly; the panel beside the text lists them.",
+    "orient_groups_q": "What do the outside groups report?",
+    "orient_term": "{name} says {term}",
+    "orient_lean_unmatched": "No Lean statement is matched to {theorems}, which is also one of the paper’s main statements.",
+    "orient_next_q": "Where next?",
+    "orient_next_lean": "Compare {lean} with {theorem} and read each group’s reasons",
+    "orient_next_family": "see every paper and Lean statement of family {id}",
+    "orient_next_or": ", or ",
+    "orient_terms": "On whether family {id}’s Lean statements state the whole advertised result: {terms}.",
+    "orient_groups_go": "Compare their reasons",
     "numbering": "Atlas reconstructs statement numbers from the paper’s typesetting source (TeX). Use the original PDF if they differ.",
-    "converted": "This page is converted from the paper’s {source}.",
     "tex_source_title": "The paper’s TeX source in the release at commit {commit}",
     "figures_one": "One figure is shown as a placeholder; see the PDF for it.",
     "figures_many": "{n} figures are shown as placeholders; see the PDF for them.",
@@ -162,7 +185,7 @@ TXT = {
     "side_label": "This paper’s family, Lean statements and the groups’ reports",
     "side_family": "Family {id}",
     "side_open_family": "Open the family page",
-    "side_lean_h": "Lean statements",
+    "side_lean_h": "Which Lean statements does the family have?",
     "side_lean_none": "The family has no Lean statement.",
     "side_match_here": "Possible match: {ref}, in this paper",
     "side_match_there": "Possible match: {ref}, in another paper of the family",
@@ -3815,7 +3838,9 @@ class Paper:
         self.abstract_html = self.fill(self.abstract_html)
         for fn in self.footnotes:
             fn["html"] = self.fill(fn["html"])
-        self.toc_html = self.fill(self.render_toc())
+        # A heading's cross-reference ("proof of Theorem 1.1") would put a link inside the
+        # contents entry's own link, which the HTML parser splits in two: keep its text.
+        self.toc_html = re.sub(r'<a class="pr-(?:ref|xref|cite)"[^>]*>(.*?)</a>', r"\1", self.fill(self.render_toc()), flags=re.S)
         self.author_html = self.fill(self.author_html)
         for f in self.formulas:
             f["tex"] = self.fill_tex(f["tex"])
@@ -4989,25 +5014,111 @@ def side_panel_html(m: dict, fam: dict | None, root: str) -> str:
     return "".join(out)
 
 
+def orient_html(m: dict, fam: dict | None, root: str, printed: dict | None = None) -> str:
+    """Before the paper's text, three questions a newcomer asks, each answered in a
+    sentence: which result the paper belongs to, which of its theorems have a possible
+    Lean match, and what the outside groups report. The side panel and the family page
+    carry the detail; every value is the backend's record as build_site reads it."""
+    import evidence as ev
+    esc = S.esc
+    if not fam:
+        return ""
+    r = S.RD()
+    try:
+        doc = r.family("f:" + fam["id"]) or {}
+    except Exception:  # noqa: BLE001  (a family the backend does not hold)
+        doc = {}
+    sib = S.paper_siblings(m["id"], root)
+    n_papers = (len([1 for h, _, _ in sib[0]
+                     if S.MS.get(unquote(h.rsplit("/", 1)[-1][:-len(".html")]), {}).get("status") == "current"]) if sib else 1)
+    fam_link = f'<a href="{root}families/{fam["id"]}.html">{esc(TXT["orient_family_id"].format(id=fam["id"]))} {S.fam_title_html(fam)}</a>'
+    rows = [(TXT["orient_family_q"],
+             esc(TXT["orient_family_many" if n_papers > 1 else "orient_family_one"].format(n=S.say(n_papers), family="\x00")).replace("\x00", fam_link)
+             + f' <a class="pr-orient__go" href="{root}families/{fam["id"]}.html#{esc(m["id"])}">{esc(TXT["orient_family_go"])}</a>')]
+    leans = doc.get("lean") or []
+    here = []
+    for rec in leans:
+        lid = rec["id"][2:]
+        pinfo = S.lean_pairing(doc, rec["id"])
+        if pinfo["state"] in S.PAIRED_STATES and pinfo.get("target"):
+            pm, pst, prec = S.ms_statement(doc, pinfo["target"])
+            if pm and pm["id"] == m["id"] and pst:
+                href = "#" + prec["reading_page"].split("#", 1)[1] if prec and "#" in (prec.get("reading_page") or "") else None
+                here.append((lid, S.backend_printed(prec, pst), href, pinfo["state"], rec))
+    if not leans:
+        lean_answer = esc(TXT["orient_lean_none"])
+    elif here:
+        bits = []
+        for lid, name, href, state, _rec in here:
+            thm = f'<a href="{esc(href)}">{esc(name)}</a>' if href else esc(name)
+            bits.append(esc(TXT["orient_lean_item"]).replace("{theorem}", thm).replace(
+                "{lean}", f'<a href="{root}statements/{quote(lid)}.html"><code>{esc(lid)}</code></a>')
+                + f' <span class="pr-side__state">{esc(TXT["side_match_state"].get(state, ""))}</span>')
+        lean_answer = "; ".join(bits) + ". " + esc(TXT["orient_lean_marked_" + ("one" if len(here) == 1 else "many")])
+    else:
+        lean_answer = esc(TXT["orient_lean_elsewhere_" + ("one" if len(leans) == 1 else "many")].format(n=S.say(len(leans))))
+    # The paper's own main statements that no Lean statement is matched to (017: the
+    # Flint-Hills corollary), named as the page prints them and linked to their place.
+    if leans:
+        marks = S.paper_marks()
+        missing = []
+        for st in S.headline_statements(m):
+            if (marks.get((m["id"], st["file"], st["line"])) or {}).get("lean"):
+                continue
+            got = (printed or {}).get((st.get("file"), st.get("line")))
+            name = f"{got[0]} {got[1]}".strip() if got and got[1] else (got[0] if got else st.get("display") or "")
+            anchor = st.get("label") or f'L-{st.get("file")}-{st.get("line")}'
+            missing.append(f'<a href="#{esc(quote(anchor, safe=":-_./"))}">{esc(name)}</a>')
+        if missing:
+            lean_answer += " " + esc(TXT["orient_lean_unmatched"]).replace("{theorems}", S.esc(", ").join(missing) if len(missing) > 2 else " and ".join(missing))
+    rows.append((TXT["orient_lean_q"], lean_answer))
+    # What the groups report: their Comparator runs for this paper's Lean statements, then
+    # their assessment of the family's Lean as a whole, each in their own term.
+    said = []
+    for lid, _name, _href, _state, rec in here:
+        said.append(esc(S.reruns_sentence(rec)).replace(esc("this Lean statement"), f"<code>{esc(lid)}</code>", 1))
+    readings = {x["source"]: x for x in doc.get("readings") or []}
+    terms = []
+    for src in ev.reader_order(set(readings)):
+        rd = readings.get(src)
+        if rd:
+            nm = S.prose_credit((rd.get("credit") or {}).get("name") or src)
+            url = (rd.get("source_value") or {}).get("url")
+            term = f'“{esc(rd.get("source_term") or "")}”'
+            term = f'<a class="ext" href="{esc(url)}" rel="noopener">{term}</a>' if url else term
+            terms.append(esc(TXT["orient_term"].format(name=nm, term="\x00")).replace("\x00", term))
+    if terms:
+        said.append(esc(TXT["orient_terms"].format(id=fam["id"], terms="\x00")).replace("\x00", "; ".join(terms)))
+    if said:
+        rows.append((TXT["orient_groups_q"], " ".join(said)
+                     + f' <a class="pr-orient__go" href="{root}families/{fam["id"]}.html#readings">{esc(TXT["orient_groups_go"])}</a>'))
+    # The obvious next step: the Lean statement's page, where the two are compared.
+    nxt = [f'<a href="{root}statements/{quote(lid)}.html#h-groups">{esc(TXT["orient_next_lean"].format(lean=lid, theorem=name))}</a>'
+           for lid, name, _h, _s, _r in here[:3]]
+    nxt.append(f'<a href="{root}families/{fam["id"]}.html">{esc((S.cap if not here else str)(TXT["orient_next_family"].format(id=fam["id"])))}</a>')
+    rows.append((TXT["orient_next_q"], esc(TXT["orient_next_or"]).join(nxt) + "."))
+    dl = "".join(f"<div><dt>{esc(k)}</dt><dd>{v}</dd></div>" for k, v in rows)
+    return (f'<section class="pr-orient" aria-labelledby="pr-orient-h"><h2 class="pr-orient__h" id="pr-orient-h">{esc(TXT["orient_h"])}</h2>'
+            f'<dl class="pr-brief">{dl}</dl></section>')
+
+
 def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
     m = p.m
     root = "../"
     esc = S.esc
     fam = S.FAM.get(m.get("family") or "")
+    own = (S.crumb_title(S.ms_title_html(m), S.tex_plain(m["title"])), None)
+    # A paper titled like its family would print the same words twice in the trail;
+    # its crumb then says what the page is.
+    _same = lambda t: re.sub(r"\W+", " ", S.tex_plain(t).replace("π", "pi")).strip().lower()  # noqa: E731
+    if fam and _same(fam["title"]) == _same(m["title"]):
+        own = (esc(TXT["crumb_paper"]), None)
     if fam:
-        di = S.DISC_OF.get(fam["id"])
-        crumbs = []
-        if di is not None:
-            crumbs.append((esc(S.DISCIPLINES[di]["name"]), f"{root}index.html#o=d:{S.DISC_SLUG[di]}"))
-        crumbs.append((S.fam_title_html(fam), f"{root}families/{fam['id']}.html"))
-        # The page's own crumb repeats its title (the heading below); when the family has
-        # the same title the trail would print it twice, so it ends at the family.
-        if S.tex_plain(fam["title"]).strip().lower() != S.tex_plain(m["title"]).strip().lower():
-            crumbs.append((S.ms_title_html(m), None))
-        trail = S.trail(root, crumbs)
+        # Map / Subject / Family N: short title / the paper's short title
+        trail = S.trail(root, S.family_crumbs(fam, root) + [own])
         trail += sibling_row(m["id"], root)
     else:
-        trail = S.trail(root, [(S.ms_title_html(m), None)])
+        trail = S.trail(root, [own])
     title_plain = S.tex_plain(m["title"])
     facts = []
     if p.author_html:
@@ -5015,11 +5126,8 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
     if m.get("date"):
         facts.append(f'<span>{esc(S.date_words(m["date"]))}</span>')
     actions = [S.pdf_button(m, "btn btn--primary"),
-               f'<a class="btn btn--ghost ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" rel="noopener">{esc(TXT["tex_source"])}</a>']
-    lede = ""
-    if fam:
-        lede = (f'<p class="lede">{esc(site_copy("paper.in_result", "Part of family {id}: {title}.", id=fam["id"], title=S.tex_plain(fam["title"])))} '
-                f'<a href="{root}families/{fam["id"]}.html#{esc(m["id"])}">{esc(site_copy("paper.read_in_result", "Read it with its result"))}</a></p>')
+               f'<a class="btn btn--ghost ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" rel="noopener" title="{esc(TXT["tex_source_title"].format(commit=COMMIT[:7]))}">{esc(TXT["tex_source"])}</a>']
+    lede = orient_html(m, fam, root, p.printed)
     notes = ""
     if m.get("version_note"):
         notes += (f'<div class="note"><p class="note__h">{esc(site_copy("family.version_note", "Version note"))}</p>'
@@ -5029,11 +5137,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
         lines = [TXT["numbering"]]
         if figs:
             lines.append(TXT["figures_one"] if figs == 1 else TXT["figures_many"].format(n=figs))
-        # The commit is named by the link, not printed in the sentence.
-        src_link = (f'<a class="ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" '
-                    f'rel="noopener" title="{esc(TXT["tex_source_title"].format(commit=COMMIT[:7]))}">{esc(TXT["tex_source"])}</a>')
-        converted = esc(TXT["converted"]).replace("{source}", src_link)
-        status = f'<div class="pr-status" role="note"><p>{converted} {" ".join(esc(x) for x in lines)}</p></div>'
+        status = f'<div class="pr-status" role="note"><p>{" ".join(esc(x) for x in lines)}</p></div>'
     else:
         items = banner_items(row)
         if figs:
@@ -5080,6 +5184,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
  <p class="phead__kicker">{esc(TXT['kicker'])}</p>
  <h1 class="phead__title">{S.ms_title_html(m)}</h1>
  <p class="phead__facts pr-facts">{', '.join(facts)}</p>
+ <p class="pr-what">{esc(TXT['what'])}</p>
  <p class="actions">{''.join(actions)}</p>
 </header>
 {toc}
