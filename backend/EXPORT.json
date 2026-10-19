@@ -2,20 +2,20 @@
  "_note": "What backend/ holds and where it came from. scripts/reader.py checks these four files against their hashes, every packet under web/ against the manifest, and the schema, release, pin and generation of each packet, before a page uses it.",
  "schema": "plectis-atlas-backend-export/2",
  "backend": "Statement Map, by Will Cook (not yet published)",
- "backend_commit": "40d540deb98202697c0575388e0f0bf0a305f8d4",
+ "backend_commit": "48bc2ee63c98ae4ac9e70d4a9d76eb932ebf9f02",
  "acceptance_receipt": {
-  "file": "reader-v6-attribution-acceptance.json",
-  "tested_commit": "4167dbc1efae2815607905760f51bb31e5594b3a",
+  "file": "reader-v6-outside-assessments-acceptance.json",
+  "tested_commit": "e1f4a67a37fce08815c89085e353ab05af401402",
   "exporter": "reader-projection/6",
-  "sha256": "sha256:4f17ece35e6d047172c950197e27387bfec60b62e223830e75fc457dd7fdb126"
+  "sha256": "sha256:de8a84275f4f9d09e2c6e47c9b6d2fe95a4e7d90eb23d958dabe95aa9d1c9955"
  },
  "release_id": "openai-math",
  "pin": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
- "generation_id": "sha256:5a03758bbca39920a550b1c239dc979d39e0f6a37e43cadc614dc3fc932c29ee",
+ "generation_id": "sha256:a00a259f585f0a66241826b8c638852175265af1b921a7b1889127dc7d3cc9b3",
  "reader_schema": "statement-map-web/2",
  "packets": {
   "count": 1675,
-  "bytes": 79544360,
+  "bytes": 79689853,
   "kinds": [
    "family-reader",
    "number-members",
@@ -31,7 +31,7 @@
  "files": {
   "catalog.json": {
    "bytes": 1838,
-   "sha256": "sha256:213196877ef6a4f3c590fca4c890fd5305337899fe1e2d668f9b41a0deca5462"
+   "sha256": "sha256:6fc708018509cc6acd618d9092cf191d055cf45280a28b8ad6513f0ed7ae805e"
   },
   "NOTICE.md": {
    "bytes": 5565,
@@ -39,11 +39,11 @@
   },
   "openai-math/targets.json": {
    "bytes": 2738689,
-   "sha256": "sha256:7d1c40282464b5ac501ae3f3fd328f02aaf8ed4cbecd8f47a84c9486ea9955c5"
+   "sha256": "sha256:b6374fb065bf845164bc87404681d74a6e74c05405661d3dea78914f4a9b201f"
   },
   "openai-math/web/manifest.json": {
-   "bytes": 657119,
-   "sha256": "sha256:cbf98dfee9fb1f25cc70e57c9cbb3cd430dd1184b9884a611d19f3aa21662991"
+   "bytes": 657123,
+   "sha256": "sha256:11a8950685b9d460853484bad2417f3647ae6408510782d0fb3343ca7eb6240f"
   }
  }
 }
