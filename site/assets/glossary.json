@@ -18,8 +18,8 @@
   },
   {
    "id": "challenge",
-   "term": "Lean statement (a Comparator challenge file)",
-   "short": "A file stating a theorem in Lean, usually with sorry in place of its proof. Comparator’s settings identify the statement to verify, the definitions the proof may supply and the axioms it may use. OpenAI provides its proof separately."
+   "term": "Lean statement",
+   "short": "A file stating a theorem in Lean, usually with sorry in place of its proof (Comparator calls it a challenge file). Comparator’s settings identify the statement to verify, the definitions the proof may supply and the axioms it may use. OpenAI provides its proof separately."
   },
   {
    "id": "comparator",
@@ -63,13 +63,13 @@
   },
   {
    "id": "rerun",
-   "term": "Re-run",
-   "short": "An independent group’s attempt to verify OpenAI’s proof with Comparator. Atlas records the group’s reported result and the release version used. Atlas has not repeated the attempts."
+   "term": "Comparator run",
+   "short": "A group’s attempt to verify OpenAI’s proof with Comparator, sometimes called a re-run. Atlas records the group’s reported result and the release version used. Atlas has not repeated the runs."
   },
   {
    "id": "readers",
-   "term": "Outside readers",
-   "short": "MathVet and Carlos Toledo’s cert-machine, who each read every family’s Lean statements against its headline, independently of OpenAI and of each other, under their own published rules. Each states its own method; the atlas quotes their verdicts and notes and adds none of its own."
+   "term": "The groups",
+   "short": "MathVet and Carlos Toledo’s cert-machine, the two outside groups that each read every family’s Lean statements against its headline, independently of OpenAI and of each other, under their own published rules. Each states its own method; the atlas quotes their verdicts and notes and adds none of its own."
   },
   {
    "id": "hol-light",
@@ -83,8 +83,8 @@
   },
   {
    "id": "pairing",
-   "term": "Candidate pairing",
-   "short": "A possible link between a paper statement and a Lean statement, selected automatically from words they share. Atlas records no review that their mathematical meanings agree."
+   "term": "Possible match",
+   "short": "A possible link between a paper statement and a Lean statement, selected automatically from words they share (also called a candidate pairing). Atlas records no review that their mathematical meanings agree."
   },
   {
    "id": "reading-page",
@@ -104,12 +104,12 @@
   {
    "id": "mathvet",
    "term": "MathVet",
-   "short": "One of the two outside readers. It reads each family’s Lean statements against the headline under a published rubric, with help from a model, and runs Comparator itself. Its verdict and note are quoted in its own terms."
+   "short": "One of the two outside groups. It reads each family’s Lean statements against the headline under a published rubric, with help from a model, and runs Comparator itself. Its verdict and note are quoted in its own terms."
   },
   {
    "id": "cert-machine",
    "term": "cert-machine",
-   "short": "Carlos Toledo’s audit of the release, one of the two outside readers. It re-runs every Lean statement through Comparator with nanoda switched on, reads each family’s Lean statements against the headline clause by clause, and decides finite parts of some papers with exact code."
+   "short": "Carlos Toledo’s audit of the release, one of the two outside groups. It re-runs every Lean statement through Comparator with nanoda switched on, reads each family’s Lean statements against the headline clause by clause, and decides finite parts of some papers with exact code."
   },
   {
    "id": "local-vocabulary",
@@ -140,6 +140,11 @@
    "id": "pairing-declared",
    "term": "Paired by the release’s own declaration",
    "short": "OpenAI’s release explicitly links the Lean statement to a paper statement. Atlas records that link, with no recorded review that the statements mean the same thing."
+  },
+  {
+   "id": "map-colours",
+   "term": "Map colours",
+   "short": "The map’s colours compare the two groups’ assessments of each family’s Lean statements. They do not say whether a paper’s proof is correct."
   }
  ]
 }

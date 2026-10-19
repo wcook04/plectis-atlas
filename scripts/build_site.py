@@ -1183,12 +1183,14 @@ def build_glossary():
         f'<section class="gloss__group" aria-labelledby="g-{L}"><h2 class="h3" id="g-{L}">{L}</h2><dl class="gloss">'
         + "".join(f'<div class="gloss__row" id="{esc(t_["id"])}"><dt>{esc(t_["term"])}</dt><dd>{esc(t_["short"])}</dd></div>' for t_ in group)
         + "</dl></section>" for L, group in groups.items())
-    body = f"""<div class="frame page page--narrow">
+    letters = "".join(f'<li><a href="#g-{L}">{L}</a></li>' for L in groups)
+    body = f"""<div class="frame page page--wide">
 <header class="phead">
  <h1 class="phead__title">{esc(C('glossary.title'))}</h1>
  <p class="lede">{esc(C('glossary.lede'))}</p>
+ <nav class="jump" aria-label="{esc(C('glossary.letters'))}"><ul>{letters}</ul></nav>
 </header>
-{blocks}
+<div class="gloss-cols">{blocks}</div>
 </div>"""
     write_page(rel, page(rel, C("glossary.title"), C("glossary.lede"), body, current="glossary"))
 
@@ -1434,6 +1436,7 @@ def header(rel: str, current: str | None) -> str:
   <div class="top__tools">
    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg><span>{esc(C('nav.menu'))}</span></button>
    <a class="search-open" href="{root}explain.html" aria-label="{esc(C('nav.search'))}" aria-haspopup="dialog" aria-controls="search-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg><span class="search-open__label">{esc(C('nav.search'))}</span><kbd aria-hidden="true">/</kbd></a>
+   <button class="help-open" type="button" aria-label="{esc(C('nav.help'))}" title="{esc(C('nav.help'))}" aria-haspopup="dialog" aria-controls="help-dialog"><span aria-hidden="true">?</span></button>
    <button class="theme-toggle" type="button" data-label-dark="{esc(C('nav.theme_dark'))}" data-label-light="{esc(C('nav.theme_light'))}" aria-label="{esc(C('nav.theme_dark'))}"><span class="theme-toggle__thumb" aria-hidden="true"></span></button>
   </div>
  </div>
@@ -1451,7 +1454,67 @@ def header(rel: str, current: str | None) -> str:
  <p class="search__status" role="status" aria-live="polite"></p>
  <div class="search__results" id="search-results" role="listbox" aria-label="{esc(C('search.results_label'))}"></div>
  <p class="search__keys">{C('search.keys')}</p>
+</dialog>
+{help_dialog(root)}{first_visit_hint() if current == "map" else ""}"""
+
+
+def help_steps_html(prefix: str = "help-") -> str:
+    """The route through a result, numbered: shared by the help dialog, help.html and the
+    404 page. Each step carries an id, so data-help="<step>" opens the guide at it."""
+    return '<ol class="help__steps">' + "".join(
+        f'<li id="{prefix}{esc(sid)}"><span class="help__step">{text}</span></li>' for sid, text in COPY["help"]["steps"]) + "</ol>"
+
+
+def help_terms_html(root: str) -> str:
+    return '<dl class="help__terms">' + "".join(
+        f'<div class="help__term"><dt><a href="{root}glossary.html#{esc(tid)}">{esc(label)}</a></dt><dd>{esc(text)}</dd></div>'
+        for tid, label, text in COPY["help"]["terms"]) + "</dl>"
+
+
+def help_dialog(root: str) -> str:
+    """The how-to-use guide behind the header's ? button: rendered on every page, so it
+    reads without scripts in the page source; atlas.js only opens and closes it (also from
+    the ? key, ?help=1 in the address, and any element with data-help)."""
+    return f"""<dialog class="dlg help" id="help-dialog" aria-labelledby="help-title">
+ <div class="help__head">
+  <h2 class="help__title" id="help-title">{esc(C('help.title'))}</h2>
+  <button class="search__close help__close" type="button">{esc(C('help.close'))}</button>
+ </div>
+ <div class="help__body">
+  <p class="help__what">{esc(C('help.what'))}</p>
+  <div class="help__cols">
+   <section class="help__route" aria-labelledby="help-steps-h"><h3 class="help__h" id="help-steps-h">{esc(C('help.steps_heading'))}</h3>{help_steps_html()}</section>
+   <section class="help__words" aria-labelledby="help-terms-h"><h3 class="help__h" id="help-terms-h">{esc(C('help.terms_heading'))}</h3>{help_terms_html(root)}
+    <p class="help__more"><a href="{root}glossary.html">{esc(C('help.glossary_link'))}</a> · <a href="{root}help.html">{esc(C('help.page_link'))}</a></p></section>
+  </div>
+  <p class="help__limit">{esc(C('help.limit'))}</p>
+ </div>
+ <p class="search__keys">{C('help.keys')}</p>
 </dialog>"""
+
+
+def build_help():
+    """help.html: the same guide as a page, for readers without scripts and for links."""
+    rel = "help.html"
+    body = f"""<div class="frame page page--wide page--help">
+<header class="phead"><h1 class="phead__title">{esc(C('help.title'))}</h1><p class="lede">{esc(C('help.what'))}</p></header>
+<div class="help__cols help__cols--page">
+ <section class="band band--tight help-route" aria-labelledby="hp-steps"><h2 class="h2" id="hp-steps">{esc(C('help.steps_heading'))}</h2>{help_steps_html("step-")}</section>
+ <section class="band band--tight" aria-labelledby="hp-terms"><h2 class="h2" id="hp-terms">{esc(C('help.terms_heading'))}</h2>{help_terms_html("")}
+  <p class="help__more"><a href="glossary.html">{esc(C('help.glossary_link'))}</a></p></section>
+</div>
+<p class="help__limit">{esc(C('help.limit'))}</p>
+</div>"""
+    write_page(rel, page(rel, C("help.title"), C("help.page_description"), body, current="help"))
+
+
+def first_visit_hint() -> str:
+    """A one-line pointer to the guide on the map, floating under the header so the map's
+    own layout is untouched. Hidden until atlas.js finds no dismissal stored."""
+    return (f'<div class="hint" id="first-hint" role="note" hidden><p class="hint__t">{esc(C("help.hint"))}</p>'
+            f'<button class="btn btn--small hint__open" type="button" aria-haspopup="dialog" aria-controls="help-dialog">{esc(C("help.hint_open"))}</button>'
+            f'<a class="hint__ex" href="families/017.html">{esc(C("help.hint_example"))}</a>'
+            f'<button class="hint__x" type="button" aria-label="{esc(C("help.hint_close"))}"><span aria-hidden="true">\u00d7</span></button></div>')
 
 
 def footer(rel: str) -> str:
@@ -1464,17 +1527,24 @@ def footer(rel: str) -> str:
    <p>{esc(C('site.independence', author=CFG['author']))}</p>
    <p>{esc(C('site.licence', upstream='openai/math', commit_short=COMMIT_SHORT))}</p>
   </div>
-  <ul class="foot__links">
-   <li><a href="{root}sources.html#software">{esc(C("site.notices_link"))}</a></li>
-   <li><a href="{root}about.html">{esc(C('nav.about'))}</a></li>
-   <li><a href="{root}numbers.html">{esc(C('nav.numbers'))}</a></li>
-   <li><a href="{root}citations-within.html">{esc(C('citations_within.title'))}</a></li>
-   <li><a href="{root}references-outside.html">{esc(C('references_outside.title'))}</a></li>
-   <li><a href="{root}contribute.html">{esc(C('nav.contribute'))}</a></li>
-   <li><a href="{root}agents.md">{esc(C('site.agents_link'))}</a></li>
-   <li><a class="ext" href="{esc(REPO)}" rel="noopener">{esc(C('site.repo_link'))}</a></li>
-   <li><a class="ext" href="{esc(up)}/tree/{COMMIT}" rel="noopener">{esc(C('site.upstream_link'))}</a></li>
-  </ul>
+  <nav class="foot__nav" aria-label="{esc(C('site.foot_nav'))}">
+   <div class="foot__col"><h2 class="foot__h">{esc(C('site.foot_atlas'))}</h2><ul class="foot__links">
+    <li><a href="{root}about.html">{esc(C('nav.about'))}</a></li>
+    <li><a href="{root}numbers.html">{esc(C('nav.numbers'))}</a></li>
+    <li><a href="{root}contribute.html">{esc(C('nav.contribute'))}</a></li>
+    <li><a href="{root}glossary.html">{esc(C('nav.glossary'))}</a></li>
+   </ul></div>
+   <div class="foot__col"><h2 class="foot__h">{esc(C('site.foot_lists'))}</h2><ul class="foot__links">
+    <li><a href="{root}citations-within.html">{esc(C('citations_within.title'))}</a></li>
+    <li><a href="{root}references-outside.html">{esc(C('references_outside.title'))}</a></li>
+    <li><a href="{root}sources.html#software">{esc(C("site.notices_link"))}</a></li>
+   </ul></div>
+   <div class="foot__col"><h2 class="foot__h">{esc(C('site.foot_source'))}</h2><ul class="foot__links">
+    <li><a class="ext" href="{esc(REPO)}" rel="noopener">{esc(C('site.repo_link'))}</a></li>
+    <li><a class="ext" href="{esc(up)}/tree/{COMMIT}" rel="noopener">{esc(C('site.upstream_link'))}</a></li>
+    <li><a href="{root}agents.md">{esc(C('site.agents_link'))}</a></li>
+   </ul></div>
+  </nav>
  </div>
 </footer>
 </body>
@@ -2023,16 +2093,18 @@ def build_explanation(f, e):
     title = e.get("title") or C("explanation.untitled")
     page_url = BASE_URL + rel
     suggest = suggest_url(page_url, title)
-    body = f"""<div class="frame page page--narrow">
+    body = f"""<div class="frame page page--wide">
 {trail(root, [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d:{DISC_SLUG[di]}'), (fam_title_html(f), f'{root}families/{fid}.html'), (f'<span class="md-math">{esc(title)}</span>', None)])}
 <header class="phead">
  <p class="phead__kicker">{esc(C('explanation.kicker', id=fid))}</p>
  <h1 class="phead__title md-math">{esc(title)}</h1>
  <p class="phead__facts">{esc(C('explanation.reviewed_note'))}</p>
 </header>
-<section class="band band--tight">{explanation_meta_html(e, fid, root)}</section>
-<article class="band explain-body prose md-math" data-macros="">{body_html}</article>
-<section class="band band--tight"><p class="actions"><a class="btn btn--ghost" href="{root}families/{fid}.html">{esc(C('explanation.back', id=fid))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p></section>
+<div class="rd">
+<article class="rd__main explain-body prose md-math" data-macros="">{body_html}</article>
+<aside class="rd__side"><div class="panel">{explanation_meta_html(e, fid, root)}
+<p class="actions"><a class="btn btn--ghost" href="{root}families/{fid}.html">{esc(C('explanation.back', id=fid))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p></div></aside>
+</div>
 </div>"""
     write_page(rel, page(rel, title, C("explanation.description", title=title, id=fid), body, page_type="article"))
 
@@ -3727,11 +3799,14 @@ def build_explain():
         if k:
             lean_cell = num(k)
             rerun = sum(1 for l in ev.lean if l.accepted)
+            proof = "all" if rerun == k else "some" if rerun else "none"
+            counts["p_" + proof] = counts.get("p_" + proof, 0) + 1
             runs_cell = f'{esc(C("explain.runs_of", k=num(rerun), n=num(k)))}'
         else:
             lean_cell = quiet_none(C("explain.no_lean_label"))
             runs_cell = quiet_none(C("explain.no_lean_label"))
             rerun = -1
+            proof = "nolean"
         # each reader's own term, with a plain gloss under it
         rcells = []
         tones = {}
@@ -3774,7 +3849,7 @@ def build_explain():
             expl = reading + status
         rows.append(
             f'<tr id="f-{fid}" data-q="{esc((fid + " " + name_plain + " " + dname).lower())}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none") if k else "nolean"}" '
-            f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}" data-t="{tone}">'
+            f'data-r="{tones.get(1, "none") if k else "nolean"}" data-s="{st}" data-t="{tone}" data-p="{proof}">'
             f'<td class="t-num t-id" data-v="{fid}">{fid}</td>'
             f'<td class="t-title" data-v="{esc(name_plain.lower())}"><a href="families/{fid}.html">{title}</a>'
             f'<span class="cell__sub t-disc-inline">{esc(dname)}</span>{editions}{agree}</td>'
@@ -3796,7 +3871,9 @@ def build_explain():
     for d in r.universe.get("disciplines") or []:
         dopts.append(f'<option value="{slugify(d["name"])}">{esc(d["name"])} ({num(len(d.get("family_ids") or []))})</option>')
     eopts = [f'<option value="">{esc(C("explain.all_evidence"))}</option>']
-    for group, keys in (("lean", ("lean", "nolean")), ("readers", ("disagree",)), ("pairing", evidence.PAIRING_CLASSES),
+    # Disagreement is offered once, as the colour filter's "The groups disagree" (t=split
+    # selects exactly the rows classed disagree); an old ?c=disagree link maps to it in atlas.js.
+    for group, keys in (("lean", ("lean", "nolean")), ("pairing", evidence.PAIRING_CLASSES),
                         ("checks", ("ring",)), ("explanations", ("explained_by_others",)), ("problems", ("problems_reported",)),
                         ("papers", ("has_withdrawn", "has_edition"))):
         # An option that would lead to an empty list is not offered.
@@ -3807,10 +3884,13 @@ def build_explain():
         if shown_opts:
             eopts.append(f'<optgroup label="{esc(C("explain.evgroup_" + group))}">{shown_opts}</optgroup>')
     topts = [f'<option value="">{esc(C("explain.colour_any"))}</option>'] + [
-        f'<option value="{t_}">{esc(colour_words[t_])} ({num(counts["t_" + t_])})</option>'
+        f'<option value="{t_}">{esc(C("explain.colour_split") if t_ == "split" else colour_words[t_])} ({num(counts["t_" + t_])})</option>'
         for t_ in BU.TONE_ORDER if counts.get("t_" + t_)]
+    popts = [f'<option value="">{esc(C("explain.proof_any"))}</option>'] + [
+        f'<option value="{p_}">{esc(C("explain.proof_" + p_))} ({num(counts["p_" + p_])})</option>'
+        for p_ in ("all", "some", "none") if counts.get("p_" + p_)]
     selects = [select("ff-d", C("explain.filter_discipline"), "d", dopts), select("ff-c", C("explain.filter_evidence"), "c", eopts),
-               select("ff-t", C("explain.filter_colour"), "t", topts)]
+               select("ff-t", C("explain.filter_colour"), "t", topts), select("ff-p", C("explain.filter_proof"), "p", popts, term="rerun")]
     for side, src in enumerate(order):
         opts = [f'<option value="">{esc(C("explain.reader_any"))}</option>']
         for tone in evidence.TONES:
@@ -3957,8 +4037,15 @@ def build_statements_table():
             notes.append(T("note_axiom"))
         notes_html = "".join(f'<span class="cell__sub">{esc(n_)}</span>' for n_ in notes)
         q = " ".join([label, s["id"], tex_plain(f["title"]) if f else "", dname, how]).lower()
+        # the two groups on this statement's family, and the Comparator runs reported for it
+        fev = evs.get(fid)
+        groups = "disagree" if fev and fev.agreement == "disagree" else ("agree" if fev and fev.agreement == "agree" else "")
+        if groups:
+            counts["g_" + groups] += 1
+        proof = "accepted" if acc else ("other" if (lrec or {}).get("runs") else "none")
+        counts["p_" + proof] += 1
         rows.append(
-            f'<tr data-q="{esc(q)}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none")}" data-r="{tones.get(1, "none")}">'
+            f'<tr data-q="{esc(q)}" data-d="{dslug}" data-c="{" ".join(classes)}" data-l="{tones.get(0, "none")}" data-r="{tones.get(1, "none")}" data-g="{groups}" data-p="{proof}">'
             f'<td class="t-title" data-v="{esc(label.lower())}"><a href="statements/{esc(s["id"])}.html"><span class="md-math">{esc(label)}</span></a>'
             f'<code class="t-lid">{esc(s["id"])}</code><span class="cell__sub t-disc-inline">{esc(dname)}</span></td>'
             f'<td data-v="{esc(fid or "")}" data-label="{esc(T("col_result"))}">{f"<a href=\"families/{fid}.html\">{fam_title_html(f)}</a>" if f else ""}</td>'
@@ -3989,7 +4076,13 @@ def build_statements_table():
         f'<option value="{k}">{esc(v)} ({num(dcount[k])})</option>' for k, v in sorted(disc_slug.items(), key=lambda x: x[1]) if k]
     popts = [f'<option value="">{esc(T("all_pairings"))}</option>'] + [
         f'<option value="{k}">{esc(cap(T("pair." + k)))} ({num(counts[k])})</option>' for k in ("declared", "cited", "lean-words", "catalogue-words", "none") if counts[k]]
-    selects = [select("sf-d", T("filter_discipline"), "d", dopts), select("sf-c", T("filter_pairing"), "c", popts, term="pairing")]
+    gopts = [f'<option value="">{esc(C("statements.groups_any"))}</option>'] + [
+        f'<option value="{k}">{esc(C("statements.groups_" + k))} ({num(counts["g_" + k])})</option>' for k in ("disagree", "agree") if counts["g_" + k]]
+    ropts = [f'<option value="">{esc(C("statements.proof_any"))}</option>'] + [
+        f'<option value="{k}">{esc(C("statements.proof_" + k))} ({num(counts["p_" + k])})</option>' for k in ("accepted", "other", "none") if counts["p_" + k]]
+    selects = [select("sf-d", T("filter_discipline"), "d", dopts), select("sf-c", T("filter_pairing"), "c", popts, term="pairing"),
+               select("sf-g", C("statements.filter_groups"), "g", gopts, term="readers"),
+               select("sf-p", C("statements.filter_proof"), "p", ropts, term="rerun")]
     for side, src in enumerate(order):
         opts = [f'<option value="">{esc(T("reader_any"))}</option>'] + [
             f'<option value="{tone}">{esc(cap(evidence.say("tone_short." + tone)))} ({num(counts[(side, tone)])})</option>'
@@ -4234,7 +4327,7 @@ def build_references_outside():
  <p>{esc(C('references_outside.credit'))}</p>
  <p class="muted small">{esc(C('references_outside.how'))}</p>
 </header>
-<section class="band band--tight">{''.join(rows)}</section>
+<section class="band band--tight"><div class="works">{''.join(rows)}</div></section>
 </div>"""
     write_page(rel, page(rel, C("references_outside.title"), C("references_outside.lede", works=NUM("external_works_cited"), citations=NUM("external_citations"), n=len(hl)), body))
 
@@ -4317,13 +4410,13 @@ def build_sources():
  <h1 class="phead__title">{esc(C('sources.title'))}</h1>
  <p class="lede">{esc(lede)}</p>
  <p>{esc(C('sources.credit'))}</p>
- <p><a href="NOTICE">{esc(C('sources.notices_link'))}</a> · <a href="#software">{esc(C('sources.components_heading'))}</a> · <a href="CITATION.cff">{esc(C('sources.citation_link'))}</a></p>
+ <nav class="jump" aria-label="{esc(C('sources.jump_label'))}"><ul><li><a href="#base">{esc(C('sources.base_heading'))}</a></li><li><a href="#software">{esc(C('sources.components_heading'))}</a></li>{('<li><a href="#ingested">' + esc(C('sources.ingested_heading')) + '</a></li>') if ingested else ''}{('<li><a href="#efforts">' + esc(C('sources.efforts_heading')) + '</a></li>') if efforts else ''}<li><a href="NOTICE">{esc(C('sources.notices_link'))}</a></li><li><a href="CITATION.cff">{esc(C('sources.citation_link'))}</a></li></ul></nav>
  <p class="muted small">{esc(C('community.how'))} <a class="ext" href="{esc(issue_url('problem', C('community.add_title'), page=BASE_URL + rel))}" rel="noopener">{esc(C('community.add'))}</a></p>
 </header>
-<section class="band band--tight"><h2 class="h2">{esc(C('sources.base_heading'))}</h2><div class="ceffs">{up}{own}</div></section>
+<section class="band band--tight" id="base"><h2 class="h2">{esc(C('sources.base_heading'))}</h2><div class="ceffs">{up}{own}</div></section>
 <section class="band band--tight" id="software"><h2 class="h2">{esc(C("sources.components_heading"))}</h2><p class="intro">{esc(C("sources.components_intro"))}</p><div class="ceffs">{"".join(components)}</div></section>
-{('<section class="band band--tight"><h2 class="h2">' + esc(C('sources.ingested_heading')) + '</h2><p class="intro">' + esc(C('sources.ingested_intro')) + '</p><div class="ceffs">' + ''.join(ingested) + '</div></section>') if ingested else ''}
-{('<section class="band band--tight"><h2 class="h2">' + esc(C('sources.efforts_heading')) + '</h2><p class="intro">' + esc(C('sources.efforts_intro')) + '</p><div class="ceffs">' + ''.join(efforts) + '</div></section>') if efforts else ''}
+{('<section class="band band--tight" id="ingested"><h2 class="h2">' + esc(C('sources.ingested_heading')) + '</h2><p class="intro">' + esc(C('sources.ingested_intro')) + '</p><div class="ceffs">' + ''.join(ingested) + '</div></section>') if ingested else ''}
+{('<section class="band band--tight" id="efforts"><h2 class="h2">' + esc(C('sources.efforts_heading')) + '</h2><p class="intro">' + esc(C('sources.efforts_intro')) + '</p><div class="ceffs">' + ''.join(efforts) + '</div></section>') if efforts else ''}
 </div>"""
     write_page(rel, page(rel, C("sources.title"), lede, body, current="sources"))
 
@@ -4353,7 +4446,7 @@ def build_citations_within():
  <p class="lede">{esc(C('citations_within.lede', edges=NUM('internal_citation_edges'), n=len(hl)))}</p>
  <p class="muted small">{esc(C('citations_within.how'))}</p>
 </header>
-<section class="band band--tight">{''.join(rows)}</section>
+<section class="band band--tight"><div class="works">{''.join(rows)}</div></section>
 </div>"""
     write_page(rel, page(rel, C("citations_within.title"), C("citations_within.lede", edges=NUM("internal_citation_edges"), n=len(hl)), body))
 
@@ -4373,15 +4466,17 @@ def build_contribute():
     ways = []
     for key in ("claim", "check", "problem", "credit", "replay"):
         name = CFG["issue_templates"][key]
-        ways.append(f'<li><a class="ext" href="{esc(REPO)}/issues/new?template={esc(name)}.yml" rel="noopener">{esc(C("contribute." + key))}</a></li>')
+        ways.append(f'<li class="way"><a class="way__a ext" href="{esc(REPO)}/issues/new?template={esc(name)}.yml" rel="noopener">{esc(C("contribute." + key))}</a></li>')
     names = contributor_names()
     contrib = f'<p>{esc(", ".join(names))}</p>' if names else f'<p class="muted">{esc(C("contribute.contributors_none"))}</p>'
-    body = f"""<div class="frame page page--narrow">
+    body = f"""<div class="frame page page--wide">
 <header class="phead"><h1 class="phead__title">{esc(C('contribute.title'))}</h1><p class="lede">{esc(C('contribute.lede'))}</p></header>
 <section class="band band--tight"><h2 class="h2">{esc(C('contribute.ways_heading'))}</h2><ul class="ways">{''.join(ways)}</ul>
-<p>{esc(C('contribute.guide'))} <a class="ext" href="{esc(guide)}" rel="noopener">{esc(C('contribute.guide_link'))}</a></p></section>
-<section class="band band--tight"><h2 class="h2">{esc(C('explain.queue_heading'))}</h2><p>{esc(C('contribute.queue'))} <a href="explain.html#careful-reading">{esc(C('contribute.queue_link'))}</a></p></section>
-<section class="band" id="contributors"><h2 class="h2">{esc(C('contribute.contributors_heading'))}</h2>{contrib}</section>
+<p class="intro">{esc(C('contribute.guide'))} <a class="ext" href="{esc(guide)}" rel="noopener">{esc(C('contribute.guide_link'))}</a></p></section>
+<div class="cards2">
+<section class="panel"><h2 class="h3">{esc(C('explain.queue_heading'))}</h2><p>{esc(C('contribute.queue'))} <a href="explain.html#careful-reading">{esc(C('contribute.queue_link'))}</a></p></section>
+<section class="panel" id="contributors"><h2 class="h3">{esc(C('contribute.contributors_heading'))}</h2>{contrib}</section>
+</div>
 </div>"""
     write_page(rel, page(rel, C("contribute.title"), C("contribute.lede"), body, current="contribute"))
 
@@ -4438,9 +4533,10 @@ def build_about():
         f'<li class="approach__item"><p><span class="approach__who">{esc(a["who"])}</span>, in '
         f'<a class="ext" href="{esc(a["url"])}" rel="noopener">{esc(a["title"])}</a>, {esc(a["says"])}</p></li>'
         for a in COPY["about"]["since_items"])
-    body = f"""<div class="frame page page--narrow prose-page">
-<header class="phead"><h1 class="phead__title">{esc(C('about.title'))}</h1></header>
-<section class="band band--tight"><h2 class="h2">{esc(C('about.what_heading'))}</h2><p>{esc(C('about.what', **fill))}</p></section>
+    body = f"""<div class="frame page page--wide prose-page">
+<header class="phead"><h1 class="phead__title">{esc(C('about.title'))}</h1>
+<section class="phead__sec" aria-labelledby="h-what"><h2 class="vh" id="h-what">{esc(C('about.what_heading'))}</h2><p class="lede">{esc(C('about.what', **fill))}</p></section></header>
+<div class="flow">
 <section class="band band--tight" id="approach" aria-labelledby="h-approach"><h2 class="h2" id="h-approach">{esc(C('about.approach_heading'))}</h2><p>{esc(C('about.approach_intro'))}</p><ul class="approach">{approach}</ul></section>
 <section class="band band--tight" id="since" aria-labelledby="h-since"><h2 class="h2" id="h-since">{esc(C('about.since_heading'))}</h2><p>{esc(C('about.since_intro'))}</p><ul class="approach">{since}</ul><p>{esc(C('about.since_note'))}</p></section>
 <section class="band band--tight" id="adds" aria-labelledby="h-adds"><h2 class="h2" id="h-adds">{esc(C('about.adds_heading'))}</h2><p>{esc(C('about.adds_intro', **adds_fill))}</p><ul class="adds">{adds}</ul></section>
@@ -4454,6 +4550,7 @@ def build_about():
 <section class="band band--tight"><h2 class="h2">{esc(C('about.licence_heading'))}</h2><p>{esc(C('about.licence'))} <a href="sources.html#software">{esc(C("about.licence_link"))}</a></p></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.cite_heading'))}</h2><p>{esc(C('about.cite'))} <a href="CITATION.cff">CITATION.cff</a></p><div class="texsrc__box texsrc__box--open"><button class="copy" type="button" data-copy-next>{esc(C('words.copy'))}</button><pre><code>{esc(cite)}</code></pre></div></section>
 <section class="band band--tight"><h2 class="h2">{esc(C('about.author_heading'))}</h2><p>{esc(C('about.author', **fill))} <a class="ext" href="{esc(CFG['author_url'])}" rel="noopener">{esc(C('about.author_link'))}</a></p></section>
+</div>
 </div>"""
     write_page(rel, page(rel, C("about.title"), C("about.what", **fill), body, current="about"))
 
@@ -4464,11 +4561,12 @@ def build_404():
     # Where to go instead: the Families list (every family), the search, and the map.
     families = f'<a href="explain.html">{esc(C("notfound.families_link"))}</a>'
     text = esc(C("notfound.families", link="\x00")).replace("\x00", families)
-    body = (f'<div class="frame page page--narrow"><header class="phead"><h1 class="phead__title">{esc(C("notfound.title"))}</h1>'
+    body = (f'<div class="frame page page--wide page--404"><header class="phead"><h1 class="phead__title">{esc(C("notfound.title"))}</h1>'
             f'<p class="lede">{esc(C("notfound.text"))} {text}</p>'
             f'<p class="actions"><a class="btn btn--primary" href="explain.html">{esc(C("notfound.families_button"))}</a>'
             f'<a class="btn btn--ghost" href="explain.html" data-open-search>{esc(C("notfound.search_button"))}</a>'
-            f'<a class="btn btn--quiet" href="{esc(base)}/">{esc(C("notfound.map_button"))}</a></p></header></div>')
+            f'<a class="btn btn--quiet" href="{esc(base)}/">{esc(C("notfound.map_button"))}</a></p></header>'
+            f'<section class="band band--tight help-route"><h2 class="h2">{esc(C("help.steps_heading"))}</h2>{help_steps_html("step-")}</section></div>')
     h = page(rel, C("notfound.title"), C("notfound.text") + " " + C("notfound.families", link=C("notfound.families_link")),
              body, noindex=True)
     # The host serves this page at any depth: local assets and links need the site root.
@@ -4771,6 +4869,7 @@ def main():
     build_contribute()
     build_about()
     build_404()
+    build_help()
     build_search_data()
     (OUT / "cards" / "site.html").write_text(social_card_html(), encoding="utf-8")
     build_sitemap()
