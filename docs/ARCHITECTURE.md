@@ -275,7 +275,7 @@ The README opens with `docs/images/overview-light.png` and
 `docs/images/overview-dark.png`: real browser captures of the entire release
 map, with its discipline regions, family dots, release summary and colour key.
 Both link to the public Atlas front page. The paper reader now sits beside the
-“What you can do” feature table; the family board remains a separate detail view.
+“What you can do” feature table.
 
 The overview pair was captured on 15 October 2026 from a local build of main
 commit `96d9f05d8f1a5cf4fefbc47879b4dfbc1278ccc6`, using the documented quick
