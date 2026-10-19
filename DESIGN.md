@@ -68,9 +68,10 @@ map for where things are, the list for reading them.
   back; a click opens the family's page. Every level fits its stage, so the map
   has no zoom or pan.
 - **The list** (the left panel): what the site is for in one sentence, then
-  search with one line saying what it finds, then the release in four plain
-  figures (linked once, to how they are counted), where to start (π first, and
-  the families the groups disagree on), the subjects with a thin bar of their
+  search with one line saying what it finds, then the worked example (π), the
+  release in four figures each saying what it counts (linked once, to how they
+  are counted), more places to start (and the families the groups disagree
+  on), the subjects with a thin bar of their
   colours, the full colour key with counts, and what changed since the release.
   Choosing a subject zooms the map to it and lists its families as plain
   entries: title and one short line, and on pointing the claim's first sentence with its mathematics typeset
@@ -96,6 +97,32 @@ map for where things are, the list for reading them.
   layout packs below that bar and above the hover line, subject circles start
   at the top of the stage and rows spread down it, and the explorer stands in
   the site frame so the sidebar starts on the header's left edge.
+- **The front door teaches by one worked example** (round 2, 19 October 2026).
+  Under the search, π's family (017) is taken through the whole route in four
+  short sentences: what OpenAI's catalogue says the paper proves; the one Lean
+  statement chosen for checking (PiExponent); each group's own label (MathVet
+  "full", cert-machine "NARROWER — DECLARED") and the omission both name, which
+  is why its dot has the "groups disagree" colour; and that both report
+  Comparator accepted the proof of that statement, which is not the paper's
+  whole claim. Then one filled action opens the family. `example_html` takes
+  the names, labels and Lean name from Statement Map and stops the build if the
+  family no longer fits the sentences. The π dot wears a quiet ring on the map
+  at the release and in its subject, and the idle hover line names it. The four
+  figures say what each counts (Lean is defined in the row where it first
+  appears). The key on the map asks the colour's one question ("do MathVet and
+  cert-machine say the family's Lean states the whole result? It does not say
+  whether a proof is right") and each chip answers it ("yes, both groups",
+  "they disagree, as for π", "no Lean released", so a white dot never reads as
+  a failure). The sidebar's full key now stands above the subjects, and two
+  small buttons under the purpose line open the guide and the π family.
+  At a subject the citation inks are named in the sentence that says how to
+  make arrows appear, never as a legend for arrows not yet drawn.
+- **A subject's trail is the site's breadcrumb**: `Map / Number theory`, built
+  with atlas.css's `.trail` look, every crumb a link except the subject (plain,
+  `aria-current="page"`). Each family row's second line is a sentence, never a
+  code: "Family 017: 1 paper, 1 Lean statement. MathVet and cert-machine
+  disagree about what its Lean states." The subject's lede says what each row
+  shows.
 - **Formerly, a family board of cards** in the Zenith Code Map Focus grammar:
   its papers as columns of results, each statement typeset, the Lean statements
   paired with them joined beneath, "Cited by" families on the left and "Cites"

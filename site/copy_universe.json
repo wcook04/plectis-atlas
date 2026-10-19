@@ -8,7 +8,8 @@
   "redirect_link": "Open the map",
   "independent": "An independent guide to OpenAI’s papers, not affiliated with OpenAI.",
   "nojs": "The interactive map needs JavaScript. The list below links to every group of related papers. The Agent navigation link opens instructions for reading the map as JSON.",
-  "job": "Find a result, see which Lean statement was chosen for computer checking, and read what each outside group says about it."
+  "job": "Pick a result from OpenAI’s mathematics release and see, on one page, what the paper claims, the Lean statement OpenAI chose for a computer to check, and what outside groups report about both.",
+  "how": "How to use the Atlas"
  },
  "release": {
   "s1": "OpenAI published {manuscripts_current} current papers across {disciplines} disciplines. It groups related papers into {families} “families”.",
@@ -88,8 +89,8 @@
   "lean": "Lean statement {n} of {of} in this family"
  },
  "levels": {
-  "release": "The release",
-  "trail_label": "Where you are"
+  "release": "Map",
+  "trail_label": "Breadcrumb"
  },
  "controls": {
   "zoom_in": "Zoom in",
@@ -119,10 +120,10 @@
   "filter_label": "Show only",
   "in_paper": "in {title}",
   "suggest": "Words in the titles that come close:",
-  "hint": "Search by title, theorem or Lean file name, or click a subject on the map."
+  "hint": "Search by title, theorem or Lean file name, or click a dot on the map."
  },
  "discipline": {
-  "lede": "{counts}. Point at a family to find it on the map; click it to open its page, with the paper, the Lean statement and what each group found.",
+  "lede": "{counts}. Under each title: the family’s number and size, then what MathVet and cert-machine find its Lean states, which is its dot’s colour. Click a row or a circle to open the family’s page.",
   "loading": "Loading the families…",
   "failed": "The list could not load. Open a family’s page to read its papers and independent reports."
  },
@@ -234,13 +235,8 @@
   "parts_failed": "The family details could not load. Select a family to try again."
  },
  "ways": {
-  "heading": "Where to start",
+  "heading": "More places to start",
   "items": [
-   {
-    "family": "017",
-    "name": "The irrationality exponent of π is 2",
-    "why": "OpenAI’s catalogue describes a proof that π cannot be approximated by fractions much better than almost every number can. The two groups disagree about how much of this its Lean statement states."
-   },
    {
     "family": "159",
     "name": "Erdős’s reciprocal-sum conjecture",
@@ -301,12 +297,15 @@
  },
  "chart": {
   "_note": "The words standing with the drawing at the release and at a discipline.",
-  "release_cap": "Big circles are subjects; each dot is a family, a group of related papers on one result. Click a dot to open its family, or a subject to see its families labelled.",
+  "release_cap": "Each big circle is a subject; each dot inside it is one family, a group of papers on one result. Click a dot to open its page, or a subject to see its families by name.",
   "disc_cap": "{name}: {counts}. Each circle is one family; click it to open the family’s page.",
   "hover_disc": "Click to see its families labelled.",
   "hover_family": "Click to open its page.",
-  "hover_idle_release": "Point at a dot or a subject to name it here.",
-  "hover_idle_disc": "Point at a circle to name it here, with its papers and what the groups found."
+  "hover_idle_release": "Point at a dot or a subject to name it here. The ringed dot in Number theory is π, the example on the left.",
+  "hover_idle_disc": "Point at a circle to name it here, with its papers and what the groups found. Click it to open its page.",
+  "edge_hint": "Point at a family to see which families its papers cite ({cites}) and which cite it ({cited}).",
+  "edge_cites": "brick",
+  "edge_cited": "grey"
  },
  "board": {
   "_note": "The citation inks named in the caption at a discipline.",
@@ -340,22 +339,57 @@
   "family_counts": "{papers}, {lean}"
  },
  "stats": {
-  "_note": "The release in four figures at the top of the sidebar. The figures are plain text; one link says how they are counted.",
-  "papers": "papers",
-  "families": "families",
-  "with_lean": "families with Lean",
-  "lean": "Lean statements",
-  "define": "A family is a group of related papers on one result. Lean is a language in which a computer can check mathematical statements and proofs.",
+  "_note": "The release in four figures at the top of the sidebar, each with what it counts in plain words. One link says how they are counted.",
+  "papers": "papers OpenAI published",
+  "families": "families: groups of papers on one result",
+  "with_lean": "families with a statement in Lean, a language in which a computer checks proofs",
+  "lean": "Lean statements in all",
   "counted": "See how these are counted"
  },
  "keyshort": {
-  "_note": "The colour key standing on the map: a short name for each colour; the full sentence (key.*) is its tooltip and stands in the sidebar.",
-  "lead": "Colour: what MathVet and cert-machine found about the Lean",
-  "all": "Whole result",
-  "part": "Part of it",
-  "other": "A step or another result",
-  "split": "Groups disagree",
-  "none": "No Lean",
-  "unread": "Not compared"
+  "_note": "The colour key standing on the map, read as one sentence: the lead, then each colour's short ending. The full sentence (key.*) is each chip's tooltip and stands in the sidebar.",
+  "lead": "Colour: do MathVet and cert-machine say the family’s Lean states the whole result? It does not say whether a proof is right.",
+  "all": "yes, both groups",
+  "part": "part of it, or narrower",
+  "other": "a step or another result",
+  "split": "they disagree, as for π",
+  "none": "no Lean released",
+  "unread": "not yet compared"
+ },
+ "example": {
+  "_note": "The worked example under the search: one family taken through the whole route (claim, Lean, the two groups' labels and reason, the colour it gives the dot, Comparator, then the page). build_universe.example_html fills the names, labels and Lean statement from Statement Map and stops the build if the family no longer fits these sentences.",
+  "family": "017",
+  "heading": "Try an example: the irrationality exponent of π",
+  "steps": [
+   {
+    "q": "What does the paper claim?",
+    "a": "That π cannot be approximated by fractions much better than almost every number can, and that the Flint–Hills series converges, as OpenAI’s catalogue describes it."
+   },
+   {
+    "q": "What did OpenAI write in Lean?",
+    "a": "One Lean statement, {lean}, chosen for a computer to check."
+   },
+   {
+    "q": "What do the outside groups say?",
+    "a": "{first} labels it {first_term} and {second} labels it {second_term}. Both note that it leaves out the Flint–Hills series, so π’s dot has the colour for “they disagree”."
+   },
+   {
+    "q": "Was the proof checked?",
+    "a": "Both groups report that Comparator, a program that checks Lean proofs, accepted OpenAI’s proof of {lean}. That is the proof of this Lean statement, not of everything the paper claims."
+   }
+  ],
+  "open": "Open the π family",
+  "open_sub": "the paper, the Lean and both reports side by side",
+  "try": "Try an example: π, family 017"
+ },
+ "rowline": {
+  "_note": "The second line of each family row in a subject's list, after its number and size: what the dot's colour means, as a sentence.",
+  "all": "Both groups say its Lean states the whole result.",
+  "part": "Its Lean states part of the result, or a narrower one.",
+  "other": "Its Lean states a supporting step or a different result.",
+  "split": "MathVet and cert-machine disagree about what its Lean states.",
+  "none": "No Lean statement released for it.",
+  "unread": "Neither group has compared its Lean yet.",
+  "size": "Family {num}: {counts}."
  }
 }

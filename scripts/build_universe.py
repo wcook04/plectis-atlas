@@ -1123,12 +1123,50 @@ def num_text(M, key: str) -> str:
 
 
 def stats_html(M) -> str:
-    """The release in four plain figures, one definition and one link to how they are counted."""
+    """The release in four figures, each with what it counts in plain words (Lean is
+    defined where it first appears), and one link to how they are counted."""
     cells = "".join(f'<li class="u-stat"><b class="u-stat__n">{esc(num_text(M, k))}</b> <span class="u-stat__w">{esc(U("stats." + w))}</span></li>'
                     for k, w in (("manuscripts_current", "papers"), ("families", "families"),
                                  ("families_with_lean", "with_lean"), ("statements_lean", "lean")))
     return (f'<ul class="u-stats">{cells}</ul>'
-            f'<p class="u-define">{esc(U("stats.define"))} <a href="numbers.html">{esc(U("stats.counted"))}</a></p>')
+            f'<p class="u-define"><a href="numbers.html">{esc(U("stats.counted"))}</a></p>')
+
+
+def example_html(M) -> str:
+    """The worked example under the search: one family taken through the whole route,
+    from the claim to the page. The groups' names and labels and the Lean statement's
+    name come from Statement Map; the copy's sentences about this family (the colour,
+    the shared omission, both Comparator reports) are checked here, and the build stops
+    if the family no longer fits them."""
+    ex = COPY_U["example"]
+    f = next((x for x in M.data["families"] if x["num"] == ex["family"]), None)
+    if not f:
+        raise SystemExit(f"example: family {ex['family']} is not on the map")
+    rows = reader_rows(M.evs[f["id"]], M.docs[f["id"]])
+    leans = [M.data["lean"][li] for li in f["lean"]]
+    problems = []
+    if f["tone"] != "split":
+        problems.append(f"its colour is {f['tone']}, not split")
+    if len(rows) != 2 or not all(r.get("term") for r in rows):
+        problems.append("it does not have exactly two groups' labels")
+    if not all("flint" in (r.get("note") or "").lower() for r in rows):
+        problems.append("not every group's note names the Flint–Hills series")
+    if len(leans) != 1:
+        problems.append(f"it has {len(leans)} Lean statements, not one")
+    elif len(set(leans[0]["acc"])) < 2:
+        problems.append("fewer than two groups report an accepted Comparator run")
+    if problems:
+        raise SystemExit("example: the copy no longer describes family " + ex["family"] + ": " + "; ".join(problems))
+    lean = f'<code class="u-ex__code">{esc(leans[0]["name"])}</code>'
+    names = ["\u2019s ".join(r["name"].split(", ", 1)) for r in rows]
+    quoted = [f'\u201c{esc(r["term"])}\u201d' for r in rows]
+    fill = dict(lean=lean, first=esc(names[0]), second=esc(names[1]), first_term=quoted[0], second_term=quoted[1])
+    steps = "".join(f'<li><b class="u-example__q">{esc(st["q"])}</b> {linked(st["a"], **fill)}</li>' for st in ex["steps"])
+    return (f'<section class="u-example" aria-labelledby="u-ex-h">'
+            f'<h2 class="u-h2 u-example__h" id="u-ex-h"><span class="u-dot u-dot--{f["tone"]}" aria-hidden="true"></span>{esc(ex["heading"])}</h2>'
+            f'<ol class="u-example__steps">{steps}</ol>'
+            f'<a class="u-example__go" href="{esc(f["href"])}"><span class="u-example__open">{esc(ex["open"])}</span>'
+            f'<span class="u-example__sub">{esc(ex["open_sub"])}</span></a></section>')
 
 
 def number_sentence(M, key: str) -> str:
@@ -1346,10 +1384,11 @@ def page_body(M, gen, data_version=None) -> str:
  </div>
  <aside class="u-panel" aria-labelledby="u-title">
   <div class="u-panel__head">
-   <nav class="u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail hidden></nav>
+   <nav class="trail u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail hidden></nav>
    <nav class="u-step" aria-label="{esc(U('step.label'))}" data-u-step hidden></nav>
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
    <p class="u-ground" data-u-ground>{esc(U('page.job'))} <span class="u-ground__ind">{esc(U('page.independent'))}</span></p>
+   <p class="u-starts" data-u-ground><a class="u-gbtn" href="help.html" data-help="">{esc(U('page.how'))}</a><a class="u-gbtn" href="families/{esc(COPY_U['example']['family'])}.html">{esc(U('example.try'))}</a></p>
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
     <svg class="u-search__icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>
@@ -1360,12 +1399,12 @@ def page_body(M, gen, data_version=None) -> str:
   <div class="u-panel__body" data-u-scroll>
    <div class="u-results" data-u-results hidden></div>
    <div class="u-view" data-u-view>
+    {example_html(M)}
     <section class="u-statsec">{stats_html(M)}</section>
     <p class="u-nojs">{esc(U('page.nojs'))}</p>
-    <p class="u-keyjump"><a href="#u-key" data-u-keyjump>{esc(U('key.heading'))}</a></p>
+    <section class="u-keysec" id="u-key">{key_html(M)}</section>
     <section class="u-wayssec">{ways_html(M)}</section>
     <section class="u-discsec">{discipline_rows(M)}</section>
-    <section class="u-keysec" id="u-key">{key_html(M)}</section>
     {since_html(M)}
    </div>
   </div>

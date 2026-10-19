@@ -279,12 +279,14 @@
       byKey[key] = objects.length;
       objects.push({ key: key, kind: kind, i: idx });
     };
+    var exampleFi = -1;
     function ingest(data, layout) {
       D = data; L = layout;
       D.papers = []; D.results = []; D.lean = [];
       D.disciplines.forEach(function (d, i) { addObj(d.id, 'd', i); });
       D.families.forEach(function (f, i) {
         addObj(f.id, 'f', i);
+        if (COPY.example && f.num === COPY.example.family) exampleFi = i;
         var g = L.families[i];
         fams.push({ x: g[0], y: g[1], r: g[2], a: g[3], d: f.d, data: f, hop: {} });
       });
@@ -802,6 +804,18 @@
         ctx.restore();
         if (lvl === 'disc' && q.a > 0.5) chartBoxes.push({ x0: q.x - q.r, x1: q.x + q.r, y0: q.y - q.r, y1: q.y + q.r, fi: fi, disc: true });
       }
+      // The worked example in the sidebar (π's family) wears one quiet ring, so the
+      // sentence "the ringed dot in Number theory" points at something on the drawing.
+      if (exampleFi >= 0 && (lvl === 'release' || lvl === 'disc')) {
+        var xq = S.nodes[exampleFi];
+        if (xq && xq.a > 0.05) {
+          ctx.save();
+          ctx.globalAlpha = xq.a * (matchFam && !searchFolded && !matchFam[exampleFi] ? 0.22 : 1) * (lvl === 'disc' && hf >= 0 && !near[exampleFi] ? 0.14 : 1);
+          ctx.strokeStyle = palette.focus; ctx.lineWidth = lvl === 'release' ? 1.5 : 2;
+          ctx.beginPath(); ctx.arc(xq.x, xq.y, xq.r + (lvl === 'release' ? 3.5 : 5), 0, TAU); ctx.stroke();
+          ctx.restore();
+        }
+      }
       // The words: each discipline's name and counts in its region; each family's title in its disc.
       if (words > 0.01) {
         if (lvl === 'release') {
@@ -1105,18 +1119,21 @@
     function goBtn(key, inner, cls) {
       return '<button type="button" class="u-go ' + (cls || '') + '" data-go="' + escapeHtml(key) + '">' + inner + '</button>';
     }
+    // The site's one breadcrumb grammar (build_site.trail): Map / Subject, every crumb a
+    // link except the place you are, which is plain text with aria-current.
     function trailHtml() {
       var o = sel ? obj(sel) : null, items = [];
       var chain = [];
       for (var c = o; c; c = obj(parentKey(c))) chain.unshift(c);
       if (!o) return '';
-      items.push(goBtn('', escapeHtml(T('levels.release')), 'u-crumb'));
+      items.push('<a class="u-crumb" href="index.html" data-go="">' + escapeHtml(T('levels.release')) + '</a>');
       chain.forEach(function (c, i) {
         var label = c.kind === 'f' ? D.families[c.i].title : c.kind === 'd' ? D.disciplines[c.i].name :
           c.kind === 'r' ? resultName(D.results[c.i]) : c.kind === 'l' ? D.lean[c.i].name : T('levels.paper');
-        if (i < chain.length - 1) items.push(goBtn(c.key, escapeHtml(label), 'u-crumb'));
+        if (i < chain.length - 1) items.push('<a class="u-crumb" href="index.html#o=' + encodeURIComponent(c.key) + '" data-go="' + escapeHtml(c.key) + '">' + escapeHtml(label) + '</a>');
+        else items.push('<span aria-current="page">' + escapeHtml(label) + '</span>');
       });
-      return items.join('<span class="u-crumb-sep" aria-hidden="true">/</span>');
+      return items.join(' <span class="trail__sep" aria-hidden="true">/</span>\u2060');
     }
     // The selection's siblings in reading order: fields of the release, families of a
     // field, and a family's papers (oldest first), results and Lean statements.
@@ -1230,8 +1247,10 @@
       if (!o) capEl.textContent = T('chart.release_cap', { families: D.families.length, disciplines: D.disciplines.length });
       else if (o.kind === 'd') {
         capEl.innerHTML = escapeHtml(T('chart.disc_cap', { name: D.disciplines[o.i].name, counts: discCounts(D.disciplines[o.i]) })) +
-          '<span class="u-edge-guide"><span class="u-edge-key u-edge-key--out"><span aria-hidden="true">⟶</span> ' + escapeHtml(T('board.cites')) + '</span> ' +
-          '<span class="u-edge-key u-edge-key--in"><span aria-hidden="true">⟶</span> ' + escapeHtml(T('board.cited_by')) + '</span> ' + escapeHtml(T('mapkey.arrow')) + '</span>';
+          // No arrow is drawn until a family is pointed at, so the inks are named in the
+          // sentence that says how to make them appear.
+          '<span class="u-edge-guide">' + escapeHtml(T('chart.edge_hint')).replace('{cites}', '<span class="u-edge-key u-edge-key--out">' + escapeHtml(T('chart.edge_cites')) + '</span>')
+            .replace('{cited}', '<span class="u-edge-key u-edge-key--in">' + escapeHtml(T('chart.edge_cited')) + '</span>') + ' ' + escapeHtml(T('mapkey.arrow')) + '</span>';
       }
     }
     function updateFit() {
@@ -1460,17 +1479,17 @@
     var failedShards = {};
 
     /* A discipline: its families as plain entries a person can read. */
-    // One short line per family: its size, then the colour's short name (the full
-    // sentence is the dot's meaning in the key on the map and in the release's list).
+    // The second line of a family row says, in words, what the row shows: the family's
+    // number and size, then what its dot's colour means (DESIGN.md, the map sidebar).
     function statusLine(f) {
-      return count('papers', f.papers.length) + (f.lean.length ? ', ' + count('lean', f.lean.length) : '') + ' · ' + T('keyshort.' + f.tone);
+      var size = count('papers', f.papers.length) + (f.lean.length ? ', ' + count('lean', f.lean.length) : '');
+      return T('rowline.size', { num: f.num, counts: size }) + ' ' + T('rowline.' + (f.tone || 'none'));
     }
     function entryHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
       return '<li><a class="u-entry" href="' + escapeHtml(f.href) + '" data-go="' + escapeHtml(f.id) + '">' +
         '<span class="u-entry__t">' + dot(f.tone) + '<span class="tex-auto">' + (det ? det.titleHtml : escapeHtml(f.title)) + '</span></span>' +
-        '<span class="u-entry__s"><span class="u-entry__num">' + escapeHtml(f.num) + '</span> ' + escapeHtml(statusLine(f)) +
-        '<span class="u-visually-hidden">. ' + escapeHtml(T('key.' + f.tone)) + '.</span></span>' +
+        '<span class="u-entry__s">' + escapeHtml(statusLine(f)) + '</span>' +
         (det ? '<span class="u-entry__more">' +
           (det.first ? '<span class="u-entry__c"><span class="u-role">' + escapeHtml(T('family.catalogue')) + '</span> <span class="tex-auto">' + det.first + '</span></span>' : '') +
           '<span class="u-entry__e">' + escapeHtml(det.evidence) + '</span></span>' : '') + '</a></li>';
