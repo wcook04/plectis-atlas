@@ -51,6 +51,8 @@ jobs:
           node scripts/tests/test_universe_performance.js
       - name: The data parsers read their fixtures correctly
         run: python3 scripts/tests/test_build_data.py
+      - name: The weekly upstream job tells a relevant openai/math change from an unrelated one
+        run: python3 scripts/tests/test_upstream_changes.py
       - name: The paper reader converts its fixtures correctly
         run: |
           python3 scripts/tests/test_build_papers.py
