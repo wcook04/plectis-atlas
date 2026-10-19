@@ -67,9 +67,13 @@ map for where things are, the list for reading them.
   draws its citations to its neighbours (brick out, grey in) and steps the rest
   back; a click opens the family's page. Every level fits its stage, so the map
   has no zoom or pan.
-- **The list** (the left panel): the release in sentences, search, then the
-  disciplines. Choosing one zooms the map to it and lists its families as plain
-  entries: title, the claim's first sentence with its mathematics typeset
+- **The list** (the left panel): what the site is for in one sentence, then
+  search with one line saying what it finds, then the release in four plain
+  figures (linked once, to how they are counted), where to start (π first, and
+  the families the groups disagree on), the subjects with a thin bar of their
+  colours, the full colour key with counts, and what changed since the release.
+  Choosing a subject zooms the map to it and lists its families as plain
+  entries: title and one short line, and on pointing the claim's first sentence with its mathematics typeset
   (credited to OpenAI's catalogue), and one sentence saying what the Lean
   states and who checked it. Pointing at an entry lights its node; clicking
   opens the family's page.
@@ -82,8 +86,16 @@ map for where things are, the list for reading them.
   its subjects.
 - **Hover never covers the drawing** (19 October 2026). A floating card beside
   a hovered subject sat on the very dots the reader was reaching for. What the
-  pointer names is written in the caption above the drawing, in the same grid
-  cell as the standing caption so the bar never changes height.
+  pointer names is written on its own line under the drawing, so the
+  instruction above never disappears and the bar never changes height.
+- **The colour key stands on the map** (UX pass, 19 October 2026). A "Map key"
+  button that opened a panel had no visible effect at desktop width, and the
+  sidebar key fell below the fold at 1440x900. The bar over the drawing now
+  holds the instruction and a row of colour chips (short name, count at this
+  level, the full sentence as its title) at the release and in a subject. The
+  layout packs below that bar and above the hover line, subject circles start
+  at the top of the stage and rows spread down it, and the explorer stands in
+  the site frame so the sidebar starts on the header's left edge.
 - **Formerly, a family board of cards** in the Zenith Code Map Focus grammar:
   its papers as columns of results, each statement typeset, the Lean statements
   paired with them joined beneath, "Cited by" families on the left and "Cites"
@@ -427,8 +439,10 @@ is reading, delay the mathematics, or run in a loop.
 
 ## The map sidebar at each selection level
 
-On desktop, the release starts with the colour key, visible without scrolling;
-the disciplines follow it. The map key remains available at every depth. A
+On desktop, the colour key stands on the map at the release and in a subject;
+the sidebar starts with the release's figures and where to start, then the
+subjects. Each family in a subject's list is one title and one short line:
+its number, its size and the colour's short name. A
 discipline lists families with their paper counts and the readers' assessment. A family is an index of its papers and Lean statements,
 with the catalogue claim, attributed readings and citations retained. Choose
 a paper to read its abstract and statement previews, then a result to read the

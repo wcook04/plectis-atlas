@@ -78,10 +78,15 @@ def main() -> None:
                         assert status.count() == 1 and status.get_attribute('role') == 'status'
                         assert status.locator('xpath=ancestor::*[@data-u-stage]').count() == 0
                         page.locator('[data-u-view] [data-go^="d:"]').first.click()
-                        family = page.locator('[data-u-view] [data-go^="f:"]').first
+                        family = page.locator('[data-u-view] a.u-entry[data-go^="f:"]').first
                         family.wait_for(state='visible')
-                        key = family.get_attribute('data-go')
-                        family.click()
+                        key, href = family.get_attribute('data-go'), family.get_attribute('href')
+                        assert href and href.startswith('families/'), 'a family in the list is a link to its page'
+                        # Choosing a family on the map (the test's explicit selection) waits for
+                        # the parts, reports a failure, retries on the next explicit selection
+                        # and then settles the selection.
+                        page.evaluate('k => window.__universe.select(k)', key)
+                        status = page.locator('[data-u-status]')
                         status.wait_for(state='visible')
                         assert status.inner_text() == 'Opening the family…'
                         if width < 900:
@@ -93,23 +98,21 @@ def main() -> None:
                         assert len(pending) == 1, 'selection starts exactly one parts request'
                         pending.pop().fulfill(status=503, content_type='application/json', body='{}')
                         page.wait_for_function("document.querySelector('[data-u-status]').textContent.includes('could not load')")
-                        assert status.is_visible(), 'failed selection stays visible with the map hidden'
+                        assert status.is_visible(), 'failed selection stays visible'
                         if args.shots:
                             page.screenshot(path=str(args.shots / f'status-failed-{width}-{scheme}.png'))
-                        family.click()
+                        page.evaluate('k => window.__universe.select(k)', key)
                         page.wait_for_function("document.querySelector('[data-u-status]').textContent === 'Opening the family…'")
                         assert status.is_visible(), 'explicit retry replaces failure with visible loading'
                         assert len(pending) == 1, 'explicit retry starts one replacement request'
                         if width < 900:
                             page.locator('[data-u-show="map"]').click()
                             assert status.is_visible(), 'the same status survives a switch to Map'
-                        if args.shots:
-                            page.screenshot(path=str(args.shots / f'status-map-retry-{width}-{scheme}.png'))
                         pending.pop().continue_()
                         page.wait_for_function('key => window.__universe.state().sel === key', arg=key)
                         status.wait_for(state='hidden')
                         assert not errors, errors
-                        print(f'PASS {width}px {scheme}: hidden-map loading, failure, retry and successful clear', flush=True)
+                        print(f'PASS {width}px {scheme}: family links, loading, failure, retry and successful clear', flush=True)
                     finally:
                         context.close()
             finally:

@@ -1109,6 +1109,28 @@ def num_link(M, key: str) -> str:
     return f'<a class="u-num" href="{esc(href)}">{esc(text)}</a>'
 
 
+def num_text(M, key: str) -> str:
+    """The same number as num_link, as plain text: the sidebar's figures are not citations."""
+    n = M.r.number(key)
+    state, value = n.get("state"), n.get("value")
+    if state == "computed" and value is not None:
+        return f"{value:,}" if isinstance(value, int) else str(value)
+    if state == "reported" and value is not None:
+        return U("numbers.reported", value=value)
+    if n.get("known_value") is not None:
+        return U("numbers.incomplete", value=n["known_value"])
+    return U("numbers.unavailable")
+
+
+def stats_html(M) -> str:
+    """The release in four plain figures, one definition and one link to how they are counted."""
+    cells = "".join(f'<li class="u-stat"><b class="u-stat__n">{esc(num_text(M, k))}</b> <span class="u-stat__w">{esc(U("stats." + w))}</span></li>'
+                    for k, w in (("manuscripts_current", "papers"), ("families", "families"),
+                                 ("families_with_lean", "with_lean"), ("statements_lean", "lean")))
+    return (f'<ul class="u-stats">{cells}</ul>'
+            f'<p class="u-define">{esc(U("stats.define"))} <a href="numbers.html">{esc(U("stats.counted"))}</a></p>')
+
+
 def number_sentence(M, key: str) -> str:
     tpl = COPY_U["release"][key]
     return linked(tpl, **{k: num_link(M, k) for k in re.findall(r"\{(\w+)\}", tpl)})
@@ -1197,15 +1219,24 @@ def since_html(M) -> str:
     return f'<p class="u-since"><b class="u-since__h">{esc(U("since.heading"))}</b> {text}</p>'
 
 
+def tone_bar(M, d) -> str:
+    """A discipline's families as one thin bar in the map's colours, in key order."""
+    tones = defaultdict(int)
+    for fi in d["families"]:
+        tones[M.data["families"][fi]["tone"]] += 1
+    segs = "".join(f'<span class="u-tbar__s u-tbar__s--{t}" style="flex-grow:{tones[t]}"></span>' for t in TONE_ORDER if tones[t])
+    return f'<span class="u-tbar" aria-hidden="true">{segs}</span>'
+
+
 def discipline_rows(M) -> str:
     D = M.data
     rows = []
     for d in D["disciplines"]:
-        rows.append(f'<li><a class="u-row" href="index.html#o={quote(d["id"], safe="")}" data-go="{esc(d["id"])}">'
+        rows.append(f'<li><a class="u-row u-row--disc" href="index.html#o={quote(d["id"], safe="")}" data-go="{esc(d["id"])}">'
                     f'<span class="u-row__t">{esc(d["name"])}</span>'
-                    f'<span class="u-row__n">{esc(disc_counts(d))}</span></a></li>')
-    return (f'<h2 class="u-h2" id="u-disc-h">{esc(U("release.disciplines_heading"))}</h2>'
-            f'<ul class="u-rows" aria-labelledby="u-disc-h">{"".join(rows)}</ul>')
+                    f'<span class="u-row__n">{esc(disc_counts(d))}</span>{tone_bar(M, d)}</a></li>')
+    return (f'<h2 class="u-h2" id="u-disc-h">{esc(U("release.disciplines_heading"))} <span class="u-h2__n">{len(D["disciplines"])}</span></h2>'
+            f'<ul class="u-rows u-rows--disc" aria-labelledby="u-disc-h">{"".join(rows)}</ul>')
 
 
 def disc_counts(d) -> str:
@@ -1229,6 +1260,13 @@ def ways_html(M) -> str:
         rows.append(f'<li><a class="u-way" href="{esc(f["href"])}" data-go="{esc(f["id"])}">'
                     f'<span class="u-way__t"><span class="u-dot u-dot--{f["tone"]}" aria-hidden="true"></span>{esc(w["name"])}</span>'
                     f'<span class="u-way__w">{esc(w["why"])}</span></a></li>')
+    split = {f["num"] for f in M.data["families"] if f["tone"] == "split"}
+    q = "c=disagree"
+    if split and filter_selects(explain_rows(), q) == split:
+        rows.append(f'<li><a class="u-way u-way--list" href="explain.html?{q}" aria-label="{esc(U("ways.disagree_label", n=len(split)))}">'
+                    f'<span class="u-way__t"><span class="u-dot u-dot--split" aria-hidden="true"></span>{esc(U("ways.disagree", n=len(split)))}</span></a></li>')
+    elif split:
+        print(f"universe: explain.html?{q} does not select exactly the {len(split)} families the groups disagree on; link left out")
     return f'<h2 class="u-h2 u-h2--ways" id="u-ways-h">{esc(U("ways.heading"))}</h2><ul class="u-ways" aria-labelledby="u-ways-h">{"".join(rows)}</ul>'
 
 
@@ -1248,8 +1286,18 @@ def index_html(M) -> str:
     return "".join(out)
 
 
+def keystrip_html(M) -> str:
+    """The colour key standing on the map, for the release; universe.js redraws it per level."""
+    counts = defaultdict(int)
+    for f in M.data["families"]:
+        counts[f["tone"]] += 1
+    chips = "".join(f'<li class="u-chip-k" title="{esc(U("key." + t))}"><span class="u-dot u-dot--{t}" aria-hidden="true"></span>'
+                    f'{esc(U("keyshort." + t))} <span class="u-chip-k__n">{counts[t]}</span></li>' for t in TONE_ORDER if counts[t])
+    return f'<span class="u-keystrip__lead">{esc(U("keyshort.lead"))}</span><ul class="u-keystrip__list">{chips}</ul>'
+
+
 def release_band(M) -> str:
-    sentences_ = [number_sentence(M, k) for k in ("s3", "s4", "s5")]
+    sentences_ = [number_sentence(M, "s1") + " " + number_sentence(M, "s2")] + [number_sentence(M, k) for k in ("s3", "s4", "s5")]
     return f"""<section class="u-band u-band--release" id="release" aria-labelledby="h-release">
  <div class="frame u-band__in u-band__in--split">
   <h2 class="u-band__h" id="h-release">{esc(U('bands.release_heading'))}</h2>
@@ -1301,22 +1349,24 @@ def page_body(M, gen, data_version=None) -> str:
    <nav class="u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail hidden></nav>
    <nav class="u-step" aria-label="{esc(U('step.label'))}" data-u-step hidden></nav>
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
-   <p class="u-ground" data-u-ground>{esc(U('page.independent'))}</p>
+   <p class="u-ground" data-u-ground>{esc(U('page.job'))} <span class="u-ground__ind">{esc(U('page.independent'))}</span></p>
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
-    <input id="u-search-in" class="u-search__in" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(U('search.placeholder'))}" data-u-search>
+    <svg class="u-search__icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>
+    <input id="u-search-in" class="u-search__in" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(U('search.placeholder'))}" aria-describedby="u-search-hint" data-u-search>
+    <p class="u-search__hint" id="u-search-hint" data-u-ground>{esc(U('search.hint'))}</p>
    </form>
   </div>
   <div class="u-panel__body" data-u-scroll>
    <div class="u-results" data-u-results hidden></div>
    <div class="u-view" data-u-view>
-    <p class="u-lede">{number_sentence(M, 's1')} {number_sentence(M, 's2')}</p>
-    {since_html(M)}
-    <section class="u-keysec" id="u-key">{key_html(M)}</section>
+    <section class="u-statsec">{stats_html(M)}</section>
     <p class="u-nojs">{esc(U('page.nojs'))}</p>
     <p class="u-keyjump"><a href="#u-key" data-u-keyjump>{esc(U('key.heading'))}</a></p>
-    <section class="u-discsec">{discipline_rows(M)}</section>
     <section class="u-wayssec">{ways_html(M)}</section>
+    <section class="u-discsec">{discipline_rows(M)}</section>
+    <section class="u-keysec" id="u-key">{key_html(M)}</section>
+    {since_html(M)}
    </div>
   </div>
  </aside>
@@ -1325,13 +1375,10 @@ def page_body(M, gen, data_version=None) -> str:
   <div class="u-visually-hidden" aria-live="polite" data-u-live></div>
   <div class="u-maplegend" data-u-legend hidden></div>
   <div class="u-mapbar" data-u-bar>
-   <button type="button" class="u-mapkey-btn" data-u-mapkey aria-expanded="false" aria-controls="u-mapkey">{esc(U('mapkey.button'))}</button>
-   <div class="u-capbox">
-    <p class="u-cap" data-u-cap>{esc(U('chart.release_cap', families=len(M.data['families']), disciplines=len(M.data['disciplines'])))}</p>
-    <p class="u-cap u-cap--hover" data-u-hovercap aria-hidden="true"></p>
-   </div>
+   <p class="u-cap" data-u-cap>{esc(U('chart.release_cap', families=len(M.data['families']), disciplines=len(M.data['disciplines'])))}</p>
+   <div class="u-keystrip" data-u-keystrip>{keystrip_html(M)}</div>
   </div>
-  <div class="u-mapkey" id="u-mapkey" data-u-mapkey-panel hidden></div>
+  <p class="u-hoverline" data-u-hoverline aria-hidden="true"><span class="u-hoverline__idle" data-u-hoveridle>{esc(U('chart.hover_idle_release'))}</span><span class="u-hoverline__on" data-u-hovercap></span></p>
  </div>
  <p class="u-status" data-u-status role="status">{esc(U('status.loading'))}</p>
  <script type="application/json" id="universe-copy">{copy_json}</script>
