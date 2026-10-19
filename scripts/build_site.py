@@ -1630,10 +1630,16 @@ def family_crumb_html(f) -> str:
 
 def family_crumbs(f, root, current=False):
     """The crumbs from the map down to a family: its subject (the map opened on that
-    subject) and the family itself, a link unless the family page is the current page."""
-    di = DISC_OF[f["id"]]
-    return [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d%3A{DISC_SLUG[di]}'),
-            (family_crumb_html(f), None if current else f'{root}families/{f["id"]}.html')]
+    subject), then "Family N: short title", a link unless the family page is the current
+    page. A long title is cut at a word with the whole title in its tooltip."""
+    di = DISC_OF.get(f["id"])
+    items = []
+    if di is not None:
+        items.append((esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d%3A{DISC_SLUG[di]}'))
+    title = crumb_title(fam_title_html(f), tex_plain(f["title"]))
+    items.append((esc(C("nav.trail_family", num=f["id"])) + ": " + title,
+                  None if current else f'{root}families/{f["id"]}.html'))
+    return items
 
 
 def family_trail(f, root, here_html=None):
@@ -3409,18 +3415,6 @@ def crumb_title(title_html: str, plain: str, n: int = 52) -> str:
     if len(plain) <= n:
         return title_html
     return f'<span title="{esc(plain)}">{esc(short(plain, n - 4))}</span>'
-
-
-def family_crumbs(fam: dict, root: str) -> list:
-    """The trail's middle crumbs for a page under a family: its subject on the map, then
-    "Family N: short title" (the breadcrumb grammar every page below the map shares)."""
-    di = DISC_OF.get(fam["id"])
-    items = []
-    if di is not None:
-        items.append((esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d%3A{DISC_SLUG[di]}'))
-    title = crumb_title(fam_title_html(fam), tex_plain(fam["title"]))
-    items.append((esc(LW("trail.family", id=fam["id"])) + " " + title, f'{root}families/{fam["id"]}.html'))
-    return items
 
 
 def lean_symbols_html(code: str, definition_only: bool) -> str:
