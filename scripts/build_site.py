@@ -1438,7 +1438,10 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 # Numbers lives in the footer and in the home page's bands.
 NAV = [("index.html", "map"), ("explain.html", "explain"), ("statements.html", "statements"),
        ("sources.html", "sources"), ("glossary.html", "glossary"),
-       ("contribute.html", "contribute"), ("about.html", "about")]
+       ("about.html", "about")]
+# Every section page, including those the header nav leaves to the footer (Contribute left the
+# header on 19 October 2026: Atlas collects from public sources and asks readers for nothing).
+SECTIONS = NAV + [("contribute.html", "contribute")]
 
 
 def header(rel: str, current: str | None) -> str:
@@ -1657,7 +1660,7 @@ def section_trail(root, key, *here):
     """The trail of a list or general page: Map / <Section> for the section's own page,
     Map / <Section> / <this page> for a page that belongs to a section (its nav item is
     then the current one). key names a NAV entry; here is this page's own name, plain."""
-    href = dict((k, h) for h, k in NAV)[key]
+    href = dict((k, h) for h, k in SECTIONS)[key]
     sec = esc(COPY["nav"]["crumb"].get(key) or C("nav." + key))
     if not here:
         return trail(root, [(sec, None)])
@@ -3848,8 +3851,7 @@ def build_statement(stmt):
     paper_btn = (f'<a class="btn btn--ghost" href="{root}papers/{quote(paper_ms["id"])}.html">{esc(LW("page.read_paper_page"))}</a>'
                  if paper_ms and paper_ms["id"] in PAPER_READING and not (paired and pinfo["state"] != "candidate-pairing" and reading_href) else "")
     action_group = (f'<div class="phead__go">'
-                    f'<p class="actions">{read_primary}{paper_btn}<a class="btn btn--ghost" href="#h-groups">{esc(LW("page.read_groups"))}</a>'
-                    f'<a class="btn btn--quiet ext" href="{esc(check_url(sid))}" rel="noopener">{esc(LW("page.report_check"))}</a></p></div>')
+                    f'<p class="actions">{read_primary}{paper_btn}<a class="btn btn--ghost" href="#h-groups">{esc(LW("page.read_groups"))}</a></p></div>')
     runs_section = lean_runs_html(lrec, root) if lrec else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
     selected_line = LW("page.selected_" + ("main" if main else "supporting"), id=(fid or "f:")[2:],
                        what=LW("page.what_" + ("definitions" if definition_only else "theorem")))
@@ -3858,6 +3860,14 @@ def build_statement(stmt):
     groups_section = lean_groups_html(fam, fid, doc, lrec, root, definition_only)
     next_section = lean_next_html(fam, sid, paper_rec, backend_printed(paper_rec, paper_st) if paper_st else None, lrec, stmt, root)
     left_html = "".join(f"<li>{esc(t)}</li>" for t in left_items)
+    # Contributed comparisons and runs are shown when Atlas holds some; their absence is
+    # not announced (Atlas collects from public sources and asks readers for nothing).
+    records_html = ""
+    if checks or replays:
+        records_html = ('<div class="left-records">'
+                        + (f'<div><h3 class="h3">{esc(C("statement.checks_heading"))}</h3><ul>{checks_html}</ul></div>' if checks else "")
+                        + (f'<div><h3 class="h3">{esc(C("statement.replays_heading"))}</h3><ul>{replays_html}</ul></div>' if replays else "")
+                        + '</div>')
     # The contents rail beside the page on a wide screen: each section in reading order,
     # each a question the section answers.
     toc_items = [("h-glance", LW("toc.glance")), ("h-lean-read", LW("toc.lean")), ("h-claim", LW("toc.claim")),
@@ -3907,13 +3917,7 @@ def build_statement(stmt):
  <h2 class="h2" id="h-checks">{esc(LW('left.heading'))}</h2>
  <p class="intro">{esc(LW('left.intro'))}</p>
  <ul class="left">{left_html}</ul>
- <p class="actions"><a class="btn btn--ghost ext" href="{esc(check_url(sid))}" rel="noopener">{esc(C('statement.check_button'))}</a><a class="btn btn--ghost ext" href="{esc(replay_url)}" rel="noopener">{esc(C('statement.replay_button'))}</a><a class="btn btn--quiet ext" href="{esc(suggest)}" rel="noopener">{esc(C('words.suggest_change'))}</a></p>
- <div class="left-records">
- <div><h3 class="h3">{esc(C('statement.checks_heading'))}</h3>
- {f'<ul>{checks_html}</ul>' if checks else f'<p>{esc(C("statement.checks_none"))}</p>'}</div>
- <div><h3 class="h3">{esc(C('statement.replays_heading'))}</h3>
- {f'<ul>{replays_html}</ul>' if replays else f'<p>{esc(C("statement.replays_none"))}</p>'}</div>
- </div>
+ {records_html}
  {('<h3 class="h3">' + esc(C('sources.statement_more')) + '</h3>' + findings_list(more_finds, root)) if more_finds else ''}
  {reasons_html}
 </section>
@@ -4227,9 +4231,6 @@ def build_explain():
     sort_select = (f'<div class="filters__g filters__g--sort"><label class="filters__h" for="ff-sort">{esc(C("explain.sort_label"))}</label>'
                    f'<select class="select" id="ff-sort" data-sort-table="families-table">'
                    + "".join(f'<option value="{v}">{esc(C("explain." + k))}</option>' for v, k in sort_menu) + "</select></div>")
-    invite_key = "explain.invite_all" if status_counts["none"] == len(evs) else "explain.invite"
-    invite = (f'<p class="phead__invite">{esc(C(invite_key, open=num(status_counts["none"]), families=num(len(evs))))} {esc(C("explain.how"))} '
-              f'<a class="ext" href="{esc(REPO + "/" + CFG["contributing_path"])}" rel="noopener">{esc(C("contribute.guide_link"))}</a></p>')
     readers_note = C("explain.readers_note", left=prose_name[order[0]], right=prose_name[order[1]] if len(order) > 1 else "")
     body = f"""<div class="frame page page--families">
 {section_trail("", "explain")}
@@ -4257,7 +4258,6 @@ def build_explain():
  <tbody>{''.join(rows)}</tbody>
 </table></div>
 </section>
-<section class="band band--tight" aria-labelledby="h-invite"><h2 class="h2" id="h-invite">{esc(C('explain.invite_heading'))}</h2>{invite}</section>
 {review_queue_html("")}
 </div>"""
     write_page(rel, page(rel, C("explain.title"), C("explain.lede", families=NUM("families")), body, current="explain"))

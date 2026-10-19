@@ -1431,24 +1431,7 @@ def page_body(M, gen, data_version=None) -> str:
 </section>
 {release_band(M)}
 {checked_band()}
-{help_band()}"""
-
-
-def help_band() -> str:
-    start_here = S.REPO + "/tree/main/skills/start-here"
-    return f"""<section class="u-band u-band--help" id="help" aria-labelledby="h-help">
- <div class="frame u-band__in">
-  <h2 class="u-band__h" id="h-help">{esc(U('bands.help_heading'))}</h2>
-  <p class="u-band__intro">{esc(U('bands.help_intro'))}</p>
-  <div class="u-help2">
-   <div><h3 class="u-h3">{esc(U('bands.help_without_heading'))}</h3><p>{esc(U('bands.help_without'))}</p><p><a href="contribute.html">{esc(U('bands.help_without_link'))}</a></p></div>
-   <div><h3 class="u-h3">{esc(U('bands.help_with_heading'))}</h3><p>{esc(U('bands.help_with'))}</p><p><a class="ext" href="{esc(start_here)}" rel="noopener">{esc(U('bands.help_with_link'))}</a></p></div>
-  </div>
-  <p class="u-band__links"><span>{esc(U('bands.help_queue'))}</span><a href="explain.html#careful-reading">{esc(U('bands.help_queue_link'))}</a></p>
- </div>
-</section>"""
-
-
+"""
 
 
 def redirect_stub() -> str:

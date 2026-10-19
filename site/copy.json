@@ -78,7 +78,7 @@
    ],
    [
     "contribute",
-    "<strong>Find the disagreements, or help.</strong> In Families, the colour filter’s “The groups disagree” lists every family where the two groups’ verdicts differ. “Left to check” on each family page names what nobody has reviewed, and each family’s Contribute tab says how to help."
+    "<strong>Find the disagreements.</strong> In Families, the colour filter’s “The groups disagree” lists every family where the two groups’ verdicts differ. Each family’s overview names the paper–Lean match that has no recorded review."
    ]
   ],
   "terms_heading": "Words you will meet, in the order you meet them",
@@ -170,7 +170,7 @@
    ],
    [
     "ex-left",
-    "<strong>See what is still unchecked.</strong> No review is recorded of whether PiExponent means the same as the paper’s Theorem 1.1, and none of the reported Comparator runs covers the Flint–Hills claim. The family’s Contribute tab says how to add a comparison or an explanation, credited by name."
+    "<strong>See what is still unchecked.</strong> No review is recorded of whether PiExponent means the same as the paper’s Theorem 1.1, and none of the reported Comparator runs covers the Flint–Hills claim."
    ]
   ],
   "example_open": "Try the π example (family 017)",
@@ -1143,8 +1143,7 @@
    "independent groups’ reports of Comparator runs and other proof checks on OpenAI’s proofs, credited and dated;",
    "independent assessments of whether a family’s Lean statements express the result OpenAI describes in its catalogue, quoted in each group’s own terms;",
    "reports of proofs in another proof assistant and exact calculations for finite claims;",
-   "citations between the release’s papers, with links in both directions;",
-   "forms for contributing an explanation, comparing statements or proposing a correction, with named credit."
+   "citations between the release’s papers, with links in both directions;"
   ],
   "backend": "Statement Map, a program by Will Cook, collects the release’s statements, Lean files, independent assessments and contributions into versioned records. Atlas imports these records and computes possible paper matches from shared wording. Those matches are labelled as candidates; they are not reviews of mathematical meaning.",
   "backend_pin": "The imported records have generation identifier {generation}, format version {schema}, and exporter {exporter} from Statement Map revision {commit}. Validation report {receipt} records software tests at revision {runtime}. The site build rejects records that do not match this export’s version and file hashes. These tests validate the data format and consistency, not the mathematics.",
