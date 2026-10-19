@@ -199,9 +199,9 @@ beside **What each group found**: one row per outside group with its own word
 for how much of the advertised result the Lean states, the gap it names, its
 own word for whether OpenAI's proof passed Comparator, and a link to its
 record, with one line saying a passing run does not show the statement matches
-the paper. The rest is **one tab per reading question**: the result and its
-papers; the Lean statements; what the groups found; connections; discussion
-and explanations; contribute. The tab bar stays in view; a link into a hidden panel opens it;
+the paper. The rest is **one tab per reading question**: what the paper
+claims; OpenAI's Lean; the groups' reasons; read more; what others wrote; how
+to help. The tab bar stays in view; a link into a hidden panel opens it;
 without scripts every panel shows in turn. This is the Atlas film's route
 (find a result, see its claims, compare the groups' labels and reasons, see
 which proof was checked) laid out so it needs no scrolling.
@@ -227,6 +227,32 @@ each group's term to its definition and its run word to its card, and ends with
 what is left to check, quoting OpenAI's own sentence on what its Lean leaves out
 (017: the Flint–Hills consequence). A family with no Lean gets a quiet Lean tab
 of one line.
+
+**The first screen teaches, one question at a time** (19 October 2026, round 2).
+Will: "god-level good clear communication for any audience". Worked on family
+017 (π) and checked on 003, 005, 006 and 159. The headings alone now carry the
+argument, each answered in its first sentence: *What is claimed?* (the catalogue,
+quoted); *Which Lean statement was selected?* (PiExponent, with Lean defined in
+half a sentence); *Does the Lean state the whole claim?* (each outside group's
+own label as a boxed quotation, the label in plain words, and, quoted, what the
+group says is missing, side by side, so the reader sees MathVet's "full" and
+cert-machine's "NARROWER — DECLARED" name the same Flint–Hills omission without
+Atlas saying so); *Did OpenAI's proof pass Comparator, the checking program?* (a
+plain "Yes, accepted" or "No acceptance reported" per group from the backend's
+accepted statements, then the group's word, date and own account, and every Lean
+statement it did not run); *Not yet checked by anyone* (the unreviewed pairing,
+OpenAI's own sentence on what its Lean leaves out, and two buttons that say where
+they go). On a wide screen these read left to right in three columns. Rules
+learnt: a reader's note can carry its reason after a semicolon, so never cut a
+group's note at its first clause (the cut hid MathVet's Flint–Hills sentence);
+quoted verdict words are tags, glossary terms keep the dotted underline; group
+names, Mathlib, nanoda and "headline" link their glossary entry at first use.
+Tabs and section headings are the reader's next questions (What does the paper
+claim? What did OpenAI write in Lean? Why do the groups differ, and which proof
+was checked? Where can I read more? What have other people written? How can I
+help?); none repeats a heading of the first screen, and a tab with nothing in
+the release says "(none in the release)". The trail is the site's own
+`build_site.trail`: Map / subject / Family N: short title.
 
 - **Head**: the trail; the family's name; OpenAI's catalogue description as a
   credited quotation, with its mathematics typeset.
