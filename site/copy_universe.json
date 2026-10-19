@@ -120,7 +120,7 @@
   "suggest": "Words in the titles that come close:"
  },
  "discipline": {
-  "lede": "{counts}. Point at a family to highlight its group of related papers on the map. Select it to see the papers and Lean statements.",
+  "lede": "{counts}. Point at a family to find it on the map; click it to open its page, with the paper, the Lean statement and what each group found.",
   "loading": "Loading the families…",
   "failed": "The list could not load. Open a family’s page to read its papers and independent reports."
  },
@@ -302,8 +302,10 @@
  },
  "chart": {
   "_note": "The words standing with the drawing at the release and at a discipline.",
-  "release_cap": "{families} families in {disciplines} disciplines. Point at a dot to see its family; choose it to open the family. Choose a discipline’s name to see all its families.",
-  "disc_cap": "{name}: {counts}. Choose a family to open its papers, results and Lean statements."
+  "release_cap": "Each large circle is a subject, and each dot inside it is one family: a group of related papers on one result. {families} families in {disciplines} subjects. Click a dot to open its family’s page, or a subject’s name to see its families labelled.",
+  "disc_cap": "{name}: {counts}. Each circle is one family; click it to open the family’s page.",
+  "hover_disc": "Click to see its families labelled.",
+  "hover_family": "Click to open its page."
  },
  "board": {
   "_note": "Inside a family the map is a board of cards: its papers in columns with each result's statement, the Lean statements beside the results they state, the families citing it on the left and those it cites on the right.",

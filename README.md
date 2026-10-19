@@ -21,14 +21,14 @@ The mathematics is OpenAI’s and the cited authors’ work. Independent assessm
 
 OpenAI’s release contains PDFs, their TeX typesetting source, a catalogue and Lean files. The relevant information is spread across them: the paper’s theorem, a possible Lean counterpart, OpenAI’s note on what the Lean statement expresses, and independent assessments or proof-verification reports. Atlas brings those sources onto each family’s page and links the papers that cite one another. Families without Lean remain visible. You can read the website without installing anything.
 
-<a href="https://wcook04.github.io/plectis-atlas/#o=f%3A003">
+<a href="https://wcook04.github.io/plectis-atlas/families/003.html">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/family-dark.png">
-    <img src="docs/images/family-light.png" width="1440" alt="Family 003, the quasi-Riemann hypothesis, opened on the map: its papers as columns, each theorem with the opening of its statement typeset, the Lean statements paired with them joined by dashed lines, and the families that cite it and that it cites on either side.">
+    <img src="docs/images/family-light.png" width="1440" alt="The page for family 003, the quasi-Riemann hypothesis: OpenAI’s catalogue description beside a table of what each outside group found, with each group’s own word for how much of the result the Lean states and whether OpenAI’s proof passed Comparator, and tabs for the papers, the Lean and the reports, connections, discussion and contributions.">
   </picture>
 </a>
 
-*Inside a family: the paper’s theorems beside possible Lean counterparts. A dashed line is a match selected from shared wording, with no recorded review of whether the statements mean the same thing.*
+*A family’s page: the claim beside what each group found, in their own words, with links to their records.*
 
 ## What you can do
 

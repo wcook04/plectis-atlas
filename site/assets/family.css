@@ -426,3 +426,78 @@
 /* An unresolved headline: after the statements the papers print, one line of information
    on how they were chosen and where the open task is listed. */
 .fx-cand--note { margin: 2px 0 18px; max-width: 75ch; }
+
+/* ---- The overview: the claim beside what each group found ------------------
+   The first screen answers the page's question: what is claimed, and what each
+   outside group says about the Lean and the proof, in their own words. */
+.fx-overview { display: grid; gap: 24px 48px; margin: 6px 0 0; }
+@media (min-width: 1100px) { .fx-overview { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: start; } }
+.fx-overview__claim > .fx-quote, .fx-overview__claim > .fx-fact { max-width: none; }
+.fx-overview .fx-quote__q p { font-size: 1.0625rem; line-height: 1.58; }
+/* The map's tone inks (universe.css), held equal by scripts/tests/test_family_page.py. */
+.fx-glance { --u-t-all: #2a5982; --u-t-part: #86a8c6; --u-t-other: #8a77a8; --u-t-split: #b5801f; --u-t-none: #978a7c; --u-t-unread: #978a7c; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .fx-glance { --u-t-all: #7fb4e8; --u-t-part: #6c8399; --u-t-other: #a493c6; --u-t-split: #dba84c; --u-t-none: #8a8396; --u-t-unread: #8a8396; }
+}
+:root[data-theme="dark"] .fx-glance { --u-t-all: #7fb4e8; --u-t-part: #6c8399; --u-t-other: #a493c6; --u-t-split: #dba84c; --u-t-none: #8a8396; --u-t-unread: #8a8396; }
+.fx-glance { border: 1px solid var(--rule-strong); border-radius: var(--r-md, 8px); background: var(--surface); padding: 14px 18px 12px; }
+.fx-glance__h { margin: 0 0 4px; font: 600 var(--fs-body)/1.3 var(--sans); color: var(--ink); }
+.fx-glance__lead { margin: 0 0 10px; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
+.fx-gt { width: 100%; border-collapse: collapse; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
+.fx-gt thead th { padding: 0 12px 6px 0; text-align: left; vertical-align: bottom; font-size: var(--fs-meta); font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--rule-strong); }
+.fx-gt tbody th, .fx-gt td { padding: 9px 12px 9px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
+.fx-gt tbody tr:last-child > * { border-bottom: 0; }
+.fx-gt tr > :last-child { padding-right: 0; }
+.fx-gt tbody th { width: 21%; font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
+.fx-gt td:last-child { width: 29%; }
+.fx-gt p { margin: 0; max-width: none; }
+.fx-gt__term { font-weight: 600; color: var(--ink); }
+.fx-gt__says { margin-top: 2px !important; }
+.fx-gt__none { color: var(--muted); }
+.fx-gt__go { white-space: nowrap; }
+.fx-gt .u-dot { display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 50%; vertical-align: 0.02em; background: var(--u-t-none); }
+.fx-gt .u-dot--all { background: var(--u-t-all); } .fx-gt .u-dot--part { background: var(--u-t-part); }
+.fx-gt .u-dot--other { background: var(--u-t-other); } .fx-gt .u-dot--split { background: var(--u-t-split); }
+.fx-glance__note { margin: 10px 0 0; font-size: var(--fs-meta); line-height: 1.45; color: var(--muted); }
+.fx-glance__foot { display: flex; flex-wrap: wrap; gap: 4px 20px; margin: 8px 0 0; font-size: var(--fs-small); }
+@media (max-width: 640px) {
+  .fx-gt thead { display: none; }
+  .fx-gt, .fx-gt tbody, .fx-gt tr, .fx-gt tbody th, .fx-gt td { display: block; width: auto !important; }
+  .fx-gt tr { padding: 8px 0; border-bottom: 1px solid var(--rule); }
+  .fx-gt tbody tr:last-child { border-bottom: 0; }
+  .fx-gt tbody th, .fx-gt td { padding: 2px 0; border: 0; }
+  .fx-gt td::before { content: attr(data-label); display: block; margin-top: 4px; font-size: var(--fs-meta); color: var(--muted); }
+}
+
+/* ---- Tabs: one reading question per panel, the bar kept in view ------------- */
+.fx-tabs { position: sticky; top: 0; z-index: 20; margin-top: 30px; background: var(--page); border-bottom: 1px solid var(--rule-strong); }
+.fx-tabs__list { display: flex; gap: 0 28px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.fx-tabs__list::-webkit-scrollbar { display: none; }
+.fx-tab { display: block; padding: 13px 0 10px; margin-bottom: -1px; border-bottom: 2px solid transparent; font: 500 var(--fs-small)/1.2 var(--sans); color: var(--muted); text-decoration: none; white-space: nowrap; }
+.fx-tab:hover { color: var(--ink); }
+.fx-tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); }
+.fx-tab:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+.fx--tabbed .fx-panel > .fx-sec:first-child, .fx--tabbed .fx-panel > .fx-sec--theorem { margin-top: 30px; padding-top: 0; border-top: 0; }
+.fx--tabbed .fx-panel[hidden] { display: none; }
+.fx--tabbed .fx-main [id] { scroll-margin-top: 64px; }
+@media (min-width: 1240px) { .fx--tabbed .fx-aside { top: 60px; } }
+
+/* Under the claim, the family's papers and Lean statements as direct routes, so the
+   claim column ends with the glance rather than in a dead gap; a glance taller than
+   the claim column travels with the reader instead. */
+.fx-brief { display: grid; gap: 4px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--rule); }
+.fx-brief__h { margin: 8px 0 2px; font: 600 var(--fs-small)/1.3 var(--sans); color: var(--muted); }
+.fx-brief__h:first-child { margin-top: 0; }
+.fx-brief__l { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; }
+.fx-brief__l li { max-width: none; font-size: var(--fs-body); line-height: 1.4; }
+.fx-brief__l a { font-family: var(--serif); }
+.fx-brief__l code { font-family: var(--fx-lean-mono); font-size: 0.92em; }
+.fx-brief__m { font-size: var(--fs-small); color: var(--muted); }
+.fx-brief__more a { font-family: var(--sans); font-size: var(--fs-small); }
+@media (min-width: 1100px) { .fx-glance { position: sticky; top: 16px; } }
+/* With nothing to compare, the glance is one sentence: it stacks under the claim
+   rather than standing in an empty column. */
+@media (min-width: 1100px) {
+  .fx-overview--single { grid-template-columns: minmax(0, 52rem); }
+  .fx-overview--single .fx-glance { position: static; }
+}

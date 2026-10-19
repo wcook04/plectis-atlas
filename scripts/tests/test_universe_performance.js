@@ -275,7 +275,7 @@ async function loads() {
       setTimeout: fn => fn(), restoreViewPositions: noop, showView: noop, pendingBoard: null, pendingY: null,
       obj: () => ({ kind: 'f' }), discOf: () => 0, shards: {}, failedShards: {},
       loadShard: () => Promise.resolve(), loadParts: () => { parts++; return Promise.resolve(); },
-      select: noop, sel: null, renderPanel: noop, statusEl: { hidden: false },
+      select: noop, openPage: noop, sel: null, renderPanel: noop, statusEl: { hidden: false },
       root: { classList: { add: noop } }, resize: noop, chartTo: noop, restoreSearch: noop,
       chart: {}, trail: [], paint: noop, lastPlan: null
     });

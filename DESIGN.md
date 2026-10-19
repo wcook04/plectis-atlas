@@ -65,15 +65,26 @@ map for where things are, the list for reading them.
 - **A discipline:** its families as large discs filling the stage, each with
   its title written inside and tinted by its evidence colour. Pointing at one
   draws its citations to its neighbours (brick out, grey in) and steps the rest
-  back; a click opens the family board. Every level fits its stage, so the map
+  back; a click opens the family's page. Every level fits its stage, so the map
   has no zoom or pan.
 - **The list** (the left panel): the release in sentences, search, then the
   disciplines. Choosing one zooms the map to it and lists its families as plain
   entries: title, the claim's first sentence with its mathematics typeset
   (credited to OpenAI's catalogue), and one sentence saying what the Lean
   states and who checked it. Pointing at an entry lights its node; clicking
-  opens the family.
-- **A family: a board of cards** in the Zenith Code Map Focus grammar. Its
+  opens the family's page.
+- **One place to read a family: its page** (19 October 2026). Clicking a dot
+  used to replace the map with a board of cards while the list showed a second
+  summary and a third "Open the family page" route; Will could not tell how the
+  three related. A family, paper, theorem or Lean statement chosen anywhere on
+  the map now opens its own page, and an older `#o=f:…`, `#o=p:…`, `#o=r:…` or
+  `#o=l:…` address is replaced by that page. The map holds only the release and
+  its subjects. The board code below is dormant and due for removal.
+- **Hover never covers the drawing** (19 October 2026). A floating card beside
+  a hovered subject sat on the very dots the reader was reaching for. What the
+  pointer names is written in the caption above the drawing, in the same grid
+  cell as the standing caption so the bar never changes height.
+- **Formerly, a family board of cards** in the Zenith Code Map Focus grammar. Its
   papers are columns in date order (short title, date, "Read the paper");
   under each, a card per result with its printed number and the whole
   statement typeset with the paper's macros; under a result, the Lean statement
@@ -85,9 +96,8 @@ map for where things are, the list for reading them.
   Every paper appears on the board, with columns that wrap and no paper pager.
   Previous and next under the breadcrumbs move between siblings at the current
   level; arrow keys do the same and keep a visible keyboard focus target.
-- Hover explains, click selects, double-click or Enter opens, Escape steps
-  back. Selection lives in the URL (`#o=f%3A003`,
-  `#o=d%3Anumber-theory`, `#o=r:...`, `#o=l:...`); Back and Forward restore it;
+- Hover explains in the caption, click opens, Escape steps back. Selection
+  lives in the URL (`#o=d%3Anumber-theory`); Back and Forward restore it;
   older `#d=...&f=...` links still land. Keyboard: Tab, arrows, Enter, Escape.
 
 ## What each view shows first
@@ -150,11 +160,25 @@ whole and sit under a heading that says so.
 
 The family page is the beginning of mathematical work, not of an audit.
 
+**The first screen answers the page's question** (19 October 2026). The page
+was 8,800px tall at 1440×900, and the comparison of what each group said
+started on its fourth screen. Now, under the title, the catalogue's claim sits
+beside **What each group found**: one row per outside group with its own word
+for how much of the advertised result the Lean states, the gap it names, its
+own word for whether OpenAI's proof passed Comparator, and a link to its
+record, with one line saying a passing run does not show the statement matches
+the paper. The rest is **one tab per reading question**: the result and its
+papers; the Lean statements; what the groups found; connections; discussion
+and explanations; contribute. The tab bar stays in view; a link into a hidden panel opens it;
+without scripts every panel shows in turn. This is the Atlas film's route
+(find a result, see its claims, compare the groups' labels and reasons, see
+which proof was checked) laid out so it needs no scrolling.
+
 - **Head**: the trail; the family's name; OpenAI's catalogue description as a
   credited quotation, with its mathematics typeset.
 - **The theorem**: the page's centrepiece, set large as printed (number, paper,
-  date), with "Read it in the paper" and "Compare with Lean". Its place in the
-  family is one click away on the map ("Show on the map").
+  date), with "Read it in the paper" and "Compare with Lean". "Show on the map"
+  opens the family's subject on the map.
 - **Two lines kept apart**: the formal status (what the Lean states, who re-ran
   it) and the readable argument (the paper at the passage, any explanation).
   Neither stands in for the other.

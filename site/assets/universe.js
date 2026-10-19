@@ -840,7 +840,9 @@
         }
       }
       paintRing();
-      if (!board.on) { cardFor = cardObject(); placeCard(cardFor); }
+      // What the pointer names is said in the caption above the drawing, never in a
+      // card on it: a floating card covered the very dots the reader was reaching for.
+      if (!board.on) { cardFor = null; hideCard(); updateHoverCap(); }
       if (chart.start || ring) draw();
       if (window.__universeDebug) window.__universeDebug.boxes = chartBoxes;
     }
@@ -1941,14 +1943,15 @@
         try { window.history.replaceState(Object.assign({}, window.history.state, { y: saved.y, v: saved.view, ys: phoneViewY, b: saved.board }), ''); } catch (e) { /* navigation still works */ }
       }
     }
-    function openPage(o) {
+    function openPage(o, replace) {
       if (!o) return;
       var href = null;
       if (o.kind === 'f') href = D.families[o.i].href;
       else if (o.kind === 'p') href = D.papers[o.i].href || D.papers[o.i].pdf;
       else if (o.kind === 'r') href = D.results[o.i].href || D.papers[D.results[o.i].p].href || D.papers[D.results[o.i].p].pdf;
       else if (o.kind === 'l') href = D.lean[o.i].href;
-      if (href) window.location.href = href;
+      if (!href) return;
+      if (replace) window.location.replace(href); else window.location.href = href;
     }
 
     /* ---- Panel ------------------------------------------------------------ */
@@ -2025,6 +2028,35 @@
     function scopeName(o) {
       if (!o) return '';
       return o.kind === 'd' ? D.disciplines[o.i].name : D.families[famOf(o)].title;
+    }
+    /* The hover caption lies over the standing caption in the same grid cell, so the
+       bar never changes height and the drawing never moves while the pointer sweeps. */
+    var hoverCapEl = root.querySelector('[data-u-hovercap]'), hoverCapKey = '';
+    function hoverCapHtml(o) {
+      var strong = function (html) { return '<strong class="u-cap__name">' + html + '</strong> '; };
+      if (o.kind === 'd') {
+        var d = D.disciplines[o.i];
+        return strong(escapeHtml(d.name)) + escapeHtml(discCounts(d) + '. ' + T('chart.hover_disc'));
+      }
+      var f = D.families[o.i], det = detail(o);
+      var n = [count('papers', f.papers.length)];
+      if (f.lean.length) n.push(count('lean', f.lean.length));
+      var counts = n.length > 1 ? T('card.counts', { papers: n[0], lean: n[1] }) : n[0];
+      return strong('<span class="tex-auto">' + (det && det.titleHtml ? det.titleHtml : escapeHtml(f.title)) + '</span>') +
+        escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name }) + ': ' + counts + '. ') +
+        dot(f.tone) + ' ' + escapeHtml(T('key.' + f.tone) + '. ' + T('chart.hover_family'));
+    }
+    function updateHoverCap() {
+      if (!hoverCapEl || !barEl) return;
+      var o = hover && D ? obj(hover) : null;
+      var show = !!(o && (o.kind === 'd' || o.kind === 'f') && hover !== sel);
+      var key = show ? hover + (detail(o) ? '+' : '') : '';
+      if (key === hoverCapKey) return;
+      hoverCapKey = key;
+      if (!show) { barEl.classList.remove('is-hovering'); return; }
+      hoverCapEl.innerHTML = hoverCapHtml(o);
+      if (window.atlasRenderMath) window.atlasRenderMath(hoverCapEl);
+      barEl.classList.add('is-hovering');
     }
     // The words standing with the drawing: what it shows and what choosing does.
     function updateCap(o) {
@@ -2786,6 +2818,10 @@
       var key = press && (press.key || press.moving) ? press.key : hitAt(p[0], p[1], true);
       if (!key) { if (sel && !chart.start && !(press && press.moving)) stepBack(); return; }
       if (key === sel) return;
+      // Every dot is a family, and choosing one opens that family's page: one place to
+      // read a family, rather than a second board drawn inside the map.
+      var chosen = obj(key);
+      if (chosen && chosen.kind === 'f') { openPage(chosen); return; }
       select(key, { trail: true });
     });
     if (cardEl) {
@@ -2817,7 +2853,11 @@
       if (outside) window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
       var fromResults = !!(resultsEl && resultsEl.contains(go));
       var byKey = e.detail === 0 && root.contains(go);
+      var target = key ? obj(key) : null;
       if (go.classList.contains('u-crumb')) selectAncestor(key || null);
+      // A family, paper, theorem or Lean statement opens its own page; only the release
+      // and its disciplines are places on the map.
+      else if (target && target.kind !== 'd') { if (fromResults) foldResults(true); openPage(target); return; }
       else select(key || null, { trail: true });
       // A match opened from the search folds the list of matches away, so what was
       // opened starts at the top of the panel; one button brings the matches back.
@@ -2998,7 +3038,8 @@
       }
     }, true);
     window.addEventListener('hashchange', function () {
-      var key = readHash();
+      var key = readHash(), o = key ? obj(key) : null;
+      if (o && o.kind !== 'd') { openPage(o, true); return; }
       if (key !== sel) select(key, { fromHistory: true });
     });
     window.addEventListener('popstate', function (e) {
@@ -3092,10 +3133,12 @@
             var initialDi = discOf(initialFamily);
             if (!shards[initialDi] && !failedShards[initialDi]) loadShard(initialDi).catch(function () {});
           }
+          // An address naming a family, paper, theorem or Lean statement (#o=f:003, the
+          // map's older in-map board) now opens that object's own page in its place.
           loadParts().then(function () {
             var key = readHash(), o = key ? obj(key) : null;
             if (!o) return;
-            select(key, { fly: false, fromHistory: true, quiet: true });
+            openPage(o, true);
           }, function () {});
           start = null;
         }
