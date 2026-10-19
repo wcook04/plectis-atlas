@@ -9628,6 +9628,441 @@
    ],
    "statements": [],
    "source_seed": "B_community_seed.json"
+  },
+  {
+   "id": "punk01-shaka-hadwiger-nelson-audit",
+   "name": "punk01-shaka/hadwiger-nelson-audit: an audit of the five-colour proof and of Comparator definition holes",
+   "url": "https://github.com/punk01-shaka/hadwiger-nelson-audit",
+   "kind": "audit",
+   "authors": [
+    {
+     "name": "Punk01 - Shaka",
+     "handle": "punk01-shaka",
+     "url": "https://github.com/punk01-shaka"
+    }
+   ],
+   "licence": "Apache-2.0",
+   "date": "2026-10-12",
+   "summary": "An audit repository that re-checks family 158's proof against statements importing only Mathlib, with an issue reporting that nine Comparator configurations list fully written definitions as holes and that labelled fake solutions pass three of them.",
+   "traction": "0 stars, 0 forks, last push 2026-10-12; issue 1 open with 0 comments (GitHub API, 19 Oct 2026)",
+   "reuse": "cite",
+   "families": [
+    "103",
+    "110",
+    "145",
+    "158",
+    "238",
+    "297",
+    "371",
+    "374"
+   ],
+   "statements": [
+    "Brenier",
+    "DefocusingNLS",
+    "EuclideanFiveColor",
+    "KServer",
+    "LogspaceEquality",
+    "Naimark",
+    "OccupiedOverlap",
+    "Rokhlin",
+    "SpinAngle"
+   ],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "lattice24-openai-math-audit",
+   "name": "Lattice24 corrections to the release: a review of the 547 manuscripts without Lean",
+   "url": "https://github.com/JJardine919/openai-math-audit",
+   "kind": "audit",
+   "authors": [
+    {
+     "name": "Jim Jardine (Lattice24)",
+     "handle": "JJardine919",
+     "url": "https://github.com/JJardine919"
+    }
+   ],
+   "licence": "CC BY 4.0 (stated in the README and the Zenodo record; GitHub shows no licence file)",
+   "date": "2026-10-15",
+   "summary": "An AI-run review of every manuscript without a Lean formalisation: Claude review agents read each proof in an order set by Lattice24's ranking system, and skeptic agents told to refute each serious finding checked it. It reports two gaps and publishes one review file per paper.",
+   "traction": "0 stars, 0 forks, last push 2026-10-16 (GitHub API, 19 Oct 2026); archived as Zenodo doi:10.5281/zenodo.23422995 on 2026-10-16",
+   "reuse": "cite",
+   "families": [
+    "223",
+    "266",
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "yuyauchuncn-dot-openai-math-audit",
+   "name": "yuyauchuncn-dot/openai-math-audit: citation graph, Lean coverage, withdrawals and revision diffs",
+   "url": "https://github.com/yuyauchuncn-dot/openai-math-audit",
+   "kind": "analysis",
+   "authors": [
+    {
+     "name": "yuyauchuncn-dot",
+     "handle": "yuyauchuncn-dot",
+     "url": "https://github.com/yuyauchuncn-dot"
+    }
+   ],
+   "licence": "Apache-2.0",
+   "date": "2026-10-15",
+   "summary": "A reading of the release's own files side by side (manuscript map, formalisation catalogue, cross-references, changelog and withdrawal notices), with a browsable ledger of all 372 families; it states that nothing in it checks whether a theorem is true.",
+   "traction": "0 stars, 0 forks, last push 2026-10-15 (GitHub API, 19 Oct 2026)",
+   "reuse": "cite",
+   "families": [
+    "032",
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "pebblous-openai-math-verification-ledger",
+   "name": "Pebblous: OpenAI's math papers carry a review field, and what it says is unchecked",
+   "url": "https://blog.pebblous.ai/report/openai-math-722-verification-ledger/en/",
+   "kind": "post",
+   "authors": [
+    {
+     "name": "Pebblous",
+     "handle": "",
+     "url": "https://blog.pebblous.ai"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-13",
+   "summary": "A company report that downloads the release at its release-day commit adc7f124 and at fd4aeeb2 and counts the formalisation catalogue and the changes between them; the report says that the review field it examines is what Pebblous sells.",
+   "traction": "not measured",
+   "reuse": "link",
+   "families": [
+    "032",
+    "342",
+    "release"
+   ],
+   "statements": [
+    "TamingCompatibility"
+   ],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "axiommath-arealaw2d",
+   "name": "AxiomMath/AreaLaw2D: a Lean 4 formalisation of the two-dimensional area law",
+   "url": "https://github.com/AxiomMath/AreaLaw2D",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Ruiz Chen",
+     "handle": "",
+     "url": ""
+    },
+    {
+     "name": "Axiom",
+     "handle": "AxiomMath",
+     "url": "https://github.com/AxiomMath"
+    }
+   ],
+   "licence": "Apache-2.0",
+   "date": "2026-10-16",
+   "summary": "A Lean 4 development of a family 265 paper that had no Lean in the release. Axiom's agent tooling and OpenAI Codex produced the proofs, directed by Ruiz Chen, who froze and audited the statement layer.",
+   "traction": "0 stars, 0 forks, last push 2026-10-17; Lean Action CI succeeded on 2026-10-16 (GitHub API, 19 Oct 2026)",
+   "reuse": "cite",
+   "families": [
+    "265"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "amitb-quantum-navier-stokes-statement-audit",
+   "name": "SpectraNS-3D pull request 12: statement-fidelity audit of OpenAI's Lean Navier-Stokes theorems",
+   "url": "https://github.com/amitb-quantum/SpectraNS-3D/pull/12",
+   "kind": "audit",
+   "authors": [
+    {
+     "name": "amitb-quantum",
+     "handle": "amitb-quantum",
+     "url": "https://github.com/amitb-quantum"
+    }
+   ],
+   "licence": "repository licence: Apache-2.0",
+   "date": "2026-10-14",
+   "summary": "An audit, written with Claude Code, of the forced Navier-Stokes breakdown theorems in OpenAI's separate September repository NavierStokesAndEuler against the Clay problem statement; it concerns that earlier claim, not a family of this collection.",
+   "traction": "0 stars, 0 forks; pull request merged by its author on 2026-10-14 (GitHub API, 19 Oct 2026)",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "arxiv-2610-17090-what-the-machine-invented",
+   "name": "What the Machine Invented: Mining New Mathematical Instruments from OpenAI's October 2026 Release (arXiv 2610.17090)",
+   "url": "https://arxiv.org/abs/2610.17090",
+   "kind": "paper",
+   "authors": [
+    {
+     "name": "Ying Xie",
+     "handle": "",
+     "url": ""
+    }
+   ],
+   "licence": "CC BY 4.0",
+   "date": "2026-10-12",
+   "summary": "A survey of 38 families that extracts the new lemmas, constructions and proof mechanisms in each source argument, with antecedents, caveats and a formalisation scoreboard; it says Claude Fable 5.1 did the initial extraction, that novelty verdicts are provisional, and that no Lean was compiled.",
+   "traction": "not measured",
+   "reuse": "cite",
+   "families": [
+    "002",
+    "003",
+    "004",
+    "007",
+    "010",
+    "017",
+    "032",
+    "040",
+    "074",
+    "087",
+    "102",
+    "103",
+    "107",
+    "112",
+    "143",
+    "156",
+    "157",
+    "158",
+    "159",
+    "193",
+    "196",
+    "197",
+    "221",
+    "248",
+    "263",
+    "265",
+    "266",
+    "268",
+    "285",
+    "287",
+    "293",
+    "297",
+    "304",
+    "309",
+    "325",
+    "340",
+    "362",
+    "376"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "kohze-openai-mathematical-frontiers-review",
+   "name": "Mathematical Frontiers in the OpenAI Research Release: a comparative review",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "kind": "commentary",
+   "authors": [
+    {
+     "name": "Robin Gounder",
+     "handle": "Kohze",
+     "url": "https://github.com/Kohze"
+    }
+   ],
+   "licence": "repository licence: NOASSERTION",
+   "date": "2026-10-07",
+   "summary": "A 25-page comparative review of eight grouped case studies (ten families) set against earlier literature, with 83 references; it states that its checks do not establish the release theorems.",
+   "traction": "0 stars, 0 forks, last push 2026-10-08 (GitHub API, 19 Oct 2026)",
+   "reuse": "link",
+   "families": [
+    "007",
+    "017",
+    "087",
+    "102",
+    "113",
+    "114",
+    "115",
+    "197",
+    "325",
+    "362"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "erebos-labs-family169-certificate-atlas",
+   "name": "erebos-labs/family169-certificate-atlas: finite certificates for elementary positivity, n <= 6",
+   "url": "https://github.com/erebos-labs/family169-certificate-atlas",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Erebos Labs",
+     "handle": "erebos-labs",
+     "url": "https://github.com/erebos-labs"
+    }
+   ],
+   "licence": "Apache-2.0",
+   "date": "2026-10-14",
+   "summary": "Explicit permutation-witness tables for the family 169 identity on every naturally labelled unit interval graph with at most six vertices, with exact replay and an independently written checker.",
+   "traction": "0 stars, 0 forks, last push 2026-10-14 (GitHub API, 19 Oct 2026)",
+   "reuse": "cite",
+   "families": [
+    "169"
+   ],
+   "statements": [
+    "ElementaryPositivity"
+   ],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "zhang-liao-quasi-riemann",
+   "name": "Zhang-Liao/quasi-riemann: a standalone Lean project for the 7/8 zero-free half-plane",
+   "url": "https://github.com/Zhang-Liao/quasi-riemann",
+   "kind": "replay",
+   "authors": [
+    {
+     "name": "Zhang-Liao",
+     "handle": "Zhang-Liao",
+     "url": "https://github.com/Zhang-Liao"
+    }
+   ],
+   "licence": "Apache-2.0",
+   "date": "2026-10-07",
+   "summary": "An extraction of the import closure of OpenAI's zeta and Dirichlet L-function nonvanishing theorems into a standalone Lake project, with source hashes and a build record.",
+   "traction": "0 stars, 0 forks, last push 2026-10-07 (GitHub API, 19 Oct 2026)",
+   "reuse": "cite",
+   "families": [
+    "003"
+   ],
+   "statements": [
+    "QuasiRiemannHypothesis",
+    "DirichletSevenEighths"
+   ],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "rpinho-tetrahedron-cylinder-cover",
+   "name": "rpinho/tetrahedron-cylinder-cover: a 4,096-cylinder cover of the regular tetrahedron",
+   "url": "https://github.com/rpinho/tetrahedron-cylinder-cover",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Ricardo Pinho",
+     "handle": "rpinho",
+     "url": "https://github.com/rpinho"
+    }
+   ],
+   "licence": "MIT",
+   "date": "2026-10-15",
+   "summary": "An explicit cylinder cover for the family 100 problem with two independently written exact checkers, also deposited on Hexagon as 2610.00304.",
+   "traction": "0 stars, 1 fork, last push 2026-10-18 (GitHub API, 19 Oct 2026)",
+   "reuse": "cite",
+   "families": [
+    "100"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "canghaimeng-euler-openai-math-improvement",
+   "name": "Euler: improved bounds on 8 of 20 problems from the release",
+   "url": "https://github.com/canghaimeng/openai-math-improvement",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "canghaimeng",
+     "handle": "canghaimeng",
+     "url": "https://github.com/canghaimeng"
+    }
+   ],
+   "licence": "Apache-2.0",
+   "date": "2026-10-19",
+   "summary": "Self-reported results from Euler, a system that coordinates teams of publicly accessible models, which says it improved the published bounds on 8 of 20 problems tried, with a paper per problem and a technical report (arXiv 2610.19864, not opened by us).",
+   "traction": "0 stars, 0 forks, created and last pushed 2026-10-19 (GitHub API, 19 Oct 2026)",
+   "reuse": "link",
+   "families": [
+    "100",
+    "111",
+    "127",
+    "130",
+    "131",
+    "132",
+    "191",
+    "269"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "long-mathematics-openai-math-extensions",
+   "name": "OpenAI Math Extensions: four manuscripts extending results of the release",
+   "url": "https://github.com/long-mathematics/openai-math-extensions",
+   "kind": "follow-up",
+   "authors": [
+    {
+     "name": "Christopher D. Long",
+     "handle": "long-mathematics",
+     "url": "https://github.com/long-mathematics"
+    }
+   ],
+   "licence": "MIT",
+   "date": "2026-10-11",
+   "summary": "Four research manuscripts extending OpenAI preprints pinned at fd4aeeb, with a theorem-status file and a dependency map; the README says its checks are not peer review or formal verification.",
+   "traction": "4 stars, 1 fork, last push 2026-10-13 (GitHub API, 19 Oct 2026)",
+   "reuse": "cite",
+   "families": [
+    "017",
+    "229",
+    "231",
+    "235"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "morrisqa-ai-math-citations",
+   "name": "Citation practices in AI-generated mathematics",
+   "url": "https://github.com/morrisqa/ai-math-citations",
+   "kind": "analysis",
+   "authors": [
+    {
+     "name": "Quinn Morris",
+     "handle": "morrisqa",
+     "url": "https://github.com/morrisqa"
+    }
+   ],
+   "licence": "code MIT; data and documentation CC BY 4.0",
+   "date": "2026-10-07",
+   "summary": "A comparison of the reference lists of the 722 preprints with a subject-matched sample of human-written arXiv papers from 2020 to 2022, with the CSVs and a dashboard.",
+   "traction": "0 stars, 0 forks, last push 2026-10-08 (GitHub API, 19 Oct 2026)",
+   "reuse": "cite",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "id": "bendlaufer-openai-math-citation-network",
+   "name": "bendlaufer/openai-math-citation-network: citation-network figures for the release",
+   "url": "https://github.com/bendlaufer/openai-math-citation-network",
+   "kind": "analysis",
+   "authors": [
+    {
+     "name": "bendlaufer",
+     "handle": "bendlaufer",
+     "url": "https://github.com/bendlaufer"
+    }
+   ],
+   "licence": "none stated",
+   "date": "2026-10-08",
+   "summary": "Code and four figures for the release's citation network at commit adc7f124, recomputable from the LaTeX and BibTeX sources.",
+   "traction": "1 star, 0 forks, last push 2026-10-08 (GitHub API, 19 Oct 2026)",
+   "reuse": "link",
+   "families": [
+    "release"
+   ],
+   "statements": [],
+   "source_seed": "coverage_research_20261019"
   }
  ],
  "findings": [
@@ -16940,6 +17375,941 @@
    "date": "2026-10-10",
    "verified": "GitHub REST API metadata and the README read via raw.githubusercontent.com on 11 Oct 2026; URL status 200 on 11 Oct 2026",
    "source_seed": "C_community_seed.curated.json"
+  },
+  {
+   "effort": "punk01-shaka-hadwiger-nelson-audit",
+   "family": "158",
+   "statement": "EuclideanFiveColor",
+   "kind": "replay-pass",
+   "summary": "The audit restates the five-colour theorem in a file importing only Mathlib and reports that a Lean build, Comparator with the default kernel and the independent nanoda kernel all accept OpenAI's proof with only the three standard axioms; a seven-colouring and a two-colour exclusion serve as controls.",
+   "url": "https://github.com/punk01-shaka/hadwiger-nelson-audit/blob/main/AUDIT.md",
+   "date": "2026-10-12",
+   "verified": "Read AUDIT.md via the GitHub API on 2026-10-19 (committed 2026-10-12; the file gives an audit date of 2026-10-13); not re-run by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "punk01-shaka-hadwiger-nelson-audit",
+   "family": "158",
+   "statement": "EuclideanFiveColor",
+   "kind": "error-reported",
+   "summary": "Issue 1 reports that the released configuration accepts a labelled fake solution that redefines ProperColoring as False, and that deleting its definition_names entry makes Comparator reject the fake while the real proof still passes.",
+   "url": "https://github.com/punk01-shaka/hadwiger-nelson-audit/issues/1",
+   "date": "2026-10-12",
+   "verified": "Read issue 1 via the GitHub API on 2026-10-19; the definition_names counts of the nine configurations (1, 9, 20, 12, 7, 5, 3, 4 and 3 entries) re-checked against data/statements.json at fd4aeeb; the fake solutions were not re-run by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "punk01-shaka-hadwiger-nelson-audit",
+   "family": "110",
+   "statement": "KServer",
+   "kind": "error-reported",
+   "summary": "Issue 1 reports that the released configuration accepts a labelled fake solution that sets MainStatement to a statement that is trivially true, because all nine definitions, MainStatement included, are listed as holes.",
+   "url": "https://github.com/punk01-shaka/hadwiger-nelson-audit/issues/1",
+   "date": "2026-10-12",
+   "verified": "Read issue 1 via the GitHub API on 2026-10-19; the definition_names counts of the nine configurations (1, 9, 20, 12, 7, 5, 3, 4 and 3 entries) re-checked against data/statements.json at fd4aeeb; the fake solutions were not re-run by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "punk01-shaka-hadwiger-nelson-audit",
+   "family": "103",
+   "statement": "LogspaceEquality",
+   "kind": "error-reported",
+   "summary": "Issue 1 reports that the released configuration accepts a labelled fake solution in which L, RL and BPL are all empty and the proof is reflexivity, because all 20 definitions of the challenge are listed as holes.",
+   "url": "https://github.com/punk01-shaka/hadwiger-nelson-audit/issues/1",
+   "date": "2026-10-12",
+   "verified": "Read issue 1 via the GitHub API on 2026-10-19; the definition_names counts of the nine configurations (1, 9, 20, 12, 7, 5, 3, 4 and 3 entries) re-checked against data/statements.json at fd4aeeb; the fake solutions were not re-run by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "punk01-shaka-hadwiger-nelson-audit",
+   "family": "release",
+   "statement": null,
+   "kind": "error-reported",
+   "summary": "Issue 1 counts 62 definitions with a written body declared as holes in 9 of the 416 Comparator configurations, covering eight results in families 103, 374, 110, 297, 238, 145, 371 and 158, and says this does not show that any of those results is wrong.",
+   "url": "https://github.com/punk01-shaka/hadwiger-nelson-audit/issues/1",
+   "date": "2026-10-12",
+   "verified": "Read issue 1 via the GitHub API on 2026-10-19; the definition_names counts of the nine configurations (1, 9, 20, 12, 7, 5, 3, 4 and 3 entries) re-checked against data/statements.json at fd4aeeb; the fake solutions were not re-run by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "lattice24-openai-math-audit",
+   "family": "223",
+   "statement": null,
+   "kind": "error-reported",
+   "summary": "Reports a critical proof gap in 'Square-lattice FK interfaces and nested loops for 1 <= q < 4': the strict power saving of Section 7.3 never uses the mixed stencil, so the same bound would force h(z)J(u) = 0 and contradict the holomorphicity proof; three skeptic agents told to refute it did not.",
+   "url": "https://github.com/JJardine919/openai-math-audit#finding-1-square-lattice-fk-interfaces-critical",
+   "date": "2026-10-15",
+   "verified": "Read the README, RESULTS.tsv (547 rows: 544 'no gap found', 1 critical gap, 1 verifiability gap, 1 inherited) and the Zenodo record via their APIs on 2026-10-19; the mathematical argument was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "lattice24-openai-math-audit",
+   "family": "223",
+   "statement": null,
+   "kind": "error-reported",
+   "summary": "Reports that 'Natural Occupation Measures for Critical Square-Lattice FK Interfaces' takes the FK interfaces paper's results as standing inputs and inherits its gap, while 'Self-dual random-cluster interfaces below one' uses them in one corollary only.",
+   "url": "https://github.com/JJardine919/openai-math-audit#finding-1-square-lattice-fk-interfaces-critical",
+   "date": "2026-10-16",
+   "verified": "Read the README, RESULTS.tsv (547 rows: 544 'no gap found', 1 critical gap, 1 verifiability gap, 1 inherited) and the Zenodo record via their APIs on 2026-10-19; the mathematical argument was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "lattice24-openai-math-audit",
+   "family": "266",
+   "statement": "MUBSix",
+   "kind": "error-reported",
+   "summary": "Reports a verifiability gap rather than an error: the upper bound N(6) <= 3 rests on a recorded computer execution whose code and run archive the paper cites but the release does not contain.",
+   "url": "https://github.com/JJardine919/openai-math-audit#finding-2-mutually-unbiased-bases-in-dimension-six-major",
+   "date": "2026-10-16",
+   "verified": "Read the README, RESULTS.tsv (547 rows: 544 'no gap found', 1 critical gap, 1 verifiability gap, 1 inherited) and the Zenodo record via their APIs on 2026-10-19; the mathematical argument was not re-checked by us; at fd4aeeb the paper's directory holds README.md, the PDF and build/ only, while build/sections/execution.tex cites verification/code/, extraction.json and full-run-01",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "lattice24-openai-math-audit",
+   "family": "release",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Reports reviewing all 547 manuscripts that have no Lean formalisation and finding no gap in 544 of them, with every review and skeptic pass published.",
+   "url": "https://github.com/JJardine919/openai-math-audit/blob/main/RESULTS.tsv",
+   "date": "2026-10-16",
+   "verified": "Read the README, RESULTS.tsv (547 rows: 544 'no gap found', 1 critical gap, 1 verifiability gap, 1 inherited) and the Zenodo record via their APIs on 2026-10-19; the mathematical argument was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "yuyauchuncn-dot-openai-math-audit",
+   "family": "release",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Reads lean/formalization.yaml as grading its own work 'unchecked', and finds one coverage figure stated over three denominators: 300 of 719 in the README, 173 sources plus 30 related formalisations in the catalogue, and 135 of 372 families.",
+   "url": "https://github.com/yuyauchuncn-dot/openai-math-audit#findings",
+   "date": "2026-10-15",
+   "verified": "Read the README and FINDINGS.md via the GitHub API on 2026-10-19; not re-computed by us; review status 'unchecked', 173 sources and 30 related_formalizations confirmed in lean/formalization.yaml at fd4aeeb",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "yuyauchuncn-dot-openai-math-audit",
+   "family": "release",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Extracts 591 directed citations among the 719 manuscripts, 223 of which cite and are cited by nothing in the collection, and finds a Lean entry for only one of the twenty most-cited manuscripts.",
+   "url": "https://github.com/yuyauchuncn-dot/openai-math-audit#findings",
+   "date": "2026-10-15",
+   "verified": "Read the README and FINDINGS.md via the GitHub API on 2026-10-19; not re-computed by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "yuyauchuncn-dot-openai-math-audit",
+   "family": "release",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Diffs the 27 superseded revisions and finds 13 that change mathematics and 14 that change only the date and one citation link, one fewer repair than history.md counts.",
+   "url": "https://github.com/yuyauchuncn-dot/openai-math-audit/blob/main/FINDINGS.md",
+   "date": "2026-10-15",
+   "verified": "Read the README and FINDINGS.md via the GitHub API on 2026-10-19; not re-computed by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "yuyauchuncn-dot-openai-math-audit",
+   "family": "032",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Finds no reference to the three withdrawn manuscripts in any surviving manuscript, CONTENTS.md or overview.tex, only in history.md, and notes their sources remain recoverable at commit adc7f124.",
+   "url": "https://github.com/yuyauchuncn-dot/openai-math-audit#findings",
+   "date": "2026-10-15",
+   "verified": "Read the README and FINDINGS.md via the GitHub API on 2026-10-19; not re-computed by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "pebblous-openai-math-verification-ledger",
+   "family": "release",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Counts 172 of 719 manuscripts (23.9%) and 135 of 372 families (36.3%) joined to the formalisation catalogue at fd4aeeb2, and reports that the README's figure of 300 matches the length of no list in the repository.",
+   "url": "https://blog.pebblous.ai/report/openai-math-722-verification-ledger/en/",
+   "date": "2026-10-13",
+   "verified": "Read the page on 2026-10-19; it states its counts were made as of 13 October 2026",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "pebblous-openai-math-verification-ledger",
+   "family": "032",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Reports that the three withdrawals left family 032 with five of its eight manuscripts and that its contents title narrowed from Hodge and Kuga-Satake results for all projective K3 surfaces to the rational Hodge conjecture for CM abelian varieties.",
+   "url": "https://blog.pebblous.ai/report/openai-math-722-verification-ledger/en/",
+   "date": "2026-10-13",
+   "verified": "Read the page on 2026-10-19; it states its counts were made as of 13 October 2026; family 032 lists five manuscripts in data/families.json at fd4aeeb",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "pebblous-openai-math-verification-ledger",
+   "family": "342",
+   "statement": "TamingCompatibility",
+   "kind": "error-reported",
+   "summary": "Reports that 'Taming implies compatibility on four-manifolds' received a 6 October edition that narrows its cone-equality claim, while the formalisation catalogue entry and the family's scope note still point to the 23 September edition.",
+   "url": "https://blog.pebblous.ai/report/openai-math-722-verification-ledger/en/",
+   "date": "2026-10-13",
+   "verified": "Read the page on 2026-10-19; it states its counts were made as of 13 October 2026; at fd4aeeb lean/formalization.yaml still cites the September-23 directory for this title, and both edition directories exist",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "axiommath-arealaw2d",
+   "family": "265",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Reports a sorry-free proof of Theorem 1.1 and Corollary 1.2 of 'A two-dimensional area law from a global spectral gap', with Propositions 4.3, 9.6, 10.2 and 11.2, on a statement layer frozen before any proof, using only the three standard axioms; its own Comparator pair restates Theorem 1.1 importing only Mathlib and Physlib.",
+   "url": "https://github.com/AxiomMath/AreaLaw2D",
+   "date": "2026-10-16",
+   "verified": "Read the README and Comparator/comparator.json (nanoda enabled) via the GitHub API on 2026-10-19; the repository holds no Comparator run log, and the development was not built by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "amitb-quantum-navier-stokes-statement-audit",
+   "family": "release",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Finds no fidelity gap: the Lean breakdown alternatives (C) and (D) match Clay's statement clause by clause, (D) as amended by Clay's errata requiring a periodic pressure, and OpenAI's challenge differs from DeepMind's earlier Formal Conjectures statement only in imports, namespace and notation.",
+   "url": "https://github.com/amitb-quantum/SpectraNS-3D/pull/12",
+   "date": "2026-10-14",
+   "verified": "Read the pull request and the audit document via the GitHub API on 2026-10-19; not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "amitb-quantum-navier-stokes-statement-audit",
+   "family": "release",
+   "statement": null,
+   "kind": "replay-pass",
+   "summary": "A later revision of the audit records a sandboxed Comparator run on 14 October in which the Lean kernel and nanoda both accept navier_stokes_breakdown_R3 and navier_stokes_breakdown_periodic with only the three standard axioms; the pull request itself had said the proofs were not built.",
+   "url": "https://github.com/amitb-quantum/SpectraNS-3D/blob/main/docs/LEAN_STATEMENT_AUDIT_2026-10-14.md",
+   "date": "2026-10-14",
+   "verified": "Read the audit document at main via the GitHub API on 2026-10-19 (run recorded in commit f8de0a3 of 2026-10-14); not re-run by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "002",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.1.1 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "003",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.1.1 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "004",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.1.2 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "007",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.1.2 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "010",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.1.3 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "017",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.1.3 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "032",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.1.4 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "040",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.1.4 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "074",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.2.1 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "087",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.2.2 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "102",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.3.1 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "103",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.3.1 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "107",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.3.2 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "112",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.3.2 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "143",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.2.1 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "156",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.3.3 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "157",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.3.3 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "158",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.3.4 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "159",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.3.5 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "193",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.1.5 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "196",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.4.1 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "197",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.4.2 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "221",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.4.1 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "248",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.4.3 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "263",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.2.2 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "265",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.2.3 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "266",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.3.4 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "268",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.2.4 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "285",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.4.2 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "287",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.4.4 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "293",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.4.3 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "297",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.4.4 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "304",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.2.4 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "309",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.4.5 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "325",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.4.6 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "340",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.4.7 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "362",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 8.2.3 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "376",
+   "statement": null,
+   "kind": "explanation",
+   "summary": "Section 9.4.8 of the survey gives a card for this family: the claim, the candidate new instruments with section and lemma references, what is reused, and caveats; the survey calls its novelty verdicts provisional.",
+   "url": "https://arxiv.org/pdf/2610.17090v1",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "arxiv-2610-17090-what-the-machine-invented",
+   "family": "112",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "States that the family's signed restriction lemma, combined with adaptive averaging, depth reduction and sparsification, gives a gate-count lower bound for the same language at every fixed depth D >= 3, with the proof deferred to a separate paper.",
+   "url": "https://arxiv.org/abs/2610.17090",
+   "date": "2026-10-12",
+   "verified": "Read the arXiv abstract and the v1 PDF (table of contents and Sections 1 and 10) on 2026-10-19; the cards' mathematics was not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "kohze-openai-mathematical-frontiers-review",
+   "family": "007",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The review's case study 'Ordinary multiplicative correlations' compares the release's claimed conclusions with earlier literature and the estimates and representation changes meant to support them; the review says it does not establish the release theorems.",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "date": "2026-10-07",
+   "verified": "Read the README and research/comparison-register.json via the GitHub API on 2026-10-19 (release pinned at adc7f124); not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "kohze-openai-mathematical-frontiers-review",
+   "family": "017",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The review's case study 'Irrationality exponent of pi' compares the release's claimed conclusions with earlier literature and the estimates and representation changes meant to support them; the review says it does not establish the release theorems.",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "date": "2026-10-07",
+   "verified": "Read the README and research/comparison-register.json via the GitHub API on 2026-10-19 (release pinned at adc7f124); not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "kohze-openai-mathematical-frontiers-review",
+   "family": "087",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The review's case study 'Mahler inequalities' compares the release's claimed conclusions with earlier literature and the estimates and representation changes meant to support them; the review says it does not establish the release theorems.",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "date": "2026-10-07",
+   "verified": "Read the README and research/comparison-register.json via the GitHub API on 2026-10-19 (release pinned at adc7f124); not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "kohze-openai-mathematical-frontiers-review",
+   "family": "102",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The review's case study 'Unique Games' compares the release's claimed conclusions with earlier literature and the estimates and representation changes meant to support them; the review says it does not establish the release theorems.",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "date": "2026-10-07",
+   "verified": "Read the README and research/comparison-register.json via the GitHub API on 2026-10-19 (release pinned at adc7f124); not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "kohze-openai-mathematical-frontiers-review",
+   "family": "113",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The review's case study 'Counting and sampling' compares the release's claimed conclusions with earlier literature and the estimates and representation changes meant to support them; the review says it does not establish the release theorems.",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "date": "2026-10-07",
+   "verified": "Read the README and research/comparison-register.json via the GitHub API on 2026-10-19 (release pinned at adc7f124); not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "kohze-openai-mathematical-frontiers-review",
+   "family": "114",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The review's case study 'Counting and sampling' compares the release's claimed conclusions with earlier literature and the estimates and representation changes meant to support them; the review says it does not establish the release theorems.",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "date": "2026-10-07",
+   "verified": "Read the README and research/comparison-register.json via the GitHub API on 2026-10-19 (release pinned at adc7f124); not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "kohze-openai-mathematical-frontiers-review",
+   "family": "115",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The review's case study 'Counting and sampling' compares the release's claimed conclusions with earlier literature and the estimates and representation changes meant to support them; the review says it does not establish the release theorems.",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "date": "2026-10-07",
+   "verified": "Read the README and research/comparison-register.json via the GitHub API on 2026-10-19 (release pinned at adc7f124); not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "kohze-openai-mathematical-frontiers-review",
+   "family": "197",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The review's case study 'Direct finiteness' compares the release's claimed conclusions with earlier literature and the estimates and representation changes meant to support them; the review says it does not establish the release theorems.",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "date": "2026-10-07",
+   "verified": "Read the README and research/comparison-register.json via the GitHub API on 2026-10-19 (release pinned at adc7f124); not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "kohze-openai-mathematical-frontiers-review",
+   "family": "325",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The review's case study 'Complete Crouzeix inequality' compares the release's claimed conclusions with earlier literature and the estimates and representation changes meant to support them; the review says it does not establish the release theorems.",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "date": "2026-10-07",
+   "verified": "Read the README and research/comparison-register.json via the GitHub API on 2026-10-19 (release pinned at adc7f124); not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "kohze-openai-mathematical-frontiers-review",
+   "family": "362",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "The review's case study 'Relativistic Vlasov-Maxwell' compares the release's claimed conclusions with earlier literature and the estimates and representation changes meant to support them; the review says it does not establish the release theorems.",
+   "url": "https://github.com/Kohze/openai-mathematical-frontiers-review",
+   "date": "2026-10-07",
+   "verified": "Read the README and research/comparison-register.json via the GitHub API on 2026-10-19 (release pinned at adc7f124); not re-checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "erebos-labs-family169-certificate-atlas",
+   "family": "169",
+   "statement": "ElementaryPositivity",
+   "kind": "follow-up-result",
+   "summary": "Releases witness tables for all 197 naturally labelled unit interval graphs with n <= 6 (11,465 witness rows), checked by a verifier that recomputes the full polynomial identity and by an independently written third implementation; the README reports all 792 supplied corruptions rejected.",
+   "url": "https://github.com/erebos-labs/family169-certificate-atlas",
+   "date": "2026-10-14",
+   "verified": "Read the README via the GitHub API on 2026-10-19 (specification pinned at openai/math 1581d4c); not re-run by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "zhang-liao-quasi-riemann",
+   "family": "003",
+   "statement": "QuasiRiemannHypothesis",
+   "kind": "replay-pass",
+   "summary": "Reports that the standalone project built all 2,943 extracted modules with Lean 4.34.1 on 7 October and that both 7/8 theorems depend only on the three standard axioms; Comparator was not run.",
+   "url": "https://github.com/Zhang-Liao/quasi-riemann",
+   "date": "2026-10-07",
+   "verified": "Read the README via the GitHub API on 2026-10-19; not re-run by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "rpinho-tetrahedron-cylinder-cover",
+   "family": "100",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Gives a cover of the regular tetrahedron by 4,096 cylinders with normalised base area below 0.499613830783714149, a saving of 3.86e-4 below 1/2 against about 5.4e-10 for the paper's 16,000,000-cylinder example, checked by two exact checkers; it claims no optimality.",
+   "url": "https://github.com/rpinho/tetrahedron-cylinder-cover",
+   "date": "2026-10-15",
+   "verified": "Read the README via the GitHub API on 2026-10-19; not re-run by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "canghaimeng-euler-openai-math-improvement",
+   "family": "130",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Reports an exponent saving of 63/50000 for exact discrete Fourier transforms of every length, against 10^-13 in the release, with a Lean proof the README says passed Lean and nanoda checking through Big O Speedrun.",
+   "url": "https://github.com/canghaimeng/openai-math-improvement/tree/main/problems/bound-130",
+   "date": "2026-10-19",
+   "verified": "Read the README via the GitHub API on 2026-10-19; a self-reported claim, not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "canghaimeng-euler-openai-math-improvement",
+   "family": "100",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Reports a cover of the regular tetrahedron by 20,000 cylinders with smaller total base area than the release's 16,000,000-cylinder construction.",
+   "url": "https://github.com/canghaimeng/openai-math-improvement/tree/main/problems/bound-100",
+   "date": "2026-10-19",
+   "verified": "Read the README via the GitHub API on 2026-10-19; a self-reported claim, not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "canghaimeng-euler-openai-math-improvement",
+   "family": "269",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Reports an exact eventual spherical Laughlin gap bound of 0.21901701265, over 5.47 times the release's uniform bound of 1/25.",
+   "url": "https://github.com/canghaimeng/openai-math-improvement/tree/main/problems/bound-269",
+   "date": "2026-10-19",
+   "verified": "Read the README via the GitHub API on 2026-10-19; a self-reported claim, not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "canghaimeng-euler-openai-math-improvement",
+   "family": "131",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Reports a mixing-time bound of n^6 for the same four-vertex switch chain, against the release's 2n^8.",
+   "url": "https://github.com/canghaimeng/openai-math-improvement/tree/main/problems/bound-131",
+   "date": "2026-10-19",
+   "verified": "Read the README via the GitHub API on 2026-10-19; a self-reported claim, not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "canghaimeng-euler-openai-math-improvement",
+   "family": "127",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Reports the coefficient 3.192 in the average-sensitivity bound AS(f) <= C d sqrt(n), against the release's 8.",
+   "url": "https://github.com/canghaimeng/openai-math-improvement/tree/main/problems/bound-127",
+   "date": "2026-10-19",
+   "verified": "Read the README via the GitHub API on 2026-10-19; a self-reported claim, not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "canghaimeng-euler-openai-math-improvement",
+   "family": "111",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Reports an explicit rational guarantee above the release's 2^-293 for one-sample matroid prophet inequalities in the full-seed adversary model.",
+   "url": "https://github.com/canghaimeng/openai-math-improvement/tree/main/problems/bound-111",
+   "date": "2026-10-19",
+   "verified": "Read the README via the GitHub API on 2026-10-19; a self-reported claim, not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "canghaimeng-euler-openai-math-improvement",
+   "family": "132",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Reports a sensitivity versus block sensitivity separation exponent above 2.032083, improving the release's displayed construction.",
+   "url": "https://github.com/canghaimeng/openai-math-improvement/tree/main/problems/bound-132",
+   "date": "2026-10-19",
+   "verified": "Read the README via the GitHub API on 2026-10-19; a self-reported claim, not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "canghaimeng-euler-openai-math-improvement",
+   "family": "191",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Reports an exponent increment of 2/100866719 in the Heilbronn triangle lower bound c n^(-2+eta) for all sufficiently large n.",
+   "url": "https://github.com/canghaimeng/openai-math-improvement/tree/main/problems/bound-191",
+   "date": "2026-10-19",
+   "verified": "Read the README via the GitHub API on 2026-10-19; a self-reported claim, not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "long-mathematics-openai-math-extensions",
+   "family": "229",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Paper I proves that for edge-dependent four-state Potts channels under a common strict contraction bound, reconstruction on every locally finite rooted tree is equivalent to positivity of an L^3 nonlinear capacity, removing the bounded-degree and homogeneous-channel assumptions.",
+   "url": "https://github.com/long-mathematics/openai-math-extensions",
+   "date": "2026-10-11",
+   "verified": "Read the README via the GitHub API on 2026-10-19; the manuscripts were not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "long-mathematics-openai-math-extensions",
+   "family": "235",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Paper II gives a robust linear upper bound for the variance of random k-SAT hitting times for every fixed k >= 3, extending the release's two variance papers.",
+   "url": "https://github.com/long-mathematics/openai-math-extensions",
+   "date": "2026-10-11",
+   "verified": "Read the README via the GitHub API on 2026-10-19; the manuscripts were not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "long-mathematics-openai-math-extensions",
+   "family": "231",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Paper III derives exact laws for the stabilisation marks of the Brownian factor-of-IID sampler's midpoint readout, which it says are observation-time statements and not coding-radius statements.",
+   "url": "https://github.com/long-mathematics/openai-math-extensions",
+   "date": "2026-10-11",
+   "verified": "Read the README via the GitHub API on 2026-10-19; the manuscripts were not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "long-mathematics-openai-math-extensions",
+   "family": "017",
+   "statement": null,
+   "kind": "follow-up-result",
+   "summary": "Paper IV proves an irrationality-exponent bound of 2d for an algebraic exponential certificate of degree d, improved to d when an inversion involution exists, and says it does not claim exponent 2 for every such fibre.",
+   "url": "https://github.com/long-mathematics/openai-math-extensions",
+   "date": "2026-10-11",
+   "verified": "Read the README via the GitHub API on 2026-10-19; the manuscripts were not checked by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "morrisqa-ai-math-citations",
+   "family": "release",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "First-pass results: the preprints cite fewer works per paper than 1,374 matched human papers (24.0 against 30.2) and name a specific result, section or page far more often (63.3% of citations against 22.5%).",
+   "url": "https://github.com/morrisqa/ai-math-citations/blob/main/data/analysis/summary.md",
+   "date": "2026-10-08",
+   "verified": "Read the README and data/analysis/summary.md via the GitHub API on 2026-10-19; not re-computed by us",
+   "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "bendlaufer-openai-math-citation-network",
+   "family": "release",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "Draws the largest connected component of citations among the manuscripts, the most-cited authors and outside works, examples of citation cycles, and manuscript dates against citation timing; the README says these are source-derived counts, not proof verification.",
+   "url": "https://github.com/bendlaufer/openai-math-citation-network",
+   "date": "2026-10-08",
+   "verified": "Read the README via the GitHub API on 2026-10-19; figures not re-computed by us",
+   "source_seed": "coverage_research_20261019"
   }
  ]
 }
