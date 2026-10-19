@@ -1358,3 +1358,11 @@ th[data-tip] .sort { cursor: pointer; }
 .way__a.ext::after { position: absolute; top: calc(var(--sp-4) + 4px); right: var(--sp-4); margin: 0; }
 .way__who { font-size: var(--fs-small); color: var(--muted); }
 .way__d { color: var(--ink-soft); }
+
+/* The way back to Plectis, the programme the Atlas belongs to: a quiet outbound link
+   beside the tools; on narrow screens it lives in the footer only. */
+.plectis-link { display: inline-flex; align-items: center; height: 34px; padding: 0 10px; border-radius: var(--r-sm); color: var(--muted); font-size: var(--fs-meta); text-decoration: none; white-space: nowrap; }
+.plectis-link:hover { color: var(--ink); background: var(--surface); }
+.plectis-link:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
+@media (max-width: 1099px) { .plectis-link { display: none; } }
+.foot__plectis a { white-space: nowrap; }
