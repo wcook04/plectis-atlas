@@ -1,9 +1,8 @@
 /* The front door's map of OpenAI's mathematics release, drawn as an illustrated chart:
    the seventeen disciplines as labelled regions holding their families, a discipline
-   as its families' discs with their titles written inside, and a family as a board of
-   cards (its papers, each result's statement, the Lean statements paired with them, the
-   families it cites and is cited by). Every object a reader can act on is big enough to
-   read and carries its name; distance means only grouping.
+   as its families' discs with their titles written inside. Choosing a family opens its
+   own page. Every object a reader can act on is big enough to read and carries its
+   name; distance means only grouping.
 
    History: the first version was ported from Will Cook's ai_workflow at commit
    4b1ebab611 (the Plectis universe map's wheel, Loom fibres and camera); on 12 October
@@ -39,10 +38,6 @@
     return String(template).replace(/\{(\w+)\}/g, function (m, k) {
       return vars && vars[k] != null ? fmtNum(vars[k]) : m;
     });
-  }
-  function overlap(a, b) {
-    var dx = Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0), dy = Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0);
-    return dx > 0 && dy > 0 ? dx * dy : 0;
   }
 
   /* ---- Colour, mixed in Oklab (from the Plectis universe map) ----------- */
@@ -366,8 +361,8 @@
        seventeen disciplines as labelled regions packed to fill the stage, each holding
        its families as discs in their evidence colour; the discipline is the thing to
        choose there. A discipline is its families as large discs packed to fill the
-       stage, each with its title written inside. A family opens as a board of cards
-       (syncBoard). Layouts are computed for the stage's own size; when the level
+       stage, each with its title written inside. A family opens its own page
+       (openPage). Layouts are computed for the stage's own size; when the level
        changes, each disc moves from where it was to where it goes (CHART_MS). */
     var chart = { shown: null, from: null, to: null, start: 0, ms: 0, level: '', di: -1, fi: -1 };
     var layoutCache = {}, labelCache = {};
@@ -544,7 +539,7 @@
       var regions = base.regions.map(function (r) { return { x: r.x, y: r.y, r: r.r, a: 0, lab: r.lab, ly: r.ly }; });
       return (layoutCache[key] = { level: 'disc', di: di, nodes: nodes, regions: regions });
     }
-    // Opening a family: its disc grows to fill the stage and the board fades in over it.
+    // A family in hand (only while the address still names one): its disc fills the stage.
     function famLayout(fi) {
       var b = discLayout(fams[fi].d);
       var nodes = b.nodes.map(function (q, i) { return { x: q.x, y: q.y, r: q.r, a: i === fi ? 1 : 0 }; });
@@ -580,18 +575,16 @@
       var same = chart.level === tg.level && chart.di === tg.di && chart.fi === tg.fi;
       var leavingFamily = chart.level === 'fam';
       chart.level = tg.level; chart.di = tg.di; chart.fi = tg.fi;
-      // The family canvas was covered by its board. Reveal the finished map on
-      // return, rather than moving hidden circles under the reader's next click.
+      // Into or out of a family the map snaps to its finished layout, rather than
+      // moving circles under the reader's next click.
       if (!chart.shown || !animate || reduceMotion || same || leavingFamily || tg.level === 'fam') {
         chart.shown = copyLayout(to); chart.to = to; chart.start = 0;
         draw();
-        if (board.pending) showBoard();
         return;
       }
       chart.from = copyLayout(chart.shown); chart.to = to; chart.start = nowMs(); chart.ms = CHART_MS;
       draw();
     }
-    function chartAnimating() { return !!chart.start; }
     // Advance the move; returns the eased progress (1 when settled).
     function stepChart() {
       if (!chart.start) return 1;
@@ -606,7 +599,6 @@
       S.level = B.level;
       if (u >= 1) {
         chart.start = 0; chart.shown = copyLayout(B);
-        if (board.pending) showBoard();
         settleRing();
       }
       return u >= 1 ? 1 : e;
@@ -645,7 +637,7 @@
     // A family's title written inside its disc, line by line within the circle's chord at
     // that height: the largest size between 11 and 17 px at which every word fits, with the
     // family's counts beneath when there is room; failing that, cut at a word with an
-    // ellipsis (the card and the list carry the whole title).
+    // ellipsis (the hover caption and the list carry the whole title).
     // Existing compound separators are safe line breaks. A single word wider than
     // the disc is split only as a last resort; its full spelling remains in the sidebar.
     function labelTokens(text, r) {
@@ -726,7 +718,7 @@
         ctx.fillStyle = color; ctx.fillText(l, x, y + lead / 2 + i * lead);
       });
     }
-    var chartBoxes = [];          // words and discs on the drawing, for the card to keep off
+    var chartBoxes = [];          // words and discs on the drawing, for checks (window.__universe)
     function paint() {
       if (!D || !W || !chart.shown) return;
       var e = stepChart(), S = chart.shown, moving = !!chart.start;
@@ -842,7 +834,7 @@
       paintRing();
       // What the pointer names is said in the caption above the drawing, never in a
       // card on it: a floating card covered the very dots the reader was reaching for.
-      if (!board.on) { cardFor = null; hideCard(); updateHoverCap(); }
+      updateHoverCap();
       if (chart.start || ring) draw();
       if (window.__universeDebug) window.__universeDebug.boxes = chartBoxes;
     }
@@ -882,857 +874,6 @@
       return null;
     }
 
-    /* ---- The card: what the pointer names, in words, beside it on the map ---------
-       On a screen that hovers, pointing at a family, paper, result or Lean statement
-       (or at its row in the list, or focusing that row) shows a small card beside the
-       object: its name, where it belongs, its counts and its state, each in words. It
-       sits inside the stage, never over the object or under the pointer, and fades in
-       over --t-hover. A touch screen gets none: tapping selects. */
-    var hoverMQ = window.matchMedia ? window.matchMedia('(hover: hover) and (pointer: fine)') : null;
-    var cardEl = null, cardFor = null, cardKey = '', cardOn = false, cardSpot = -1, cardPtr = null, cardBox = null;
-    function guardPreviewClicks(el) {
-      var press = null, cancelled = false;
-      el.addEventListener('pointerdown', function (e) {
-        cancelled = e.isPrimary === false;
-        press = e.button === 0 && !cancelled ? { x: e.clientX, y: e.clientY } : null;
-      });
-      el.addEventListener('pointercancel', function () { press = null; cancelled = true; });
-      el.addEventListener('click', function (e) {
-        if (e.detail === 0) { press = null; cancelled = false; }
-        var moved = press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8;
-        press = null;
-        if (cancelled || moved || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
-          e.preventDefault(); e.stopImmediatePropagation();
-        }
-        cancelled = false;
-      });
-    }
-    if (stage) {
-      cardEl = document.createElement('div');
-      cardEl.className = 'u-card';
-      cardEl.setAttribute('aria-hidden', 'true');
-      stage.appendChild(cardEl);
-      guardPreviewClicks(cardEl);
-    }
-    function cardObject() {
-      if (!cardEl || !hover || !D || board.on || !chart.shown) return null;
-      var o = obj(hover);
-      if (!o || hover === sel || hover === cardDismissed) return null;
-      if (hoverVia === 'touch' || (hoverVia !== 'focus' && !(hoverMQ && hoverMQ.matches))) return null;
-      var S = chart.shown;
-      if (o.kind === 'd') return S.level === 'release' && !chart.start ? o : null;
-      // At discipline depth the labelled circles and sidebar provide the preview.
-      // A floating duplicate would cover neighbouring families and intercept clicks.
-      if (o.kind === 'f') return S.nodes[o.i] && S.nodes[o.i].a > 0.5 && !chart.start && S.level === 'release' ? o : null;
-      return null;
-    }
-    function pairKind(st) { return st === 'candidate-pairing' ? 'candidate' : st === 'producer-declared-binding' ? 'declared' : 'cited'; }
-    function resultCardName(ri) {
-      var r = D.results[ri];
-      return r.lab ? r.lab : T('card.result_in', { name: resultName(r), paper: D.papers[r.p].short });
-    }
-    function cardJoin(kind) {
-      return '<span class="u-join u-join--' + (kind === 'candidate' ? 'candidate' : 'cited') + '" aria-hidden="true"></span>';
-    }
-    function cardHtml(o) {
-      var det = detail(o), h = '';
-      var line = function (cls, html) { h += '<p class="u-card__' + cls + '">' + html + '</p>'; };
-      if (o.kind === 'f') {
-        var f = D.families[o.i];
-        line('t tex-auto', det && det.titleHtml ? det.titleHtml : escapeHtml(f.title));
-        line('k', escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })));
-        var n = [count('papers', f.papers.length)];
-        if (f.lean.length) n.push(count('lean', f.lean.length));
-        line('n', escapeHtml(n.length > 1 ? T('card.counts', { papers: n[0], lean: n[1] }) : n[0]));
-        line('e', dot(f.tone) + '<span>' + escapeHtml(T('key.' + f.tone)) + '</span>');
-      } else if (o.kind === 'd') {
-        line('t', escapeHtml(D.disciplines[o.i].name));
-        line('n', escapeHtml(discCounts(D.disciplines[o.i])));
-        var tally = {};
-        D.disciplines[o.i].families.forEach(function (fi) { var t = D.families[fi].tone || 'none'; tally[t] = (tally[t] || 0) + 1; });
-        ['all', 'part', 'other', 'split', 'none', 'unread'].forEach(function (t) {
-          if (tally[t]) line('e', dot(t) + '<span>' + escapeHtml(T('key.' + t)) + ': ' + tally[t] + '</span>');
-        });
-      } else if (o.kind === 'p') {
-        var p = D.papers[o.i];
-        line('t', escapeHtml(p.short));
-        line('k', escapeHtml(T('paper.kicker', { num: D.families[p.f].num }) + (p.date ? ', ' + p.date : '')));
-        line('n', escapeHtml(count('results', p.results.length)));
-      } else if (o.kind === 'r') {
-        var r = D.results[o.i], rp = D.papers[r.p];
-        line('t', escapeHtml(resultName(r)) + (det && det.titleHtml ? ' <span class="u-card__sub tex-auto">(' + det.titleHtml + ')</span>' : ''));
-        line('k', escapeHtml(T('result.in_paper', { paper: rp.short }) + (rp.date ? ', ' + rp.date : '')));
-        if (!r.lean.length) line('e', escapeHtml(T('card.result_none')));
-        else {
-          var kinds = r.lean.map(function (li) { return pairKind(D.lean[li].pairing); });
-          var names = r.lean.map(function (li) { return D.lean[li].label; }).join(', ');
-          var one = kinds.every(function (k) { return k === kinds[0]; }) ? kinds[0] : null;
-          var key = !one ? 'card.result_mixed' : one === 'candidate' ? (kinds.length > 1 ? 'card.result_candidate_many' : 'card.result_candidate') : 'card.result_' + one;
-          line('e', cardJoin(one || 'cited') + '<span>' + escapeHtml(T(key, { name: names })) + '</span>');
-        }
-      } else if (o.kind === 'l') {
-        var l = D.lean[o.i];
-        line('t u-card__t--lean', escapeHtml(l.label) + (l.label !== l.name ? '<code>' + escapeHtml(l.name) + '</code>' : ''));
-        line('k', escapeHtml(T('lean.kicker', { num: D.families[l.f].num })));
-        if (!l.results.length) line('e', escapeHtml(T('lean.paired_none')));
-        else {
-          var lk = pairKind(l.pairing);
-          line('e', cardJoin(lk) + '<span>' + escapeHtml(T('card.lean_' + lk, { name: l.results.map(resultCardName).join('; ') })) + '</span>');
-        }
-      }
-      return h;
-    }
-    function hideCard() {
-      if (!cardOn) return;
-      cardEl.classList.remove('is-on');
-      cardOn = false; cardSpot = -1; cardBox = null;
-    }
-    // Keep the preview beside what it names. Prefer a clear adjacent spot without
-    // sending it across the stage merely to avoid an unselected object.
-    var cardDismissed = null, cardSwept = -1e9, cardTimer = 0;
-    function hoverBox(o) {
-      var S = chart.shown;
-      if (!o || !S) return null;
-      if (o.kind === 'd') { var g = S.regions[o.i]; return { x0: g.x - g.lab.w / 2, x1: g.x + g.lab.w / 2, y0: g.ly, y1: g.ly + g.lab.h }; }
-      if (o.kind === 'f') { var q = S.nodes[o.i]; return { x0: q.x - q.r, x1: q.x + q.r, y0: q.y - q.r, y1: q.y + q.r }; }
-      return null;
-    }
-    function placeCard(o) {
-      if (!cardEl || cardEl.classList.contains('is-board')) return;
-      if (!o) { hideCard(); return; }
-      var S = chart.shown, m;
-      if (o.kind === 'd') { var g = S.regions[o.i]; m = { x0: g.x - g.lab.w / 2, x1: g.x + g.lab.w / 2, y0: g.ly, y1: g.ly + g.lab.h }; }
-      else { var q = S.nodes[o.i]; m = { x0: q.x - q.r - 2, x1: q.x + q.r + 2, y0: q.y - q.r - 2, y1: q.y + q.r + 2 }; }
-      var key = o.key + (detail(o) ? '+' : '');
-      if (key !== cardKey) {
-        // While the pointer sweeps across the drawing the card waits for it to rest (70 ms),
-        // so a fast pass costs no typesetting and the frames stay smooth.
-        var t = nowMs();
-        if (cardOn && t - cardSwept < 70) {
-          cardSwept = t;
-          hideCard();
-          clearTimeout(cardTimer); cardTimer = setTimeout(draw, 80);
-          return;
-        }
-        cardSwept = t;
-        cardEl.innerHTML = cardHtml(o);
-        if (window.atlasRenderMath) window.atlasRenderMath(cardEl);
-        cardKey = key; cardSpot = -1;
-      }
-      var w = cardEl.offsetWidth, h = cardEl.offsetHeight;
-      if (!w || !h) { hideCard(); return; }
-      var keep = [m], anchor = m;
-      if (cardPtr) keep.push({ x0: cardPtr[0] - 10, x1: cardPtr[0] + 22, y0: cardPtr[1] - 10, y1: cardPtr[1] + 26 });
-      var others = chartBoxes.filter(function (b) { return !(o.kind === 'd' && b.di === o.i) && !(o.kind === 'f' && b.fi === o.i); });
-      if (o.kind === 'f' && S.level === 'release') {
-        // Keep this discipline clear so its neighbouring dots remain reachable.
-        var region = S.regions[discOf(o)];
-        anchor = { x0: region.x - region.r, x1: region.x + region.r, y0: region.y - region.r, y1: region.y + region.r };
-        keep.push(anchor);
-        others = chartBoxes.filter(function (b) { return b.di !== undefined; });
-      }
-      var g2 = 12, spots = [[anchor.x1 + g2, (m.y0 + m.y1) / 2 - h / 2], [anchor.x0 - g2 - w, (m.y0 + m.y1) / 2 - h / 2], [m.x0, anchor.y1 + g2], [m.x0, anchor.y0 - g2 - h],
-                            [anchor.x1 + g2, m.y1 - h], [anchor.x0 - g2 - w, m.y1 - h], [m.x1 - w, anchor.y1 + g2], [m.x1 - w, anchor.y0 - g2 - h]];
-      var X1 = Math.max(8, W - w - 8), Y1 = Math.max(8, H - h - 8);
-      var best = null, bestScore = Infinity, bestI = -1;
-      var tryAt = function (sp, i) {
-        var x0 = clamp(sp[0], 8, X1), y0 = clamp(sp[1], 8, Y1);
-        var b = { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h };
-        var gapX = Math.max(0, m.x0 - b.x1, b.x0 - m.x1), gapY = Math.max(0, m.y0 - b.y1, b.y0 - m.y1);
-        var score = i * 2 + Math.hypot(gapX, gapY) * 2 - (i === cardSpot ? 25 : 0);
-        keep.forEach(function (k) { var ov = overlap(b, k); if (ov > 0) score += 1e5 + ov * 20; });
-        score += Math.min(20, others.reduce(function (sum, k) { return sum + Math.max(0, overlap(b, k)) * 0.0005; }, 0));
-        chrome.forEach(function (k) { var ov = overlap(b, k); if (ov > 0) score += 600 + ov * 0.05; });
-        if (score < bestScore) { bestScore = score; best = b; bestI = i; }
-      };
-      spots.forEach(tryAt);
-      cardSpot = bestI; cardBox = best;
-      cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
-      if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
-    }
-
-    /* ---- The family board ---------------------------------------------------
-       Inside a family the drawing gives way to a board of cards: the families whose
-       papers cite it on the left, its papers in columns (each result named as its paper
-       prints it, with the opening of its statement typeset, and the Lean statements
-       paired with it joined beneath), and the families its papers cite on the right.
-       Every name is on its card. Hover explains (the card beside it), click, Enter
-       or Space selects (the panel shows the record), double-click opens, Escape steps back.
-       Lines are the board's only drawing: a result to the Lean statements paired with
-       it (dashed for a candidate pairing), and a neighbouring family to the papers that
-       carry the citation (brick where this family cites, grey where it is cited). */
-    var boardEl = root.querySelector('[data-u-board]');
-    var board = { fi: -1, sig: '', per: 1, on: false, pending: false, hideT: 0, ringKey: null, revealKey: null, selectionKey: null };
-    var boardFontVersion = 0;
-    var boardPress = null;
-    var pendingBoard = null;
-    function boardPosition() {
-      return board.fi < 0 || !boardEl ? null : { family: D.families[board.fi].id, y: boardEl.scrollTop };
-    }
-    function restoreBoardPosition() {
-      if (!pendingBoard || !board.on || board.fi < 0 || pendingBoard.family !== D.families[board.fi].id) return;
-      var position = pendingBoard;
-      layoutBoard();
-      boardEl.scrollTop = position.y || 0;
-      if (pendingBoard === position && shards[fams[board.fi].d]) pendingBoard = null;
-    }
-    function boardFamily() { var o = sel ? obj(sel) : null; return partsReady && o && o.kind !== 'd' ? famOf(o) : -1; }
-    function dateValue(s) { var t = s ? Date.parse(s) : NaN; return isFinite(t) ? t : Infinity; }
-    // The opening of a statement, concisely: its first sentence (the second too when the
-    // first is short), formulas whole, stopping before a long displayed formula, cut at a
-    // word with an ellipsis past the budget (characters; a formula counts half its TeX).
-    function excerpt(html, budget) {
-      var tpl = document.createElement('template');
-      tpl.innerHTML = html || '';
-      var toks = [];
-      var walk = function (node) {
-        for (var c = node.firstChild; c; c = c.nextSibling) {
-          if (c.nodeType === 3) { toks.push({ t: 'text', s: c.nodeValue }); continue; }
-          if (c.nodeType !== 1) continue;
-          if (c.classList.contains('m')) { toks.push({ t: c.getAttribute('data-d') === '1' ? 'dmath' : 'math', s: c.textContent }); continue; }
-          if (c.classList.contains('li-lab')) { toks.push({ t: 'label', s: c.textContent + ' ' }); continue; }
-          if (/^(P|DIV|LI|OL|UL|BLOCKQUOTE)$/.test(c.tagName)) { toks.push({ t: 'break' }); walk(c); toks.push({ t: 'break' }); continue; }
-          walk(c);
-        }
-      };
-      walk(tpl.content);
-      var out = '', used = 0, setup = null;
-      var space = function () { if (out && !/\s$/.test(out)) { out += ' '; used += 1; } };
-      // A sentence that only fixes notation ("Let X be ...") does not say what is proved:
-      // the excerpt runs on into the next one.
-      var enough = function () { var s0 = setup; setup = null; return used >= 70 && !s0; };
-      var opens = function (word) { if (setup === null) setup = /^(Let|Suppose|Assume|Fix|Write|Denote|Consider|Given|For|Throughout|Set|Define)$/.test(word.replace(/[^A-Za-z]/g, '')); };
-      var ends = function (word) { return /[.!?]["”’)]?$/.test(word) && !/^(e\.g|i\.e|cf|resp|viz|al|etc|Thm|Prop|Lem|Cor|Def|Sec|Eq|Fig|No)\.$/.test(word); };
-      for (var i = 0; i < toks.length; i++) {
-        var k = toks[i];
-        if (k.t === 'break') { space(); continue; }
-        if (k.t === 'math' || k.t === 'dmath') {
-          var tex = k.s.trim(), stop = /[.;,:]$/.exec(tex), body = stop ? tex.slice(0, -1).trim() : tex;
-          if (k.t === 'dmath' && body.length > 48) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
-          var w = Math.max(2, body.length * 0.5);
-          if (used + w > budget && used > 0) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
-          if (k.t === 'dmath') space();
-          out += '<span class="m">' + escapeHtml(body) + '</span>' + (stop ? stop[0] : '');
-          used += w;
-          if (stop && stop[0] === '.' && enough()) return { html: out, cut: false };
-          continue;
-        }
-        var parts = k.s.split(/(\s+)/);
-        for (var j = 0; j < parts.length; j++) {
-          var piece = parts[j];
-          if (!piece) continue;
-          if (/^\s+$/.test(piece)) { space(); continue; }
-          if (used + piece.length > budget && used > 0) return { html: out.replace(/[\s,;:]+$/, ''), cut: true };
-          opens(piece);
-          out += escapeHtml(piece); used += piece.length;
-          if (k.t !== 'label' && ends(piece) && enough()) return { html: out, cut: false };
-        }
-      }
-      return { html: out.trim(), cut: false };
-    }
-    // KaTeX for the formulas in el, with the paper's own macros where it has them.
-    function katexIn(el, paperId, di) {
-      if (!window.katex) { if (window.atlasRenderMath) window.atlasRenderMath(el); return; }
-      var spans = el.querySelectorAll('span.m:not([data-done])');
-      if (!spans.length) { if (window.atlasRenderMath) window.atlasRenderMath(el); return; }
-      var macros = {}, k, sh = shards[di];
-      for (k in GLOBAL_MACROS) macros[k] = GLOBAL_MACROS[k];
-      var own = sh && sh.macros && paperId ? sh.macros[paperId] || {} : {};
-      for (k in own) if (typeof own[k] === 'string' && !/\\(?:newcommand|def|let|ifx|ifmmode|csname|expandafter)/.test(own[k])) macros[k] = own[k];
-      for (var i = 0; i < spans.length; i++) {
-        var s = spans[i], tex = s.textContent;
-        s.setAttribute('data-done', '1');
-        try {
-          var src = window.atlasKeepShortMath ? window.atlasKeepShortMath(tex) : tex;
-          window.katex.render(src, s, { displayMode: false, macros: Object.assign({}, macros), throwOnError: true, strict: 'ignore', trust: false, maxExpand: 2000 });
-        } catch (err) { s.textContent = tex; s.classList.add('m-fail'); }
-      }
-      if (window.atlasRenderMath) window.atlasRenderMath(el);
-    }
-    function bcOpen(cls, key, extra) {
-      return '<div class="u-bc ' + cls + '" role="button" tabindex="0" data-bk="' + escapeHtml(key) + '"' + (extra || '') + '>';
-    }
-    function boardResult(ri, sh) {
-      var r = D.results[ri], det = sh && sh.results ? sh.results[r.id] : null, p = D.papers[r.p];
-      var h = bcOpen('u-bc--r', r.id, ' data-paper="' + escapeHtml(p.id) + '"');
-      // In its paper's column a result needs only the number the paper prints.
-      h += '<p class="u-bc__lab">' + escapeHtml(r.num || resultName(r)) + (det && det.titleHtml ? ' <span class="u-bc__ttl tex-auto">(' + det.titleHtml + ')</span>' : '') + '</p>';
-      if (!sh) h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T(failedShards[fams[r.f].d] ? 'result.load_failed' : 'board.loading')) + '</p>';
-      else if (det && det.html) {
-        // The whole statement, as the paper prints it: a card never stops mid-sentence.
-        h += '<div class="u-bc__x">' + det.html + '</div>';
-      } else h += '<p class="u-bc__x u-bc__x--none">' + escapeHtml(T('board.no_statement')) + ' ' + link(r.href || p.href, T('result.read')) + '</p>';
-      return h + '</div>';
-    }
-    // A Lean statement paired with several theorems keeps one full card, under the
-    // clearest of them, which names the others; under each other theorem a short card
-    // points back to it, so every theorem it states shows it.
-    function boardLean(li, sh, free, ri) {
-      var l = D.lean[li], det = sh && sh.lean ? sh.lean[l.id] : null, kind = pairKind(l.pairing);
-      var cand = !free && kind === 'candidate';
-      var ref = !free && l.results.length > 1 && ri !== undefined && ri !== l.results[0];
-      var pairName = function (x) { var r = D.results[x]; return ri !== undefined && D.results[ri].p === r.p ? (r.num || resultName(r)) : resultCardName(x); };
-      var h = bcOpen('u-bc--l' + (cand ? ' is-cand' : '') + (ref ? ' u-bc--also' : ''), l.id);
-      h += '<p class="u-bc__lt">' + escapeHtml(l.label || l.name) + '</p>';
-      if (ref) {
-        h += '<p class="u-bc__ln u-bc__ln--q">' + escapeHtml(T('board.also_ref', { name: pairName(l.results[0]) })) + '</p>';
-        return h + '</div>';
-      }
-      if (l.label && l.label !== l.name) h += '<p class="u-bc__id"><code>' + escapeHtml(l.name) + '</code></p>';
-      h += '<p class="u-bc__ln u-bc__ln--q">' + escapeHtml(free ? T('board.unpaired') : T('board.pair_' + kind)) + '</p>';
-      if (!free && l.results.length > 1) {
-        h += '<p class="u-bc__ln">' + escapeHtml(T('board.also', { names: l.results.slice(1).map(pairName).join(', ') })) + '</p>';
-      }
-      if (det) h += '<p class="u-bc__ln">' + escapeHtml(det.reruns || T('lean.reruns_none')) + '</p>';
-      return h + '</div>';
-    }
-    function boardPaper(pi) {
-      var p = D.papers[pi];
-      var h = bcOpen('u-bc--p', p.id);
-      h += '<p class="u-bc__pt">' + escapeHtml(p.short) + '</p>';
-      if (p.date) h += '<p class="u-bc__d">' + escapeHtml(p.date) + '</p>';
-      var acts = link(p.href, T('paper.read')) + link(p.pdf, T('paper.pdf'));
-      if (acts) h += '<p class="u-bc__acts">' + acts + '</p>';
-      return h + '</div>';
-    }
-    function boardNeighbour(g, n, way) {
-      var f = D.families[g], sh = shards[fams[g].d], det = sh && sh.families ? sh.families[f.id] : null;
-      var h = bcOpen('u-bc--f', f.id, ' data-g="' + g + '" data-way="' + way + '"');
-      h += '<p class="u-bc__k">' + escapeHtml(T('family.short', { num: f.num })) + '</p>';
-      h += '<p class="u-bc__ft tex-auto">' + (det && det.titleHtml ? det.titleHtml : escapeHtml(f.title)) + '</p>';
-      h += '<p class="u-bc__ln">' + escapeHtml(D.disciplines[fams[g].d].name) + '</p>';
-      h += '<p class="u-bc__ln">' + escapeHtml(n === 1 ? T('board.citations_one') : T('board.citations', { n: n })) + '</p>';
-      return h + '</div>';
-    }
-    function boardSide(way, list) {
-      var h = '<section class="u-board__side u-board__side--' + way + '"><h3>' + escapeHtml(T(way === 'in' ? 'board.cited_by' : 'board.cites')) + '</h3>';
-      if (!list.length) return h + '<p class="u-board__none">' + escapeHtml(T(way === 'in' ? 'board.none_in' : 'board.none_out')) + '</p></section>';
-      var sorted = list.slice().sort(function (a, b) { return b[1] - a[1] || a[0] - b[0]; });
-      sorted.forEach(function (c) { h += boardNeighbour(c[0], c[1], way); });
-      return h + '</section>';
-    }
-    function boardHtml(fi) {
-      var f = D.families[fi], d = D.disciplines[fams[fi].d], sh = shards[fams[fi].d] || null;
-      var fdet = sh && sh.families ? sh.families[f.id] : null;
-      var h = '<div class="u-board__in" data-u-board-in><svg class="u-board__wires" data-u-wires aria-hidden="true"></svg>';
-      h += '<div class="u-board__head"><p class="u-board__k">' + escapeHtml(T('family.kicker', { num: f.num, discipline: d.name })) + '</p>';
-      h += '<h2 class="u-board__t tex-auto">' + (fdet && fdet.titleHtml ? fdet.titleHtml : escapeHtml(f.title)) + '</h2>';
-      if (!f.lean.length) h += '<p class="u-board__r">' + escapeHtml(T('evidence.no_lean')) + '</p>';
-      else if (fdet && (fdet.readers || []).length) {
-        // Each reader in their own words, then whether they agree (the backend's sentence).
-        var said = fdet.readers.map(function (rd) { return rd.name + ' ' + rd.words; }).join('; ') + '.';
-        h += '<p class="u-board__r"><b>' + escapeHtml(T('board.readers')) + '</b> ' + escapeHtml(said + (fdet.agree ? ' ' + fdet.agree : '')) + '</p>';
-      } else if (fdet && fdet.agree) h += '<p class="u-board__r"><b>' + escapeHtml(T('board.readers')) + '</b> ' + escapeHtml(fdet.agree) + '</p>';
-      h += '</div><div class="u-board__cols">' + boardSide('in', f.citedBy) + '<div class="u-board__main">' +
-        '<div class="u-board__papers" data-u-papers>';
-      var papers = familyPapers(fi);
-      var anyCand = false;
-      papers.forEach(function (pi) {
-        h += '<section class="u-col" data-pi="' + pi + '">' + boardPaper(pi) + '<ol>';
-        D.papers[pi].results.forEach(function (ri) {
-          var r = D.results[ri];
-          h += '<li>' + boardResult(ri, sh);
-          if (r.lean.length) {
-            h += '<div class="u-leans">' + r.lean.map(function (li) { if (pairKind(D.lean[li].pairing) === 'candidate') anyCand = true; return boardLean(li, sh, false, ri); }).join('') + '</div>';
-          }
-          h += '</li>';
-        });
-        h += '</ol></section>';
-      });
-      var free = f.lean.filter(function (li) { return !D.lean[li].results.length; });
-      if (free.length) {
-        h += '<section class="u-col u-col--free"><h3 class="u-board__colh">' + escapeHtml(T('board.unpaired_heading')) + '</h3><div class="u-leans u-leans--free">' +
-          free.map(function (li) { return boardLean(li, sh, true); }).join('') + '</div></section>';
-      }
-      h += '</div>' + (anyCand ? '<p class="u-board__foot">' + escapeHtml(T('board.dashed')) + '</p>' : '') + '</div>';
-      h += boardSide('out', f.cites) + '</div></div>';
-      return h;
-    }
-    // Typeset every card: each result with its own paper's macros.
-    // A displayed formula wider than its card scrolls sideways: it takes focus, so a
-    // keyboard reader can scroll it with the arrow keys (which then do not step).
-    var SCROLLERS = '.m-d, .u-bc__x, .u-stmt, .u-lean, .u-example, .lean, .tex-fallback';
-    function markScrollers(scope) {
-      if (!scope) return;
-      Array.prototype.forEach.call(scope.querySelectorAll(SCROLLERS), function (x) {
-        var wide = x.scrollWidth > x.clientWidth + 1;
-        if (wide && !x.hasAttribute('tabindex')) { x.setAttribute('tabindex', '0'); x.setAttribute('data-u-scroller', ''); }
-        else if (!wide && x.hasAttribute('data-u-scroller')) { x.removeAttribute('tabindex'); x.removeAttribute('data-u-scroller'); }
-      });
-    }
-    // True when the arrow key belongs to what has focus: a field, or a box that scrolls sideways.
-    function arrowsBelongTo(target) {
-      for (var n = target; n && n.nodeType === 1 && n !== document.body; n = n.parentElement) {
-        if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName) || n.isContentEditable) return true;
-        if (n.matches(SCROLLERS + ', pre, .table-wrap') && n.scrollWidth > n.clientWidth + 1) {
-          var ox = getComputedStyle(n).overflowX;
-          if (ox === 'auto' || ox === 'scroll') return true;
-        }
-      }
-      return false;
-    }
-    function typesetBoard(fi) {
-      var di = fams[fi].d;
-      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--r'), function (c) { katexIn(c, c.getAttribute('data-paper'), di); });
-      katexIn(boardEl.querySelector('.u-board__head'), null, di);
-      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--f'), function (c) { katexIn(c, null, fams[+c.getAttribute('data-g')].d); });
-    }
-    // Every paper shows at once: the columns fill the board's width and wrap onto
-    // further rows, so a family's papers are read together, never one page at a time.
-    function layoutBoard() {
-      if (!board.on && !board.pending) return;
-      var papersEl = boardEl.querySelector('[data-u-papers]');
-      if (!papersEl) return;
-      var cols = Array.prototype.slice.call(papersEl.children);
-      var fpx = parseFloat(getComputedStyle(boardEl).fontSize) || 16;
-      var per = narrow() ? cols.length : Math.max(1, Math.floor((papersEl.clientWidth + 1.25 * fpx) / (14 * fpx + 1.25 * fpx)));
-      per = Math.min(per, Math.max(1, cols.length));
-      board.per = per;
-      // Columns pack like a newspaper, so a paper with many results leaves no gap beside it.
-      papersEl.style.columnCount = narrow() ? '' : String(per);
-      cols.forEach(function (c) { c.hidden = false; });
-      drawWires();
-      markScrollers(boardEl);
-      repositionBoardCard();
-    }
-    function drawWires() {
-      var inEl = boardEl && boardEl.querySelector('[data-u-board-in]'), svg = inEl && inEl.querySelector('[data-u-wires]');
-      if (!svg || !board.on) return;
-      var base = inEl.getBoundingClientRect();
-      var R = function (el) { var b = el.getBoundingClientRect(); return { x0: b.left - base.left, x1: b.right - base.left, y0: b.top - base.top, y1: b.bottom - base.top }; };
-      var nf = function (v) { return Math.round(v * 10) / 10; };
-      var fpx = parseFloat(getComputedStyle(boardEl).fontSize) || 16;
-      var hot = function (keys) { return keys.some(function (k) { return k && (k === sel || k === board.hoverKey); }); };
-      var paths = [];
-      Array.prototype.forEach.call(inEl.querySelectorAll('.u-col:not([hidden]) li'), function (li) {
-        var rc = li.querySelector(':scope > .u-bc--r');
-        if (!rc) return;
-        var a = R(rc), x = a.x0 + 0.7 * fpx;
-        Array.prototype.forEach.call(li.querySelectorAll('.u-leans > .u-bc--l'), function (lc) {
-          var b = R(lc), y = (b.y0 + Math.min(b.y1, b.y0 + 2.2 * fpx)) / 2, r = Math.min(6, (b.x0 - x) / 2);
-          var keys = [rc.getAttribute('data-bk'), lc.getAttribute('data-bk')];
-          paths.push('<path class="w-lean' + (lc.classList.contains('is-cand') ? ' w-cand' : '') + (hot(keys) ? ' is-hot' : '') + '" d="M' + nf(x) + ' ' + nf(a.y1) +
-            'V' + nf(y - r) + 'Q' + nf(x) + ' ' + nf(y) + ' ' + nf(x + r) + ' ' + nf(y) + 'H' + nf(b.x0) + '"/>');
-        });
-      });
-      // A neighbouring family's citation runs along one band above the paper columns and
-      // drops into each paper that carries it; the band bundles them.
-      var papersEl = inEl.querySelector('[data-u-papers]');
-      if (papersEl && !narrow()) {
-        var pr = R(papersEl), band = pr.y0 + 0.75 * fpx, fb = L.fibres[board.fi] || [], f = D.families[board.fi];
-        Array.prototype.forEach.call(inEl.querySelectorAll('.u-bc--f'), function (sc) {
-          var g = +sc.getAttribute('data-g'), way = sc.getAttribute('data-way');
-          var row = null;
-          fb.forEach(function (x) { if (x[1] === g) row = x; });
-          var local = row ? (way === 'out' ? row[3] : row[4]) || [] : [];
-          if (!local.length) local = [0];
-          var s = R(sc), sy = (s.y0 + s.y1) / 2, left = way === 'in';
-          local.forEach(function (k) {
-            var pi = f.papers[k], col = pi === undefined ? null : papersEl.querySelector('.u-col[data-pi="' + pi + '"]:not([hidden])');
-            if (!col) return;
-            var pc = R(col.querySelector('.u-bc--p')), dx = 0.75 * fpx;
-            var sx = left ? s.x1 : s.x0, px = left ? pc.x0 + 1.1 * fpx : pc.x1 - 1.1 * fpx, sg = left ? 1 : -1, r = 6;
-            var keys = [sc.getAttribute('data-bk'), D.papers[pi].id];
-            paths.push('<path class="' + (left ? 'w-in' : 'w-out') + (hot(keys) ? ' is-hot' : '') + '" d="M' + nf(sx) + ' ' + nf(sy) +
-              'C' + nf(sx + sg * dx) + ' ' + nf(sy) + ' ' + nf(sx + sg * dx) + ' ' + nf(band) + ' ' + nf(sx + sg * 2 * dx) + ' ' + nf(band) +
-              'H' + nf(px - sg * r) + 'Q' + nf(px) + ' ' + nf(band) + ' ' + nf(px) + ' ' + nf(band + r) + 'V' + nf(pc.y0) + '"/>');
-          });
-        });
-      }
-      // The old overlay contributes to scrollWidth/scrollHeight. Its next size
-      // follows the content box so a narrower or shorter board can shrink.
-      svg.setAttribute('width', inEl.clientWidth); svg.setAttribute('height', inEl.clientHeight);
-      svg.innerHTML = '<defs><marker id="u-cite-in" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="w-arrow-in" d="M0 0 10 5 0 10Z"/></marker>' +
-        '<marker id="u-cite-out" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="w-arrow-out" d="M0 0 10 5 0 10Z"/></marker></defs>' + paths.join('');
-    }
-    function markBoard() {
-      if (!boardEl) return;
-      var pp = pinnedPair();
-      Array.prototype.forEach.call(boardEl.querySelectorAll('[data-bk]'), function (c) {
-        var k = c.getAttribute('data-bk');
-        c.classList.toggle('is-sel', k === sel);
-        c.classList.toggle('is-pair', !!pp && k !== sel && (pp[0] === k || pp[1] === k));
-        c.setAttribute('aria-pressed', k === sel ? 'true' : 'false');
-      });
-    }
-    // A new selection from the panel can sit below the board's visible rows.
-    // Reveal it within the board; history still restores its saved reading place.
-    function revealBoardSelection() {
-      if (!board.revealKey || board.revealKey !== sel || !board.on || narrow() || !shards[fams[board.fi].d]) return;
-      var c = boardEl.querySelector('.u-col:not([hidden]) .u-bc.is-sel');
-      if (!c || !boardEl.clientHeight) return;
-      var view = boardEl.getBoundingClientRect(), card = c.getBoundingClientRect();
-      var top = view.top + 12, bottom = view.top + boardEl.clientHeight - 12;
-      if (card.height > bottom - top || card.top < top) boardEl.scrollTop += card.top - top;
-      else if (card.bottom > bottom) boardEl.scrollTop += card.bottom - bottom;
-      board.revealKey = null;
-    }
-    // A neighbouring packet only enriches its title. Keep the cards and controls
-    // being read intact, rather than reconstructing all this family's papers.
-    function refreshBoardNeighbours() {
-      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc--f'), function (c) {
-        var di = fams[+c.getAttribute('data-g')].d, sh = shards[di];
-        if (!sh || c.getAttribute('data-u-detail') === 'ready') return;
-        var det = sh.families && sh.families[c.getAttribute('data-bk')], title = c.querySelector('.u-bc__ft');
-        if (det && det.titleHtml && title) { title.innerHTML = det.titleHtml; katexIn(title, null, di); }
-        c.setAttribute('data-u-detail', 'ready');
-      });
-    }
-    function rememberBoardFocus() {
-      var active = document.activeElement;
-      if (!active || !boardEl.contains(active)) return null;
-      var card = active.closest('[data-bk]');
-      return { key: card && card.getAttribute('data-bk'), way: card && card.getAttribute('data-way'), href: active.getAttribute('href') };
-    }
-    function restoreBoardFocus(saved) {
-      if (!saved) return;
-      var target = null;
-      if (saved.key) {
-        Array.prototype.some.call(boardEl.querySelectorAll('[data-bk]'), function (c) {
-          if (c.getAttribute('data-bk') !== saved.key) return false;
-          if (saved.way && c.getAttribute('data-way') !== saved.way) return false;
-          target = c;
-          if (saved.href) Array.prototype.some.call(c.querySelectorAll('a'), function (a) {
-            if (a.getAttribute('href') !== saved.href) return false;
-            target = a; return true;
-          });
-          return true;
-        });
-      }
-      if (target && !target.closest('[hidden]')) target.focus({ preventScroll: true });
-    }
-    var boardShardWaiting = {};
-    function watchBoardShard(di) {
-      if (shards[di] || failedShards[di] || boardShardWaiting[di]) return;
-      var waiting = loadShard(di);
-      boardShardWaiting[di] = waiting;
-      var settled = function () {
-        if (boardShardWaiting[di] !== waiting) return;
-        delete boardShardWaiting[di];
-        // The reader may have left this board while the packet was in flight.
-        // Only its current family and neighbours can need a layout update.
-        var fi = boardFamily();
-        if (fi < 0) return;
-        var f = D.families[fi];
-        if (fams[fi].d === di || f.cites.concat(f.citedBy).some(function (c) { return fams[c[0]].d === di; })) syncBoard();
-      };
-      waiting.then(settled, settled);
-    }
-    function syncBoard() {
-      if (!boardEl || !D) return;
-      var fi = boardFamily();
-      if (fi < 0) { hideBoard(); return; }
-      var f = D.families[fi], di = fams[fi].d;
-      watchBoardShard(di);
-      // The neighbours' titles are typeset from their own disciplines' records.
-      var near = f.cites.concat(f.citedBy).map(function (c) { return fams[c[0]].d; });
-      near = near.filter(function (d2, i) { return d2 !== di && near.indexOf(d2) === i; });
-      near.forEach(watchBoardShard);
-      var sig = fi + '|' + (shards[di] ? 1 : failedShards[di] ? 'failed' : 0);
-      var fresh = board.fi !== fi;
-      var focused = null;
-      if (sig !== board.sig) {
-        var keepScroll = board.fi === fi ? boardEl.scrollTop : 0;
-        if (fresh) board.selectionKey = null;
-        else focused = rememberBoardFocus();
-        board.fi = fi; board.sig = sig;
-        boardEl.innerHTML = boardHtml(fi);
-        typesetBoard(fi);
-        boardEl.scrollTop = keepScroll;
-        hideBoardCard();
-      }
-      refreshBoardNeighbours();
-      markBoard();
-      if (!board.on) {
-        board.pending = true;
-        // Family boards do not wait for an ornamental zoom. chartTo settles a
-        // family target immediately; this frame also covers direct page entries.
-        requestAnimationFrame(function () { if (board.pending && !chartAnimating()) showBoard(); });
-      }
-      layoutPages();
-      if (ringWanted || ring) board.ringKey = sel;
-      ringBoard();
-      restoreBoardPosition();
-      revealBoardSelection();
-      restoreBoardFocus(focused);
-    }
-    function layoutPages() {
-      var keep = board.on; board.on = true; layoutBoard();
-      board.selectionKey = sel;
-      board.on = keep;
-    }
-    function showBoard() {
-      if (!board.pending) return;
-      board.pending = false;
-      board.on = true;
-      boardEl.removeAttribute('inert');
-      root.setAttribute('data-board', '');
-      boardEl.classList.add('is-on');
-      hover = null; hideCard();
-      layoutBoard();
-      ringBoard();
-      restoreBoardPosition();
-      revealBoardSelection();
-    }
-    function hideBoard() {
-      board.pending = false;
-      // The outgoing board may still be fading, but its old controls must stop
-      // catching clicks or keyboard focus as soon as the map becomes current.
-      boardEl.setAttribute('inert', '');
-      if (!board.on) { board.fi = -1; board.sig = ''; return; }
-      board.on = false; board.fi = -1; board.sig = '';
-      boardEl.classList.remove('is-on');
-      root.removeAttribute('data-board');
-      hideBoardCard();
-    }
-    // The chosen card gets the selection's one ring, once, when it settles.
-    function ringBoard() {
-      if (!board.on || !board.ringKey || reduceMotion) { board.ringKey = board.on ? null : board.ringKey; return; }
-      var key = board.ringKey;
-      board.ringKey = null;
-      Array.prototype.forEach.call(boardEl.querySelectorAll('[data-bk]'), function (c) {
-        if (c.getAttribute('data-bk') !== key) return;
-        c.classList.remove('is-ring'); void c.offsetWidth; c.classList.add('is-ring');
-      });
-    }
-    /* The board's hover card: beside the card pointed at or focused, in the stage, never
-       over that card or the selected one, and over as few other cards as it can. It can
-       itself be pointed at, and Escape dismisses it. */
-    function boardCardHtml(key) {
-      var o = obj(key);
-      if (!o) return '';
-      var di = discOf(o), sh = shards[di], h = '';
-      var line = function (cls, html) { h += '<p class="u-card__' + cls + '">' + html + '</p>'; };
-      if (o.kind === 'r') {
-        var det = sh && sh.results ? sh.results[key] : null;
-        h = cardHtml(o);
-        if (det && det.html) {
-          var ex = excerpt(det.html, 520);
-          h = h.replace(/(<p class="u-card__e)/, '<div class="u-card__x" data-paper="' + escapeHtml(D.papers[D.results[o.i].p].id) + '">' + ex.html + (ex.cut ? '…' : '') + '</div>$1');
-        }
-        return h;
-      }
-      if (o.kind === 'l') {
-        var ld = sh && sh.lean ? sh.lean[key] : null, fdet = sh && sh.families ? sh.families[D.families[D.lean[o.i].f].id] : null;
-        h = cardHtml(o);
-        if (D.lean[o.i].main) line('n', escapeHtml(T('lean.main')));
-        if (ld && ld.pairing && D.lean[o.i].results.length) line('n', escapeHtml(ld.pairing));
-        if (fdet && fdet.readers && fdet.readers.length) {
-          line('n', '<b>' + escapeHtml(T('board.readers')) + '</b> ' + fdet.readers.map(function (rd) { return escapeHtml(rd.name + ' ' + rd.words + '.'); }).join(' '));
-        }
-        return h;
-      }
-      if (o.kind === 'f') {
-        var f = D.families[o.i], fd = sh && sh.families ? sh.families[key] : null;
-        line('t tex-auto', fd && fd.titleHtml ? fd.titleHtml : escapeHtml(f.title));
-        line('k', escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name })));
-        if (fd && fd.first) line('n', escapeHtml(T('family.catalogue') + ' ' + T('family.catalogue_says')));
-        if (fd && fd.first) h += '<div class="u-card__x tex-auto">' + fd.first + '</div>';
-        line('e', dot(f.tone) + '<span>' + escapeHtml(T('key.' + f.tone)) + '</span>');
-        return h;
-      }
-      if (o.kind === 'p') {
-        var p = D.papers[o.i];
-        line('t', escapeHtml(p.title));
-        line('k', escapeHtml(T('paper.kicker', { num: D.families[p.f].num }) + (p.date ? ', ' + p.date : '')));
-        line('n', escapeHtml(count('results', p.results.length)));
-        return h;
-      }
-      return '';
-    }
-    function hideBoardCard(dismiss) {
-      if (dismiss) board.dismissedKey = board.hoverKey;
-      clearTimeout(board.hideT);
-      board.hoverVia = '';
-      board.hoverEl = null;
-      if (board.hoverKey) { board.hoverKey = null; if (board.on) drawWires(); }
-      if (cardEl) cardEl.classList.remove('is-board');
-      hideCard();
-    }
-    function showBoardCard(el, via, reposition) {
-      if (!cardEl || !board.on || narrow()) return;
-      if (via !== 'focus' && !(hoverMQ && hoverMQ.matches)) return;
-      var key = el.getAttribute('data-bk');
-      // Removing a preview can expose its source under a stationary pointer.
-      // Wait for that pointer or keyboard focus to leave before showing it again.
-      if (board.dismissedKey === key) return;
-      board.dismissedKey = null;
-      clearTimeout(board.hideT);
-      var ck = 'b:' + key + (shards[discOf(obj(key))] ? '+' : '');
-      // Formula spans and paragraph children bubble many pointerover events.
-      // An unchanged preview needs no new whole-board placement scan. Keep
-      // distinct left/right cards for the same family as separate sources.
-      if (!reposition && cardOn && board.hoverEl === el && board.hoverVia === via && cardKey === ck) return;
-      board.hoverEl = el; board.hoverVia = via;
-      if (board.hoverKey !== key) { board.hoverKey = key; drawWires(); }
-      cardEl.classList.add('is-board');
-      if (ck !== cardKey) {
-        cardEl.innerHTML = boardCardHtml(key);
-        var px = cardEl.querySelector('[data-paper]');
-        katexIn(cardEl, px ? px.getAttribute('data-paper') : null, discOf(obj(key)));
-        cardKey = ck;
-      }
-      var w = cardEl.offsetWidth, h = cardEl.offsetHeight, sr = stage.getBoundingClientRect();
-      var rel = function (n) { var b = n.getBoundingClientRect(); return { x0: b.left - sr.left, x1: b.right - sr.left, y0: b.top - sr.top, y1: b.bottom - sr.top }; };
-      var me = rel(el), others = [], keep = [me];
-      Array.prototype.forEach.call(boardEl.querySelectorAll('.u-bc'), function (c) {
-        if (c === el || c.closest('[hidden]')) return;
-        var b = rel(c);
-        if (b.y1 < 0 || b.y0 > sr.height) return;
-        if (c.classList.contains('is-sel')) keep.push(b); else others.push(b);
-      });
-      // Adjacent placements keep the preview reachable across a small gap.
-      var g = 10, spots = [[me.x1 + g, me.y0], [me.x0 - g - w, me.y0], [me.x0, me.y1 + g], [me.x0, me.y0 - g - h],
-                           [me.x1 + g, me.y1 - h], [me.x0 - g - w, me.y1 - h], [me.x1 - w, me.y1 + g], [me.x1 - w, me.y0 - g - h]];
-      var X1 = Math.max(8, sr.width - w - 8), Y1 = Math.max(8, sr.height - h - 8);
-      var best = null, bestScore = Infinity;
-      var tryAt = function (sp, i) {
-        var x0 = clamp(sp[0], 8, X1), y0 = clamp(sp[1], 8, Y1);
-        var b = { x0: x0, x1: x0 + w, y0: y0, y1: y0 + h };
-        var gapX = Math.max(0, me.x0 - b.x1, b.x0 - me.x1), gapY = Math.max(0, me.y0 - b.y1, b.y0 - me.y1);
-        var score = i * 2 + Math.hypot(gapX, gapY) * 2;
-        // Over the card itself or the selection only where nothing else is free, and then
-        // over as little of them as it can.
-        keep.forEach(function (q) { var ov = overlap(b, q); if (ov > 0) score += 1e5 + ov * 20; });
-        score += Math.min(20, others.reduce(function (sum, q) { return sum + Math.max(0, overlap(b, q)) * 0.0005; }, 0));
-        if (score < bestScore) { bestScore = score; best = b; }
-      };
-      spots.forEach(tryAt);
-      cardBox = best;
-      cardEl.style.transform = 'translate(' + Math.round(best.x0) + 'px, ' + Math.round(best.y0) + 'px)';
-      if (!cardOn) { cardEl.classList.add('is-on'); cardOn = true; }
-    }
-    function repositionBoardCard() {
-      if (!cardOn || !board.on || !board.hoverEl) return;
-      if (narrow() || !boardEl.contains(board.hoverEl)) { hideBoardCard(); return; }
-      // Width and font changes re-pack the board while focus may stay put.
-      showBoardCard(board.hoverEl, board.hoverVia, true);
-    }
-    // Reading width changes on the first click. The next press in a double-click
-    // may therefore land on the sidebar or another card, outside the old board.
-    var boardClick = null, boardRepeatPress = null, boardDoubleOpened = false;
-    function boardDoublePress(e) {
-      boardRepeatPress = null; boardDoubleOpened = false;
-      var prior = boardClick; boardClick = null;
-      if (!prior || e.button !== 0 || e.isPrimary === false || e.pointerType === 'touch' ||
-          e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !board.on || board.fi !== prior.fi || sel !== prior.key) return;
-      var elapsed = e.timeStamp - prior.time;
-      if (elapsed < 0 || elapsed > 500 || Math.hypot(e.clientX - prior.x, e.clientY - prior.y) > 8) return;
-      boardRepeatPress = { key: prior.key, fi: prior.fi, x: e.clientX, y: e.clientY, time: prior.time };
-    }
-    function boardDoubleClick(e) {
-      var press = boardRepeatPress; boardRepeatPress = null;
-      if (!press || e.detail === 0 || e.defaultPrevented || e.button > 0 ||
-          e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || !board.on || board.fi !== press.fi || sel !== press.key ||
-          e.timeStamp - press.time > 500 || Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) return;
-      boardPress = null; boardDoubleOpened = true;
-      e.preventDefault(); e.stopImmediatePropagation();
-      openFromBoard(press.key);
-    }
-    root.addEventListener('pointerdown', boardDoublePress, true);
-    root.addEventListener('click', boardDoubleClick, true);
-    root.addEventListener('pointercancel', function () { boardClick = null; boardRepeatPress = null; }, true);
-    function selectFromBoard(key) {
-      if (key !== sel) select(key, { trail: true });
-      hideBoardCard();
-      board.dismissedKey = key;
-      // On a phone the detail panel is a separate view, so reveal the record
-      // that a paper, theorem or Lean card just selected.
-      if (narrow() && obj(key) && obj(key).kind !== 'f') {
-        showView('list');
-        window.scrollTo({ top: 0, behavior: 'auto' });
-        focusArrival();
-      }
-    }
-    if (boardEl) {
-      boardEl.addEventListener('pointerdown', function (e) {
-        boardPress = e.button === 0 && e.isPrimary !== false ? { x: e.clientX, y: e.clientY, pointerType: e.pointerType } : null;
-      });
-      boardEl.addEventListener('pointercancel', function () { boardPress = null; });
-      boardEl.addEventListener('click', function (e) {
-        var press = boardPress; boardPress = null;
-        if (press && Math.hypot(e.clientX - press.x, e.clientY - press.y) > 8) { e.preventDefault(); return; }
-        if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        if (e.target.closest('a')) return;
-        var c = e.target.closest('[data-bk]');
-        if (e.detail > 1) return;
-        if (!c) {
-          // Empty board space backs out just like empty space between map discs.
-          // Restrict this to layout containers so selecting words or using controls
-          // cannot accidentally navigate away.
-          if (e.target.matches('.u-board, .u-board__in, .u-board__cols, .u-board__main, .u-board__papers, .u-board__side, .u-col, .u-leans')) {
-            hideBoardCard();
-            if (sel) stepBack();
-          }
-          return;
-        }
-        var key = c.getAttribute('data-bk');
-        selectFromBoard(key);
-        if (press && press.pointerType !== 'touch' && e.detail !== 0) boardClick = { key: key, fi: board.fi, x: e.clientX, y: e.clientY, time: e.timeStamp };
-      });
-      boardEl.addEventListener('dblclick', function (e) {
-        if (boardDoubleOpened) { boardDoubleOpened = false; return; }
-        if (e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        if (e.target.closest('a')) return;
-        var c = e.target.closest('[data-bk]');
-        if (c) openFromBoard(c.getAttribute('data-bk'));
-      });
-      boardEl.addEventListener('keydown', function (e) {
-        boardPress = null; boardClick = null; boardRepeatPress = null;
-        var c = e.target && e.target.getAttribute && e.target.getAttribute('data-bk') ? e.target : null;
-        if (!c) return;
-        var key = c.getAttribute('data-bk');
-        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
-          e.preventDefault(); selectFromBoard(key);
-          if (!boardEl.contains(c)) focusArrival();
-        }
-      });
-      boardEl.addEventListener('pointerover', function (e) {
-        var c = e.target.closest && e.target.closest('[data-bk]');
-        if (c && e.pointerType !== 'touch') showBoardCard(c, 'pointer');
-      });
-      boardEl.addEventListener('pointerout', function (e) {
-        var c = e.target.closest && e.target.closest('[data-bk]');
-        if (!c || (e.relatedTarget && (c.contains(e.relatedTarget) || (cardEl && cardEl.contains(e.relatedTarget))))) return;
-        if (board.dismissedKey === c.getAttribute('data-bk')) board.dismissedKey = null;
-        clearTimeout(board.hideT);
-        board.hideT = setTimeout(hideBoardCard, 160);
-      });
-      boardEl.addEventListener('focusin', function (e) {
-        var c = e.target && e.target.getAttribute && e.target.getAttribute('data-bk') ? e.target : null;
-        var visible = false;
-        try { visible = !!c && c.matches(':focus-visible'); } catch (err) { visible = false; }
-        if (visible) showBoardCard(c, 'focus');
-      });
-      boardEl.addEventListener('focusout', function () {
-        board.dismissedKey = null;
-        if (board.hoverVia === 'focus') hideBoardCard();
-      });
-      boardEl.addEventListener('scroll', function () { if (cardEl && cardEl.classList.contains('is-board')) hideBoardCard(); }, { passive: true });
-      if (cardEl) {
-        cardEl.addEventListener('pointerenter', function () { if (cardEl.classList.contains('is-board')) clearTimeout(board.hideT); });
-        cardEl.addEventListener('pointerleave', function (e) {
-          if (!cardEl.classList.contains('is-board')) return;
-          var back = e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('[data-bk]');
-          if (back && back.getAttribute('data-bk') === board.hoverKey) return;
-          board.hideT = setTimeout(hideBoardCard, 160);
-        });
-        cardEl.addEventListener('click', function () {
-          if (!cardEl.classList.contains('is-board') || !board.hoverKey) return;
-          var key = board.hoverKey;
-          hideBoardCard();
-          if (key !== sel) select(key, { trail: true });
-        });
-      }
-      if (window.ResizeObserver) new ResizeObserver(function () { if (board.on) layoutBoard(); }).observe(boardEl);
-    }
-    function openFromBoard(key) {
-      var o = obj(key);
-      if (!o) return;
-      if (o.kind === 'f') { if (key !== sel) select(key, { trail: true }); return; }
-      openPage(o);
-    }
-
     /* ---- Selection, trail and address ------------------------------------- */
     function parentKey(o) {
       if (!o) return null;
@@ -1743,7 +884,7 @@
     // The selection lives in the address. A selection the reader makes is a new entry
     // in the history, so Back and Forward walk the same steps; one that follows from
     // the drawing (a zoom settling) or from the history itself replaces it.
-    function updateHash(push, leavingY, leavingBoard, leavingViews) {
+    function updateHash(push, leavingY, leavingViews) {
       if (!window.history || !window.history.replaceState) return;
       var base = window.location.pathname + window.location.search;
       var url = sel ? base + '#o=' + encodeURIComponent(sel) : base;
@@ -1754,9 +895,9 @@
         // The entry being left keeps how far down the list the reader was, so Back
         // returns them to the same row.
         var previous = readHash();
-        try { window.history.replaceState(Object.assign({}, state, { o: previous, y: leavingY || 0, v: view, ys: leavingViews, sf: searchFolded, b: leavingBoard }), ''); } catch (e) { /* the address still works */ }
-        window.history.pushState({ o: sel, uPrev: previous, v: view, ys: phoneViewY, sf: searchFolded, b: boardPosition() }, '', url);
-      } else window.history.replaceState(Object.assign({}, state, { o: sel, v: view, ys: phoneViewY, sf: searchFolded, b: boardPosition() }), '', url);
+        try { window.history.replaceState(Object.assign({}, state, { o: previous, y: leavingY || 0, v: view, ys: leavingViews, sf: searchFolded }), ''); } catch (e) { /* the address still works */ }
+        window.history.pushState({ o: sel, uPrev: previous, v: view, ys: phoneViewY, sf: searchFolded }, '', url);
+      } else window.history.replaceState(Object.assign({}, state, { o: sel, v: view, ys: phoneViewY, sf: searchFolded }), '', url);
     }
     // The list scrolls inside the panel on a wide screen and with the page on a narrow one.
     function panelScroller() {
@@ -1816,31 +957,28 @@
       }
       var o = key ? obj(key) : null;
       if (key && !o) return;
-      // Only an explicit selection may retry a failed detail packet. A redraw or
-      // rejected cached promise must never recursively start another board update.
+      // Only an explicit selection may retry a failed detail packet; a redraw or a
+      // rejected cached promise never starts another request.
       var retryDi = o ? discOf(o) : -1;
       if (retryDi >= 0 && failedShards[retryDi]) loadShard(retryDi).catch(function () {});
       if (statusEl) statusEl.hidden = true;
       var prev = sel ? obj(sel) : null;
-      var revealSelection = !opts.fromHistory || !pendingBoard;
       var leavingY = savedScrollPos();
-      var leavingBoard = boardPosition();
       var leavingViews = viewPositions();
       pendingViewSwitch = null;
-      if (!opts.fromHistory) { pendingY = null; pendingBoard = null; restoreViewPositions(); }
+      if (!opts.fromHistory) { pendingY = null; restoreViewPositions(); }
       sel = key || null;
       pin = -1;
-      hover = null; hoverVia = ''; cardDismissed = null;
+      hover = null; hoverVia = '';
       // A discipline the reader chooses gets its ring once the move settles; a step
       // through the history or the first paint gets none.
       var fly = opts.fly !== false;
       ring = null;
       ringWanted = o && o.kind === 'd' && opts.trail && !opts.fromHistory && fly ? key : null;
-      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view'), y: leavingY, views: leavingViews, board: leavingBoard });
+      if (opts.trail) trail.push({ key: key, prev: prev ? prev.key : null, view: root.getAttribute('data-view'), y: leavingY, views: leavingViews });
       setReading(o);
-      board.revealKey = revealSelection && o && (o.kind === 'p' || o.kind === 'r' || o.kind === 'l') ? key : null;
       renderPanel(opts.quiet);
-      updateHash(!!opts.trail && !opts.fromHistory, leavingY, leavingBoard, leavingViews);
+      updateHash(!!opts.trail && !opts.fromHistory, leavingY, leavingViews);
       if (o && liveEl) liveEl.textContent = nameOf(o);
       chartTo(fly);
       // A fresh selection starts with its heading and breadcrumbs visible. The
@@ -1870,7 +1008,7 @@
     }
     function updateLegend(fi) {
       if (!legendEl) return;
-      // The family's board explains itself in words; its old key stays closed.
+      // A family opens its own page, so the family key stays closed.
       fi = -1;
       if (fi < 0) { if (!legendEl.hidden) { legendEl.hidden = true; chrome = chromeBoxes(); } return; }
       var f = D.families[fi], rows = [];
@@ -1895,24 +1033,23 @@
             state.uPrev === last.prev && window.history.back) {
           historyBackPending = { key: last.prev, trail: trail.slice(0, -1) };
           try {
-            window.history.replaceState(Object.assign({}, state, { y: savedScrollPos(), v: root.getAttribute('data-view'), ys: viewPositions(), sf: searchFolded, b: boardPosition() }), '');
+            window.history.replaceState(Object.assign({}, state, { y: savedScrollPos(), v: root.getAttribute('data-view'), ys: viewPositions(), sf: searchFolded }), '');
             window.history.back();
             return;
           } catch (e) { historyBackPending = null; /* an explicit ancestor still works */ }
         }
-        var leavingY = savedScrollPos(), leavingBoard = boardPosition(), leavingViews = viewPositions();
+        var leavingY = savedScrollPos(), leavingViews = viewPositions();
         last = trail.pop();
         sel = last.prev;
         restoreViewPositions({ ys: last.views, v: last.view, y: last.y });
         pendingY = typeof last.y === 'number' ? last.y : null;
-        pendingBoard = last.board || null;
         if (last.view) showView(last.view, true);
-        hover = null; hoverVia = ''; ring = null; ringWanted = null; cardDismissed = null;
+        hover = null; hoverVia = ''; ring = null; ringWanted = null;
         setReading(sel ? obj(sel) : null);
         renderPanel();
         // A breadcrumb can skip several levels. Its map ancestor is then a new
         // visit, not necessarily the immediately preceding browser entry.
-        updateHash(true, leavingY, leavingBoard, leavingViews);
+        updateHash(true, leavingY, leavingViews);
         chartTo(true);
         return;
       }
@@ -1935,12 +1072,10 @@
       if (!saved) return;
       restoreViewPositions({ ys: saved.views, v: saved.view, y: saved.y });
       pendingY = typeof saved.y === 'number' ? saved.y : null;
-      pendingBoard = saved.board || null;
       if (saved.view) showView(saved.view, true);
       restorePending();
-      restoreBoardPosition();
       if (window.history && window.history.replaceState) {
-        try { window.history.replaceState(Object.assign({}, window.history.state, { y: saved.y, v: saved.view, ys: phoneViewY, b: saved.board }), ''); } catch (e) { /* navigation still works */ }
+        try { window.history.replaceState(Object.assign({}, window.history.state, { y: saved.y, v: saved.view, ys: phoneViewY }), ''); } catch (e) { /* navigation still works */ }
       }
     }
     function openPage(o, replace) {
@@ -1972,7 +1107,8 @@
       return items.join('<span class="u-crumb-sep" aria-hidden="true">/</span>');
     }
     // The selection's siblings in reading order: fields of the release, families of a
-    // field, and a family's papers, results and Lean statements in the board's order.
+    // field, and a family's papers (oldest first), results and Lean statements.
+    function dateValue(s) { var t = s ? Date.parse(s) : NaN; return isFinite(t) ? t : Infinity; }
     function familyPapers(fi) {
       return D.families[fi].papers.slice().sort(function (a, b) { return dateValue(D.papers[a].date) - dateValue(D.papers[b].date) || a - b; });
     }
@@ -2126,7 +1262,6 @@
       else if (o.kind === 'p') html = paperHtml(o.i);
       else if (o.kind === 'r') html = resultHtml(o.i);
       else if (o.kind === 'l') html = leanHtml(o.i);
-      syncBoard();
       if (titleEl) titleEl.textContent = o ? nameOf(o) : T('page.title');
       if (titleEl) titleEl.className = 'u-title' + (o && o.kind === 'l' ? ' u-title--code' : '') + (o ? ' u-title--deep' : '');
       viewEl.innerHTML = html;
@@ -2224,6 +1359,28 @@
         if (typeof v === 'string' && !/\\(?:newcommand|def|let|ifx|ifmmode|csname|expandafter)/.test(v)) macros[k] = v;
       }
       return macros;
+    }
+    // A displayed formula wider than its box scrolls sideways: it takes focus, so a
+    // keyboard reader can scroll it with the arrow keys (which then do not step).
+    var SCROLLERS = '.m-d, .u-stmt, .u-lean, .u-example, .lean, .tex-fallback';
+    function markScrollers(scope) {
+      if (!scope) return;
+      Array.prototype.forEach.call(scope.querySelectorAll(SCROLLERS), function (x) {
+        var wide = x.scrollWidth > x.clientWidth + 1;
+        if (wide && !x.hasAttribute('tabindex')) { x.setAttribute('tabindex', '0'); x.setAttribute('data-u-scroller', ''); }
+        else if (!wide && x.hasAttribute('data-u-scroller')) { x.removeAttribute('tabindex'); x.removeAttribute('data-u-scroller'); }
+      });
+    }
+    // True when the arrow key belongs to what has focus: a field, or a box that scrolls sideways.
+    function arrowsBelongTo(target) {
+      for (var n = target; n && n.nodeType === 1 && n !== document.body; n = n.parentElement) {
+        if (/^(INPUT|TEXTAREA|SELECT)$/.test(n.tagName) || n.isContentEditable) return true;
+        if (n.matches(SCROLLERS + ', pre, .table-wrap') && n.scrollWidth > n.clientWidth + 1) {
+          var ox = getComputedStyle(n).overflowX;
+          if (ox === 'auto' || ox === 'scroll') return true;
+        }
+      }
+      return false;
     }
     function typeset(el, o) {
       if (!window.katex) { if (window.atlasRenderMath) window.atlasRenderMath(el); return; }
@@ -2773,32 +1930,13 @@
     canvas.addEventListener('pointermove', function (e) {
       var p = localXY(e), h = hitAt(p[0], p[1]);
       if (h === hover) return;
-      // On the way from the object to its card the pointer may cross the ground or the
-      // edge of a neighbour: inside the box spanning both, the card stays.
-      var nextObject = h ? obj(h) : null;
-      var sameRegion = nextObject && nextObject.kind === 'd' && hover && obj(hover).kind === 'f' && discOf(obj(hover)) === nextObject.i;
-      if (sameRegion) {
-        var region = chart.shown.regions[nextObject.i];
-        if (p[0] >= region.x - region.lab.w / 2 && p[0] <= region.x + region.lab.w / 2 &&
-            p[1] >= region.ly && p[1] <= region.ly + region.lab.h) sameRegion = false;
-      }
-      if ((!h || sameRegion) && cardOn && cardBox && hoverVia === 'map' && cardFor && cardFor.key === hover && hover) {
-        var hb = hoverBox(obj(hover));
-        if (hb && p[0] >= Math.min(hb.x0, cardBox.x0) && p[0] <= Math.max(hb.x1, cardBox.x1) &&
-            p[1] >= Math.min(hb.y0, cardBox.y0) && p[1] <= Math.max(hb.y1, cardBox.y1) &&
-            (p[0] - (hb.x0 + hb.x1) / 2) * ((cardBox.x0 + cardBox.x1) / 2 - (hb.x0 + hb.x1) / 2) +
-            (p[1] - (hb.y0 + hb.y1) / 2) * ((cardBox.y0 + cardBox.y1) / 2 - (hb.y0 + hb.y1) / 2) > 0) return;
-      }
-      hover = h; hoverVia = e.pointerType === 'touch' ? 'touch' : 'map'; cardPtr = p;
-      if (h !== cardDismissed) cardDismissed = null;
+      hover = h; hoverVia = e.pointerType === 'touch' ? 'touch' : 'map';
       canvas.classList.toggle('is-over', !!h);
       syncActive();
       if (sel && obj(sel) && obj(sel).kind === 'd' && mapKeyEl && !mapKeyEl.hidden) updateMapKey();
       draw();
     });
-    canvas.addEventListener('pointerleave', function (e) {
-      if (e.relatedTarget && cardEl && cardEl.contains(e.relatedTarget)) return;
-      cardPtr = null;
+    canvas.addEventListener('pointerleave', function () {
       if (hover && hoverVia !== 'list' && hoverVia !== 'focus') { hover = null; hoverVia = ''; canvas.classList.remove('is-over'); syncActive(); draw(); }
     });
     canvas.addEventListener('pointerdown', function (e) {
@@ -2819,24 +1957,11 @@
       if (!key) { if (sel && !chart.start && !(press && press.moving)) stepBack(); return; }
       if (key === sel) return;
       // Every dot is a family, and choosing one opens that family's page: one place to
-      // read a family, rather than a second board drawn inside the map.
+      // read a family, rather than a second view of it drawn inside the map.
       var chosen = obj(key);
       if (chosen && chosen.kind === 'f') { openPage(chosen); return; }
       select(key, { trail: true });
     });
-    if (cardEl) {
-      cardEl.addEventListener('pointerleave', function (e) {
-        if (cardEl.classList.contains('is-board')) return;
-        if (e.relatedTarget === canvas) return;
-        if (hover && hoverVia === 'map') { hover = null; hoverVia = ''; syncActive(); draw(); }
-      });
-      cardEl.addEventListener('click', function () {
-        if (cardEl.classList.contains('is-board') || !hover) return;
-        var key = hover;
-        hover = null; hoverVia = '';
-        if (key !== sel) select(key, { trail: true });
-      });
-    }
     document.addEventListener('click', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
       if (!go || !D) return;
@@ -2863,16 +1988,12 @@
       // opened starts at the top of the panel; one button brings the matches back.
       if (fromResults) foldResults(true);
       // A row opened from the keyboard was redrawn or folded away: focus goes to what replaced it,
-      // the family's board on a wide screen, else the panel's heading.
+      // the map on a phone's map view, else the panel's heading.
       if (byKey) focusArrival();
     });
     function focusArrival() {
       var phoneMap = narrow() && root.getAttribute('data-view') === 'map';
-      // Keyboard navigation needs a visible focus target before the disc's
-      // transition finishes; a hidden board cannot receive focus.
-      if (board.pending && (!narrow() || phoneMap)) showBoard();
-      var target = board.on || board.pending ? (!narrow() || phoneMap ? boardEl : null) : (phoneMap ? canvas : null);
-      if (!target) target = titleEl;
+      var target = phoneMap ? canvas : titleEl;
       if (!target) return;
       if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
       try { target.focus({ preventScroll: narrow() }); } catch (err) { target.focus(); }
@@ -2918,7 +2039,6 @@
       var o = sel ? obj(sel) : null;
       if (o) { viewEl.innerHTML = rerender(o); typeset(viewEl, o); }
       if (panelBody) panelBody.scrollTop = top;
-      if (board.on) { markBoard(); drawWires(); }
       draw();
     });
     // Compact pointer browsing lights the map without reflowing the list.
@@ -2927,7 +2047,7 @@
       var key = go ? go.getAttribute('data-go') : null;
       var via = e.pointerType === 'touch' ? 'touch' : 'list';
       if (go && panelBody && panelBody.contains(go) && key && (key !== hover || hoverVia === 'map')) {
-        hover = key; hoverVia = via; cardPtr = null; draw();
+        hover = key; hoverVia = via; draw();
       }
     });
     root.addEventListener('pointerout', function (e) {
@@ -2943,7 +2063,7 @@
       var key = go ? go.getAttribute('data-go') : null;
       var visible = false;
       try { visible = go && go.matches(':focus-visible'); } catch (err) { visible = false; }
-      if (go && visible && panelBody && panelBody.contains(go) && key && obj(key) && (key !== hover || hoverVia !== 'focus')) { hover = key; hoverVia = 'focus'; cardPtr = null; syncActive(); revealEntry(go); draw(); }
+      if (go && visible && panelBody && panelBody.contains(go) && key && obj(key) && (key !== hover || hoverVia !== 'focus')) { hover = key; hoverVia = 'focus'; syncActive(); revealEntry(go); draw(); }
     });
     root.addEventListener('focusout', function (e) {
       var go = e.target.closest ? e.target.closest('[data-go]') : null;
@@ -3011,16 +2131,13 @@
       });
     }
     document.addEventListener('keydown', function (e) {
-      boardClick = null; boardRepeatPress = null;
       var tag = e.target && e.target.tagName;
       var typing = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (e.target && e.target.isContentEditable);
       if (e.key === 'Escape') {
         if (document.querySelector('dialog[open], .nav-toggle[aria-expanded="true"]')) return;
-        if (cardOn && cardEl && cardEl.classList.contains('is-board')) { e.preventDefault(); hideBoardCard(true); return; }
         if (mapKeyEl && !mapKeyEl.hidden) { e.preventDefault(); mapKeyPinned = false; showMapKey(false); mapKeyBtn.focus(); return; }
         // The input clears its query before a later Escape steps out of the map selection.
         if (e.target === searchIn && searchIn.value) return;
-        if (cardOn && hover && !cardEl.classList.contains('is-board')) { e.preventDefault(); cardDismissed = hover; hideCard(); return; }
         if (sel) { e.preventDefault(); stepBack(); focusArrival(); }
         return;
       }
@@ -3048,13 +2165,11 @@
       historyBackPending = null; historySelection = null;
       var y = e.state && typeof e.state.y === 'number' ? e.state.y : null;
       restoreViewPositions(e.state);
-      pendingBoard = e.state && e.state.b || null;
       if (e.state && (e.state.v === 'map' || e.state.v === 'list')) showView(e.state.v, true);
       if (key !== sel) { trail = returning && returning.key === key ? returning.trail : []; pendingY = y; select(key, { fromHistory: true }); }
       else if (y != null) { pendingY = y; }
       restoreSearch(e.state);
       restorePending();
-      restoreBoardPosition();
       if (returning && returning.key === key) focusArrival();
       if (queued) {
         if (queued.ancestor) selectAncestor(queued.key);
@@ -3064,7 +2179,7 @@
     // Leaving for a paper or a family page, the address's entry keeps the list's place,
     // so coming back finds it.
     window.addEventListener('pagehide', function () {
-      try { window.history.replaceState(Object.assign({}, window.history.state, { o: sel, y: savedScrollPos(), v: root.getAttribute('data-view'), ys: viewPositions(), sf: searchFolded, b: boardPosition() }), ''); } catch (e) { /* nothing to keep */ }
+      try { window.history.replaceState(Object.assign({}, window.history.state, { o: sel, y: savedScrollPos(), v: root.getAttribute('data-view'), ys: viewPositions(), sf: searchFolded }), ''); } catch (e) { /* nothing to keep */ }
     });
     function readHash() {
       var hash = window.location.hash || '';
@@ -3124,7 +2239,6 @@
         // Back from a paper or a family page: the entry remembers the list's place.
         var kept = window.history && window.history.state;
         restoreViewPositions(kept);
-        pendingBoard = kept && kept.b || null;
         if (kept && typeof kept.y === 'number') pendingY = kept.y;
         if (kept && (kept.v === 'map' || kept.v === 'list')) showView(kept.v, true);
         if (start && !/^d:/.test(start)) {
@@ -3133,8 +2247,8 @@
             var initialDi = discOf(initialFamily);
             if (!shards[initialDi] && !failedShards[initialDi]) loadShard(initialDi).catch(function () {});
           }
-          // An address naming a family, paper, theorem or Lean statement (#o=f:003, the
-          // map's older in-map board) now opens that object's own page in its place.
+          // An address naming a family, paper, theorem or Lean statement (#o=f:003, from
+          // when the map opened families inside itself) opens that object's own page.
           loadParts().then(function () {
             var key = readHash(), o = key ? obj(key) : null;
             if (!o) return;
@@ -3157,18 +2271,17 @@
           // Where everything stands on the drawing now, for checks.
           chart: function () { return { shown: chart.shown, boxes: chartBoxes, chrome: chrome }; },
           hover: function (key) { hover = key; paint(); },
-          // What the motion is doing now, for checks: the ring's age, whether the step
-          // back is still easing, and what the card says.
+          // What the motion is doing now, for checks: the ring's age and whether the
+          // step back is still easing.
           motion: function () {
-            return { ring: ring ? { key: ring.key, age: nowMs() - ring.start } : null, ringWanted: ringWanted,
-                     card: cardOn ? cardEl.innerText : null, cardBox: cardOn ? cardBox : null };
+            return { ring: ring ? { key: ring.key, age: nowMs() - ring.start } : null, ringWanted: ringWanted };
           },
           paint: paint
         };
         if (document.fonts && document.fonts.addEventListener) {
           document.fonts.addEventListener('loadingdone', function () {
-            widthCache = {}; labelCache = {}; layoutCache = {}; boardFontVersion++;
-            chartTo(false); if (board.on) layoutBoard();
+            widthCache = {}; labelCache = {}; layoutCache = {};
+            chartTo(false);
           });
         }
       })

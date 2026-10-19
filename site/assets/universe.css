@@ -466,7 +466,6 @@ main.u-main { padding: 0; max-width: none; }
 .u-edge-key { display: inline-flex; align-items: baseline; gap: 4px; margin-right: 10px; font-weight: 600; white-space: nowrap; }
 .u-edge-key--out { color: var(--u-cites); }
 .u-edge-key--in { color: var(--u-cited); }
-[data-board] .u-mapbar { display: none; }
 .u-mapkey-btn { flex: none; position: static; min-height: 32px; padding: 5px 12px; border-radius: var(--r-sm); border: 1px solid var(--rule-strong); background: var(--surface); color: var(--ink); font: 500 var(--fs-small)/1.2 var(--sans); cursor: pointer; }
 .u-mapkey-btn[hidden] { display: none; }
 .u-mapkey-btn[aria-expanded="true"] { border-color: var(--ink); }
@@ -503,157 +502,15 @@ main.u-main { padding: 0; max-width: none; }
 html:not(.js) .u-nojs { display: block; font: 400 var(--fs-meta)/1.5 var(--sans); color: var(--ink-soft); }
 html:not(.js) .u-stage, html:not(.js) .u-switch, html:not(.js) .u-status { display: none; }
 
-/* ---- The family board -------------------------------------------------------- */
-/* Inside a family the map is a board of cards, read left to right: the families whose
-   papers cite it, its papers in columns (each result's statement, typeset, with the Lean
-   statements paired with it joined beneath), and the families its papers cite. Every
-   name is written on its card; nothing waits for the pointer. Cards grow with the
-   screen, so a 27-inch monitor reads as easily as a laptop. */
-.u-board {
-  position: absolute; inset: 0; z-index: 2; overflow: auto; overscroll-behavior: contain;
-  scrollbar-gutter: stable;
-  background: var(--page); color: var(--ink-soft);
-  font: 400 clamp(15px, calc(0.42vw + 9.5px), 20px)/1.45 var(--sans);
-  opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(8px);
-  transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s;
-}
-.u-board.is-on { opacity: 1; visibility: visible; pointer-events: auto; transform: none; transition: opacity var(--t-open) var(--ease-out), transform var(--t-open) var(--ease-out), visibility 0s; }
-.u-board:focus { outline: none; }
-.u-board:focus-visible { outline: 2px solid var(--steel-text); outline-offset: -2px; }
 .u-title:focus { outline: none; }
-[data-board] .u-tools, [data-board] .u-mapkey-btn, [data-board] .u-mapkey, [data-board] .u-maplegend { display: none; }
-.u-board__in { position: relative; box-sizing: border-box; min-height: 100%; padding: 1em 1.25em 1.25em; }
-.u-board__wires { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
-.u-board__wires path { fill: none; stroke-width: 1.5; stroke-linecap: round; }
-.u-board__wires .w-lean { stroke: var(--u-steel); }
-.u-board__wires .w-cand { stroke-dasharray: 5 4; }
-.u-board__wires .w-out { stroke: var(--u-cites); opacity: 0.85; marker-start: url(#u-cite-out); }
-.u-board__wires .w-in { stroke: var(--u-cited); opacity: 0.85; marker-end: url(#u-cite-in); }
-.u-board__wires .w-arrow-out { fill: var(--u-cites); stroke: none; }
-.u-board__wires .w-arrow-in { fill: var(--u-cited); stroke: none; }
-.u-board__wires .is-hot { opacity: 1; stroke-width: 2.2; }
-.u-board__head { margin: 0 0 0.9em; max-width: 72em; }
-.u-board__k { margin: 0; font: 600 0.8125em/1.4 var(--sans); color: var(--muted); }
-.u-board__t { display: none; margin: 0.15em 0 0.3em; font: 500 1.3em/1.25 var(--serif); color: var(--ink); text-wrap: balance; }
-.u-board__r { margin: 0.25em 0 0; max-width: 60em; font-size: 0.875em; color: var(--ink-soft); text-wrap: pretty; }
-.u-board__r b { font-weight: 600; color: var(--ink); }
-.u-board__cols { display: grid; grid-template-columns: minmax(8.5em, 11em) minmax(0, 1fr) minmax(8.5em, 11em); gap: 0 2.25em; align-items: start; }
-.u-board__side h3, .u-board__colh { margin: 0 0 0.55em; font: 600 0.875em/1.3 var(--sans); color: var(--ink); }
-.u-board__side .u-bc + .u-bc { margin-top: 0.6em; }
-.u-board__none { margin: 0; font-size: 0.8125em; color: var(--muted); }
-.u-board__papers { column-gap: 1.25em; padding-top: 1.5em; }
-.u-board__papers > .u-col { break-inside: avoid; margin-bottom: 1.25em; }
-.u-board__papers > [hidden] { display: none; }
-.u-col { min-width: 0; }
-.u-col > ol { list-style: none; margin: 0; padding: 0; }
-.u-col > ol > li { margin: 0.7em 0 0; }
-.u-leans > .u-bc { margin: 0.55em 0 0 1.4em; }
-.u-board__foot { margin: 1.1em 0 0; font-size: 0.8125em; color: var(--muted); }
-.u-board__foot::before { content: ""; display: inline-block; width: 1.6em; margin-right: 0.5em; vertical-align: 0.3em; border-top: 1.5px dashed var(--u-steel); }
-/* A card: one object, named on it, its words kept inside it. */
-.u-bc {
-  position: relative; display: block; box-sizing: border-box; min-width: 0; padding: 0.55em 0.75em 0.65em;
-  background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-md);
-  color: var(--ink-soft); cursor: pointer; overflow: hidden; overflow-wrap: break-word;
-  transition: border-color var(--t-hover) var(--ease-out), box-shadow var(--t-hover) var(--ease-out);
-}
-.u-bc p { margin: 0; }
-@media (hover: hover) and (pointer: fine) { .u-bc:hover { border-color: var(--ink-soft); } }
-.u-bc:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
-.u-bc.is-sel { border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
-.u-bc.is-pair { border-color: var(--u-steel); box-shadow: 0 0 0 1px var(--u-steel); }
-.u-bc.is-ring { animation: u-bc-ring 700ms var(--ease-out) 1; }
-@keyframes u-bc-ring { from { box-shadow: 0 0 0 1px var(--ink), 0 0 0 0 color-mix(in oklab, var(--ink) 40%, transparent); } to { box-shadow: 0 0 0 1px var(--ink), 0 0 0 12px color-mix(in oklab, var(--ink) 0%, transparent); } }
-.u-bc.is-dim { opacity: 0.45; }
-.u-bc--p { background: var(--sunk); border-color: var(--sunk); }
-.u-bc__pt { font: 500 1.0625em/1.3 var(--serif); color: var(--ink); text-wrap: balance; }
-.u-bc__d { margin-top: 0.15em !important; font-size: 0.8125em; color: var(--muted); }
-.u-bc__acts { display: flex; flex-wrap: wrap; gap: 0.2em 1em; margin-top: 0.35em !important; font: 500 0.8125em/1.4 var(--sans); }
-.u-bc__acts a { color: var(--steel-text); }
-.u-bc__lab { font: 600 0.8125em/1.35 var(--sans); color: var(--ink); }
-.u-bc__lab .u-bc__ttl { font-weight: 400; color: var(--ink-soft); }
-/* Give typeset glyphs room beyond the text line box; a few pixels of ink must
-   not create an inner vertical scrollbar and narrow the whole statement. */
-.u-bc__x { margin-top: 0.3em; padding-block: 0.25em; font: 400 1em/1.5 var(--serif); color: var(--ink); overflow-x: auto; overflow-wrap: break-word; }
-.u-bc__x p { margin: 0 0 0.4em; }
-.u-bc__x p:last-child { margin-bottom: 0; }
-.u-bc__x .katex { font-size: 1.02em; }
-.u-bc__x--none { font: 400 0.8125em/1.45 var(--sans); color: var(--muted); max-height: none; }
-.u-bc--l { border-color: color-mix(in oklab, var(--u-steel) 40%, var(--rule-strong)); }
-.u-bc__lt { font: italic 400 1em/1.35 var(--serif); color: var(--steel-text); }
-.u-bc__id { margin-top: 0.1em !important; }
-.u-bc__id code { font: 400 0.8125em/1.35 var(--mono); color: var(--ink-soft); overflow-wrap: anywhere; }
-.u-bc__ln { margin-top: 0.3em !important; font-size: 0.8125em; line-height: 1.45; color: var(--ink-soft); text-wrap: pretty; }
-.u-bc__ln--q { color: var(--ink); }
-.u-bc--f .u-bc__k { font: 600 0.75em/1.4 var(--sans); color: var(--muted); }
-.u-bc__ft { font: 500 0.9375em/1.3 var(--serif); color: var(--ink); }
-.u-bc--f .u-bc__ln { margin-top: 0.2em !important; color: var(--muted); }
-.u-bc--f .u-dot { width: 0.6em; height: 0.6em; margin-right: 0.4em; }
-/* On a wide screen the panel beside the board names the family; on a phone the board
-   is one column under the switch and names it first. */
-@media (max-width: 899px) {
-  [data-universe][data-board] .u-stage { height: auto; min-height: 0; overflow: visible; }
-  [data-universe][data-board] .u-canvas { display: none; }
-  .u-board { position: static; overflow: visible; font-size: 15px; transform: none; }
-  .u-board:not(.is-on) { display: none; }
-  .u-board__in { padding: 0.9em 16px 1.5em; }
-  .u-board__t { display: block; }
-  .u-board__cols { display: flex; flex-direction: column; gap: 1.5em; }
-  .u-board__main { order: 1; }
-  .u-board__side--in { order: 2; }
-  .u-board__side--out { order: 3; }
-  .u-board__papers { display: block; padding-top: 0; }
-  .u-col + .u-col { margin-top: 1.4em; }
-  .u-board__papers > .u-col { margin-bottom: 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .u-board, .u-board.is-on { transition: none; transform: none; }
-  .u-bc.is-ring { animation: none; }
-}
 
 /* ---- Motion (DESIGN.md "Motion and hover") ---------------------------------- */
-/* The card beside what the pointer names on the map: its name, where it belongs,
-   its counts and its state in words. It never takes the pointer, fades in over
-   --t-hover and leaves a little faster. */
-.u-card {
-  position: absolute; left: 0; top: 0; z-index: 4; box-sizing: border-box;
-  width: max-content; max-width: min(300px, calc(100% - 16px)); padding: 9px 12px 10px;
-  background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-md, 8px);
-  box-shadow: 0 1px 2px rgba(25, 21, 32, 0.08), 0 6px 18px -8px rgba(25, 21, 32, 0.2);
-  font: 400 var(--fs-small)/1.45 var(--sans); color: var(--ink-soft);
-  pointer-events: none; visibility: hidden; opacity: 0;
-  transition: opacity 80ms var(--ease-out), visibility 0s linear 80ms;
-}
-.u-card.is-on { visibility: visible; opacity: 1; transition: opacity var(--t-hover) var(--ease-out), visibility 0s; }
-.u-card p { margin: 0; }
-.u-card__t { font: 500 0.9375rem/1.3 var(--serif); color: var(--ink); text-wrap: balance; margin-bottom: 3px !important; }
-.u-card__t--lean { font-style: italic; }
-.u-card__t code { display: block; margin-top: 2px; font: 400 0.75rem/1.35 var(--mono); font-style: normal; color: var(--muted); overflow-wrap: anywhere; }
-.u-card__sub { font-weight: 400; }
-.u-card__k { color: var(--muted); }
-.u-card__n { color: var(--ink-soft); }
-.u-card__e { display: flex; align-items: baseline; margin-top: 4px !important; color: var(--ink-soft); text-wrap: pretty; }
-.u-card__e .u-dot { position: relative; top: 0.05em; }
-.u-card__e .u-join { flex: none; }
-/* On the board the card says more (a statement's opening, a pairing's terms), and the
-   pointer can move onto it to read it; a click on it selects what it names. */
-.u-card.is-board { max-width: min(23rem, calc(100% - 16px)); }
-.u-card.is-on { pointer-events: auto; cursor: pointer; }
-.u-card__x { margin: 5px 0 2px; font: 400 0.9375rem/1.5 var(--serif); color: var(--ink); overflow-wrap: break-word; }
-.u-card__n + .u-card__n { margin-top: 3px !important; }
-.u-card__n b { font-weight: 600; color: var(--ink); }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .u-card { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 10px 26px -10px rgba(0, 0, 0, 0.6); }
-}
-:root[data-theme="dark"] .u-card { box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2), 0 10px 26px -10px rgba(0, 0, 0, 0.6); }
-@media (hover: none) { .u-card { display: none; } }
 /* The panel's new content rises 6 px into place as a selection changes. Filled
    backwards only, so nothing keeps a transform once it has arrived. */
 @keyframes u-arrive { from { opacity: 0; transform: translateY(6px); } }
 .u-view.is-arriving, .u-title.is-arriving { animation: u-arrive var(--t-state) var(--ease-out) backwards; }
 @media (prefers-reduced-motion: reduce) {
   .u-view.is-arriving, .u-title.is-arriving { animation: none; }
-  .u-card, .u-card.is-on { transition: none; }
 }
 
 /* The selection has one scrolling reading surface. Section links stay reachable
@@ -700,10 +557,5 @@ a.u-key__n { color: var(--steel-text); text-decoration: underline; text-underlin
 .u-results__more { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin: 8px 0 4px; }
 .u-more-btn, .u-suggest__w { min-height: 28px; padding: 3px 10px; border: 1px solid var(--rule-strong); border-radius: var(--r-sm); background: var(--surface); color: var(--steel-text); font: 600 var(--fs-small)/1.3 var(--sans); cursor: pointer; }
 .u-suggest__w { padding: 2px 8px; font-weight: 500; }
-/* A formula wider than its card that takes focus to scroll. */
+/* A formula wider than its box that takes focus to scroll. */
 [data-u-scroller]:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 1px; }
-
-/* round 2: pairing consistency */
-/* A short card under a second theorem a Lean statement is paired with points back to its full card. */
-.u-bc--l.u-bc--also { background: transparent; padding-block: 0.4em; }
-.u-bc--l.u-bc--also .u-bc__lt { font-size: 0.92em; }
