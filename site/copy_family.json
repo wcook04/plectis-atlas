@@ -161,7 +161,7 @@
   "holes_one": "Comparator compares one definition by its name and type only: {names}.",
   "holes_many": "{n} definitions are compared by name and type only: {names}.",
   "cited_quote": "The Lean source’s comment reads: {quote}",
-  "nolean": "The release has no Lean statement for this family. Its papers remain available to read, and contributors can propose a formal statement of a result.",
+  "nolean": "The release has no Lean statement for this family. Its papers remain available to read.",
   "runs_link": "The groups’ Comparator runs",
   "sorry": "This file states the theorem with <code>sorry</code>, a placeholder, in place of its proof. OpenAI supplies a separate proof file. Comparator tests whether that proof proves the statement here.",
   "source_notes_heading": "Lean source and the scope of the reports",
@@ -404,9 +404,9 @@
  "glance": {
   "_note": "The first-screen comparison of what each outside group found, in their own words.",
   "col_who": "Group",
-  "not_read": "Not assessed.",
+  "not_read": "No coverage assessment recorded.",
   "no_scope": "Did not assess this.",
-  "runs_none": "No run reported.",
+  "runs_none": "No run recorded.",
   "record": "Their assessment",
   "record_label": "Read {who}’s original assessment",
   "note": "Quoted words are each group’s own; point at a label to read its meaning. The dot is the family’s colour on the map.",
@@ -436,7 +436,18 @@
   "not_run": "no run reported for {which}",
   "nolean_do": "You can still {papers}, or {explain}.",
   "nolean_papers": "read the papers",
-  "nolean_explain": "explain a result or propose a Lean statement for it"
+  "nolean_explain": "explain a result or propose a Lean statement for it",
+  "run": {
+   "accepted": "Acceptance reported",
+   "undecided": "Run ended without a verdict",
+   "built": "Built and checked; Comparator not run",
+   "other": "No acceptance reported"
+  },
+  "their_label": "Their label:",
+  "col_scope": "Does the Lean state the whole claim?",
+  "col_run_one": "Did OpenAI’s proof of {lean} pass [[comparator|Comparator]]?",
+  "col_run_many": "Did OpenAI’s proofs pass [[comparator|Comparator]]?",
+  "col_run": "Did OpenAI’s proof pass Comparator?"
  },
  "tabs": {
   "_note": "Each tab answers one reading question about the family.",
@@ -444,10 +455,11 @@
   "result": "What the paper claims",
   "lean": "OpenAI’s Lean",
   "checks": "The groups’ reasons",
-  "cites": "Read more",
+  "cites": "Related reading",
   "said": "What others wrote",
   "contribute": "How to help",
-  "none": "(none in the release)"
+  "none": "(none in the release)",
+  "overview": "Overview"
  },
  "brief": {
   "_note": "Under the claim: the family's current papers and selected Lean statements, each linked.",
@@ -477,7 +489,7 @@
   "lean": "Which Lean statement was selected?",
   "scope": "Does the Lean state the whole claim?",
   "proof": "Did OpenAI’s proof pass [[comparator|Comparator]], the checking program?",
-  "left": "Not yet checked by anyone",
+  "left": "What the reports leave open",
   "proof_one_by_one": "{names} reports that Comparator accepted OpenAI’s proof of {lean}.",
   "proof_one_by_many": "{names} report that Comparator accepted OpenAI’s proof of {lean}.",
   "proof_none_one": "No group reports that Comparator accepted OpenAI’s proof of {lean}.",
@@ -486,6 +498,8 @@
   "proof_none_many": "No group reports that Comparator accepted OpenAI’s proof of any of the {n} Lean statements.",
   "proof_all_least_one": "Groups report that Comparator accepted OpenAI’s proofs of all {n} Lean statements, at least one group for each.",
   "proof_all_least_many": "Groups report that Comparator accepted OpenAI’s proofs of all {n} Lean statements, at least {k} groups for each.",
-  "proof_some": "Groups report that Comparator accepted OpenAI’s proofs of {k} of the {n} Lean statements: {which}."
+  "proof_some": "Groups report that Comparator accepted OpenAI’s proofs of {k} of the {n} Lean statements: {which}.",
+  "found": "What did the outside groups find?",
+  "left_pairing": "Paper–Lean match: no review recorded"
  }
 }

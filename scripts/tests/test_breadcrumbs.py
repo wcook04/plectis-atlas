@@ -105,7 +105,9 @@ class GeneralPages(unittest.TestCase):
             opening = " ".join(re.findall(r"<p[^>]*>(.*?)</p>", main[main.index("</h1>"):], re.S)[:2])
             self.assertRegex(unescape(opening), r"(?i)\bfor (anyone|mathematicians)|first list", rel)
             cur = re.findall(r'<a href="[^"]*" aria-current="page">', h[:h.index("</header>")])
-            if section:
+            # A section the header nav carries marks itself there; one the footer carries
+            # (Contribute) has nothing to mark in the header.
+            if section and section in dict((k, v) for v, k in S.NAV):
                 href = dict((k, v) for v, k in S.NAV)[section]
                 self.assertEqual(cur, [f'<a href="{href}" aria-current="page">'], rel)
             else:

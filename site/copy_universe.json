@@ -273,17 +273,7 @@
   "checked_neal": "ran Comparator on OpenAI’s proofs using Lean’s own proof verifier and recorded the time and memory used.",
   "checked_hol": "proved selected intermediate steps using HOL Light, a different proof assistant, and tested incorrect examples that the program should reject.",
   "checked_erdos": "identifies which Erdős problems the papers address. These links do not assess whether the claimed proofs are correct.",
-  "checked_more_link": "Every source, with what each one reports",
-  "help_heading": "How to help",
-  "help_intro": "Each contribution covers one result or one page, and is credited by name on the pages it changes.",
-  "help_without_heading": "Without an AI account",
-  "help_without": "Open a short GitHub form to explain a result, compare a Lean statement with its paper, or report a problem with a page.",
-  "help_without_link": "Ways to contribute",
-  "help_with_heading": "With an AI account",
-  "help_with": "Give your assistant the start-here guide from the repository. It helps you choose one useful note, drafts it privately and leaves the signing to you.",
-  "help_with_link": "The start-here guide",
-  "help_queue": "Some Lean statements have a specific reason to be read first.",
-  "help_queue_link": "See which, and why"
+  "checked_more_link": "Every source, with what each one reports"
  },
  "maplegend": {
   "heading": "On this family’s map",

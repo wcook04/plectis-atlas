@@ -228,6 +228,45 @@ what is left to check, quoting OpenAI's own sentence on what its Lean leaves out
 (017: the Flint–Hills consequence). A family with no Lean gets a quiet Lean tab
 of one line.
 
+**The overview is the first tab; evidence is one row per group** (19 October
+2026, third pass). The overview sat above the tabs, so every tab opened under a
+screenful the reader had already read. Now the trail, title and tab bar come
+first, **Overview** is the default tab and every other tab opens straight into
+its task; old addresses into removed sections (`#left`, `#explain`, `#h-left`,
+`#h-explain`, `#h-contrib`, `#h-standing`) land on the overview or the theorem.
+The overview's table gives each group one row across both questions (does the
+Lean state the whole claim; did OpenAI's proof of the named statement pass
+Comparator), so a reader never carries a group's name across the page. Each
+cell reads in three steps: the plain outcome (from the record's state:
+`reported-accepted` "Acceptance reported", `reported-undecided` "Run ended
+without a verdict", `reported-built` "Built and checked; Comparator not run"),
+then the group's own label and reason, then the date and its account.
+cert-machine's "REFUSED" on 005 is a run that ended, not a proof found invalid,
+and the outcome word says so before the label. A group with only a run gets "No
+coverage assessment recorded", never a failure word. The note on what is
+unreviewed is titled by its scope ("Paper–Lean match: no review recorded").
+
+**Atlas asks readers for nothing** (Will, 19 October 2026: "this is all noise
+... we're just collecting from online"). The family page has no contribution
+tab, no "open questions you can help with" button and no "Open the form" links;
+the header nav has no Contribute item (the page stays, linked from the footer);
+the map has no How to help band; Lean pages state what is unreviewed as fact
+("No comparison of this Lean statement with Theorem 1.1 is recorded") rather
+than as a task, and show contributed records only when some exist. Saying that
+no review is recorded is evidence and stays; inviting the reader to do the
+review is not.
+
+**Set reading modules on the page, not in boxes.** Only mathematics (theorem
+and Lean excerpts) and the evidence table sit on a raised surface; group
+reports, routes and commentary are columns under a hairline, with group columns
+under a 2px ink rule and sharing row tracks (subgrid) so each group's
+assessment and runs start on one line. Explanatory text on family pages is
+14 to 16px (`--fs-small` and `--fs-body` raised inside `.fx`), never the site's
+13px label step. A short theorem stands beside its papers on a wide screen;
+follow-up research is the main column of Related reading with references
+beside it, so no card stretches round a narrow strip of text. Commentary lists
+credited, dated items newest first and an item with no named author last.
+
 **The first screen teaches, one question at a time** (19 October 2026, round 2).
 Will: "god-level good clear communication for any audience". Worked on family
 017 (π) and checked on 003, 005, 006 and 159. The headings alone now carry the
@@ -455,7 +494,7 @@ is reading, delay the mathematics, or run in a loop.
 | `papers/<slug>.html` | Read the paper, with evidence at each theorem |
 | `statements/<id>.html` | Read the Lean statement whole, and what you must check |
 | `explain.html` | Every family as a list, with who has explained it |
-| `sources.html`, `glossary.html`, `numbers.html`, `contribute.html`, `about.html` | Credit, terms, counts with receipts, how to help, why it is built this way |
+| `sources.html`, `glossary.html`, `numbers.html`, `contribute.html` (footer only), `about.html` | Credit, terms, counts with receipts, how to contribute, why it is built this way |
 | `help.html`, and the `?` guide in every header | How to use the Atlas: the route through one result and the words on the way |
 
 ## What the October rebuild taught

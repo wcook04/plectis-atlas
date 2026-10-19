@@ -3,8 +3,7 @@
 Builds the pages into a temporary directory and checks what DESIGN.md and the brief
 pin: the anchors other pages link to, the theorem shown only when the backend names a
 candidate, every state in words (no symbol mark), every inspection trigger with its
-record, no repeated ids, and every "what is left to check" link carrying its target's
-exact fingerprint. Standard library only: python3 scripts/tests/test_family_page.py
+record, no repeated ids, and no contribution tab or form link. Standard library only: python3 scripts/tests/test_family_page.py
 """
 from __future__ import annotations
 
@@ -63,10 +62,8 @@ def main() -> int:
             # The page leads with what the papers state; how those statements were chosen follows them.
             if said and 'id="claim-alt-1"' in html:
                 check(page_text.index('id="claim-alt-1"') < page_text.index(said), "the unresolved note comes before the statements")
-        for rc in doc.get("remaining_checks") or []:
-            fp = (rc.get("contribution_target") or {}).get("fingerprint")
-            if fp:
-                check(fp in unquote(html), f"no contribution link carries {fp[:19]}")
+        # Atlas collects from public sources and asks readers for nothing (19 October 2026).
+        check('id="p-contribute"' not in html and "Open the form" not in html, "a contribution tab or form link")
         if doc.get("lean"):
             for l in doc["lean"]:
                 check(f'id="lean-{l["id"][2:]}"' in html, f"no comparison for {l['id']}")
@@ -95,7 +92,7 @@ def main() -> int:
         check('class="fx-cmp fx-cmp--rest"' not in html, "a Lean comparison is hidden behind another")
         tabs = re.findall(r'data-fx-tab="([^"]+)"', html)
         panels = re.findall(r'id="(p-[a-z]+)" role="tabpanel"', html)
-        check(tabs == panels and tabs and tabs[0] == "p-result", f"tabs {tabs} do not match panels {panels}")
+        check(tabs == panels and tabs and tabs[0] == "p-overview", f"tabs {tabs} do not match panels {panels}")
         check("index.html#o=f%3A" not in html, "a map link to the family, which now opens this page")
     fails += tone_tokens_equal()
     fails += status_group_counts()

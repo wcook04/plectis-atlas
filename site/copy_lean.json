@@ -333,14 +333,14 @@
   "intro_def": "Two separate answers. Does the Lean state the advertised result? That is judged for all of family {id}’s Lean statements together. Did OpenAI’s definitions pass Comparator? That is reported for this Lean statement alone. Their labels differ, so read the reasons in their own words."
  },
  "left": {
-  "heading": "What is still unchecked, and how can you help?",
-  "intro": "These questions are open, as far as Atlas records. Each comparison you contribute is credited by name.",
-  "match": "Compare the Lean statement with {ref}: does it say the same thing, with the same hypotheses? No such comparison is recorded.",
-  "no_match": "Find the paper theorem this Lean statement expresses, if any. No paper statement matched its wording clearly.",
-  "replay": "Run Comparator at the release version shown here. No group’s accepted run is recorded at this version.",
-  "definitions": "Read the definitions OpenAI’s library supplies against the objects the paper means. Comparator compares them by name and type only.",
-  "scope": "Review OpenAI’s note on what this statement covers. Only an AI-drafted interpretation of it is recorded.",
-  "disagree": "Settle why the groups disagree about how much of the family’s result its Lean statements express. Their notes above give their reasons.",
+  "heading": "What is still unchecked",
+  "intro": "As far as Atlas records, nobody has reviewed these questions.",
+  "match": "No comparison of this Lean statement with {ref} is recorded: whether it says the same thing, with the same hypotheses.",
+  "no_match": "No paper theorem is identified as the one this Lean statement expresses; none matched its wording clearly.",
+  "replay": "No group’s accepted Comparator run is recorded at the release version shown here.",
+  "definitions": "The definitions OpenAI’s library supplies have not been compared with the objects the paper means; Comparator compares them by name and type only.",
+  "scope": "Only an AI-drafted interpretation of OpenAI’s note on what this statement covers is recorded.",
+  "disagree": "The groups disagree about how much of the family’s result its Lean statements express; their notes above give their reasons.",
   "paper": "Checking the paper’s proof, and whether its result is new, is a separate question: Comparator says nothing about either."
  },
  "next": {
