@@ -616,12 +616,29 @@ readable, while keeping those circles clickable.
   as one grid row, and the table head sticks inside its own scroll box. A choice is
   offered once: disagreement is the colour filter's "The groups disagree" (an old
   `?c=disagree` link selects it). Both lists filter by Comparator runs.
-- **The `?` guide.** Beside Search in every header; the `?` key, `?help=1` and any
-  `data-help="<step>"` element open it (at that step). Its words live in
-  `copy.json` `help`, rendered into every page and into `help.html` for readers
-  without scripts; it ends by saying Atlas links reports and runs no checks. The
-  map alone shows a one-line first-visit hint, floating so the map's layout is
-  untouched, dismissed for good in `localStorage`.
+- **One breadcrumb.** `build_site.trail` writes every trail below the map: a
+  `nav` landmark holding an `ol`, every crumb a link except the page itself
+  (`aria-current="page"`), slashes hidden from screen readers and glued to the
+  crumb after them. Inside a family: `family_trail(f, root[, here])` gives
+  Map / Subject / Family N: title [/ this page]. A list or general page:
+  `section_trail(root, key[, page])` gives Map / Section [/ page], and the
+  header marks that section; pages inside a family mark Map
+  (`aria-current="true"`). The previous/next row sits directly under the trail,
+  between two hairlines, on every family, Lean statement and paper page.
+- **Every general page opens with its purpose.** The lede says what the page is
+  for and who it helps, then what to do next. List column heads and filters
+  carry `data-tip` (`tip_attr`): atlas.js shows the plain explanation in the
+  glossary popover on hover and focus.
+- **The `?` guide teaches through one example.** Beside Search in every header;
+  the `?` key, `?help=1` and any `data-help="<step>"` element open it (at that
+  step). Family 017 comes first as six numbered steps in a tinted card, the same
+  route for any result beside it, then the words in the order a reader meets
+  them. The same blocks fill `help.html`. No card floats over the map: the
+  map's own panel offers the guide and the example.
+- **The glossary has two orders.** `glossary.json` `learning_order` lists the
+  core terms; the page shows them first as numbered cards in columns, then
+  every term A to Z. A term's `example` follows its definition there and in
+  the hover popover.
 - **The footer** is the name, independence and licence, then three short labelled
   lists (the Atlas, lists and credits, source). It sits directly after the page's
   last section, with no stacked margins above it.

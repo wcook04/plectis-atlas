@@ -136,7 +136,9 @@ def ctext(s: str) -> str:
     return TERM_RE.sub(lambda m: term_link(m.group(1), m.group(2)), out)
 
 
-GLOSSARY = {t_["id"]: t_ for t_ in json.loads((ASSETS / "glossary.json").read_text(encoding="utf-8"))["terms"]}
+_GLOSSARY_JSON = json.loads((ASSETS / "glossary.json").read_text(encoding="utf-8"))
+GLOSSARY = {t_["id"]: t_ for t_ in _GLOSSARY_JSON["terms"]}
+GLOSSARY_ORDER = [t_ for t_ in _GLOSSARY_JSON.get("learning_order") or [] if t_ in GLOSSARY]
 TERM_RE = re.compile(r"\[\[([a-z0-9-]+)\|([^\]]+)\]\]")
 
 
@@ -1172,29 +1174,47 @@ def source_credit(source_id):
 
 
 
+def glossary_row(t_, prefix=""):
+    """One term: its plain definition, then a concrete example from the release."""
+    ex = (f'<p class="gloss__ex"><span class="gloss__exk">{esc(C("glossary.example"))}:</span> {esc(t_["example"])}</p>'
+          if t_.get("example") else "")
+    return (f'<div class="gloss__row" id="{prefix}{esc(t_["id"])}"><dt>{esc(t_["term"])}</dt>'
+            f'<dd><p class="gloss__def">{esc(t_["short"])}</p>{ex}</dd></div>')
+
+
 def build_glossary():
-    """The glossary page: every term pages link with [[id|text]], grouped by first letter."""
+    """The glossary page: first the core terms in the order a newcomer meets them
+    (glossary.json learning_order), each with an example; then every term A to Z, grouped
+    by first letter. The A to Z rows keep the term ids pages link to; the learning list
+    links down to them."""
     rel = "glossary.html"
     terms = sorted(GLOSSARY.values(), key=lambda t_: t_["term"].lower())
     groups = {}
     for t_ in terms:
         groups.setdefault(t_["term"][0].upper(), []).append(t_)
     blocks = "".join(
-        f'<section class="gloss__group" aria-labelledby="g-{L}"><h2 class="h3" id="g-{L}">{L}</h2><dl class="gloss">'
-        + "".join(f'<div class="gloss__row" id="{esc(t_["id"])}"><dt>{esc(t_["term"])}</dt><dd>{esc(t_["short"])}</dd></div>' for t_ in group)
+        f'<section class="gloss__group" aria-labelledby="g-{L}"><h3 class="h3" id="g-{L}">{L}</h3><dl class="gloss">'
+        + "".join(glossary_row(t_) for t_ in group)
         + "</dl></section>" for L, group in groups.items())
     letters = "".join(f'<li><a href="#g-{L}">{L}</a></li>' for L in groups)
+    start = "".join(
+        f'<li class="gstart__i"><a class="gstart__t" href="#{esc(tid)}">{esc(GLOSSARY[tid]["term"])}</a>'
+        f'<p class="gstart__d">{esc(GLOSSARY[tid]["short"])}</p>'
+        + (f'<p class="gloss__ex"><span class="gloss__exk">{esc(C("glossary.example"))}:</span> {esc(GLOSSARY[tid]["example"])}</p>' if GLOSSARY[tid].get("example") else "")
+        + "</li>" for tid in GLOSSARY_ORDER)
     body = f"""<div class="frame page page--wide">
+{section_trail("", "glossary")}
 <header class="phead">
  <h1 class="phead__title">{esc(C('glossary.title'))}</h1>
  <p class="lede">{esc(C('glossary.lede'))}</p>
- <nav class="jump" aria-label="{esc(C('glossary.letters'))}"><ul>{letters}</ul></nav>
 </header>
-<div class="gloss-cols">{blocks}</div>
+<section class="band band--tight" aria-labelledby="h-gstart"><h2 class="h2" id="h-gstart">{esc(C('glossary.start_heading'))}</h2>
+<ol class="gstart">{start}</ol></section>
+<section class="band band--tight" aria-labelledby="h-gall"><h2 class="h2" id="h-gall">{esc(C('glossary.all_heading'))}</h2>
+<nav class="jump" aria-label="{esc(C('glossary.letters'))}"><ul>{letters}</ul></nav>
+<div class="gloss-cols">{blocks}</div></section>
 </div>"""
     write_page(rel, page(rel, C("glossary.title"), C("glossary.lede"), body, current="glossary"))
-
-
 
 
 def findings_for(fid=None, sid=None, kinds=None):
@@ -1424,10 +1444,13 @@ NAV = [("index.html", "map"), ("explain.html", "explain"), ("statements.html", "
 def header(rel: str, current: str | None) -> str:
     root = "../" * rel.count("/")
     links = []
+    # A page inside a family (family, Lean statement, paper, explanation) sits under the
+    # map in the breadcrumb, so the nav marks Map as its section (aria-current="true").
+    inside = current is None and rel.split("/")[0] in ("families", "statements", "papers", "explanations")
     for href, key in NAV:
-        cur = ' aria-current="page"' if key == current else ""
+        cur = ' aria-current="page"' if key == current else (' aria-current="true"' if inside and key == "map" else "")
         links.append(f'<a href="{root}{href}"{cur}>{esc(C("nav." + key))}</a>')
-    return f"""<body data-root="{root}" data-generation="{esc(RD().generation)}" data-copied="{esc(C('words.copied'))}" data-copy-failed="{esc(C('words.copy_failed'))}" data-tex-failed="{esc(C('words.tex_failed'))}">
+    return f"""<body data-root="{root}" data-generation="{esc(RD().generation)}" data-copied="{esc(C('words.copied'))}" data-copy-failed="{esc(C('words.copy_failed'))}" data-tex-failed="{esc(C('words.tex_failed'))}" data-example-word="{esc(C('glossary.example'))}">
 <a class="skip" href="#main">{esc(C('site.skip'))}</a>
 <header class="top">
  <div class="frame top__in">
@@ -1455,20 +1478,43 @@ def header(rel: str, current: str | None) -> str:
  <div class="search__results" id="search-results" role="listbox" aria-label="{esc(C('search.results_label'))}"></div>
  <p class="search__keys">{C('search.keys')}</p>
 </dialog>
-{help_dialog(root)}{first_visit_hint() if current == "map" else ""}"""
+{help_dialog(root)}"""
 
 
-def help_steps_html(prefix: str = "help-") -> str:
-    """The route through a result, numbered: shared by the help dialog, help.html and the
-    404 page. Each step carries an id, so data-help="<step>" opens the guide at it."""
-    return '<ol class="help__steps">' + "".join(
-        f'<li id="{prefix}{esc(sid)}"><span class="help__step">{text}</span></li>' for sid, text in COPY["help"]["steps"]) + "</ol>"
+def help_steps_html(prefix: str = "help-", key: str = "steps") -> str:
+    """A numbered list of the guide's steps: the worked example (key "example_steps") or
+    the general route ("steps"), shared by the help dialog, help.html and the 404 page.
+    Each step carries an id, so data-help="<step>" opens the guide at it."""
+    cls = "help__steps help__steps--ex" if key == "example_steps" else "help__steps"
+    return f'<ol class="{cls}">' + "".join(
+        f'<li id="{prefix}{esc(sid)}"><span class="help__step">{text}</span></li>' for sid, text in COPY["help"][key]) + "</ol>"
 
 
 def help_terms_html(root: str) -> str:
     return '<dl class="help__terms">' + "".join(
         f'<div class="help__term"><dt><a href="{root}glossary.html#{esc(tid)}">{esc(label)}</a></dt><dd>{esc(text)}</dd></div>'
         for tid, label, text in COPY["help"]["terms"]) + "</dl>"
+
+
+def help_more_html(root: str, page_link=True) -> str:
+    links = [f'<a href="{root}glossary.html">{esc(C("help.glossary_link"))}</a>']
+    if page_link:
+        links.append(f'<a href="{root}help.html">{esc(C("help.page_link"))}</a>')
+    return '<p class="help__more">' + "".join(links) + "</p>"
+
+
+def help_guide_html(root: str, h: str = "h3", prefix: str = "help-", page_link=True) -> str:
+    """The guide's teaching order: one worked example (family 017) first, then the same
+    route for any result beside it, then the words in the order a reader meets them."""
+    hc = "help__h" if h == "h3" else "h2"
+    return f"""<div class="help__cols">
+  <section class="help__example" aria-labelledby="{prefix}ex-h"><{h} class="{hc}" id="{prefix}ex-h">{esc(C('help.example_heading'))}</{h}>
+   <p class="help__intro">{esc(C('help.example_intro'))}</p>{help_steps_html(prefix, "example_steps")}
+   <p class="help__more"><a class="btn btn--primary btn--small" href="{root}families/017.html">{esc(C('help.example_open'))}</a></p></section>
+  <section class="help__route" aria-labelledby="{prefix}steps-h"><{h} class="{hc}" id="{prefix}steps-h">{esc(C('help.steps_heading'))}</{h}>{help_steps_html(prefix)}</section>
+ </div>
+ <section class="help__words" aria-labelledby="{prefix}terms-h"><{h} class="{hc}" id="{prefix}terms-h">{esc(C('help.terms_heading'))}</{h}>{help_terms_html(root)}
+  {help_more_html(root, page_link)}</section>"""
 
 
 def help_dialog(root: str) -> str:
@@ -1482,11 +1528,7 @@ def help_dialog(root: str) -> str:
  </div>
  <div class="help__body">
   <p class="help__what">{esc(C('help.what'))}</p>
-  <div class="help__cols">
-   <section class="help__route" aria-labelledby="help-steps-h"><h3 class="help__h" id="help-steps-h">{esc(C('help.steps_heading'))}</h3>{help_steps_html()}</section>
-   <section class="help__words" aria-labelledby="help-terms-h"><h3 class="help__h" id="help-terms-h">{esc(C('help.terms_heading'))}</h3>{help_terms_html(root)}
-    <p class="help__more"><a href="{root}glossary.html">{esc(C('help.glossary_link'))}</a> · <a href="{root}help.html">{esc(C('help.page_link'))}</a></p></section>
-  </div>
+  {help_guide_html(root)}
   <p class="help__limit">{esc(C('help.limit'))}</p>
  </div>
  <p class="search__keys">{C('help.keys')}</p>
@@ -1497,24 +1539,13 @@ def build_help():
     """help.html: the same guide as a page, for readers without scripts and for links."""
     rel = "help.html"
     body = f"""<div class="frame page page--wide page--help">
-<header class="phead"><h1 class="phead__title">{esc(C('help.title'))}</h1><p class="lede">{esc(C('help.what'))}</p></header>
-<div class="help__cols help__cols--page">
- <section class="band band--tight help-route" aria-labelledby="hp-steps"><h2 class="h2" id="hp-steps">{esc(C('help.steps_heading'))}</h2>{help_steps_html("step-")}</section>
- <section class="band band--tight" aria-labelledby="hp-terms"><h2 class="h2" id="hp-terms">{esc(C('help.terms_heading'))}</h2>{help_terms_html("")}
-  <p class="help__more"><a href="glossary.html">{esc(C('help.glossary_link'))}</a></p></section>
-</div>
+{trail("", [(esc(C("help.title")), None)])}
+<header class="phead"><h1 class="phead__title">{esc(C('help.title'))}</h1><p class="lede">{esc(C('help.what'))}</p>
+<p class="phead__facts">{esc(C('help.page_lede'))}</p></header>
+{help_guide_html("", "h2", "step-", page_link=False)}
 <p class="help__limit">{esc(C('help.limit'))}</p>
 </div>"""
     write_page(rel, page(rel, C("help.title"), C("help.page_description"), body, current="help"))
-
-
-def first_visit_hint() -> str:
-    """A one-line pointer to the guide on the map, floating under the header so the map's
-    own layout is untouched. Hidden until atlas.js finds no dismissal stored."""
-    return (f'<div class="hint" id="first-hint" role="note" hidden><p class="hint__t">{esc(C("help.hint"))}</p>'
-            f'<button class="btn btn--small hint__open" type="button" aria-haspopup="dialog" aria-controls="help-dialog">{esc(C("help.hint_open"))}</button>'
-            f'<a class="hint__ex" href="families/017.html">{esc(C("help.hint_example"))}</a>'
-            f'<button class="hint__x" type="button" aria-label="{esc(C("help.hint_close"))}"><span aria-hidden="true">\u00d7</span></button></div>')
 
 
 def footer(rel: str) -> str:
@@ -1570,19 +1601,59 @@ def page(rel, title, description, body, *, current=None, og_block=None, noindex=
     return f'{h}\n{header(rel, current)}\n<main id="main" class="{main_class}" tabindex="-1">\n{body}\n</main>\n{footer(rel)}'
 
 
-# A breadcrumb's separator goes with the step after it: a line may break before "/" and
-# never after it, so a phone never shows a "/" alone on a line.
+# The one breadcrumb grammar for every page below the front door (DESIGN.md, "The shell
+# and the general pages"): Map / <Subject> / Family <N>: <title> / <this page>, and on a
+# list or general page Map / <Section> [/ <this page>]. It is an ordered list inside a
+# labelled nav landmark; every crumb is a link except the page itself, which carries
+# aria-current="page"; the slashes are hidden from screen readers. A separator goes with
+# the step after it (a word joiner glues them), so a phone never shows a "/" alone at the
+# end of a line. TRAIL_SEP stays for builders that still write their own crumbs.
 TRAIL_SEP = ' <span class="trail__sep" aria-hidden="true">/</span>\u2060'
 
 
 def trail(root, items):
-    parts = [f'<a href="{root}index.html">{esc(C("nav.trail_home"))}</a>']
-    for label, href in items:
-        if href:
-            parts.append(f'<a href="{href}">{label}</a>')
-        else:
-            parts.append(f'<span aria-current="page">{label}</span>')
-    return '<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '">' + TRAIL_SEP.join(parts) + "</nav>"
+    """items: (label_html, href) pairs after Map; href None marks the current page."""
+    crumbs = [(esc(C("nav.trail_home")), f"{root}index.html")] + list(items)
+    lis = []
+    for i, (label, href) in enumerate(crumbs):
+        sep = '<span class="trail__sep" aria-hidden="true">/</span>\u2060' if i else ""
+        inner = f'<a href="{href}">{label}</a>' if href else f'<span class="trail__cur" aria-current="page">{label}</span>'
+        lis.append(f'<li class="trail__i">{sep}{inner}</li>')
+    return ('<nav class="trail" aria-label="' + esc(C("nav.breadcrumb")) + '"><ol class="trail__list">'
+            + "".join(lis) + "</ol></nav>")
+
+
+def family_crumb_html(f) -> str:
+    """A family as a crumb: "Family 017: The irrationality exponent of π is 2"."""
+    return esc(C("nav.trail_family", num=f["id"])) + ": " + fam_title_html(f)
+
+
+def family_crumbs(f, root, current=False):
+    """The crumbs from the map down to a family: its subject (the map opened on that
+    subject) and the family itself, a link unless the family page is the current page."""
+    di = DISC_OF[f["id"]]
+    return [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d%3A{DISC_SLUG[di]}'),
+            (family_crumb_html(f), None if current else f'{root}families/{f["id"]}.html')]
+
+
+def family_trail(f, root, here_html=None):
+    """The trail of a family page (here_html None) or of a page inside a family (a Lean
+    statement, a paper, an explanation), whose own name here_html ends the trail."""
+    items = family_crumbs(f, root, current=here_html is None)
+    if here_html is not None:
+        items.append((here_html, None))
+    return trail(root, items)
+
+
+def section_trail(root, key, *here):
+    """The trail of a list or general page: Map / <Section> for the section's own page,
+    Map / <Section> / <this page> for a page that belongs to a section (its nav item is
+    then the current one). key names a NAV entry; here is this page's own name, plain."""
+    href = dict((k, h) for h, k in NAV)[key]
+    sec = esc(COPY["nav"]["crumb"].get(key) or C("nav." + key))
+    if not here:
+        return trail(root, [(sec, None)])
+    return trail(root, [(sec, f"{root}{href}")] + [(esc(h), None) for h in here])
 
 
 # Lateral navigation. The breadcrumb climbs (map, field, family); this row moves sideways
@@ -2094,7 +2165,7 @@ def build_explanation(f, e):
     page_url = BASE_URL + rel
     suggest = suggest_url(page_url, title)
     body = f"""<div class="frame page page--wide">
-{trail(root, [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d:{DISC_SLUG[di]}'), (fam_title_html(f), f'{root}families/{fid}.html'), (f'<span class="md-math">{esc(title)}</span>', None)])}
+{family_trail(f, root, f'<span class="md-math">{esc(title)}</span>')}
 <header class="phead">
  <p class="phead__kicker">{esc(C('explanation.kicker', id=fid))}</p>
  <h1 class="phead__title md-math">{esc(title)}</h1>
@@ -2422,8 +2493,7 @@ def build_paper(m):
     items = []
     if fam:
         di = DISC_OF[fam["id"]]
-        tr = trail(root, [(esc(DISCIPLINES[di]["name"]), f'{root}index.html#o=d:{DISC_SLUG[di]}'),
-                          (fam_title_html(fam), f'{root}families/{fam["id"]}.html'), (ms_title_html(m), None)])
+        tr = family_trail(fam, root, ms_title_html(m))
         tr += sibling_nav("paper", paper_siblings(slug, root))
         if m.get("family_on_release_day"):
             then = tex_plain(m.get("family_title_on_release_day") or fam["title"])
@@ -3939,6 +4009,14 @@ def sort_head(i: int, typ: str, label: str, tid=None) -> str:
     return f'<button type="button" class="sort" data-sort="{i}" data-type="{typ}">{esc(label)}</button>'
 
 
+def tip_attr(text: str | None, above=False) -> str:
+    """A column head's or filter's plain explanation, shown by atlas.js beside it on hover
+    and on focus (the same popover as a glossary word), and read as its description."""
+    if not text:
+        return ""
+    return f' data-tip="{esc(text)}"' + (' data-tip-place="above"' if above else "")
+
+
 def reader_term(source: str):
     """The glossary term for an outside reader ("mathvet", "cert-machine"), if there is one."""
     return source if source in GLOSSARY else None
@@ -4092,8 +4170,8 @@ def build_explain():
             f'<td data-v="{esc(checks)}" data-label="{esc(C("explain.col_checks"))}">{checks_cell}</td>'
             f'<td data-v="{st}" data-label="{esc(C("explain.col_status"))}">{"".join(expl)}</td></tr>')
     # Filters, in one row: discipline, evidence, each reader's finding, and words.
-    def select(fid_, label, key, opts, term=None):
-        return (f'<div class="filters__g"><label class="filters__h" for="{fid_}">{head_term(term, esc(label))}</label>'
+    def select(fid_, label, key, opts, term=None, tip=None):
+        return (f'<div class="filters__g"{tip_attr(tip, above=True)}><label class="filters__h" for="{fid_}">{head_term(term, esc(label))}</label>'
                 f'<select class="select" id="{fid_}" data-filter="{key}">{"".join(opts)}</select></div>')
     dopts = [f'<option value="">{esc(C("explain.all_disciplines"))}</option>']
     for d in r.universe.get("disciplines") or []:
@@ -4117,8 +4195,10 @@ def build_explain():
     popts = [f'<option value="">{esc(C("explain.proof_any"))}</option>'] + [
         f'<option value="{p_}">{esc(C("explain.proof_" + p_))} ({num(counts["p_" + p_])})</option>'
         for p_ in ("all", "some", "none") if counts.get("p_" + p_)]
-    selects = [select("ff-d", C("explain.filter_discipline"), "d", dopts), select("ff-c", C("explain.filter_evidence"), "c", eopts),
-               select("ff-t", C("explain.filter_colour"), "t", topts), select("ff-p", C("explain.filter_proof"), "p", popts, term="rerun")]
+    selects = [select("ff-d", C("explain.filter_discipline"), "d", dopts, tip=C("explain.tips.f_discipline")),
+               select("ff-c", C("explain.filter_evidence"), "c", eopts, tip=C("explain.tips.f_evidence")),
+               select("ff-t", C("explain.filter_colour"), "t", topts, term="map-colours", tip=C("explain.tips.f_colour")),
+               select("ff-p", C("explain.filter_proof"), "p", popts, term="rerun", tip=C("explain.tips.f_proof"))]
     for side, src in enumerate(order):
         opts = [f'<option value="">{esc(C("explain.reader_any"))}</option>']
         for tone in evidence.TONES:
@@ -4127,7 +4207,7 @@ def build_explain():
                 continue   # an option that leads to an empty list is not offered
             opts.append(f'<option value="{tone}">{esc(cap(say_e("tone_short." + tone)))} ({num(n)})</option>')
         selects.append(select(f"ff-{side}", C("explain.filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts,
-                              term=reader_term(src)))
+                              term=reader_term(src), tip=C("explain.tips.f_reader", name=short_name[src])))
     selects.append(f'<div class="filters__g filters__g--q"><label class="filters__h" for="ff-q">{esc(C("explain.filter_words"))}</label>'
                    f'<input class="filter-input" id="ff-q" type="search" data-filter="q" autocomplete="off" spellcheck="false" placeholder="{esc(C("explain.filter_words_ph"))}">'
                    f'<a class="filters__all" href="index.html" data-search-all="index.html">{esc(C("explain.search_all"))}</a></div>')
@@ -4136,14 +4216,14 @@ def build_explain():
     heads = []
     for i, (key, typ) in enumerate(sort_cols):
         cls = ' class="t-num"' if typ == "n" else (' class="t-disc"' if key == "discipline" else "")
-        heads.append(f'<th scope="col"{cls} aria-sort="{"ascending" if key == "id" else "none"}">'
+        heads.append(f'<th scope="col"{cls} aria-sort="{"ascending" if key == "id" else "none"}"{tip_attr(C("explain.tips." + key))}>'
                      f'{sort_head(i, typ, C("explain.col_" + key), col_terms.get(key))}</th>')
     for src in order:
-        heads.append(f'<th scope="col" class="t-reader">{head_term(reader_term(src), esc(C("explain.col_reader", name=short_name[src])))}</th>')
+        heads.append(f'<th scope="col" class="t-reader"{tip_attr(C("explain.tips.reader", name=short_name[src]))}>{head_term(reader_term(src), esc(C("explain.col_reader", name=short_name[src])))}</th>')
     runs_i = len(sort_cols) + len(order)
-    heads.append(f'<th scope="col" class="t-num" aria-sort="none">{sort_head(runs_i, "n", C("explain.col_runs"), "rerun")}</th>')
-    heads.append(f'<th scope="col">{esc(C("explain.col_checks"))}</th>')
-    heads.append(f'<th scope="col">{esc(C("explain.col_status"))}</th>')
+    heads.append(f'<th scope="col" class="t-num" aria-sort="none"{tip_attr(C("explain.tips.runs"))}>{sort_head(runs_i, "n", C("explain.col_runs"), "rerun")}</th>')
+    heads.append(f'<th scope="col"{tip_attr(C("explain.tips.checks"))}><span class="th-tip" tabindex="0">{esc(C("explain.col_checks"))}</span></th>')
+    heads.append(f'<th scope="col"{tip_attr(C("explain.tips.status"))}><span class="th-tip" tabindex="0">{esc(C("explain.col_status"))}</span></th>')
     # On a phone the column heads are hidden; this menu sorts the list instead.
     sort_menu = [("0:n:ascending", "sort_id"), ("1:s:ascending", "sort_name"), ("2:s:ascending", "sort_discipline"),
                  ("3:n:descending", "sort_papers"), ("4:n:descending", "sort_lean"), ("5:n:descending", "sort_cited"),
@@ -4156,12 +4236,12 @@ def build_explain():
               f'<a class="ext" href="{esc(REPO + "/" + CFG["contributing_path"])}" rel="noopener">{esc(C("contribute.guide_link"))}</a></p>')
     readers_note = C("explain.readers_note", left=prose_name[order[0]], right=prose_name[order[1]] if len(order) > 1 else "")
     body = f"""<div class="frame page page--families">
+{section_trail("", "explain")}
 <header class="phead phead--compact">
  <h1 class="phead__title">{esc(C('explain.title'))}</h1>
  <p class="phead__lede">{esc(C('explain.lede', families=NUM('families')))}</p>
- <p class="phead__invite"><a href="citations-within.html">{esc(C('explain.cited_link'))}</a></p>
- {invite}
-</header>
+ <p class="phead__invite">{C('explain.more_lists', cited='<a href="citations-within.html">' + esc(C('explain.cited_short')) + '</a>', outside='<a href="references-outside.html">' + esc(C('explain.outside_short')) + '</a>')}</p>
+ </header>
 <section class="band band--table" aria-labelledby="h-list">
 <h2 class="h2 vh" id="h-list">{esc(C('explain.list_heading'))}</h2>
 <div class="filters filters--families" data-filter-families="families-table">
@@ -4181,6 +4261,7 @@ def build_explain():
  <tbody>{''.join(rows)}</tbody>
 </table></div>
 </section>
+<section class="band band--tight" aria-labelledby="h-invite"><h2 class="h2" id="h-invite">{esc(C('explain.invite_heading'))}</h2>{invite}</section>
 {review_queue_html("")}
 </div>"""
     write_page(rel, page(rel, C("explain.title"), C("explain.lede", families=NUM("families")), body, current="explain"))
@@ -4288,16 +4369,17 @@ def build_statements_table():
     cols = [("statement", "s", ""), ("result", "s", ""), ("discipline", "s", "t-disc"), ("pair", "s", "t-pair")]
     # column heads link their glossary term where the glossary has one
     head_terms = {"statement": "challenge", "result": "family", "pair": "pairing", "runs": "rerun", "vocab": "local-vocabulary"}
-    heads = [f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none">{sort_head(i, t, T("col_" + k), head_terms.get(k))}</th>'
+    heads = [f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none"{tip_attr(C("statements.tips." + k))}>{sort_head(i, t, T("col_" + k), head_terms.get(k))}</th>'
              for i, (k, t, c) in enumerate(cols)]
     for side, src in enumerate(order):
-        heads.append(f'<th scope="col" class="t-reader" aria-sort="none">{sort_head(4 + side, "s", T("col_reader", name=short_name[src]), reader_term(src))}</th>')
+        heads.append(f'<th scope="col" class="t-reader" aria-sort="none"{tip_attr(C("statements.tips.reader", name=short_name[src]))}>{sort_head(4 + side, "s", T("col_reader", name=short_name[src]), reader_term(src))}</th>')
     base = 4 + len(order)
     for j, (k, c) in enumerate((("runs", "t-num"), ("main", "t-c"), ("vocab", "t-num"), ("lines", "t-num"), ("notes", ""))):
-        heads.append(f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none">{sort_head(base + j, "n", T("col_" + k), head_terms.get(k))}</th>')
+        label = C("statements.col_runs") if k == "runs" else T("col_" + k)
+        heads.append(f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none"{tip_attr(C("statements.tips." + k))}>{sort_head(base + j, "n", label, head_terms.get(k))}</th>')
 
-    def select(id_, label, key, opts, term=None):
-        return (f'<div class="filters__g"><label class="filters__h" for="{id_}">{head_term(term, esc(label))}</label>'
+    def select(id_, label, key, opts, term=None, tip=None):
+        return (f'<div class="filters__g"{tip_attr(tip, above=True)}><label class="filters__h" for="{id_}">{head_term(term, esc(label))}</label>'
                 f'<select class="select" id="{id_}" data-filter="{key}">{"".join(opts)}</select></div>')
     dcount = Counter(slugify(DISCIPLINES[DISC_OF[s["families"][0]]]["name"]) for s in STATEMENTS if s.get("families") and DISC_OF.get(s["families"][0]) is not None)
     dopts = [f'<option value="">{esc(T("all_disciplines"))}</option>'] + [
@@ -4308,14 +4390,16 @@ def build_statements_table():
         f'<option value="{k}">{esc(C("statements.groups_" + k))} ({num(counts["g_" + k])})</option>' for k in ("disagree", "agree") if counts["g_" + k]]
     ropts = [f'<option value="">{esc(C("statements.proof_any"))}</option>'] + [
         f'<option value="{k}">{esc(C("statements.proof_" + k))} ({num(counts["p_" + k])})</option>' for k in ("accepted", "other", "none") if counts["p_" + k]]
-    selects = [select("sf-d", T("filter_discipline"), "d", dopts), select("sf-c", T("filter_pairing"), "c", popts, term="pairing"),
-               select("sf-g", C("statements.filter_groups"), "g", gopts, term="readers"),
-               select("sf-p", C("statements.filter_proof"), "p", ropts, term="rerun")]
+    selects = [select("sf-d", T("filter_discipline"), "d", dopts, tip=C("statements.tips.f_discipline")),
+               select("sf-c", T("filter_pairing"), "c", popts, term="pairing", tip=C("statements.tips.f_pairing")),
+               select("sf-g", C("statements.filter_groups"), "g", gopts, term="readers", tip=C("statements.tips.f_groups")),
+               select("sf-p", C("statements.filter_proof"), "p", ropts, term="rerun", tip=C("statements.tips.f_proof"))]
     for side, src in enumerate(order):
         opts = [f'<option value="">{esc(T("reader_any"))}</option>'] + [
             f'<option value="{tone}">{esc(cap(evidence.say("tone_short." + tone)))} ({num(counts[(side, tone)])})</option>'
             for tone in evidence.TONES if counts[(side, tone)]]
-        selects.append(select(f"sf-{side}", T("filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts, term=reader_term(src)))
+        selects.append(select(f"sf-{side}", T("filter_reader", name=short_name[src]), "l" if side == 0 else "r", opts, term=reader_term(src),
+                              tip=C("statements.tips.f_reader", name=short_name[src])))
     selects.append(f'<div class="filters__g filters__g--q"><label class="filters__h" for="sf-q">{esc(T("filter_words"))}</label>'
                    f'<input class="filter-input" id="sf-q" type="search" data-filter="q" autocomplete="off" spellcheck="false" placeholder="{esc(T("filter_words_ph"))}"></div>')
     sort_menu = [("0:s:ascending", "sort_name"), ("2:s:ascending", "sort_discipline"), ("3:s:ascending", "sort_pair"),
@@ -4324,9 +4408,10 @@ def build_statements_table():
                    f'<select class="select" id="sf-sort" data-sort-table="stmt-table">'
                    + "".join(f'<option value="{v}">{esc(T(k))}</option>' for v, k in sort_menu) + "</select></div>")
     total = len(STATEMENTS)
-    lede = T("lede", lean=NUM("statements_lean"), main=NUM("statements_lean_main_results"))
+    lede = C("statements.lede", lean=NUM("statements_lean"), main=NUM("statements_lean_main_results"))
     readers_note = T("readers_note", names=evidence.join_names([prose_credit(reader_names.get(s_, s_)) for s_ in order]))
     body = f"""<div class="frame page page--families page--stmts">
+{section_trail("", "statements")}
 <header class="phead phead--compact">
  <h1 class="phead__title">{esc(C('statements.title'))}</h1>
  <p class="phead__lede">{esc(lede)}</p>
@@ -4503,9 +4588,11 @@ def build_numbers():
     hist = "".join(f'<article class="changelog"><h3 class="h3">{esc(h["date"])}</h3><blockquote class="quote md-math">{md_paragraphs(h["markdown"])}<footer><a class="ext" href="{BASE_BLOB}history.md" rel="noopener">{esc(C("numbers.changelog_source"))}</a></footer></blockquote></article>' for h in HISTORY)
     toc = "".join(f'<li><a href="#h-n-{g}">{esc(C("numbers.group." + g))}</a></li>' for g, _ in NUMBER_GROUPS if grouped[g])
     body = f"""<div class="frame page page--numbers" data-generation="{esc(r.generation)}">
+{section_trail("", "about", C("numbers.title"))}
 <header class="phead">
  <h1 class="phead__title">{esc(C('numbers.title'))}</h1>
- <p class="lede">{esc(C('numbers.lede'))}</p>
+ <p class="lede">{esc(C('numbers.purpose'))}</p>
+ <p>{esc(C('numbers.lede'))}</p>
  <p class="phead__facts">{esc(C('numbers.states_note'))}</p>
  <p class="phead__facts">{esc(C('numbers.credit_common', credit=common_credit))}</p>
  <nav class="numtoc" aria-label="{esc(C('numbers.toc_label'))}"><ul>{toc}</ul></nav>
@@ -4516,7 +4603,7 @@ def build_numbers():
 <section class="band" aria-labelledby="h-hist"><h2 class="h2" id="h-hist">{esc(C('numbers.changelog_heading'))}</h2>{hist}</section>
 </div>
 {json_script('number-words', COPY['numbers']['js'])}"""
-    write_page(rel, page(rel, C("numbers.title"), C("numbers.lede"), body, current="numbers"))
+    write_page(rel, page(rel, C("numbers.title"), C("numbers.lede"), body, current="about"))
 
 
 def build_references_outside():
@@ -4549,15 +4636,17 @@ def build_references_outside():
  </div>
 </article>""")
     body = f"""<div class="frame page">
+{section_trail("", "explain", C("references_outside.title"))}
 <header class="phead">
  <h1 class="phead__title">{esc(C('references_outside.title'))}</h1>
- <p class="lede">{esc(C('references_outside.lede', works=NUM('external_works_cited'), citations=NUM('external_citations'), n=len(hl)))}</p>
+ <p class="lede">{esc(C('references_outside.purpose'))}</p>
+ <p>{esc(C('references_outside.lede', works=NUM('external_works_cited'), citations=NUM('external_citations'), n=len(hl)))}</p>
  <p>{esc(C('references_outside.credit'))}</p>
  <p class="muted small">{esc(C('references_outside.how'))}</p>
 </header>
 <section class="band band--tight"><div class="works">{''.join(rows)}</div></section>
 </div>"""
-    write_page(rel, page(rel, C("references_outside.title"), C("references_outside.lede", works=NUM("external_works_cited"), citations=NUM("external_citations"), n=len(hl)), body))
+    write_page(rel, page(rel, C("references_outside.title"), C("references_outside.lede", works=NUM("external_works_cited"), citations=NUM("external_citations"), n=len(hl)), body, current="explain"))
 
 
 def used_on(nf: int, nfam: int) -> str:
@@ -4634,17 +4723,18 @@ def build_sources():
     people = {(a.get("name") or a.get("handle")) for e in COMMUNITY["list"] for a in (e.get("authors") or [])}
     lede = C("sources.lede", sources=num(2 + len(s.get("sources", [])) + (NUMV("community_efforts") or len(COMMUNITY["list"]))), people=NUM("community_people"), findings=NUM("community_findings"))
     body = f"""<div class="frame page">
+{section_trail("", "sources")}
 <header class="phead">
  <h1 class="phead__title">{esc(C('sources.title'))}</h1>
- <p class="lede">{esc(lede)}</p>
- <p>{esc(C('sources.credit'))}</p>
- <nav class="jump" aria-label="{esc(C('sources.jump_label'))}"><ul><li><a href="#base">{esc(C('sources.base_heading'))}</a></li><li><a href="#software">{esc(C('sources.components_heading'))}</a></li>{('<li><a href="#ingested">' + esc(C('sources.ingested_heading')) + '</a></li>') if ingested else ''}{('<li><a href="#efforts">' + esc(C('sources.efforts_heading')) + '</a></li>') if efforts else ''}<li><a href="NOTICE">{esc(C('sources.notices_link'))}</a></li><li><a href="CITATION.cff">{esc(C('sources.citation_link'))}</a></li></ul></nav>
+ <p class="lede">{esc(C('sources.purpose'))}</p>
+ <p class="phead__facts">{esc(lede)} {esc(C('sources.credit'))}</p>
+ <nav class="jump" aria-label="{esc(C('sources.jump_label'))}"><ul><li><a href="#base">{esc(C('sources.base_heading'))}</a></li>{('<li><a href="#ingested">' + esc(C('sources.ingested_heading')) + '</a></li>') if ingested else ''}{('<li><a href="#efforts">' + esc(C('sources.efforts_heading')) + '</a></li>') if efforts else ''}<li><a href="#software">{esc(C('sources.components_heading'))}</a></li><li><a href="NOTICE">{esc(C('sources.notices_link'))}</a></li><li><a href="CITATION.cff">{esc(C('sources.citation_link'))}</a></li></ul></nav>
  <p class="muted small">{esc(C('community.how'))} <a class="ext" href="{esc(issue_url('problem', C('community.add_title'), page=BASE_URL + rel))}" rel="noopener">{esc(C('community.add'))}</a></p>
 </header>
 <section class="band band--tight" id="base"><h2 class="h2">{esc(C('sources.base_heading'))}</h2><div class="ceffs">{up}{own}</div></section>
-<section class="band band--tight" id="software"><h2 class="h2">{esc(C("sources.components_heading"))}</h2><p class="intro">{esc(C("sources.components_intro"))}</p><div class="ceffs">{"".join(components)}</div></section>
 {('<section class="band band--tight" id="ingested"><h2 class="h2">' + esc(C('sources.ingested_heading')) + '</h2><p class="intro">' + esc(C('sources.ingested_intro')) + '</p><div class="ceffs">' + ''.join(ingested) + '</div></section>') if ingested else ''}
 {('<section class="band band--tight" id="efforts"><h2 class="h2">' + esc(C('sources.efforts_heading')) + '</h2><p class="intro">' + esc(C('sources.efforts_intro')) + '</p><div class="ceffs">' + ''.join(efforts) + '</div></section>') if efforts else ''}
+<section class="band band--tight" id="software"><h2 class="h2">{esc(C("sources.components_heading"))}</h2><p class="intro">{esc(C("sources.components_intro"))}</p><div class="ceffs">{"".join(components)}</div></section>
 </div>"""
     write_page(rel, page(rel, C("sources.title"), lede, body, current="sources"))
 
@@ -4669,14 +4759,16 @@ def build_citations_within():
  </div>
 </article>""")
     body = f"""<div class="frame page">
+{section_trail("", "explain", C("citations_within.title"))}
 <header class="phead">
  <h1 class="phead__title">{esc(C('citations_within.title'))}</h1>
- <p class="lede">{esc(C('citations_within.lede', edges=NUM('internal_citation_edges'), n=len(hl)))}</p>
+ <p class="lede">{esc(C('citations_within.purpose'))}</p>
+ <p>{esc(C('citations_within.lede', edges=NUM('internal_citation_edges'), n=len(hl)))}</p>
  <p class="muted small">{esc(C('citations_within.how'))}</p>
 </header>
 <section class="band band--tight"><div class="works">{''.join(rows)}</div></section>
 </div>"""
-    write_page(rel, page(rel, C("citations_within.title"), C("citations_within.lede", edges=NUM("internal_citation_edges"), n=len(hl)), body))
+    write_page(rel, page(rel, C("citations_within.title"), C("citations_within.lede", edges=NUM("internal_citation_edges"), n=len(hl)), body, current="explain"))
 
 
 def contributor_names():
@@ -4694,11 +4786,15 @@ def build_contribute():
     ways = []
     for key in ("claim", "check", "problem", "credit", "replay"):
         name = CFG["issue_templates"][key]
-        ways.append(f'<li class="way"><a class="way__a ext" href="{esc(REPO)}/issues/new?template={esc(name)}.yml" rel="noopener">{esc(C("contribute." + key))}</a></li>')
+        short, who = COPY["contribute"]["way_names"][key]
+        ways.append(f'<li class="way"><a class="way__a ext" href="{esc(REPO)}/issues/new?template={esc(name)}.yml" rel="noopener">'
+                    f'<span class="way__n">{esc(short)}</span><span class="way__who">{esc(who)}</span>'
+                    f'<span class="way__d">{esc(C("contribute." + key))}</span></a></li>')
     names = contributor_names()
     contrib = f'<p>{esc(", ".join(names))}</p>' if names else f'<p class="muted">{esc(C("contribute.contributors_none"))}</p>'
     body = f"""<div class="frame page page--wide">
-<header class="phead"><h1 class="phead__title">{esc(C('contribute.title'))}</h1><p class="lede">{esc(C('contribute.lede'))}</p></header>
+{section_trail("", "contribute")}
+<header class="phead"><h1 class="phead__title">{esc(C('contribute.title'))}</h1><p class="lede">{esc(C('contribute.purpose'))}</p></header>
 <section class="band band--tight"><h2 class="h2">{esc(C('contribute.ways_heading'))}</h2><ul class="ways">{''.join(ways)}</ul>
 <p class="intro">{esc(C('contribute.guide'))} <a class="ext" href="{esc(guide)}" rel="noopener">{esc(C('contribute.guide_link'))}</a></p></section>
 <div class="cards2">
@@ -4762,8 +4858,10 @@ def build_about():
         f'<a class="ext" href="{esc(a["url"])}" rel="noopener">{esc(a["title"])}</a>, {esc(a["says"])}</p></li>'
         for a in COPY["about"]["since_items"])
     body = f"""<div class="frame page page--wide prose-page">
-<header class="phead"><h1 class="phead__title">{esc(C('about.title'))}</h1>
-<section class="phead__sec" aria-labelledby="h-what"><h2 class="vh" id="h-what">{esc(C('about.what_heading'))}</h2><p class="lede">{esc(C('about.what', **fill))}</p></section></header>
+{section_trail("", "about")}
+<header class="phead"><h1 class="phead__title">{esc(C('about.title'))}</h1><p class="lede">{esc(C('about.purpose', author=CFG['author']))}</p>
+<section class="phead__sec" aria-labelledby="h-what"><h2 class="vh" id="h-what">{esc(C('about.what_heading'))}</h2><p>{esc(C('about.what', **fill))}</p></section>
+<p class="actions"><a class="btn btn--primary" href="families/017.html">{esc(C('about.example_button'))}</a><a class="btn btn--ghost" href="help.html">{esc(C('help.title'))}</a></p></header>
 <div class="flow">
 <section class="band band--tight" id="approach" aria-labelledby="h-approach"><h2 class="h2" id="h-approach">{esc(C('about.approach_heading'))}</h2><p>{esc(C('about.approach_intro'))}</p><ul class="approach">{approach}</ul></section>
 <section class="band band--tight" id="since" aria-labelledby="h-since"><h2 class="h2" id="h-since">{esc(C('about.since_heading'))}</h2><p>{esc(C('about.since_intro'))}</p><ul class="approach">{since}</ul><p>{esc(C('about.since_note'))}</p></section>
@@ -4789,12 +4887,12 @@ def build_404():
     # Where to go instead: the Families list (every family), the search, and the map.
     families = f'<a href="explain.html">{esc(C("notfound.families_link"))}</a>'
     text = esc(C("notfound.families", link="\x00")).replace("\x00", families)
-    body = (f'<div class="frame page page--wide page--404"><header class="phead"><h1 class="phead__title">{esc(C("notfound.title"))}</h1>'
+    body = (f'<div class="frame page page--wide page--404">{trail("", [(esc(C("notfound.title")), None)])}<header class="phead"><h1 class="phead__title">{esc(C("notfound.title"))}</h1>'
             f'<p class="lede">{esc(C("notfound.text"))} {text}</p>'
             f'<p class="actions"><a class="btn btn--primary" href="explain.html">{esc(C("notfound.families_button"))}</a>'
             f'<a class="btn btn--ghost" href="explain.html" data-open-search>{esc(C("notfound.search_button"))}</a>'
             f'<a class="btn btn--quiet" href="{esc(base)}/">{esc(C("notfound.map_button"))}</a></p></header>'
-            f'<section class="band band--tight help-route"><h2 class="h2">{esc(C("help.steps_heading"))}</h2>{help_steps_html("step-")}</section></div>')
+            f'<section class="band band--tight help-route"><h2 class="h2">{esc(C("help.route_alone"))}</h2>{help_steps_html("step-")}</section></div>')
     h = page(rel, C("notfound.title"), C("notfound.text") + " " + C("notfound.families", link=C("notfound.families_link")),
              body, noindex=True)
     # The host serves this page at any depth: local assets and links need the site root.

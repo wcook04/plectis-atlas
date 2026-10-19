@@ -1,80 +1,110 @@
 {
- "_note": "The atlas glossary. Copy strings mark a term as [[id|text]]; pages show the short definition on hover and link here. Plain words, no em dashes.",
+ "_note": "The atlas glossary. Copy strings mark a term as [[id|text]]; pages show the short definition and its example on hover and focus, and link here. learning_order lists the core terms in the order a newcomer meets them; the glossary page shows those first, then every term A to Z. Plain words, no em dashes.",
+ "learning_order": [
+  "family",
+  "headline",
+  "lean",
+  "challenge",
+  "sorry",
+  "comparator",
+  "rerun",
+  "readers",
+  "mathvet",
+  "cert-machine",
+  "pairing",
+  "scope-note",
+  "map-colours"
+ ],
  "terms": [
   {
    "id": "lean",
    "term": "Lean",
-   "short": "A language and program for writing mathematical statements and proofs, then verifying each proof step. A verified proof establishes the statement as written; comparing that statement and its definitions with a paper is a separate task."
+   "short": "A language and program for writing mathematical statements and proofs, then verifying each proof step. A verified proof establishes the statement as written; comparing that statement and its definitions with a paper is a separate task.",
+   "example": "PiExponent is a Lean file stating that the irrationality exponent of π is 2."
   },
   {
    "id": "family",
    "term": "Family",
-   "short": "OpenAI’s group of related papers about a main result. Each group has a number in its catalogue; Atlas uses that number to link the papers and reports about them."
+   "short": "OpenAI’s group of related papers about a main result. Each group has a number in its catalogue; Atlas uses that number to link the papers and reports about them.",
+   "example": "Family 017, “The irrationality exponent of π is 2”, holds one paper and one Lean statement, PiExponent."
   },
   {
    "id": "headline",
    "term": "Headline result",
-   "short": "The main claim OpenAI’s catalogue gives for a family. A family’s Lean statements may state all of it, part of it, or a supporting step."
+   "short": "The main claim OpenAI’s catalogue gives for a family. A family’s Lean statements may state all of it, part of it, or a supporting step.",
+   "example": "Family 017’s headline makes two claims: π’s irrationality exponent is 2, and the Flint–Hills series converges."
   },
   {
    "id": "challenge",
    "term": "Lean statement",
-   "short": "A file stating a theorem in Lean, usually with sorry in place of its proof (Comparator calls it a challenge file). Comparator’s settings identify the statement to verify, the definitions the proof may supply and the axioms it may use. OpenAI provides its proof separately."
+   "short": "A file stating a theorem in Lean, usually with sorry in place of its proof (Comparator calls it a challenge file). Comparator’s settings identify the statement to verify, the definitions the proof may supply and the axioms it may use. OpenAI provides its proof separately.",
+   "example": "PiExponent.lean states the exponent of π as the theorem OAI.PiExponent.main, with sorry where the proof would go."
   },
   {
    "id": "comparator",
    "term": "Comparator",
-   "short": "A program that tests OpenAI’s separate proof against a Lean statement. Acceptance means that Lean’s proof verifier accepts the configured theorem using only the allowed axioms. It does not establish that the statement means the same thing as a paper’s theorem."
+   "short": "A program that tests OpenAI’s separate proof against a Lean statement. Acceptance means that Lean’s proof verifier accepts the configured theorem using only the allowed axioms. It does not establish that the statement means the same thing as a paper’s theorem.",
+   "example": "MathVet and cert-machine each report that Comparator accepted OpenAI’s proof of PiExponent."
   },
   {
    "id": "sorry",
    "term": "sorry",
-   "short": "Lean’s placeholder for a missing proof. A Lean statement leaves its proof as sorry on purpose; the proof is in OpenAI’s separate solution module."
+   "short": "Lean’s placeholder for a missing proof. A Lean statement leaves its proof as sorry on purpose; the proof is in OpenAI’s separate solution module.",
+   "example": "The theorem in PiExponent.lean ends with by sorry."
   },
   {
    "id": "axioms",
    "term": "Permitted axioms",
-   "short": "The axioms a configuration allows a proof to use, here the three standard ones: propext, Classical.choice and Quot.sound. A replay shows which ones a proof actually uses."
+   "short": "The axioms a configuration allows a proof to use, here the three standard ones: propext, Classical.choice and Quot.sound. A replay shows which ones a proof actually uses.",
+   "example": "PiExponent’s configuration allows propext, Quot.sound and Classical.choice."
   },
   {
    "id": "holes",
    "term": "Definition hole",
-   "short": "A definition a configuration lists for the solution to supply. Comparator compares it by name and type only, so its body comes from the solution and must be read there."
+   "short": "A definition a configuration lists for the solution to supply. Comparator compares it by name and type only, so its body comes from the solution and must be read there.",
+   "example": "PiExponent’s configuration lists no definition holes, so every definition it uses is compared as written."
   },
   {
    "id": "kernel",
    "term": "Lean kernel",
-   "short": "The small core of Lean that checks every step of a proof. Everything Lean accepts passes through it."
+   "short": "The small core of Lean that checks every step of a proof. Everything Lean accepts passes through it.",
+   "example": "cert-machine reports that Lean’s kernel and nanoda both accept OpenAI’s proof of PiExponent."
   },
   {
    "id": "nanoda",
    "term": "nanoda",
-   "short": "A second proof-verification program for Lean, written independently in Rust. Comparator can run it alongside Lean’s own verifier. The report for each run states which verifiers were used when that information is available."
+   "short": "A second proof-verification program for Lean, written independently in Rust. Comparator can run it alongside Lean’s own verifier. The report for each run states which verifiers were used when that information is available.",
+   "example": "cert-machine ran PiExponent through Comparator with nanoda switched on and recorded “CERTIFIED”."
   },
   {
    "id": "mathlib",
    "term": "Mathlib",
-   "short": "The community-maintained library of mathematical definitions, theorems and proofs written in Lean. OpenAI’s release specifies the version it uses."
+   "short": "The community-maintained library of mathematical definitions, theorems and proofs written in Lean. OpenAI’s release specifies the version it uses.",
+   "example": "PiExponent writes π as Mathlib’s Real.pi."
   },
   {
    "id": "scope-note",
    "term": "Scope note",
-   "short": "OpenAI’s note on what a family’s Lean statements cover, in lean/docs of the release. The atlas quotes it beside other people’s readings."
+   "short": "OpenAI’s note on what a family’s Lean statements cover, in lean/docs of the release. The atlas quotes it beside other people’s readings.",
+   "example": "OpenAI’s note for family 017 says: “The paper’s convergence consequence for the Flint–Hills series is outside this selected statement.”"
   },
   {
    "id": "rerun",
    "term": "Comparator run",
-   "short": "A group’s attempt to verify OpenAI’s proof with Comparator, sometimes called a re-run. Atlas records the group’s reported result and the release version used. Atlas has not repeated the runs."
+   "short": "A group’s attempt to verify OpenAI’s proof with Comparator, sometimes called a re-run. Atlas records the group’s reported result and the release version used. Atlas has not repeated the runs.",
+   "example": "MathVet’s Comparator run of PiExponent, which it reports as “comparator-sandboxed-pass”."
   },
   {
    "id": "readers",
    "term": "The groups",
-   "short": "MathVet and Carlos Toledo’s cert-machine, the two outside groups that each read every family’s Lean statements against its headline, independently of OpenAI and of each other, under their own published rules. Each states its own method; the atlas quotes their verdicts and notes and adds none of its own."
+   "short": "MathVet and Carlos Toledo’s cert-machine, the two outside groups that each read every family’s Lean statements against its headline, independently of OpenAI and of each other, under their own published rules. Each states its own method; the atlas quotes their verdicts and notes and adds none of its own.",
+   "example": "For family 017 MathVet says “full” and cert-machine says “NARROWER — DECLARED”, and both notes name the missing Flint–Hills claim."
   },
   {
    "id": "hol-light",
    "term": "HOL Light",
-   "short": "A proof assistant separate from Lean. Ben Knill’s reports use it to prove selected steps in some of the release’s papers. They also test deliberately incorrect examples that the program should reject."
+   "short": "A proof assistant separate from Lean. Ben Knill’s reports use it to prove selected steps in some of the release’s papers. They also test deliberately incorrect examples that the program should reject.",
+   "example": "Ben Knill’s HOL Light card for family 017 checks that the Flint–Hills partial sum up to n = 355 exceeds 24."
   },
   {
    "id": "exact-check",
@@ -84,32 +114,38 @@
   {
    "id": "pairing",
    "term": "Possible match",
-   "short": "A possible link between a paper statement and a Lean statement, selected automatically from words they share (also called a candidate pairing). Atlas records no review that their mathematical meanings agree."
+   "short": "A possible link between a paper statement and a Lean statement, selected automatically from words they share (also called a candidate pairing). Atlas records no review that their mathematical meanings agree.",
+   "example": "Atlas shows Theorem 1.1 of the π paper as PiExponent’s possible match, from shared words such as pi, integer and real."
   },
   {
    "id": "reading-page",
    "term": "Reading page",
-   "short": "The atlas’s HTML version of a paper, converted from its TeX at the pinned commit. The PDF stays the reference; a page that did not convert in full lists what is missing."
+   "short": "The atlas’s HTML version of a paper, converted from its TeX at the pinned commit. The PDF stays the reference; a page that did not convert in full lists what is missing.",
+   "example": "The π paper’s reading page shows Theorem 1.1 with a link to its line in the TeX source."
   },
   {
    "id": "withdrawn",
    "term": "Withdrawn paper",
-   "short": "A paper OpenAI removed after the release, with a notice explaining the gap. The atlas keeps it, marked, under the family it was listed in on release day."
+   "short": "A paper OpenAI removed after the release, with a notice explaining the gap. The atlas keeps it, marked, under the family it was listed in on release day.",
+   "example": "“Algebraicity of Kuga-Satake Correspondences for K3 Surfaces”, kept in family 032."
   },
   {
    "id": "earlier-edition",
    "term": "Earlier edition",
-   "short": "A paper OpenAI later replaced with a revised edition. The atlas keeps the earlier edition, marked, beside the current one in the same family."
+   "short": "A paper OpenAI later replaced with a revised edition. The atlas keeps the earlier edition, marked, beside the current one in the same family.",
+   "example": "An earlier edition of “A pointwise 2-converse for elliptic curves with rational two-torsion”, kept beside its revision in family 004."
   },
   {
    "id": "mathvet",
    "term": "MathVet",
-   "short": "One of the two outside groups. It reads each family’s Lean statements against the headline under a published rubric, with help from a model, and runs Comparator itself. Its verdict and note are quoted in its own terms."
+   "short": "One of the two outside groups. It reads each family’s Lean statements against the headline under a published rubric, with help from a model, and runs Comparator itself. Its verdict and note are quoted in its own terms.",
+   "example": "For family 017 MathVet says “full”, and its note adds that the Flint–Hills corollary is not stated."
   },
   {
    "id": "cert-machine",
    "term": "cert-machine",
-   "short": "Carlos Toledo’s audit of the release, one of the two outside groups. It re-runs every Lean statement through Comparator with nanoda switched on, reads each family’s Lean statements against the headline clause by clause, and decides finite parts of some papers with exact code."
+   "short": "Carlos Toledo’s audit of the release, one of the two outside groups. It re-runs every Lean statement through Comparator with nanoda switched on, reads each family’s Lean statements against the headline clause by clause, and decides finite parts of some papers with exact code.",
+   "example": "For family 017 cert-machine says “NARROWER — DECLARED”: the Flint–Hills claim is in the headline but not in PiExponent, and OpenAI’s note says so."
   },
   {
    "id": "local-vocabulary",
@@ -119,7 +155,8 @@
   {
    "id": "pairing-lean-words",
    "term": "Paired from the Lean statement’s own words",
-   "short": "Atlas selects a possible paper match from words in the Lean statement, when one statement has a sufficiently clear match. Atlas records no review that their mathematical meanings agree."
+   "short": "Atlas selects a possible paper match from words in the Lean statement, when one statement has a sufficiently clear match. Atlas records no review that their mathematical meanings agree.",
+   "example": "PiExponent is matched to Theorem 1.1 of its paper this way."
   },
   {
    "id": "pairing-catalogue-words",
@@ -144,7 +181,8 @@
   {
    "id": "map-colours",
    "term": "Map colours",
-   "short": "The map’s colours compare the two groups’ assessments of each family’s Lean statements. They do not say whether a paper’s proof is correct."
+   "short": "The map’s colours compare the two groups’ assessments of each family’s Lean statements. They do not say whether a paper’s proof is correct.",
+   "example": "A family whose groups disagree, like family 017 (“full” against “NARROWER — DECLARED”), is coloured to show the disagreement."
   }
  ]
 }

@@ -599,7 +599,10 @@
    copy, rendered as a.term) shows its short definition after a 140 ms dwell, beside the
    word, and clears 260 ms after the pointer leaves. Focus shows it too; Escape closes it.
    The definitions load once, on first use, from assets/glossary.json; without them the
-   word is a plain link to the glossary page. */
+   word is a plain link to the glossary page. A term's example, when it has one, follows
+   its definition. Any element with data-tip (a list's column head or filter, written by
+   build_site.tip_attr) shows its own explanation the same way, above it when it says
+   data-tip-place="above"; inside such an element its explanation wins over a term's. */
 (function () {
   var doc = document, root = (doc.body && doc.body.getAttribute('data-root')) || '';
   var data = null, loading = null, pop = null, current = null, showTimer = 0, hideTimer = 0;
@@ -625,38 +628,64 @@
     var w = p.offsetWidth, h = p.offsetHeight;
     var left = Math.max(12, Math.min(r.left + window.scrollX, window.scrollX + vw - w - 12));
     var below = r.bottom + 8 + h < window.innerHeight;
+    if (a.getAttribute('data-tip-place') === 'above' && r.top - h - 8 > 0) below = false;
     var top = below ? r.bottom + window.scrollY + 8 : r.top + window.scrollY - h - 8;
     p.style.left = left + 'px'; p.style.top = top + 'px';
   }
+  function described(a) {
+    var f = doc.activeElement;
+    return f && f !== doc.body && a.contains(f) ? f : a;
+  }
+  function fill(p, head, body, example) {
+    p.innerHTML = '';
+    var h = doc.createElement('p'); h.className = 'term-pop__h'; h.textContent = head;
+    var b = doc.createElement('p'); b.className = 'term-pop__b'; b.textContent = body;
+    p.appendChild(h); p.appendChild(b);
+    if (example) { var x = doc.createElement('p'); x.className = 'term-pop__x'; x.textContent = example; p.appendChild(x); }
+  }
   function show(a) {
+    if (a.hasAttribute('data-tip')) {
+      if (current !== a) return;
+      var p0 = ensurePop(), lab = a.querySelector('label, .sort, a.term, .th-tip') || a;
+      fill(p0, (lab.textContent || '').trim(), a.getAttribute('data-tip'));
+      p0.hidden = false; described(a).setAttribute('aria-describedby', 'term-pop');
+      place(a);
+      return;
+    }
     load().then(function (d) {
       var t = d && d[a.getAttribute('data-term')];
       if (!t || current !== a) return;
-      var p = ensurePop();
-      p.innerHTML = '';
-      var h = doc.createElement('p'); h.className = 'term-pop__h'; h.textContent = t.term;
-      var b = doc.createElement('p'); b.className = 'term-pop__b'; b.textContent = t.short;
-      p.appendChild(h); p.appendChild(b);
+      var p = ensurePop(), ex = (doc.body && doc.body.getAttribute('data-example-word')) || 'Example';
+      fill(p, t.term, t.short, t.example ? ex + ': ' + t.example : '');
       p.hidden = false; a.setAttribute('aria-describedby', 'term-pop');
       place(a);
     });
   }
   function hide() {
     if (pop) pop.hidden = true;
-    if (current) current.removeAttribute('aria-describedby');
+    if (current) {
+      current.removeAttribute('aria-describedby');
+      var f = current.querySelector && current.querySelector('[aria-describedby="term-pop"]');
+      if (f) f.removeAttribute('aria-describedby');
+    }
     current = null;
+  }
+  function owner(e) {
+    if (!e.target.closest) return null;
+    return e.target.closest('[data-tip]') || e.target.closest('a.term');
   }
   function scheduleHide() { clearTimeout(showTimer); clearTimeout(hideTimer); hideTimer = setTimeout(hide, 260); }
   function onEnter(e) {
-    var a = e.target.closest && e.target.closest('a.term');
+    var a = owner(e);
     if (!a) return;
+    if (a === current && pop && !pop.hidden) { clearTimeout(hideTimer); return; }
     clearTimeout(hideTimer); clearTimeout(showTimer);
     current = a;
     showTimer = setTimeout(function () { show(a); }, e.type === 'focusin' ? 0 : 140);
   }
   function onLeave(e) {
-    var a = e.target.closest && e.target.closest('a.term');
-    if (a && a === current) scheduleHide();
+    var a = owner(e);
+    if (a && a === current && !(e.relatedTarget && a.contains(e.relatedTarget))) scheduleHide();
   }
   doc.addEventListener('mouseover', onEnter);
   doc.addEventListener('mouseout', onLeave);
