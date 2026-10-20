@@ -34,6 +34,7 @@
         leqno: opts.leqno, fleqn: opts.fleqn
       });
       node.classList.add('pr-m--ok');
+      if (display && window.atlasFitMath) window.atlasFitMath(node);
       // copy-tex copies the annotation: keep it the paper's TeX, without keepShort's braces.
       var ann = node.querySelector('annotation');
       if (ann) ann.textContent = tex;

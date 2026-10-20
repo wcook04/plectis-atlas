@@ -62,6 +62,7 @@
   "results": "{n} results",
   "lean_one": "1 Lean statement",
   "lean": "{n} Lean statements",
+  "disc_lean": "{papers}, {n} Lean",
   "links_one": "1 citing pair of papers",
   "links": "{n} citing pairs of papers"
  },

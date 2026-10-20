@@ -99,6 +99,64 @@
     return '{' + t + '}';
   }
   window.atlasKeepShortMath = keepShort;
+  /* A display formula a little wider than its column is set smaller until it fits, as
+     a typesetter would, instead of scrolling sideways. It never goes below 70% of the
+     text size; only a formula wider than that still scrolls inside its own box.
+     Each display is refitted whenever its column changes width (a resize, a tab or
+     panel opening). */
+  var fitRO = 'ResizeObserver' in window ? new ResizeObserver(function (es) {
+    for (var i = 0; i < es.length; i++) fitLater(es[i].target);
+  }) : null;
+  // Fitting is batched: every queued display is measured first and only the few that
+  // overflow are changed, so a paper of 200 displays costs one layout, not 200.
+  var fitQ = [], fitT = 0;
+  function fitLater(d) {
+    if (fitQ.indexOf(d) < 0) fitQ.push(d);
+    if (!fitT) fitT = setTimeout(fitFlush, 0);
+  }
+  function fitFlush() {
+    fitT = 0;
+    var q = fitQ, todo = [];
+    fitQ = [];
+    for (var i = 0; i < q.length; i++) {
+      var d = q[i], k = d.querySelector(':scope > .katex');
+      if (k && (k.style.fontSize || d.scrollWidth > d.clientWidth + 1)) todo.push(d);
+    }
+    for (var j = 0; j < todo.length; j++) fitDisplay(todo[j]);
+  }
+  function fitDisplay(d) {
+    var k = d.querySelector(':scope > .katex');
+    if (!k) return;
+    k.style.fontSize = '';
+    var cw = d.clientWidth;
+    if (!cw) return;
+    var sw = d.scrollWidth;
+    if (sw <= cw + 1) { d.removeAttribute('data-fit'); return; }
+    // Not every part of a formula scales with its size (a tag's gap, rule widths), so
+    // measure again after each step.
+    var base = parseFloat(getComputedStyle(k).fontSize), r = 1;
+    for (var n = 0; n < 4 && sw > cw + 1 && r > 0.7; n++) {
+      r = Math.max(0.7, r * (cw - 2) / sw);
+      k.style.fontSize = (base * r).toFixed(2) + 'px';
+      sw = d.scrollWidth;
+    }
+    d.setAttribute('data-fit', sw > cw + 1 ? 'scroll' : 'fit');
+  }
+  // KaTeX's fonts can arrive after the first fit and widen a formula: fit everything again.
+  if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(function () {
+    var ds = doc.querySelectorAll('.katex-display');
+    for (var i = 0; i < ds.length; i++) if (ds[i].__fit) fitLater(ds[i]);
+  });
+  function fitMath(scope) {
+    var ds = (scope || doc).querySelectorAll('.katex-display');
+    for (var i = 0; i < ds.length; i++) {
+      if (ds[i].__fit) continue;
+      ds[i].__fit = true;
+      // The observer's first report queues the fit; without one, queue it here.
+      if (fitRO) fitRO.observe(ds[i]); else fitLater(ds[i]);
+    }
+  }
+  window.atlasFitMath = fitMath;
   function renderSpans(scope) {
     if (!window.katex) return;
     var spans = (scope || doc).querySelectorAll('span.m:not([data-done])');
@@ -118,6 +176,7 @@
         if (stats.errors.length < 200) stats.errors.push(String(err && err.message || err).slice(0, 160));
       }
     }
+    fitMath(scope);
   }
   function renderAuto(scope) {
     if (!window.renderMathInElement) return;
@@ -130,6 +189,7 @@
     for (var i = 0; i < a.length; i++) { a[i].setAttribute('data-done', '1'); try { window.renderMathInElement(a[i], opts(false)); } catch (e) { stats.failed++; } }
     var b = (scope || doc).querySelectorAll('.md-math:not([data-done])');
     for (var j = 0; j < b.length; j++) { b[j].setAttribute('data-done', '1'); try { window.renderMathInElement(b[j], opts(true)); } catch (e) { stats.failed++; } }
+    fitMath(scope);
   }
   window.atlasRenderMath = function (scope) { renderSpans(scope); renderAuto(scope); };
 

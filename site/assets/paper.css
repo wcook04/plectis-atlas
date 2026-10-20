@@ -310,3 +310,22 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
   .pr-brief dt { padding-bottom: 3px; }
   .pr-brief dd { border-top: 0; padding-top: 3px; }
 }
+
+/* ---- Reading choices and wide formulas (20 October) ------------------------------
+   The PDF is one click away wherever the reader is: in the header, and at the head of
+   the contents that stay beside the text on a wide screen. */
+.pr-pdf { display: none; }
+@media (min-width: 1280px) {
+  .pr-grid > .pr-toc .pr-pdf { display: block; position: sticky; top: 0; z-index: 1; margin: 0 0 14px; padding: 7px 10px; border: 1px solid var(--rule-control); border-radius: var(--r-sm);
+    font-family: var(--sans); font-size: var(--fs-small); font-weight: 600; color: var(--ink); text-decoration: none; background: var(--surface); }
+  .pr-grid > .pr-toc .pr-pdf:hover { border-color: var(--rule-strong); background: var(--sunk); }
+}
+.pr-what { max-width: 52em; }
+/* A formula waiting for KaTeX shows nothing rather than its raw TeX, which flashed as
+   code while a long paper loaded. If typesetting never comes, the TeX shows after 6s. */
+:root.js .pr-m:not(.pr-m--ok):not(.pr-m--fail) { color: transparent; animation: pr-tex-late 0s linear 6s forwards; }
+:root[data-paper-math="unavailable"] .pr-m:not(.pr-m--ok) { color: var(--muted); animation: none; }
+@keyframes pr-tex-late { to { color: var(--muted); } }
+/* A display a little wider than the column is set smaller to fit (atlas.js fitMath);
+   the box keeps its own scroll only for the rare formula wider than that. */
+.pr-eq, .pr-col .katex-display { scrollbar-width: thin; }
