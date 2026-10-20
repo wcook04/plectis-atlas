@@ -790,7 +790,9 @@
         var f = fams[fi].data, tone = f.tone || 'none', hollow = tone === 'none' || tone === 'unread';
         var a = q.a;
         if (matchFam && !searchFolded && !matchFam[fi]) a *= 0.22;
-        if (lvl === 'disc' && hf >= 0 && !near[fi]) a *= 0.14;
+        // Context recedes but stays legible: discs drop further than their names, so the
+        // next family to visit can still be read while the selection's citations lead.
+        if (lvl === 'disc' && hf >= 0 && !near[fi]) a *= 0.32;
         var hot = fi === hf || (sel && obj(sel) && obj(sel).kind === 'f' && obj(sel).i === fi);
         ctx.save();
         ctx.globalAlpha = a;
@@ -810,7 +812,7 @@
         var xq = S.nodes[exampleFi];
         if (xq && xq.a > 0.05) {
           ctx.save();
-          ctx.globalAlpha = xq.a * (matchFam && !searchFolded && !matchFam[exampleFi] ? 0.22 : 1) * (lvl === 'disc' && hf >= 0 && !near[exampleFi] ? 0.14 : 1);
+          ctx.globalAlpha = xq.a * (matchFam && !searchFolded && !matchFam[exampleFi] ? 0.22 : 1) * (lvl === 'disc' && hf >= 0 && !near[exampleFi] ? 0.32 : 1);
           ctx.strokeStyle = palette.focus; ctx.lineWidth = lvl === 'release' ? 1.5 : 2;
           ctx.beginPath(); ctx.arc(xq.x, xq.y, xq.r + (lvl === 'release' ? 3.5 : 5), 0, TAU); ctx.stroke();
           ctx.restore();
@@ -845,7 +847,7 @@
               return edge < labelR && textWidth(line, t.font) <= 2 * Math.sqrt(labelR * labelR - edge * edge) * 0.9 - 6;
             });
             var blockH = t.lines.length * t.lead + (showCnt ? cl : 0);
-            var a2 = n.a * words * (matchFam && !searchFolded && !matchFam[fj] ? 0.3 : 1) * (hf >= 0 && !near[fj] ? 0.18 : 1);
+            var a2 = n.a * words * (matchFam && !searchFolded && !matchFam[fj] ? 0.3 : 1) * (hf >= 0 && !near[fj] ? 0.55 : 1);
             ctx.save(); ctx.globalAlpha = a2;
             // Fit once at the destination, then scale that fit with the moving disc.
             // Wrapping at every fractional animation radius stalls slower machines.

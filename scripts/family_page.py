@@ -670,9 +670,13 @@ def find_card(c: Ctx, x, kind: str = "") -> str:
     who = c.effort_credit(x)
     when = c.S.date_words(x.get("date"))
     k = f'<p class="fx-c__kind">{esc(kind)}</p>' if kind else ""
-    return (f'<li class="fx-c fx-find">{k}<p class="fx-find__who"><span class="fx-find__name">{esc(curly(who))}</span>'
-            + (f'<span class="fx-find__when">{esc(when)}</span>' if when else "")
-            + f'<a class="ext fx-find__src" href="{esc(x.get("url") or "")}" rel="noopener">{esc(c.S.C("community.source"))}</a></p>'
+    # The credit is the one link (to where they said it), the date quiet under it, so each
+    # record is a title, a date and the atlas's summary, with no detached "Source" link.
+    url = x.get("url") or ""
+    name = (f'<a class="ext fx-find__name" href="{esc(url)}" rel="noopener">{esc(curly(who))}</a>' if url
+            else f'<span class="fx-find__name">{esc(curly(who))}</span>')
+    return (f'<li class="fx-c fx-find">{k}<p class="fx-find__who">{name}'
+            + (f'<span class="fx-find__when">{esc(when)}</span>' if when else "") + '</p>'
             f'<p class="fx-find__what">{esc(curly(x.get("summary") or ""))}</p></li>')
 
 
@@ -1866,56 +1870,72 @@ def group_scope_html(c: Ctx, src: str) -> str:
             f'{ins_button(tid, esc(W("readings.details")), name=W("readings.details_label", who=c.disp(rd.name) + "’s", num=c.num))}</p></div>')
 
 
-def group_runs_html(c: Ctx, src: str) -> tuple:
-    """One group's Comparator runs, one entry per Lean statement: their word, their account,
-    the fields the report gives, the date and version, and the original report. A Lean
-    statement the group has not run says so. Returns (html, whether any report gave fields)."""
+def run_cell_html(c: Ctx, src: str, l, ru) -> tuple:
+    """One group's Comparator run of one Lean statement, as a table cell: their word, their
+    account, the date and version, and the original report; or that no run is recorded.
+    Returns (html, whether the report gave fields)."""
     S = c.S
-    k = f'<p class="fx-grp__k">{S.ctext(W("groups.runs_k"))}</p>'
-    if not c.leans:
+    name = l["id"][2:]
+    if not ru:
+        return f'<span class="fx-muted">{esc(W("glance.runs_none"))}</span>', False
+    credit = ru.get("credit") or {}
+    sv = ru.get("source_value") or {}
+    who = c.disp(credit.get("name") or ru.get("source"))
+    whose = possessive(S, who)
+    when = S.date_words(ru.get("date"))
+    pin = W("reruns.at_pin") if ru.get("pin_state") == "current" else W("reruns.other_pin")
+    det = run_fields(ru)
+    tid = "ins-run-" + slug_id(ru["id"][4:])
+    c.tpls[tid] = record(W("inspect.kind_run"), f'{esc(who)}, <code translate="no">{esc(name)}</code>',
+                         [(W("reruns.said"), f"“{esc(ru.get('source_term') or '')}”"),
+                          (W("reruns.account"), esc(S.curly(sv.get("text") or ""))),
+                          (W("inspect.date"), esc(when or W("reruns.undated"))), (W("inspect.version"), esc(pin)),
+                          (W("readings.method"), code_spans(first_sentence(credit.get("method") or ""))),
+                          (W("reruns.recorded"), esc(det))],
+                         [(W("reruns.receipt"), ru.get("receipt"))])
+    receipt = (f'<a class="ext" href="{esc(ru.get("receipt") or "")}" rel="noopener" '
+               f'aria-label="{esc(W("reruns.receipt_label", who=whose, name=name))}">{esc(W("reruns.receipt"))}</a>' if ru.get("receipt") else "")
+    details = ins_button(tid, esc(W("readings.details")), name=W("reruns.details_label", who=whose, name=name))
+    return (f'<p class="fx-run__term">“{esc(ru.get("source_term") or "")}”</p>'
+            f'<p class="fx-run__acc">{esc(S.curly(sv.get("text") or ""))}' + (f' <span class="fx-run__det">{esc(det)}</span>' if det else "") + '</p>'
+            f'<p class="fx-run__meta">{esc(when or W("reruns.undated"))}, {esc(pin)}. {receipt} {details}</p>'), bool(det)
+
+
+def runs_table_html(c: Ctx, srcs: list, names: dict) -> tuple:
+    """Every reported Comparator run in one table: a row per Lean statement, a column per
+    group, so which statements each group ran, and which it did not, reads across and down.
+    A narrow screen stacks each statement's runs under it, labelled by group.
+    Returns (html, whether any report gave fields)."""
+    S = c.S
+    if not c.leans or not srcs:
         return "", False
-    items, any_detail = [], False
-    many = len(c.leans) > 1
-    for l, ru in group_runs(c, src):
+    runs = {src: dict((l["id"], ru) for l, ru in group_runs(c, src)) for src in srcs}
+    head = "".join(f'<th scope="col">{esc(names[src])}</th>' for src in srcs)
+    rows, any_detail = [], False
+    for l in c.leans:
         name = l["id"][2:]
         title = l.get("name") or ""
-        obj = ((f'<span class="fx-run__t md-math">{esc(curly_tex(title))}</span> ' if title and title != name and many else "")
+        obj = ((f'<span class="fx-run__t md-math">{esc(curly_tex(title))}</span>' if title and title != name else "")
                + f'<code translate="no">{S.lean_breaks(">" + esc(name))[1:]}</code>')
-        if not ru:
-            if many:
-                items.append(f'<li class="fx-run fx-run--none"><p class="fx-run__obj">{obj}</p><p class="fx-muted">{esc(W("glance.runs_none"))}</p></li>')
-            continue
-        credit = ru.get("credit") or {}
-        sv = ru.get("source_value") or {}
-        who = c.disp(credit.get("name") or ru.get("source"))
-        whose = possessive(S, who)
-        when = S.date_words(ru.get("date"))
-        pin = W("reruns.at_pin") if ru.get("pin_state") == "current" else W("reruns.other_pin")
-        det = run_fields(ru)
-        any_detail = any_detail or bool(det)
-        tid = "ins-run-" + slug_id(ru["id"][4:])
-        c.tpls[tid] = record(W("inspect.kind_run"), f'{esc(who)}, <code translate="no">{esc(name)}</code>',
-                             [(W("reruns.said"), f"“{esc(ru.get('source_term') or '')}”"),
-                              (W("reruns.account"), esc(S.curly(sv.get("text") or ""))),
-                              (W("inspect.date"), esc(when or W("reruns.undated"))), (W("inspect.version"), esc(pin)),
-                              (W("readings.method"), code_spans(first_sentence(credit.get("method") or ""))),
-                              (W("reruns.recorded"), esc(det))],
-                             [(W("reruns.receipt"), ru.get("receipt"))])
-        receipt = (f'<a class="ext" href="{esc(ru.get("receipt") or "")}" rel="noopener" '
-                   f'aria-label="{esc(W("reruns.receipt_label", who=whose, name=name))}">{esc(W("reruns.receipt"))}</a>' if ru.get("receipt") else "")
-        details = ins_button(tid, esc(W("readings.details")), name=W("reruns.details_label", who=whose, name=name))
-        items.append(f'<li class="fx-run" id="{run_id(src, name)}"><p class="fx-run__obj">{obj}</p>'
-                     f'<p class="fx-run__term">“{esc(ru.get("source_term") or "")}”</p>'
-                     f'<p class="fx-run__acc">{esc(S.curly(sv.get("text") or ""))}' + (f' <span class="fx-run__det">{esc(det)}</span>' if det else "") + '</p>'
-                     f'<p class="fx-run__meta">{esc(when or W("reruns.undated"))}, {esc(pin)}. {receipt} {details}</p></li>')
-    body = f'<ul class="fx-runs">{"".join(items)}</ul>' if items else f'<p class="fx-muted">{esc(W("glance.runs_none"))}</p>'
-    return f'<div class="fx-grp__part">{k}{body}</div>', any_detail
+        cells = []
+        for src in srcs:
+            ru = runs[src].get(l["id"])
+            cell, det = run_cell_html(c, src, l, ru)
+            any_detail = any_detail or det
+            rid = f' id="{run_id(src, name)}"' if ru else ""
+            cells.append(f'<td{rid} data-label="{esc(names[src])}"{" class=" + chr(34) + "fx-rt__none" + chr(34) if not ru else ""}>{cell}</td>')
+        rows.append(f'<tr><th scope="row" class="fx-rt__obj">{obj}</th>{"".join(cells)}</tr>')
+    k = f'<h4 class="fx-grp__k fx-rt__h">{S.ctext(W("groups.runs_table"))}</h4>'
+    table = (f'<div class="fx-rt__wrap"><table class="fx-rt fx-rt--n{min(len(srcs), 4)}"><thead><tr><th scope="col">{esc(W("groups.runs_obj"))}</th>{head}</tr></thead>'
+             f'<tbody>{"".join(rows)}</tbody></table></div>')
+    return k + table, any_detail
 
 
 def groups_html(c: Ctx) -> str:
-    """One card per outside group, side by side and of equal height: the group's whole
-    position in one place, its assessment of the Lean's scope and its Comparator runs of
-    every Lean statement. Earlier addresses (#readings, #reruns, #reruns-<name>) land here."""
+    """What the groups found, in two comparisons: the coverage assessments side by side
+    (a group that made none is named in one line, not given an empty card), then every
+    Comparator run in one table of Lean statements by groups. Earlier addresses
+    (#readings, #reruns, #reruns-<name>, #grp-<group>) land here."""
     S, ev = c.S, c.ev
     names_full = reader_full_names()
     aliases = ('<span class="fx-alias" id="h-readings"></span><span class="fx-alias" id="h-reruns"></span>'
@@ -1924,25 +1944,31 @@ def groups_html(c: Ctx) -> str:
     head = f'<h3 class="fx-h3" id="readings">{esc(W("groups.heading"))}</h3>'
     if not c.leans and not c.readings:
         return f'{aliases}{head}<p class="fx-none">{esc(W("readings.nolean"))}</p>'
-    cards, any_detail = [], False
-    for src in group_order(c):
+    order = group_order(c)
+    names, cards, silent = {}, [], []
+    for src in order:
         rd = next((x for x in ev.readers if x.source == src), None)
         full = names_full.get(src) or (rd.name if rd else "") or c.source_name(src)
         name = c.disp(full) if full else c.source_name(src)
+        names[src] = name
+        if not rd:
+            silent.append(f'<span class="fx-grp-none__n" id="{group_id(src)}">{esc(name)}</span>')
+            continue
         credit = reader_credit(S, full) if full and full != name else ""
-        runs, det = group_runs_html(c, src)
-        any_detail = any_detail or det
         cards.append(f'<article class="fx-c fx-grp" id="{group_id(src)}" aria-labelledby="{group_id(src)}-h">'
                      f'<header class="fx-grp__head"><h4 class="fx-c__h" id="{group_id(src)}-h">{esc(name)}</h4>'
                      + (f'<p class="fx-c__sub">{esc(credit)}</p>' if credit else "") + '</header>'
-                     f'{group_scope_html(c, src)}{runs}</article>')
-    # The answer in one sentence; each group's own finding is on its card, said once.
+                     f'{group_scope_html(c, src)}</article>')
+    run_srcs = [src for src in order if any(ru for _, ru in group_runs(c, src))]
+    runs, any_detail = runs_table_html(c, run_srcs, names)
     lead = esc(ev.agreement_sentence()) if c.readings else ""
     note = "" if any_detail or not c.leans else f' {esc(W("reruns.details_none"))}'
     intro = W("groups.intro", names=join_and(S, [reader_credit(S, names_full.get(rd.source, rd.name)) for rd in ev.readers])) if ev.readers else ""
+    none_line = (f'<p class="fx-grp-none">{W("groups.no_scope_line", names=join_and(S, silent))}</p>' if silent else "")
     return (f'{aliases}<div class="fx-grphead">{head}' + (f'<p class="fx-ans">{lead}</p>' if lead else "")
             + f'<p class="fx-how">{esc(intro)}{note}</p></div>'
-            f'<div class="fx-grid fx-grid--groups">{"".join(cards)}</div>')
+            + (f'<div class="fx-grid fx-grid--groups">{"".join(cards)}</div>' if cards else "")
+            + none_line + (f'<div class="fx-runs-all">{runs}</div>' if runs else ""))
 
 
 def producer_drafts_html(c: Ctx) -> str:
@@ -2261,8 +2287,7 @@ def said_html(c: Ctx) -> str:
         tname = (tsrc.get("tier_names") or {}).get(str(tier["value"]))
         what = S.C("sources.type_words").get(ty["value"], ty["value"])
         if tname:
-            lead = (f'<li class="fx-c fx-find"><p class="fx-find__who"><span class="fx-find__name">{esc(S.C("family.tier_credit"))}</span>'
-                    f'<a class="ext fx-find__src" href="{esc(tsrc.get("url") or "")}" rel="noopener">{esc(S.C("community.source"))}</a></p>'
+            lead = (f'<li class="fx-c fx-find"><p class="fx-find__who"><a class="ext fx-find__name" href="{esc(tsrc.get("url") or "")}" rel="noopener">{esc(S.C("family.tier_credit"))}</a></p>'
                     f'<p class="fx-find__what">{esc(S.C("family.tier_said", name=S.curly(tsrc.get("name") or ""), type=what, tier=S.curly(tname)))}</p></li>')
     if not said and not lead:
         return ""

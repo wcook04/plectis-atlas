@@ -248,7 +248,7 @@
   "details_none": "These reports do not list software versions, axioms, time or memory as separate fields; any such details are in each report’s own account.",
   "more": "Comparator runs of the other {n} Lean statements",
   "others_heading": "Other Comparator runs",
-  "others_intro": "Other people’s accounts of Comparator runs, with links to their reports."
+  "others_intro": "Other people’s reports on this family, as they describe them, with links to the originals."
  },
  "checks": {
   "heading": "Other reports and calculations",
@@ -287,7 +287,7 @@
    "source-data-unavailable": "the procedure needs data that the source does not provide"
   },
   "atlas_source_note": "Atlas source inspection ({date})",
-  "kind_replay": "Another Comparator run"
+  "kind_replay": "Other report"
  },
  "left": {
   "heading": "What is still unchecked",
@@ -475,6 +475,9 @@
   "heading": "Each group’s label, reason and Comparator runs",
   "scope_k": "Does the Lean state the advertised result?",
   "runs_k": "Their [[comparator|Comparator]] runs of OpenAI’s proof",
+  "runs_table": "Reported [[comparator|Comparator]] runs of OpenAI’s proofs",
+  "runs_obj": "Lean statement",
+  "no_scope_line": "{names} did not assess whether the Lean states the advertised result; their Comparator runs are in the table below.",
   "finds": "They find that {finds}.",
   "intro": "{names} each compared the Lean statements with the whole result OpenAI describes, and report their own Comparator runs. A group’s finding is about the family as a whole, not each paper theorem. Atlas has not repeated the runs."
  },

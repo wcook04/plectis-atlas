@@ -100,9 +100,12 @@
 .fx-claim__main .fx-cand { max-width: none; }
 .fx-others .fx-alts { columns: 30rem auto; column-gap: var(--fx-block); }
 .fx-main .fx-others .fx-alt { max-width: none; break-inside: avoid; }
-.fx-flow { columns: 22rem auto; column-gap: var(--fx-gap); margin: 0; padding: 0; list-style: none; }
-.fx-flow > * { break-inside: avoid; margin: 0 0 var(--fx-gap); }
-.fx-flow--wide { columns: 26rem auto; }
+.fx-flow { display: grid; gap: var(--fx-block) 40px; align-items: start; margin: 0; padding: 0; list-style: none;
+  /* Row-wise, at most three columns: a reader finishes a record and finds the next one to
+     its right, never at the top of another column (the 20 October review). */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, max(20rem, calc((100% - 80px) / 3))), 1fr)); }
+.fx-flow > * { margin: 0; }
+.fx-flow--wide { grid-template-columns: repeat(auto-fill, minmax(min(100%, max(24rem, calc((100% - 40px) / 2))), 1fr)); }
 .fx-grid--wide { grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); }
 .fx-h4 { font-family: var(--sans); font-weight: 600; font-size: var(--fs-base); margin: 24px 0 6px; }
 .fx-intro { color: var(--muted); max-width: 80ch; font-size: var(--fs-body); line-height: 1.55; margin: 0 0 16px; text-wrap: pretty; }
@@ -244,8 +247,13 @@
 .fx-join--unavailable { border-left-color: var(--rule-control); }
 .fx-join__quote { display: block; margin-top: 6px; font-size: var(--fs-small); color: var(--muted); }
 @container fxmain (min-width: 860px) {
-  .fx-cmp__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "join join" "paper lean"; gap: 0 24px; align-items: start; }
+  .fx-cmp__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "join join" "paper lean" "paper lean"; gap: 0 24px; align-items: start; }
   .fx-join { margin: 0 0 16px; }
+  /* The two captions share one band, so the paper's card and the Lean card start level. */
+  @supports (grid-template-rows: subgrid) {
+    .fx-cmp__paper, .fx-cmp__lean { display: grid; grid-template-rows: subgrid; align-items: end; }
+    .fx-cmp__paper > :last-child, .fx-cmp__lean > :last-child { align-self: start; }
+  }
 }
 
 .fx-lean { padding: 16px 18px 12px; background: var(--surface); border: 1px solid color-mix(in oklab, var(--steel) 40%, var(--rule-strong)); border-radius: var(--r-lg); }
@@ -273,7 +281,7 @@
    assessment and its runs start on one line across the row whatever its name block holds. */
 @supports (grid-template-rows: subgrid) {
   .fx-grid--groups { row-gap: 0; }
-  .fx-grp { display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: var(--fx-block); margin-bottom: var(--fx-gap); }
+  .fx-grp { display: grid; grid-row: span 2; grid-template-rows: subgrid; row-gap: var(--fx-block); margin-bottom: var(--fx-gap); }
 }
 .fx-grp__head .fx-c__h { font-size: 1.125rem; margin-bottom: 2px; }
 .fx-grp__head .fx-c__sub { margin: 0; }
@@ -290,15 +298,34 @@
 .fx-rd__def, .fx-rd__method { margin: 0 0 6px; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); scroll-margin-top: 64px; }
 .fx-rd__def:target { color: var(--ink); background: color-mix(in oklab, var(--steel) 12%, transparent); border-radius: 4px; }
 .fx-rd__links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: var(--fx-tight) 0 0; font-size: var(--fs-small); }
-.fx-runs { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--fx-tight); }
-.fx-run { padding: 0 0 var(--fx-tight); border-bottom: 1px solid var(--rule); scroll-margin-top: 64px; }
-.fx-run:last-child { border-bottom: 0; padding-bottom: 0; }
-.fx-run:target { background: color-mix(in oklab, var(--steel) 10%, transparent); }
-.fx-run p { margin: 0; }
-.fx-run__obj { font-size: var(--fs-small); color: var(--muted); }
-.fx-run__obj code { font-family: var(--fx-lean-mono); color: var(--steel-text); overflow-wrap: anywhere; }
-.fx-run__t { font-family: var(--serif); font-size: var(--fs-meta); color: var(--ink-soft); }
+/* A group that made no coverage assessment is named in one line, not given an empty card. */
+.fx-grp-none { margin: 0 0 var(--fx-block); max-width: 80ch; font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); }
+.fx-grp-none__n { font-weight: 600; color: var(--ink); scroll-margin-top: 64px; }
+/* Every reported run in one table: Lean statements down, groups across. */
+.fx-runs-all { margin-top: var(--fx-sec); }
+.fx-rt__h { font-size: var(--fs-body); color: var(--ink); }
+.fx-rt { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); }
+.fx-rt thead th { padding: 0 16px 8px 0; text-align: left; vertical-align: bottom; font-weight: 600; color: var(--ink); border-bottom: 1px solid var(--rule-strong); }
+.fx-rt thead th:first-child { width: 24%; color: var(--muted); }
+.fx-rt tbody th, .fx-rt td { padding: 12px 16px 12px 0; text-align: left; vertical-align: top; font-weight: 400; border-bottom: 1px solid var(--rule); }
+.fx-rt tr > :last-child { padding-right: 0; }
+.fx-rt td { scroll-margin-top: 64px; }
+.fx-rt td:target { background: color-mix(in oklab, var(--steel) 10%, transparent); }
+.fx-rt p { margin: 0; max-width: none; }
+.fx-rt__obj { color: var(--ink); }
+.fx-run__t { display: block; font-family: var(--serif); font-size: var(--fs-body); color: var(--ink); }
+.fx-rt__obj code { font-family: var(--fx-lean-mono); font-size: 0.92em; color: var(--steel-text); overflow-wrap: anywhere; }
+.fx-rt__none { color: var(--muted); }
+@media (max-width: 760px) {
+  .fx-rt, .fx-rt tbody, .fx-rt tr, .fx-rt tbody th, .fx-rt td { display: block; width: auto; }
+  .fx-rt thead { display: none; }
+  .fx-rt tr { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+  .fx-rt tbody th, .fx-rt td { padding: 2px 0; border: 0; }
+  .fx-rt td::before { content: attr(data-label); display: block; margin: 8px 0 2px; font-size: var(--fs-meta); font-weight: 600; color: var(--muted); }
+}
 .fx-run__term { font-weight: 600; color: var(--ink); font-size: var(--fs-body); overflow-wrap: anywhere; }
+.fx-run__acc { margin-top: 2px !important; }
+.fx-run__meta { margin-top: 4px !important; }
 .fx-run__acc { font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
 .fx-run__det { color: var(--muted); }
 .fx-run__meta { font-size: var(--fs-small); color: var(--muted); }
@@ -333,17 +360,20 @@
 
 /* A credited community item: who and when as the card's head, then what they say. */
 .fx-finds { list-style: none; }
-.fx-find__who { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 0 0 6px; font-size: var(--fs-small); color: var(--muted); }
-.fx-find__name { font-weight: 600; color: var(--ink); }
-.fx-find__src { margin-left: auto; }
+.fx-find__who { margin: 0 0 6px; font-size: var(--fs-small); line-height: 1.4; color: var(--muted); }
+.fx-find__name { display: inline; font-weight: 500; color: var(--ink); text-wrap: pretty; }
+a.fx-find__name { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em;
+  text-decoration-color: color-mix(in oklab, currentColor 35%, transparent); }
+a.fx-find__name:hover { text-decoration-color: currentColor; }
+.fx-find__when { display: block; margin-top: 2px; font-size: var(--fs-meta); color: var(--muted); }
 .fx-find__what { margin: 0; font-size: var(--fs-body); line-height: 1.55; color: var(--ink); }
 /* Related reading: follow-up work is the main column, at a reading measure; the citation
    and reference routes stack beside it at their natural heights, so no card is stretched
    round a narrow strip of text. */
 .fx-cites2 { display: grid; gap: var(--fx-gap); align-items: start; }
 .fx-cites2__side { display: grid; gap: var(--fx-gap); align-content: start; min-width: 0; }
-@media (min-width: 960px) { .fx-cites2 { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); } }
-.fx-followups .fx-find--row { max-width: 72ch; }
+@media (min-width: 960px) { .fx-cites2 { grid-template-columns: minmax(0, 72ch) minmax(0, 1fr); column-gap: 48px; } }
+.fx-main .fx-followups .fx-find--row { max-width: 72ch; }
 .fx-find--row { padding: var(--fx-tight) 0; border-top: 1px solid var(--rule); }
 .fx-find--row:first-child { border-top: 0; padding-top: 0; }
 .fx-finds { margin: 0; padding: 0; }
@@ -371,7 +401,7 @@
 .pp__meta { font-size: var(--fs-meta); color: var(--muted); margin: 0; }
 .pp__acts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 10px 0 6px; }
 .pp__prev { font-size: var(--fs-meta); color: var(--muted); margin: 6px 0; }
-.pp__abstract { font-family: var(--serif); font-size: 1rem; line-height: 1.6; color: var(--ink-soft); margin: 4px 0 0; }
+.pp__abstract { font-family: var(--serif); font-size: 1rem; line-height: 1.6; color: var(--ink-soft); margin: 4px 0 0; max-width: 72ch; }
 .pp__note { font-size: var(--fs-meta); color: var(--ink-soft); max-width: 62ch; }
 .fx-checks { font-size: var(--fs-body); color: var(--ink-soft); }
 .fx-checks a { margin-right: 4px; }
@@ -615,6 +645,15 @@ a.fx-vt:hover { border-color: var(--ink); }
   .fx--tabbed #p-result:not(:has(.fx-claim--many)) > .fx-sec { margin-top: var(--fx-block); }
   #p-result .fx-grid--papers { grid-template-columns: minmax(0, 1fr); }
   #p-result .fx-grid--papers > .pp:only-child { display: block; }
+  /* Several statements push the papers under them, full width: each paper becomes one
+     row, its title, date and reading actions beside an abstract at a reading measure. */
+  #p-result:has(.fx-claim--many) .fx-grid--papers > .pp { display: grid; grid-template-columns: minmax(16rem, 2fr) minmax(0, 3fr); column-gap: 48px; align-content: start; }
+  #p-result:has(.fx-claim--many) .fx-grid--papers > .pp > * { grid-column: 1; }
+  #p-result:has(.fx-claim--many) .fx-grid--papers > .pp > .pp__abstract { grid-column: 2; grid-row: 1 / span 12; margin: 0; }
   /* The overview's claim column travels beside the taller evidence card. */
   .fx-overview__claim { position: sticky; top: 64px; }
 }
+
+/* Four Lean statements: one row of four on a wide screen, two by two when narrower,
+   never three and an orphan. */
+.fx-idx__list:has(> li:nth-child(4):last-child) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }

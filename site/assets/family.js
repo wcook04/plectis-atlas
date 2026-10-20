@@ -34,10 +34,14 @@
         fxTabs[j].tabIndex = on ? 0 : -1;
       }
     };
-    // A chosen tab starts its panel at the tab bar, never mid-way down the last one.
+    // A chosen tab starts its panel just under the tab bar, never mid-way down the last
+    // one. The bar sticks at the top once the page scrolls, so measure the panel, not the
+    // bar: a panel opened while the bar is stuck would otherwise begin above the window.
     var toTabs = function () {
-      var r = tabBar.getBoundingClientRect();
-      if (r.top < 0 || r.top > window.innerHeight * 0.6) window.scrollTo(0, window.scrollY + r.top);
+      var p = activePanel ? doc.getElementById(activePanel) : null;
+      var bh = tabBar.getBoundingClientRect().height;
+      var top = p ? p.getBoundingClientRect().top : tabBar.getBoundingClientRect().top + bh;
+      if (top < bh || top > window.innerHeight * 0.6) window.scrollTo(0, Math.max(0, window.scrollY + top - bh - 12));
     };
     var fromHash = function (initial) {
       var id = '';
