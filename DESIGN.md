@@ -595,6 +595,32 @@ reader, not emptier ones.
 - **One trail**: Map / Subject / Family N: short title / Lean statement Name, or
   the paper's short title ("The paper" when it repeats the family's title).
 
+## Width follows the kind of evidence (20 October 2026)
+
+A visual review of family 003 and the Number theory map found the pages noisy because
+every kind of content took the same width. The rules that came out of it:
+
+- **Prose keeps a reading measure; comparisons take the width.** Paper abstracts and
+  follow-up summaries stop near 72 characters; with several statements in "What the paper
+  claims", each paper is one row, its title, date and actions beside its abstract. The
+  theorem and its possible Lean match stay side by side, and their two captions share one
+  band so both cards start on the same line.
+- **Coverage and proof runs are two comparisons.** The groups tab sets the coverage
+  assessments side by side, names a group that made none in one sentence (never an empty
+  card), then gives every reported Comparator run in one table of Lean statements by
+  groups, with "No run recorded." in each empty cell. A narrow screen stacks each row,
+  labelled by group.
+- **A record's credit is its link.** Commentary, explanations and follow-ups put the
+  author and title as the one link to the source, the date under it and the summary as the
+  body; no detached "Source" link. Lists of records run row-wise, at most three across.
+- **Labels claim no more than the record.** A credited report is "Other report", not
+  "Another Comparator run": some are calculations or say Comparator was not run.
+- **A tab opens at its heading.** Choosing a tab while the bar is stuck at the top scrolls
+  the new panel to start just under the bar (`family.js`, `toTabs`).
+- **Selection on the map keeps the field readable.** Unrelated discs drop to about a third,
+  their names to about half, so the next family can be read while the selected family's
+  citations lead.
+
 ## The map sidebar at each selection level
 
 On desktop, the colour key stands on the map at the release and in a subject;
