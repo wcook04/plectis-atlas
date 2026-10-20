@@ -656,4 +656,6 @@ a.fx-vt:hover { border-color: var(--ink); }
 
 /* Four Lean statements: one row of four on a wide screen, two by two when narrower,
    never three and an orphan. */
-.fx-idx__list:has(> li:nth-child(4):last-child) { grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); }
+.fx-idx__list:has(> li:nth-child(4):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@container fxmain (min-width: 1000px) { .fx-idx__list:has(> li:nth-child(4):last-child) { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@container fxmain (max-width: 520px) { .fx-idx__list:has(> li:nth-child(4):last-child) { grid-template-columns: minmax(0, 1fr); } }

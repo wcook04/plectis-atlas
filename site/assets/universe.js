@@ -671,10 +671,12 @@
       });
       return tokens;
     }
-    function wrapInCircle(tokens, font, lead, r, n) {
-      var widths = [], memo = {};
+    function wrapInCircle(tokens, font, lead, r, n, below) {
+      // below: the height of a line set under the title (a family's counts), so the
+      // title's lines are measured where they will sit once the block is centred.
+      var widths = [], memo = {}, top = -(n * lead + (below || 0)) / 2;
       for (var li = 0; li < n; li++) {
-        var edge = Math.abs(-n * lead / 2 + (li + 0.5) * lead) + lead * 0.45;
+        var edge = Math.abs(top + (li + 0.5) * lead) + lead * 0.45;
         if (edge >= r) return null;
         widths.push(2 * Math.sqrt(r * r - edge * edge) * 0.9 - 6);
       }
@@ -704,25 +706,35 @@
       var cached = labelCache[fi];
       if (cached && cached.r === r) return cached.label;
       var tokens = labelTokens(D.families[fi].title, r), out = null, last = null;
-      for (var size = clamp(r * 0.18, 11, 17); size >= 11 && !out; size = Math.max(10.5, size - 0.5)) {
-        var font = '500 ' + size.toFixed(1) + 'px ' + SERIF, lead = size * 1.17;
-        for (var n = 1; n <= tokens.length && n * lead < r * 1.5 && !out; n++) {
-          var got = wrapInCircle(tokens, font, lead, r, n);
+      // Every family disc carries its counts under its title, so the title is fitted
+      // with that line's room reserved: the count never drops out on a long title.
+      for (var size = clamp(r * 0.18, 11, 17); size >= 10.5 && !out; size = size - 0.5) {
+        var font = '500 ' + size.toFixed(1) + 'px ' + SERIF, lead = size * 1.17, below = cntLead(size);
+        for (var n = 1; n <= tokens.length && n * lead + below < r * 1.6 && !out; n++) {
+          var got = wrapInCircle(tokens, font, lead, r, n, below);
           var label = got && { lines: got.lines, font: font, lead: lead, size: size };
           if (got && got.k === tokens.length) out = label;
           else if (got && (!last || got.k > last.k)) last = { k: got.k, label: label };
         }
         // Always test the readable lower bound, including fractional starting sizes.
-        if (!out && size > 11 && size < 11.5) size = 11.5;
+        if (!out && size > 10.5 && size < 11) size = 11;
       }
       if (!out && last && last.k) out = last.label;
       if (!out) {
         var first = Array.from(D.families[fi].title), fallbackFont = '500 11px ' + SERIF;
+        // (the one-line fallback sits high enough for the count line under it)
         while (first.length > 1 && textWidth(first.join('') + '…', fallbackFont) > r * 1.7 - 6) first.pop();
         out = { lines: [first.join('').trim() + '…'], font: fallbackFont, lead: 13, size: 11 };
       }
       labelCache[fi] = { r: r, label: out };
       return out;
+    }
+    function cntLead(size) { return clamp(size * 0.78, 10.5, 13) * 1.3; }
+    // A family's counts, as short as the disc needs: "3 papers, 2 Lean", then "3 papers".
+    function famCounts(f, font, room) {
+      var p = count('papers', f.papers.length);
+      var full = f.lean.length ? T('counts.disc_lean', { papers: p, n: f.lean.length }) : p;
+      return textWidth(full, font) <= room ? full : p;
     }
     function drawText(lines, x, y, font, color, lead, align, halo) {
       ctx.font = font; ctx.textAlign = align || 'center'; ctx.textBaseline = 'middle';
@@ -836,17 +848,16 @@
             if (!n || n.a < 0.5) continue;
             var t = famLabel(fj, moving ? chart.to.nodes[fj].r : n.r), f2 = fams[fj].data;
             var labelR = moving ? chart.to.nodes[fj].r : n.r;
-            var cnt = [count('papers', f2.papers.length)];
-            if (f2.lean.length) cnt.push(count('lean', f2.lean.length));
-            var cntText = cnt.length > 1 ? T('card.counts', { papers: cnt[0], lean: cnt[1] }) : cnt[0];
-            var cf = '400 ' + clamp(t.size * 0.78, 10.5, 13).toFixed(1) + 'px ' + SANS, cl = t.size * 1.05;
-            var cy2 = (t.lines.length * t.lead + cl) / 2, ce = cy2 + 2;
-            var showCnt = ce < labelR && textWidth(cntText, cf) <= 2 * Math.sqrt(labelR * labelR - ce * ce) * 0.9 - 6;
-            showCnt = showCnt && t.lines.every(function (line, i) {
-              var edge = Math.abs(-cy2 + (i + 0.5) * t.lead) + t.lead * 0.45;
-              return edge < labelR && textWidth(line, t.font) <= 2 * Math.sqrt(labelR * labelR - edge * edge) * 0.9 - 6;
-            });
-            var blockH = t.lines.length * t.lead + (showCnt ? cl : 0);
+            // Every disc says how many papers it holds (and Lean statements, when it has
+            // any) in the same place: under its title, in the interface face.
+            var cfs = clamp(t.size * 0.78, 10.5, 13), cl = cntLead(t.size);
+            var cy2 = (t.lines.length * t.lead + cl) / 2, ce = Math.min(cy2, labelR - 2);
+            var room = 2 * Math.sqrt(Math.max(0, labelR * labelR - ce * ce)) * 0.92 - 4;
+            var cf = '400 ' + cfs.toFixed(1) + 'px ' + SANS;
+            var cntText = famCounts(f2, cf, room);
+            while (textWidth(cntText, cf) > room && cfs > 9) { cfs -= 0.5; cf = '400 ' + cfs.toFixed(1) + 'px ' + SANS; }
+            var showCnt = true;
+            var blockH = t.lines.length * t.lead + cl;
             var a2 = n.a * words * (matchFam && !searchFolded && !matchFam[fj] ? 0.3 : 1) * (hf >= 0 && !near[fj] ? 0.55 : 1);
             ctx.save(); ctx.globalAlpha = a2;
             // Fit once at the destination, then scale that fit with the moving disc.

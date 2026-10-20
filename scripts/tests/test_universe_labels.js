@@ -31,11 +31,13 @@ vm.runInContext(source.slice(begin, end), c);
 for (const radius of [40, 44.3, 65.2, 90]) {
   for (let i = 0; i < titles.length; i++) {
     const label = c.famLabel(i, radius);
-    assert.ok(label.lines.length > 0 && label.size >= 11);
+    assert.ok(label.lines.length > 0 && label.size >= 10.5);
     assert.notEqual(label.lines.join('').trim(), '…', titles[i]);
     assert.ok(!/^(The|A|An)\s*…$/.test(label.lines.join(' ')), JSON.stringify({title:titles[i],radius,label,tokens:c.labelTokens(titles[i],radius)}));
     label.lines.forEach((line, j) => {
-      const edge = Math.abs(-label.lines.length * label.lead / 2 + (j + .5) * label.lead) + label.lead * .45;
+      // The title sits above the family's count line, so the block it centres on is taller.
+      const below = c.cntLead(label.size);
+      const edge = Math.abs(-(label.lines.length * label.lead + below) / 2 + (j + .5) * label.lead) + label.lead * .45;
       const width = 2 * Math.sqrt(radius * radius - edge * edge) * .9 - 6;
       assert.ok(edge < radius && textWidth(line, label.font) <= width + .001,
         `${titles[i]}: ${line} exceeds its circle at radius ${radius}`);

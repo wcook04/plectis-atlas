@@ -463,8 +463,8 @@
  },
  "brief": {
   "_note": "Under the claim: the family's current papers and selected Lean statements, each linked.",
-  "papers_one": "Read the paper",
-  "papers_many": "Read the {n} papers",
+  "papers_one": "Read OpenAI’s paper",
+  "papers_many": "Read OpenAI’s {n} papers",
   "more": "and {n} more",
   "lean_ans_one": "OpenAI’s release selects one Lean statement for computer checking, {name}.",
   "lean_ans_many": "OpenAI’s release selects {n} Lean statements for computer checking.",
@@ -477,7 +477,7 @@
   "runs_k": "Their [[comparator|Comparator]] runs of OpenAI’s proof",
   "runs_table": "Reported [[comparator|Comparator]] runs of OpenAI’s proofs",
   "runs_obj": "Lean statement",
-  "no_scope_line": "{names} did not assess whether the Lean states the advertised result; their Comparator runs are in the table below.",
+  "no_scope_line": "Atlas has no record of {names} assessing whether the Lean states the advertised result; their reported Comparator runs are in the table below.",
   "finds": "They find that {finds}.",
   "intro": "{names} each compared the Lean statements with the whole result OpenAI describes, and report their own Comparator runs. A group’s finding is about the family as a whole, not each paper theorem. Atlas has not repeated the runs."
  },

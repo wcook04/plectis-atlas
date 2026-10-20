@@ -621,6 +621,27 @@ every kind of content took the same width. The rules that came out of it:
   their names to about half, so the next family can be read while the selected family's
   citations lead.
 
+## Papers: fit, credit and the PDF (20 October 2026, second pass)
+
+- **No sideways scrolling for an ordinary formula.** A display wider than its column is
+  set smaller until it fits, down to 70% (`atlas.js`, `fitMath`), measured in one batch
+  so a long paper costs one layout. Only a formula wider than that keeps its own scroll.
+  Raw TeX never flashes while KaTeX loads; it appears after 6 seconds only if
+  typesetting never comes.
+- **The PDF is a way of reading, offered first.** "Read the PDF" is the first action in a
+  paper's header and stays pinned above the contents beside the text.
+- **OpenAI's work is credited as OpenAI's.** Every paper page says the paper is OpenAI's,
+  from its release under the Apache License 2.0, that Atlas converted the TeX (the
+  change notice the licence asks for), that the PDF is the version to cite, and that
+  Atlas is not affiliated with OpenAI. "Copy OpenAI's citation" copies the BibTeX OpenAI
+  publishes in the manuscript's directory, unchanged. Family pages say "Read OpenAI's
+  papers".
+- **Every family disc on the map says how many papers it holds,** with its Lean count
+  when it has one, in the same place under the title. The title is fitted with that
+  line reserved, so a long title never pushes the count out.
+- **An absent record is not a refusal.** A group with no recorded coverage assessment is
+  described as "Atlas has no record of … assessing", never "did not assess".
+
 ## The map sidebar at each selection level
 
 On desktop, the colour key stands on the map at the release and in a subject;

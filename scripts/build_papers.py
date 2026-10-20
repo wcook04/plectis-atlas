@@ -75,7 +75,12 @@ sys.setrecursionlimit(20000)
 # Every human-facing sentence this script writes. British spelling, no em dashes.
 TXT = {
     "kicker": "Paper",
-    "what": "The full text of a paper from OpenAI’s release, converted from its TeX source so that it can be read here with its theorems linked to their Lean statements. The PDF stays the reference.",
+    "what": "A paper by OpenAI, from its mathematics release ({repo}, Apache License 2.0). Plectis Atlas converted the paper’s TeX source into this web page and linked its theorems to Lean statements; the conversion can differ from the original, so cite and check the PDF. Plectis Atlas is not affiliated with OpenAI.",
+    "read_pdf": "Read the PDF",
+    "read_pdf_label": "Read {title} as a PDF, OpenAI’s original, at the pinned commit",
+    "read_pdf_side": "Read this paper as a PDF",
+    "cite": "Copy OpenAI’s citation",
+    "cite_label": "Copy OpenAI’s BibTeX citation for {title}",
     "crumb_paper": "The paper",
     "orient_h": "Before you read",
     "orient_family_q": "Which result is it part of?",
@@ -4698,6 +4703,17 @@ def _paper_timeout(signum, frame):
     raise PaperTimeout(f"the conversion took longer than {PAPER_SECONDS} seconds")
 
 
+def openai_bibtex(readme: Path) -> str:
+    """The BibTeX block OpenAI publishes in each manuscript's README ("To cite the
+    individual manuscript, use the BibTeX block in its directory"), or ""."""
+    try:
+        t = readme.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+    mm = re.search(r"```bibtex\s*\n(.*?)```", t, re.S)
+    return mm.group(1).strip() if mm else ""
+
+
 def build_one(m: dict, upstream: str, check: bool, out_dir: str) -> dict:
     """build_one_paper under a time limit (ATLAS_PAPER_SECONDS, default 1800; 0 for none),
     so one paper can never stall the build: a paper over the limit is recorded as
@@ -5125,8 +5141,15 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
         facts.append(f'<span class="pr-authors">{p.author_html}</span>')
     if m.get("date"):
         facts.append(f'<span>{esc(S.date_words(m["date"]))}</span>')
-    actions = [S.pdf_button(m, "btn btn--primary"),
+    # The PDF is OpenAI's original and the version to cite: the first action, named as
+    # a way of reading, then the TeX it was converted from and OpenAI's own citation.
+    bib = openai_bibtex(p.mdir / "README.md")
+    actions = [f'<a class="btn btn--primary ext" href="{esc(m["pdf_url"])}" rel="noopener" '
+               f'aria-label="{esc(TXT["read_pdf_label"].format(title=title_plain))}">{esc(TXT["read_pdf"])}</a>',
                f'<a class="btn btn--ghost ext" href="{esc(TREE + "preprints/" + m["id"] + "/" + str(Path(row["main_tex"] or "build/main.tex").parent))}" rel="noopener" title="{esc(TXT["tex_source_title"].format(commit=COMMIT[:7]))}">{esc(TXT["tex_source"])}</a>']
+    if bib:
+        actions.append(f'<button class="btn btn--ghost" type="button" data-copy-text="{esc(bib)}" '
+                       f'aria-label="{esc(TXT["cite_label"].format(title=title_plain))}">{esc(TXT["cite"])}</button>')
     lede = orient_html(m, fam, root, p.printed)
     notes = ""
     if m.get("version_note"):
@@ -5155,7 +5178,9 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
     if p.toc_html:
         # Beside the text on a wide screen it stays in view, open (paper.js); above the
         # text on a narrow one it is a disclosure, so the paper starts on the first screen.
-        toc = (f'<nav class="pr-toc" aria-label="{esc(TXT["contents"])}"><details><summary>{esc(TXT["contents"])}</summary>'
+        toc = (f'<nav class="pr-toc" aria-label="{esc(TXT["contents"])}">'
+               f'<a class="pr-pdf ext" href="{esc(m["pdf_url"])}" rel="noopener">{esc(TXT["read_pdf_side"])}</a>'
+               f'<details><summary>{esc(TXT["contents"])}</summary>'
                f'{p.toc_html}</details></nav>')
     side = side_panel_html(m, fam, root)
     notes_html = ""
@@ -5184,7 +5209,7 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
  <p class="phead__kicker">{esc(TXT['kicker'])}</p>
  <h1 class="phead__title">{S.ms_title_html(m)}</h1>
  <p class="phead__facts pr-facts">{', '.join(facts)}</p>
- <p class="pr-what">{esc(TXT['what'])}</p>
+ <p class="pr-what">{esc(TXT['what'].format(repo='openai/math'))}</p>
  <p class="actions">{''.join(actions)}</p>
 </header>
 {toc}
