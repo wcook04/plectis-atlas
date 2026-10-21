@@ -1,8 +1,8 @@
 # Plectis Atlas
 
-Read the papers in [OpenAI’s mathematics release](https://github.com/openai/math), compare their theorems with statements written in Lean, and read independent assessments. Lean is software for writing mathematical statements and verifying proofs. Plectis Atlas brings these sources together in an independent website, naming who compared the statements or ran a proof-verification program and what their reports establish.
+Plectis Atlas brings the papers in [OpenAI’s mathematics release](https://github.com/openai/math) together with their formal statements and outside checking reports. You can follow one result from the paper to what each group checked, without searching across repositories. Lean is software for writing mathematical statements and verifying proofs; Atlas keeps reports about a proof separate from assessments of whether its statement covers the paper’s claims.
 
-**[Explore the map ↗](https://wcook04.github.io/plectis-atlas/)** &nbsp; [Read a paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) &nbsp; [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [Build it locally](#build-it-yourself)
+**[Explore the map ↗](https://wcook04.github.io/plectis-atlas/)** &nbsp; [Read a paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) &nbsp; [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Watch the walkthrough](https://www.youtube.com/watch?v=c-QKeCRjvq0) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [Build it locally](#build-it-yourself)
 
 <a href="https://wcook04.github.io/plectis-atlas/">
   <picture>
@@ -29,6 +29,14 @@ OpenAI’s release contains PDFs, their TeX typesetting source, a catalogue and 
 </a>
 
 *A family’s page: the claim beside what each group found, in their own words, with links to their records.*
+
+## One paper, two coverage labels
+
+Open the [paper family about the irrationality exponent of π](https://wcook04.github.io/plectis-atlas/families/017.html), also used in the [Atlas walkthrough](https://www.youtube.com/watch?v=c-QKeCRjvq0). OpenAI’s description claims a result about approximating π by fractions and a consequence about convergence of the Flint Hills series. The selected Lean statement, `PiExponent`, includes the first claim and leaves out the second.
+
+MathVet labels the coverage **full**, taking the π result as the headline, and notes that the series consequence is absent. Carlos Toledo’s cert-machine labels it **narrower and declared**, counting both claims and noting that OpenAI already identifies the omission. Their notes agree about what is missing even though their labels differ. MathVet describes its assessment as preliminary, before referee review.
+
+Both groups also report that Comparator accepted OpenAI’s proof against `PiExponent`. That is a separate result: neither report checks the Flint Hills consequence. On the family page, you can read the paper and each group’s original report to see what its label means.
 
 ## What you can do
 
