@@ -2,7 +2,7 @@
 
 Plectis Atlas brings the papers in [OpenAI’s mathematics release](https://github.com/openai/math) together with their formal statements and outside checking reports. You can follow one result from the paper to what each group checked, without searching across repositories. Lean is software for writing mathematical statements and verifying proofs; Atlas keeps reports about a proof separate from assessments of whether its statement covers the paper’s claims.
 
-**[Explore the map ↗](https://wcook04.github.io/plectis-atlas/)** &nbsp; [Read a paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) &nbsp; [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Watch the walkthrough](https://www.youtube.com/watch?v=c-QKeCRjvq0) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [Build it locally](#build-it-yourself)
+**[Explore the map ↗](https://wcook04.github.io/plectis-atlas/)** &nbsp; [Read a paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) &nbsp; [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Watch the walkthrough](https://www.youtube.com/watch?v=Ck7HkzPUgMs) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [Build it locally](#build-it-yourself)
 
 <a href="https://wcook04.github.io/plectis-atlas/">
   <picture>
@@ -32,7 +32,7 @@ OpenAI’s release contains PDFs, their TeX typesetting source, a catalogue and 
 
 ## One paper, two coverage labels
 
-Open the [paper family about the irrationality exponent of π](https://wcook04.github.io/plectis-atlas/families/017.html), also used in the [Atlas walkthrough](https://www.youtube.com/watch?v=c-QKeCRjvq0). OpenAI’s description claims a result about approximating π by fractions and a consequence about convergence of the Flint Hills series. The selected Lean statement, `PiExponent`, includes the first claim and leaves out the second.
+Open the [paper family about the irrationality exponent of π](https://wcook04.github.io/plectis-atlas/families/017.html), also used in the [Atlas walkthrough](https://www.youtube.com/watch?v=Ck7HkzPUgMs). OpenAI’s description claims a result about approximating π by fractions and a consequence about convergence of the Flint Hills series. The selected Lean statement, `PiExponent`, includes the first claim and leaves out the second.
 
 MathVet labels the coverage **full**, taking the π result as the headline, and notes that the series consequence is absent. Carlos Toledo’s cert-machine labels it **narrower and declared**, counting both claims and noting that OpenAI already identifies the omission. Their notes agree about what is missing even though their labels differ. MathVet describes its assessment as preliminary, before referee review.
 
@@ -236,8 +236,8 @@ Henry Cohn’s [essay on the technical debt of AI-generated mathematics](https:/
 
 | Film | What it covers | Publication |
 | --- | --- | --- |
-| [Introduction (v2)](https://www.youtube.com/watch?v=Ut9068O-HGU) | Will’s overview of tools for inspecting work produced with AI agents, including CodeMap, the mathematics papers, Atlas, Demo Take and Safety Core. | Available |
-| [Atlas walkthrough](https://www.youtube.com/watch?v=c-QKeCRjvq0) | Read a paper about π alongside MathVet’s and Carlos Toledo’s cert-machine reports, and compare their different labels for what was checked. | Available |
+| [Introduction (v2)](https://www.youtube.com/watch?v=K87Qk0W7-lk) | Will’s overview of tools for inspecting work produced with AI agents, including CodeMap, the mathematics papers, Atlas, Demo Take and Safety Core. | Available |
+| [Atlas walkthrough](https://www.youtube.com/watch?v=Ck7HkzPUgMs) | Read a paper about π alongside MathVet’s and Carlos Toledo’s cert-machine reports, and compare their different labels for what was checked. | Available |
 
 ### Where Atlas fits
 
