@@ -1,10 +1,14 @@
 # Plectis Atlas
 
-With Plectis Atlas, you can read the papers in [OpenAI’s mathematics release](https://github.com/openai/math) alongside their formal statements and outside checking reports. Follow one result from the paper to what each group checked, without searching across repositories. Lean is software for writing mathematical statements and verifying proofs. On each result's page, reports about a proof are separate from assessments of whether its statement covers the paper's claims.
+Plectis Atlas brings the papers in [OpenAI’s mathematics release](https://github.com/openai/math) alongside their formal statements and outside checking reports. Follow one result from the paper to what each group checked, without searching across repositories.
 
 **[Explore the map](https://wcook04.github.io/plectis-atlas/)** · [Watch the walkthrough](https://www.youtube.com/watch?v=ugUObM3qpmM) · [Follow its π example](#one-paper-two-coverage-labels)
 
 [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) · [Build it locally](#build-it-yourself) · [Source map](#repository) · [Contribute](CONTRIBUTING.md)
+
+Lean is software for writing mathematical statements and verifying proofs.
+On each result's page, reports about a proof are separate from assessments of
+whether its statement covers the paper's claims.
 
 <a href="https://wcook04.github.io/plectis-atlas/">
   <picture>
