@@ -1,8 +1,10 @@
 # Plectis Atlas
 
-Plectis Atlas brings the papers in [OpenAI’s mathematics release](https://github.com/openai/math) together with their formal statements and outside checking reports. You can follow one result from the paper to what each group checked, without searching across repositories. Lean is software for writing mathematical statements and verifying proofs; Atlas keeps reports about a proof separate from assessments of whether its statement covers the paper’s claims.
+With Plectis Atlas, you can read the papers in [OpenAI’s mathematics release](https://github.com/openai/math) alongside their formal statements and outside checking reports. Follow one result from the paper to what each group checked, without searching across repositories. Lean is software for writing mathematical statements and verifying proofs. On each result's page, reports about a proof are separate from assessments of whether its statement covers the paper's claims.
 
-**[Explore the map ↗](https://wcook04.github.io/plectis-atlas/)** &nbsp; [Read a paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) &nbsp; [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) &nbsp; [Watch the walkthrough](https://www.youtube.com/watch?v=ugUObM3qpmM) &nbsp; [Contribute](CONTRIBUTING.md) &nbsp; [Build it locally](#build-it-yourself)
+**[Explore the map](https://wcook04.github.io/plectis-atlas/)** · [Watch the walkthrough](https://www.youtube.com/watch?v=ugUObM3qpmM) · [Follow its π example](#one-paper-two-coverage-labels)
+
+[Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) · [Build it locally](#build-it-yourself) · [Source map](#repository) · [Contribute](CONTRIBUTING.md)
 
 <a href="https://wcook04.github.io/plectis-atlas/">
   <picture>
@@ -234,10 +236,16 @@ Henry Cohn’s [essay on the technical debt of AI-generated mathematics](https:/
 
 ## Videos and related projects
 
-| Film | What it covers | Publication |
-| --- | --- | --- |
-| [Introduction](https://www.youtube.com/watch?v=U1z2-XaLe_w) | Will’s overview of tools for inspecting work produced with AI agents, including CodeMap, the mathematics papers, Atlas, Demo Take and Safety Core. | Available |
-| [Atlas walkthrough](https://www.youtube.com/watch?v=ugUObM3qpmM) | Read a paper about π alongside MathVet’s and Carlos Toledo’s cert-machine reports, and compare their different labels for what was checked. | Available |
+In the [Atlas walkthrough](https://www.youtube.com/watch?v=ugUObM3qpmM),
+Will opens the paper about π and compares MathVet's and Carlos Toledo's
+cert-machine reports. You can follow the same example at your own pace:
+
+- [Read the comparison above](#one-paper-two-coverage-labels).
+- [Open family 017](https://wcook04.github.io/plectis-atlas/families/017.html) for the paper, selected Lean statement and original reports.
+- [Read the source and citation guide](docs/ATTRIBUTION.md) before reusing a result or assessment.
+
+The [Plectis introduction](https://www.youtube.com/watch?v=U1z2-XaLe_w)
+explains the wider maths and software projects.
 
 ### Where Atlas fits
 
@@ -248,7 +256,9 @@ Plectis is Will Cook’s programme of research and software built with AI agents
 | [Plectis Erdős](https://github.com/wcook04/plectis-erdos) · [research website](https://wcook04.github.io/plectis/maths/) | The original eight-problem research corpus whose paper-to-Lean records informed Atlas. |
 | [Plectis Erdős Lean](https://github.com/wcook04/plectis-erdos-lean) | Lean proofs and Comparator checks for selected results from that corpus. |
 
-Explore the [research corpus](https://github.com/wcook04/plectis-erdos) and the [Plectis website](https://wcook04.github.io/plectis/).
+The [Plectis website](https://wcook04.github.io/plectis/) collects all the projects
+and videos. The separate [Plectis toolkit](https://github.com/wcook04/plectis)
+contains Python experiments; this repository contains the Atlas website and its builders.
 
 ## Licences and independence
 
