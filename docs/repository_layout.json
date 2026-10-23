@@ -1,0 +1,101 @@
+{
+  "schema": "repository_layout@2",
+  "root_files": [
+    ".gitattributes",
+    ".gitignore",
+    "AGENTS.md",
+    "ALIGNMENT.md",
+    "CITATION.cff",
+    "CLAUDE.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "DESIGN.md",
+    "LICENSE",
+    "Makefile",
+    "NOTICE",
+    "README.md",
+    "SECURITY.md",
+    "STYLE.md",
+    "upstream.json"
+  ],
+  "directories": {
+    ".agents": {
+      "purpose": "agent entry and generated skill mirrors"
+    },
+    ".claude": {
+      "purpose": "Claude configuration and generated skill mirrors"
+    },
+    ".github": {
+      "purpose": "CI workflows and contributor templates"
+    },
+    "LICENSES": {
+      "purpose": "third-party license texts"
+    },
+    "backend": {
+      "purpose": "hash-bound imported Statement Map export"
+    },
+    "contributions": {
+      "purpose": "authored contributor records and templates"
+    },
+    "curated": {
+      "purpose": "credited community evidence and ingestion tools"
+    },
+    "data": {
+      "purpose": "builder-owned source indexes"
+    },
+    "docs": {
+      "purpose": "authored documentation, checked indexes and publication records",
+      "suffixes": [
+        ".md",
+        ".json",
+        ".jsonl",
+        ".pdf",
+        ".tex",
+        ".png",
+        ".jpg",
+        ".svg",
+        ".yaml"
+      ]
+    },
+    "scripts": {
+      "purpose": "developer maintenance commands and their fixtures",
+      "suffixes": [
+        ".py",
+        ".js",
+        ".mjs",
+        ".sh",
+        ".md"
+      ]
+    },
+    "site": {
+      "purpose": "website source, copy, assets and ignored build output"
+    },
+    "skills": {
+      "purpose": "self-contained agent workflows and their executable helpers"
+    }
+  },
+  "exceptions": {},
+  "required_files": [
+    "README.md",
+    "AGENTS.md",
+    "docs/repository_layout.json",
+    "skills/repository-organization/SKILL.md",
+    "skills/repository-organization/scripts/check_layout.py",
+    "skills/repository-organization/scripts/test_check_layout.py",
+    ".github/workflows/repository-layout.yml"
+  ],
+  "content_routes": {
+    "AGENTS.md": [
+      "skills/repository-organization/SKILL.md"
+    ],
+    "README.md": [
+      "docs/repository_layout.json",
+      "python3 skills/repository-organization/scripts/check_layout.py"
+    ],
+    ".github/workflows/repository-layout.yml": [
+      "python3 skills/repository-organization/scripts/check_layout.py",
+      "python3 skills/repository-organization/scripts/test_check_layout.py"
+    ]
+  },
+  "undeclared_directories": "warn"
+}
