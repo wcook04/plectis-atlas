@@ -1624,7 +1624,7 @@
       // that a paper, theorem or Lean card just selected.
       if (narrow() && obj(key) && obj(key).kind !== 'f') {
         showView('list');
-        window.scrollTo({ top: 0, behavior: 'auto' });
+        window.scrollTo({ top: root.offsetTop, behavior: 'auto' });
         focusArrival();
       }
     }
@@ -1830,7 +1830,7 @@
       // A fresh selection starts with its heading and breadcrumbs visible. The
       // desktop sidebar's scrollIntoView can otherwise leave the whole map cropped.
       // Returning through history keeps the saved reading position.
-      if (!opts.fromHistory) window.scrollTo({ top: 0, behavior: 'auto' });
+      if (!opts.fromHistory) window.scrollTo({ top: root.offsetTop, behavior: 'auto' });
     }
     // A paper, theorem or Lean statement in hand is read: the panel widens to give the
     // mathematics room, and the chart is laid out again in the rest.
@@ -2798,8 +2798,8 @@
       // A way in chosen from beside or below the map brings the map into view: the
       // map's own side of the switch on a phone, the top of the page elsewhere.
       if (key && (outside || go.classList.contains('u-way')) && narrow) showView('map');
-      // The map is the page's first screen: going back up to it shows the header too.
-      if (outside) window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+      // Keep map navigation below the opening example.
+      if (outside) window.scrollTo({ top: root.offsetTop, behavior: reduceMotion ? 'auto' : 'smooth' });
       var fromResults = !!(resultsEl && resultsEl.contains(go));
       var byKey = e.detail === 0 && root.contains(go);
       if (go.classList.contains('u-crumb')) selectAncestor(key || null);
@@ -3058,6 +3058,8 @@
         weights();
         W = H = 0;
         var start = readHash();
+        // Existing object links still open directly at the explorer below the example.
+        if (start) root.scrollIntoView({ block: 'start' });
         // Back from a paper or a family page: the entry remembers the list's place.
         var kept = window.history && window.history.state;
         restoreViewPositions(kept);

@@ -224,6 +224,27 @@ class ReleaseLinks(unittest.TestCase):
         self.assertEqual(bp.release_xref("page 3", self.ref()), "page 3")
 
 
+class PaperLinkAliases(unittest.TestCase):
+    def test_location_alias_is_the_same_theorem_but_other_targets_fail(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "papers").mkdir()
+            (root / "statements").mkdir()
+            (root / "papers/paper.html").write_text(
+                '<div class="pr-thm" id="thm:main"><span class="pr-lbl" id="L-intro-21"></span>'
+                '<p class="pr-lean"><a href="../statements/Test.html">Lean</a></p></div>'
+                '<div class="pr-thm" id="thm:other"><span class="pr-lbl" id="L-intro-37"></span></div>'
+                '<span class="pr-lbl" id="outside"></span>')
+            checker = Path(__file__).with_name("check_paper_links.py")
+            for anchor, expected in (("thm:main", 0), ("L-intro-21", 0),
+                                     ("L-intro-37", 1), ("outside", 1), ("missing", 1)):
+                with self.subTest(anchor=anchor):
+                    (root / "statements/Test.html").write_text(
+                        f'<p class="claim__src"><a href="../papers/paper.html#{anchor}">Paper</a></p>')
+                    result = subprocess.run([sys.executable, str(checker), str(root)], capture_output=True, text=True)
+                    self.assertEqual(result.returncode, expected, result.stdout + result.stderr)
+
+
 class PairingWords(unittest.TestCase):
     def test_every_pairing_state_has_words(self):
         bp.import_site()

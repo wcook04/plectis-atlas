@@ -35,7 +35,8 @@
    "editions_one": "one replaced by a later edition",
    "editions_many": "{n} replaced by later editions",
    "joined": "{current}; {rest}."
-  }
+  },
+  "catalogue_details": "OpenAI’s catalogue description"
  },
  "actions": {
   "compare": "Compare with Lean",
@@ -174,7 +175,7 @@
   "heading": "Reported checks"
  },
  "readings": {
-  "heading": "The outside readers",
+  "heading": "Assessments of the family’s headline",
   "intro": "Two outside readers, {names}, have judged whether the release’s Lean states this family’s headline. Their readings concern the headline as a whole, not one paper theorem.",
   "says": "{name} finds that {finds} (their term: “{term}”).",
   "state": {

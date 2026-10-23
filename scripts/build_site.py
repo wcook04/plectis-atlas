@@ -1413,7 +1413,7 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 
 # The front door is the release universe (scripts/build_universe.py writes index.html).
 # Numbers lives in the footer and in the home page's bands.
-NAV = [("index.html", "map"), ("explain.html", "explain"), ("statements.html", "statements"),
+NAV = [("index.html#browse", "map"), ("explain.html", "explain"), ("statements.html", "statements"),
        ("sources.html", "sources"), ("glossary.html", "glossary"),
        ("contribute.html", "contribute"), ("about.html", "about")]
 

@@ -20,6 +20,21 @@ from urllib.parse import unquote
 ROOT = Path(__file__).resolve().parent.parent
 
 
+def theorem_aliases(page: str) -> dict[str, str]:
+    """Canonicalise the location spans emitted immediately inside a theorem.
+
+    A paper's labelled theorem and its source-location anchor identify the same
+    block. Other anchors (including those in later paragraphs) remain distinct.
+    """
+    aliases = {}
+    opening = r'<div class="pr-thm[^"]*" id="([^"]+)"[^>]*>((?:\s*<span class="pr-lbl" id="[^"]+"></span>)*)'
+    for match in re.finditer(opening, page):
+        owner = html.unescape(match.group(1))
+        for anchor in re.findall(r' id="([^"]+)"', match.group(2)):
+            aliases[html.unescape(anchor)] = owner
+    return aliases
+
+
 def main() -> int:
     build = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "site" / "_build"
     down = {}  # statement id -> (paper slug, anchor)
@@ -29,8 +44,10 @@ def main() -> int:
             down[p.stem] = (unquote(m.group(1)), html.unescape(unquote(m.group(2))))
     up = {}  # statement id -> (paper slug, id of the theorem block holding the note)
     pages = {}
+    aliases = {}
     for p in sorted((build / "papers").glob("*.html")):
         t = pages[p.stem] = p.read_text(encoding="utf-8")
+        aliases[p.stem] = theorem_aliases(t)
         starts = [(m.start(), m.group(1)) for m in re.finditer(r'<div class="pr-thm[^"]*" id="([^"]+)"', t)]
         for note in re.finditer(r'<p class="pr-lean[^"]*">(.*?)</p>', t, re.S):
             owner = [bid for pos, bid in starts if pos < note.start()]
@@ -40,7 +57,9 @@ def main() -> int:
     problems += [f"{s}: links down to its paper statement, which does not link back" for s in sorted(set(down) - set(up))]
     problems += [f"{s}: linked up from a theorem, but its statement page does not link down" for s in sorted(set(up) - set(down))]
     for s in sorted(set(down) & set(up)):
-        if down[s] != up[s]:
+        slug, anchor = down[s]
+        destination = (slug, aliases.get(slug, {}).get(anchor, anchor))
+        if destination != up[s]:
             problems.append(f"{s}: links down to {down[s]} but is linked up from {up[s]}")
     for s, (slug, anchor) in sorted(down.items()):
         t = pages.get(slug)

@@ -1,8 +1,8 @@
 {
  "_note": "Every visible string of the front door (index.html, assets/universe.js): the map and the list. Built by scripts/build_universe.py. Plain words, sentence case, no em dashes. Numbers come from Statement Map at build time (the numbers index, or counts of what the map draws); none is written here.",
  "page": {
-  "title": "OpenAI’s mathematics release, read and checked",
-  "description": "Every family of OpenAI’s mathematics release on one map, with a list beside it: what each family claims, what its Lean states, who has checked it, and where to read it.",
+  "title": "Explore the release",
+  "description": "Compare a paper’s claims, its selected Lean statement and attributed assessments, then explore OpenAI’s mathematics release.",
   "redirect_title": "The map has moved",
   "redirect_text": "The map of the release is now the front page.",
   "redirect_link": "Open the map",
@@ -353,5 +353,21 @@
   "open_result": "Read the full statement",
   "paper_counts": "{results} shown on the map",
   "family_counts": "{papers}, {lean}"
+ },
+ "example": {
+  "intro": "A paper’s claims from OpenAI’s mathematics release",
+  "paper": "The paper’s claims",
+  "formal": "The selected formal statement",
+  "assessments": "The assessments",
+  "paper_link": "Read this passage",
+  "lean_link": "Open the Lean source",
+  "report_link": "Original assessment",
+  "details": "Term and method",
+  "lean_note": "This challenge states the theorem and leaves its proof as sorry. The proof is supplied separately.",
+  "assessment_note": "These reports assess what the statement covers. Proof checks are separate.",
+  "full": "Read the full comparison",
+  "browse": "Explore the release map",
+  "about": "About Atlas and its sources",
+  "map_context": "Release details and colour key"
  }
 }

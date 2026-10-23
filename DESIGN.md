@@ -7,10 +7,9 @@ what a page teaches, so the next pass starts from it.
 
 A public reading room for OpenAI's mathematics release, for mathematicians
 first and AI researchers second. It is set in a publication register and kept
-as quiet as a good journal. It takes one risk: the front door is the whole
-release, drawn as one map that opens into every family, with a list beside it
-that reads the map in words. Everything else stays
-calm so that the map, and the mathematics, are what a visitor remembers.
+as quiet as a good journal. The front door starts with one paper: its claims, selected formal statement and
+attributed assessments. The whole release follows as a map with a readable list.
+Keep the evidence prominent and put supporting explanations one action away.
 
 The release arrives as 719 papers, 416 Lean files and a catalogue. A
 mathematician wants something smaller and sharper: what exactly is claimed,
@@ -20,7 +19,7 @@ size of the release feel like something a person can walk through.
 
 ## What a reader can do for any result
 
-Every family page answers these, in this order. The home page promises them.
+Every family page answers these, in this order. The home page demonstrates the first three with one example.
 
 1. **The claim.** Read the main theorem exactly as printed, with its number, its hypotheses and its place in the paper.
 2. **The formal statement.** See the Lean statement beside it, and whether outside readers judge that it states all of the theorem, part of it or less.
@@ -46,9 +45,16 @@ old tile map as just as bad. The Plectis maths site is the model: a problem is
 introduced in words with its mathematics typeset, its status is a sentence, and
 its map labels every problem with plain counts.)
 
-## The front door: the map and the list
+## The front door: one example, then the map and the list
 
-The release on one screen as our map, with a readable list beside it, the way
+The pi example leads with the paper’s exact statements, its selected Lean
+challenge and each outside report’s term and reason. Read this evidence before
+explaining the catalogue, colours or methods. Preserve the original source links
+and visible limits; definitions and methods can be opened when needed. Do not
+turn the two reports into a new Atlas verdict. Existing object links still open
+directly at their selected map object.
+
+The release then appears on one screen as our map, with a readable list beside it, the way
 a good maps app pairs a map with its results. 700-plus results need both: the
 map for where things are, the list for reading them.
 
@@ -150,8 +156,9 @@ whole and sit under a heading that says so.
 
 The family page is the beginning of mathematical work, not of an audit.
 
-- **Head**: the trail; the family's name; OpenAI's catalogue description as a
-  credited quotation, with its mathematics typeset.
+- **Head**: the trail and the family’s name. Where candidate paper passages
+  are available, the credited catalogue description is expandable background;
+  keep it visible when headline identification is unresolved.
 - **The theorem**: the page's centrepiece, set large as printed (number, paper,
   date), with "Read it in the paper" and "Compare with Lean". Its place in the
   family is one click away on the map ("Show on the map").
@@ -240,8 +247,11 @@ the paper and the Lean page: the backend's ids, never rebuilt from TeX.
 - At most four primary actions at any decision point; an expert's contents can show more.
 - Lists filter and never dump.
 
-**Teaching by example.** The front page shows the release map and its key.
-Opening a family leads to its papers, statements and attributed checks. The
+**Teaching by example.** The front page opens with the pi paper’s claims,
+selected statement and attributed assessments. Opening a family leads to its
+claim, formal comparison and assessments before its paper inventory. Keep each
+assessment’s reason visible; its definition and method are available through
+the existing inspection control. Avoid repeating the same labels in a summary. The
 README links a concrete family before offering its full source comparison.
 
 ## The repository front page

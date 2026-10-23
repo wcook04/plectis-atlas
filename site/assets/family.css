@@ -426,3 +426,9 @@
 /* An unresolved headline: after the statements the papers print, one line of information
    on how they were chosen and where the open task is listed. */
 .fx-cand--note { margin: 2px 0 18px; max-width: 75ch; }
+
+/* Background context stays available without delaying the paper statements. */
+.fx-context { margin: 0 0 14px; }
+.fx-context summary { cursor: pointer; color: var(--steel-text); font: 500 var(--fs-meta)/1.5 var(--sans); padding: 5px 0; width: fit-content; }
+.fx-context summary:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 3px; }
+.fx-context[open] summary { margin-bottom: 10px; }

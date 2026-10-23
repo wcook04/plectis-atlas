@@ -54,7 +54,7 @@ function context(extra = {}) {
     chart: { start: 1, shown: { level: 'disc', nodes: [
       { x: 20, y: 20, r: 10, a: 1 }, { x: 60, y: 20, r: 10, a: 1 }
     ], regions: [] } },
-    root: { getAttribute: () => 'map' }, window: { scrollTo() {} }, obj: key => objects.get(key),
+    root: { offsetTop: 720, getAttribute: () => 'map' }, window: { scrollTo() {} }, obj: key => objects.get(key),
     sel: 'd:test', board: {}, pendingBoard: null, pendingViewSwitch: null,
     historyBackPending: null, historySelection: null,
     pendingY: null, pin: -1, hover: null, hoverVia: '', cardDismissed: null,
@@ -88,12 +88,12 @@ async function main() {
       },
       back() { backCalls++; pendingBack = true; }
     };
-    const rendered = [];
+    const rendered = [], scrolls = [];
     const state = context({
-      window: { history, location, addEventListener: (type, fn) => { listeners[type] = fn; }, scrollTo() {} },
+      window: { history, location, addEventListener: (type, fn) => { listeners[type] = fn; }, scrollTo(options) { scrolls.push(options.top); } },
       sel: start, partsReady: true, board: {}, searchFolded: false, phoneViewY: { map: 0, list: 0 },
       historyBackPending: null, historySelection: null,
-      root: { getAttribute: () => 'map' },
+      root: { offsetTop: 720, getAttribute: () => 'map' },
       readHash: () => location.hash ? decodeURIComponent(location.hash.slice(3)) : null,
       parentKey: () => 'd:test',
       savedScrollPos: () => 27, viewPositions: () => ({ map: 27, list: 0 }),
@@ -104,7 +104,7 @@ async function main() {
     });
     vm.runInContext(hashState + select + backSteps + ancestorStep + popstate + pagehide, state);
     return {
-      state, history, entries, location, rendered, listeners,
+      state, history, entries, location, rendered, listeners, scrolls,
       get backCalls() { return backCalls; }, get focused() { return focused; },
       deliverBack() {
         assert.equal(pendingBack, true, 'a browser traversal was requested');
@@ -116,6 +116,7 @@ async function main() {
   }
   const historyWalk = historyFixture();
   historyWalk.state.select('f:a', { trail: true });
+  assert.equal(historyWalk.scrolls.at(-1), 720, 'map selection stays at the explorer below the opening example');
   assert.equal(historyWalk.entries[1].state.uPrev, 'd:test', 'first map visit records its predecessor');
   historyWalk.state.select('f:b', { trail: true });
   assert.equal(historyWalk.entries[2].state.uPrev, 'f:a', 'nested map visit records its predecessor');

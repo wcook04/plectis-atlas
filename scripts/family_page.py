@@ -696,7 +696,7 @@ def head_html(c: Ctx) -> str:
     S, f, root, doc = c.S, c.f, c.root, c.doc
     di = S.DISC_OF[c.num]
     disc = S.DISCIPLINES[di]["name"]
-    trail = (f'<nav class="trail fx-trail" aria-label="{esc(S.C("nav.breadcrumb"))}"><a href="{root}index.html">{esc(W("trail.map"))}</a>'
+    trail = (f'<nav class="trail fx-trail" aria-label="{esc(S.C("nav.breadcrumb"))}"><a href="{root}index.html#browse">{esc(W("trail.map"))}</a>'
              f'{S.TRAIL_SEP}<a href="{root}index.html#o=d%3A{S.DISC_SLUG[di]}">{esc(disc)}</a>'
              f'{S.TRAIL_SEP}<span aria-current="page">{esc(W("trail.family", num=c.num))}</span></nav>')
     tools = (f'<p class="fx-tools"><a class="btn btn--small" href="{root}index.html#o=f%3A{c.num}">{esc(W("actions.plate"))}</a>'
@@ -707,6 +707,9 @@ def head_html(c: Ctx) -> str:
     lead, more = cat, ""
     quote = (f'<figure class="fx-quote" id="h-desc"><figcaption class="fx-quote__src">{W("head.quote_credit", link=catalogue_link(c))}</figcaption>'
              f'<blockquote class="fx-quote__q"><p class="tex-auto">{S.glue(S.rich(curly_tex(lead), "", root, link_results=True))}</p>{more}</blockquote></figure>')
+    # Keep unresolved headline context visible; matched passages can lead directly.
+    if (doc.get("claim") or {}).get("state") == "candidate" and (doc.get("claim") or {}).get("primary_candidate") in c.stmts:
+        quote = f'<details class="fx-context"><summary>{esc(W("head.catalogue_details"))}</summary>{quote}</details>'
     extra = [verdict_line(c), papers_line(c)]
     erd = S.sourced(f, "erdos_problems")
     if erd and erd.get("value"):
@@ -1239,14 +1242,14 @@ def comparison_html(c: Ctx) -> str:
     supporting = sel.get("scope_context") == "supporting-or-different"
     n = len(c.leans)
     heading = W("compare.heading_one") if n == 1 else W("compare.heading_many", n=cap(S.say(n)))
-    intro = W("compare.index_intro") if n > 1 else W("compare.intro_one")
+    intro = W("compare.index_intro") if n > 1 else ""
     if supporting:
         intro += " " + sayc("scope_context.supporting-or-different")
     idx = lean_index(c) if n > 1 else ""
     cmps = "".join(comparison_one(c, l, first=(i == 0), rest=(i > 0)) for i, l in enumerate(c.leans))
     return (f'<section class="fx-sec" id="compare" aria-labelledby="compare-h" data-cmp-host>{alias}'
-            f'<h2 class="fx-h2" id="compare-h">{esc(heading)}</h2><p class="fx-intro">{esc(intro)}</p>'
-            f'<p class="fx-intro fx-intro--comparator">{S.ctext(W("compare.comparator_once"))}</p>'
+            f'<h2 class="fx-h2" id="compare-h">{esc(heading)}</h2>'
+            + (f'<p class="fx-intro">{esc(intro.strip())}</p>' if intro else "") +
             f'{idx}<div class="fx-cmps">{cmps}</div>{CMP_HASH_SCRIPT if n > 1 else ""}{formulations_html(c)}</section>')
 
 
@@ -1319,11 +1322,7 @@ def readings_html(c: Ctx) -> str:
     head = f'<h3 class="fx-h3" id="readings">{esc(W("readings.heading"))}</h3>'
     if not c.leans and not c.readings:
         return f'<span class="fx-alias" id="h-readings"></span>{head}<p class="fx-prose">{esc(W("readings.nolean"))}</p>'
-    a, b = (list(ev.readers) + [None, None])[:2]
     names_full = reader_full_names()
-    lead = esc(ev.agreement_sentence())
-    if ev.agreement == "disagree" and a and b and a.term and b.term:
-        lead += " " + esc(W("readings.both", left=reading_says(a, c.disp(a.name)).rstrip("."), right=reading_says(b, c.disp(b.name))))
     cols = []
     for rd in ev.readers:
         rec = c.readings.get(rd.source)
@@ -1337,7 +1336,6 @@ def readings_html(c: Ctx) -> str:
         for key, lab in zip(READER_NOTE_KEYS, ("readings.gap", "readings.note", "readings.defs")):
             if sv.get(key):
                 notes.append(f'<p class="fx-rd__note" id="{reader_note_id(rd.source, key)}"><span class="fx-rd__k">{esc(W(lab))}:</span> <span class="md-math">{code_spans(drop_file_refs(sv[key]))}</span></p>')
-        method = first_sentence(credit.get("method") or "")
         links = []
         if sv.get("url"):
             links.append(f'<a class="ext" href="{esc(sv["url"])}" rel="noopener">{esc(W("readings.record"))}</a>')
@@ -1352,13 +1350,11 @@ def readings_html(c: Ctx) -> str:
                              [(W("readings.record"), sv.get("url")), (W("readings.method"), credit.get("url"))])
         # Who supplied the assessment leads it, set apart by weight from what they find.
         says = esc(W("readings.says", name="\x00", finds=W("readings.state").get(rd.state or "none", sayc("tone." + rd.tone)), term=rd.term or ""))
-        says = says.replace("\x00", '<span class="fx-rd__who">' + esc(c.disp(rd.name)) + "</span>")
+        says = says.replace("\x00", '<span class="fx-rd__who">' + esc(reader_credit(S, names_full.get(rd.source, rd.name))) + "</span>")
         cols.append(f'<div class="fx-rd">'
                     f'<p class="fx-rd__v">{says}</p>'
                     f'{"".join(notes)}'
-                    f'<p class="fx-rd__def">{esc(W("readings.definition_of", term=rd.term or ""))} {code_spans(sv.get("text") or "")}</p>'
-                    + (f'<p class="fx-rd__method">{esc(W("readings.method"))}: {code_spans(method)}</p>' if method else "")
-                    + f'<p class="fx-rd__links">{" ".join(links)} '
+                    f'<p class="fx-rd__links">{" ".join(links)} '
                     f'{ins_button(tid, esc(W("readings.details")), name=W("readings.details_label", who=c.disp(rd.name) + "’s", num=c.num))}</p></div>')
     # The AI agent's draft classifications: their own subordinate group, after the outside
     # readers and OpenAI's note, each naming the Lean statement it classifies.
@@ -1386,8 +1382,7 @@ def readings_html(c: Ctx) -> str:
         rest = S.md_paragraphs(chr(10) + chr(10).join(paras[1:])) if len(paras) > 1 else ""
         producer = (f'<div class="fx-producer"><p class="fx-producer__h"><a class="ext" href="{esc(pv.get("url") or "")}" rel="noopener">{esc(W("readings.producer"))}</a></p>'
                     f'<blockquote class="fx-producer__q md-math">{S.md_paragraphs(paras[0])}{rest}</blockquote></div>')
-    return (f'<span class="fx-alias" id="h-readings"></span>{head}<p class="fx-lead-s">{lead}</p>'
-            f'<p class="fx-intro">{esc(W("readings.intro", names=join_and(S, [reader_credit(S, names_full.get(rd.source, rd.name)) for rd in ev.readers])))}</p>'
+    return (f'<span class="fx-alias" id="h-readings"></span>{head}'
             f'<div class="fx-rds">{"".join(cols)}</div>{producer}{draft_html}')
 
 
@@ -1922,10 +1917,10 @@ def build(S, f) -> None:
     c = Ctx(S, f)
     rel = f"families/{c.num}.html"
     head = head_html(c)
-    # The claim, then the papers it comes from, the Lean, the checks and the connections;
+    # The claim, its formal comparison and assessments precede the paper inventory;
     # the forms for what is left to check close the page.
-    sections = [("claim", theorem_html(c)), ("papers", papers_html(c)), ("compare", comparison_html(c)),
-                ("checks", checked_html(c)), ("cites", connections_html(c)), ("explain", explain_html(c)),
+    sections = [("claim", theorem_html(c)), ("compare", comparison_html(c)),
+                ("checks", checked_html(c)), ("papers", papers_html(c)), ("cites", connections_html(c)), ("explain", explain_html(c)),
                 ("said", said_html(c)), ("left", left_html(c))]
     present = [k for k, h in sections if h]
     head, main = link_first_terms(head + "\x00" + "".join(h for _, h in sections)).split("\x00", 1)
