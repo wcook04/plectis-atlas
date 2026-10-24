@@ -711,6 +711,27 @@ every kind of content took the same width. The rules that came out of it:
 - **An absent record is not a refusal.** A group with no recorded coverage assessment is
   described as "Atlas has no record of … assessing", never "did not assess".
 
+**The paper and its evidence at once** (24 October 2026, after Klara Kaleb's feedback that
+the site repeats its explanations and is slow to reach the concrete example). Above the
+paper's first words there is now only the title, authors and date, the three reading
+actions and one quiet line of credit and caution (OpenAI's paper, the licence, that Atlas
+converted the TeX and is not affiliated, that the text and numbers can differ from the PDF,
+the version to cite); the separate numbering note joined that line. "Before you read" went:
+its four answers repeated the panel beside the text and the note at each theorem. The panel
+is now the one summary, in the family board's grammar: each Lean statement as a small pair,
+the paper's theorem on the left (linked in place, or to the other paper that holds it), the
+Lean statement on the right, the divider dashed for a candidate and solid for a cited or
+declared link, the pairing's state at the join and each group's Comparator run under it;
+then the paper's main statements no Lean statement is paired with ("No Lean statement for
+Corollary 1.2"); then one row per group with its own term and the plain gloss. It sits
+beside the text from 1000px and before the text on a narrower screen, so a phone meets the
+evidence before the abstract. The note after a paired theorem is two lines in a box marked
+"Atlas": the Lean statement's name linked with the pairing's state in a few words (the full
+sentence is its title), then each group's term and its Comparator run. The heading no longer
+repeats the Lean link the note gives just below it. Lean and Comparator are glossary links
+on the words. Where this disagrees with "A paper says where it fits before its text" above,
+this stands.
+
 ## The map sidebar at each selection level
 
 **The family entry is the evidence in miniature** (24 October 2026, after Klara
