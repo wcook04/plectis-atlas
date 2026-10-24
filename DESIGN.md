@@ -848,6 +848,48 @@ readable, while keeping those circles clickable.
   lists (the Atlas, lists and credits, source). It sits directly after the page's
   last section, with no stacked margins above it.
 
+## Space
+
+**Use the width; never leave a dead gap** (24 October 2026). Will, on a family page
+whose theorem sat in a narrow column beside an empty half: "I hate it when we don't
+use up the space ... It needs to be better. Just visually, aesthetically, creatively,
+artistically." A pass at 1440, 1280, 1920 and a 390 phone, in both schemes, applied
+these rules; later passes keep them.
+
+- **Compose, never pad.** Dead space is a column ending far short of its neighbour, a
+  wide band holding one short line, a grid row with a lonely item, or a page that is a
+  narrow strip down the left. It is fixed by re-placing content the page already has,
+  never by filler, padding or invented content.
+- **Reading text keeps its measure** (about 60 to 75 characters); the freed width takes
+  a second column of real content: a section's answer beside its how-to-read line
+  (`.fx-shead`, `.fx-grphead`), a general page's purpose beside its longer account
+  (`.phead--split` on Numbers, Sources, About and the two citation lists), an Atlas source
+  note beside its source links, OpenAI's note on a Lean statement beside the symbol key,
+  the shared words beside the other candidate theorems, the unchecked list beside its
+  questions.
+- **The shorter column travels.** Where two columns stand side by side and one is more
+  than 120px shorter, `family.js` marks the shorter `.fx-travel` (sticky under the tab bar)
+  only when it fits the window, so a theorem taller than the window always scrolls to be
+  read. It is measured again when a column changes size. This replaced the unconditional
+  sticky paper theorem on the Lean tab, which could be taller than a laptop window. A
+  paper side holding only OpenAI's description takes the sheet's height and travels, with
+  the papers under it; Help's "same route" column travels beside the worked example.
+- **Close a tab on one row.** The evidence tab ends with the papers on the left and the
+  note and route to the groups' reasons on the right, under one hairline, not a band of
+  space and a second rule.
+- **Unequal records.** Three records where one is much longer: the long one on the left,
+  the two short ones stacked beside it. Five to twelve source cards of unequal length flow
+  in balanced columns; longer lists keep rows. Ranked works run one per row across the
+  frame with their citing papers in as many columns as fit, so the ranking reads straight
+  down. The careful-reading list runs row-wise across the frame.
+- **One Lean statement's name and runs stand beside the Lean tab's answer**; with several,
+  each comparison's head sets the name left and the runs right.
+
+Deliberately left: the Lean half of the evidence sheet under a long theorem (it already
+travels), the group cards' equal heights (their runs share one line), the glossary's
+first list (thirteen indivisible cards balance as well as columns allow), the Numbers
+grid's odd last card, and the front page.
+
 ## Quality floor
 
 Judge every page at four sizes, in both schemes:

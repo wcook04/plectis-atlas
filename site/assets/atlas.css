@@ -1366,3 +1366,44 @@ th[data-tip] .sort { cursor: pointer; }
 .plectis-link:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
 @media (max-width: 1099px) { .plectis-link { display: none; } }
 .foot__plectis a { white-space: nowrap; }
+
+/* ---- Space (24 October 2026) ---------------------------------------------------
+   Will: "I hate it when we don't use up the space." A list of records runs row-wise
+   across the frame, each record keeping its own reading measure. DESIGN.md "## Space". */
+@media (min-width: 900px) {
+  .rq { max-width: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr)); column-gap: 40px; align-items: start; }
+  .rq > li { min-width: 0; }
+  .rq__why li { border-top: 0; padding: 2px 0; }
+}
+/* Sources: a short set of cards of very unequal length (five to twelve) flows in
+   balanced columns, so no card stands stretched round empty space and no row holds one
+   lonely card. Long lists keep their rows. */
+@media (min-width: 900px) {
+  .ceffs:has(> :nth-child(5)):not(:has(> :nth-child(13))) { display: block; columns: 4 20rem; column-gap: var(--sp-4); }
+  .ceffs:has(> :nth-child(5)):not(:has(> :nth-child(13))) > * { break-inside: avoid; margin: 0 0 var(--sp-4); }
+}
+/* A general page's head: its purpose (and its jump links or actions) on the left, the
+   longer account of what the page counts or lists on the right, rather than one
+   measure-capped column with the width beside it empty. */
+.phead__more > :last-child { margin-bottom: 0; }
+@media (min-width: 1100px) {
+  .phead--split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 48px; row-gap: 0; align-items: start; }
+  .phead--split > * { grid-column: 1; }
+  .phead--split > .phead__title { grid-column: 1 / -1; }
+  .phead--split > .phead__more { grid-column: 2; grid-row: 2 / span 6; margin: 4px 0 0; padding-left: 24px; border-left: 1px solid var(--rule); }
+  .phead--split > .phead__more > p { max-width: 72ch; }
+  .phead--split > .lede { max-width: none; }
+}
+/* Ranked works: one work per row across the frame, its citing papers in as many columns
+   as fit, so two works of unequal length never stand side by side with one ending far
+   short of the other, and the ranking reads straight down. */
+@media (min-width: 1100px) {
+  .works { grid-template-columns: minmax(0, 1fr); }
+  .works .work__list { columns: 4 16rem; }
+  .works .work__h, .works .work__n { max-width: 90ch; }
+}
+/* How to use the Atlas: the shorter "same route" column travels beside the worked
+   example; it is shorter than any laptop window, so nothing of it is ever out of reach. */
+@media (min-width: 761px) and (min-height: 700px) {
+  .help__cols--page > .help__route { position: sticky; top: 16px; }
+}

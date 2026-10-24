@@ -424,3 +424,22 @@
 /* The claim line above already names the statement ("Theorem 1.1 of …"): a heading that
    only repeats its kind is dropped; one that carries the paper's title for it stays. */
 .page--lean .lxb-paper .stmt__head:has(> .stmt__kind:only-child) { display: none; }
+
+/* ---- Space (24 October 2026) -----------------------------------------------
+   Will: "I hate it when we don't use up the space." Where a section's text keeps a
+   reading measure, its other real content stands beside it. DESIGN.md "## Space". */
+.lxb-notes__cols, .lxb-how__cols { display: grid; gap: 14px var(--lx-gap-lg); }
+@media (min-width: 1000px) {
+  .lxb-notes__cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  .lxb-notes__cols .lsym { margin-top: 0; }
+  .lxb-how__cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  .lxb-how__b > .h3:first-child { margin-top: 0; }
+  .page--lean .lxb-how__cols .join__how, .page--lean .lxb-how__cols .alts { max-width: none; }
+}
+/* What is still unchecked: the list, and the questions to resolve beside it. */
+@media (min-width: 1000px) {
+  .page--lean .explain-box:has(> .left):has(> .note):not(:has(> .note ~ .note)) { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); column-gap: var(--lx-gap-lg); align-items: start; }
+  .page--lean .explain-box:has(> .left):has(> .note):not(:has(> .note ~ .note)) > * { grid-column: 1 / -1; }
+  .page--lean .explain-box:has(> .left):has(> .note):not(:has(> .note ~ .note)) > .left { grid-column: 1; grid-row: 3; }
+  .page--lean .explain-box:has(> .left):has(> .note):not(:has(> .note ~ .note)) > .note { grid-column: 2; grid-row: 3; margin-top: 4px; }
+}

@@ -3697,6 +3697,12 @@ def build_statement(stmt):
         how.append(f'<h3 class="h3">{esc(LW("page.alternatives_heading" if paper_st else "sheet.closest_how"))}</h3><ul class="alts">{alts}</ul>')
     if doc and pinfo["state"] not in ("producer-cited-association", "producer-declared-binding"):
         how.append(f'<p class="small muted pair__method">{esc(LW("pairing.method"))}</p>')
+    # The shared words and the method on the left, the other candidates beside them, so
+    # neither column runs half the width with the other half empty (24 October 2026).
+    alt_i = next((i for i, x in enumerate(how) if '<ul class="alts">' in x), None)
+    if alt_i is not None and len(how) > 1:
+        rest = [x for i, x in enumerate(how) if i != alt_i]
+        how = [f'<div class="lxb-how__cols"><div class="lxb-how__a">{"".join(rest)}</div><div class="lxb-how__b">{how[alt_i]}</div></div>']
     pairing_section = (f'<section class="band band--tight lxb-how" aria-labelledby="h-pairing">'
                        f'<h2 class="h2" id="h-pairing">{esc(LW("sheet.how_heading" + ("" if paper_st else "_none")))}</h2>'
                        + "".join(how) + '</section>')
@@ -3843,7 +3849,10 @@ def build_statement(stmt):
     runs_heading = LW("page.formal_heading" + ("_def" if definition_only else ""))
     sheet_state = {"producer-cited-association": "cited", "producer-declared-binding": "cited"}.get(pinfo["state"], "candidate") if paper_st else "none"
     lean_side = LW("sheet.lean_h" + ("_def" if definition_only else ""))
-    notes_body = plain_reading + symbols + defs + holes_html + axiom
+    # OpenAI's note and the symbol key beside it; the definitions, holes and axioms follow.
+    reading_pair = (f'<div class="lxb-notes__cols"><div class="lxb-notes__a">{plain_reading}</div><div class="lxb-notes__b">{symbols}</div></div>'
+                    if plain_reading.strip() and symbols.strip() else plain_reading + symbols)
+    notes_body = reading_pair + defs + holes_html + axiom
     body = f"""<div class="frame page page--lean">
 {trail(root, trail_items)}
 {sibling_nav("lean", lean_siblings(sid, root))}
@@ -4552,12 +4561,14 @@ def build_numbers():
     toc = "".join(f'<li><a href="#h-n-{g}">{esc(C("numbers.group." + g))}</a></li>' for g, _ in NUMBER_GROUPS if grouped[g])
     body = f"""<div class="frame page page--numbers" data-generation="{esc(r.generation)}">
 {section_trail("", "about", C("numbers.title"))}
-<header class="phead">
+<header class="phead phead--split">
  <h1 class="phead__title">{esc(C('numbers.title'))}</h1>
  <p class="lede">{esc(C('numbers.purpose'))}</p>
+ <div class="phead__more">
  <p>{esc(C('numbers.lede'))}</p>
  <p class="phead__facts">{esc(C('numbers.states_note'))}</p>
  <p class="phead__facts">{esc(C('numbers.credit_common', credit=common_credit))}</p>
+ </div>
  <nav class="numtoc" aria-label="{esc(C('numbers.toc_label'))}"><ul>{toc}</ul></nav>
 </header>
 {''.join(sections)}
@@ -4600,11 +4611,13 @@ def build_references_outside():
 </article>""")
     body = f"""<div class="frame page">
 {section_trail("", "explain", C("references_outside.title"))}
-<header class="phead">
+<header class="phead phead--split">
  <h1 class="phead__title">{esc(C('references_outside.title'))}</h1>
  <p class="lede">{esc(C('references_outside.purpose'))}</p>
+ <div class="phead__more">
  <p>{esc(C('references_outside.lede', works=NUM('external_works_cited'), citations=NUM('external_citations'), n=len(hl)))}</p>
  <p>{esc(C('references_outside.credit'))}</p>
+ </div>
  <p class="muted small">{esc(C('references_outside.how'))}</p>
 </header>
 <section class="band band--tight"><div class="works">{''.join(rows)}</div></section>
@@ -4687,10 +4700,10 @@ def build_sources():
     lede = C("sources.lede", sources=num(2 + len(s.get("sources", [])) + (NUMV("community_efforts") or len(COMMUNITY["list"]))), people=NUM("community_people"), findings=NUM("community_findings"))
     body = f"""<div class="frame page">
 {section_trail("", "sources")}
-<header class="phead">
+<header class="phead phead--split">
  <h1 class="phead__title">{esc(C('sources.title'))}</h1>
  <p class="lede">{esc(C('sources.purpose'))}</p>
- <p class="phead__facts">{esc(lede)} {esc(C('sources.credit'))}</p>
+ <div class="phead__more"><p class="phead__facts">{esc(lede)} {esc(C('sources.credit'))}</p></div>
  <nav class="jump" aria-label="{esc(C('sources.jump_label'))}"><ul><li><a href="#base">{esc(C('sources.base_heading'))}</a></li>{('<li><a href="#ingested">' + esc(C('sources.ingested_heading')) + '</a></li>') if ingested else ''}{('<li><a href="#efforts">' + esc(C('sources.efforts_heading')) + '</a></li>') if efforts else ''}<li><a href="#software">{esc(C('sources.components_heading'))}</a></li><li><a href="NOTICE">{esc(C('sources.notices_link'))}</a></li><li><a href="CITATION.cff">{esc(C('sources.citation_link'))}</a></li></ul></nav>
  <p class="muted small">{esc(C('community.how'))} <a class="ext" href="{esc(issue_url('problem', C('community.add_title'), page=BASE_URL + rel))}" rel="noopener">{esc(C('community.add'))}</a></p>
 </header>
@@ -4723,10 +4736,12 @@ def build_citations_within():
 </article>""")
     body = f"""<div class="frame page">
 {section_trail("", "explain", C("citations_within.title"))}
-<header class="phead">
+<header class="phead phead--split">
  <h1 class="phead__title">{esc(C('citations_within.title'))}</h1>
  <p class="lede">{esc(C('citations_within.purpose'))}</p>
+ <div class="phead__more">
  <p>{esc(C('citations_within.lede', edges=NUM('internal_citation_edges'), n=len(hl)))}</p>
+ </div>
  <p class="muted small">{esc(C('citations_within.how'))}</p>
 </header>
 <section class="band band--tight"><div class="works">{''.join(rows)}</div></section>
@@ -4822,8 +4837,8 @@ def build_about():
         for a in COPY["about"]["since_items"])
     body = f"""<div class="frame page page--wide prose-page">
 {section_trail("", "about")}
-<header class="phead"><h1 class="phead__title">{esc(C('about.title'))}</h1><p class="lede">{esc(C('about.purpose', author=CFG['author']))}</p>
-<section class="phead__sec" aria-labelledby="h-what"><h2 class="vh" id="h-what">{esc(C('about.what_heading'))}</h2><p>{esc(C('about.what', **fill))}</p></section>
+<header class="phead phead--split"><h1 class="phead__title">{esc(C('about.title'))}</h1><p class="lede">{esc(C('about.purpose', author=CFG['author']))}</p>
+<section class="phead__sec phead__more" aria-labelledby="h-what"><h2 class="vh" id="h-what">{esc(C('about.what_heading'))}</h2><p>{esc(C('about.what', **fill))}</p></section>
 <p class="actions"><a class="btn btn--primary" href="families/017.html">{esc(C('about.example_button'))}</a><a class="btn btn--ghost" href="help.html">{esc(C('help.title'))}</a></p></header>
 <div class="flow">
 <section class="band band--tight" id="approach" aria-labelledby="h-approach"><h2 class="h2" id="h-approach">{esc(C('about.approach_heading'))}</h2><p>{esc(C('about.approach_intro'))}</p><ul class="approach">{approach}</ul></section>
