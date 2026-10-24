@@ -147,7 +147,7 @@ TXT = {
         "unavailable": "The passage could not be shown here; follow the link to read it.",
     },
     "family_n": "family {n}",
-    "headline_note": "Possible match to OpenAI’s description of {families}, chosen as the main statement sharing most of its words; not reviewed.",
+    "headline_note": "Possible match to OpenAI’s description of {families}, found from shared wording; not reviewed.",
     "lean_runs_0": "no Comparator run reported",
     "lean_holes_1": "one definition compared by name and type only",
     "lean_holes_n": "{n} definitions compared by name and type only",

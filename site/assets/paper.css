@@ -75,7 +75,7 @@
 .paper .pr-lean__k a.term { color: var(--steel-text); }
 .pr-lean code { font-family: var(--mono); font-size: 0.95em; font-weight: 600; }
 .pr-lean__st { color: var(--muted); }
-.pr-lean__st::before { content: "· "; }
+.pr-lean__st::before { content: ", "; }
 .pr-groups { display: flex; flex-wrap: wrap; gap: 0 18px; border-left: 2px solid transparent; }
 .pr-g__who { font-weight: 600; color: var(--ink); }
 .pr-g--note { color: var(--muted); }
