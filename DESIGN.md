@@ -584,6 +584,30 @@ is reading, delay the mathematics, or run in a loop.
 
 ## Lean statement and paper reading pages (UX pass, 19 October 2026)
 
+**The evidence leads on the Lean statement page too** (24 October 2026, after Klara
+Kaleb's feedback). The page opened on a paragraph repeated on all 416 pages, then a
+"What is known so far" table of paragraph answers, and only then the Lean and the
+paper. Now, under a one-sentence header (what Lean is, a glossary link), the page
+opens on the family board's sheet: the paired paper theorem exactly as printed on
+the left (several when the Lean's parts match several; with nothing paired, the
+backend's reason and the closest statements by name), the Lean text on the right
+with one line on `sorry` (or, for a definition-only file, what Comparator compares
+instead), and the pairing's qualification once along the sheet's foot, with a link
+to how it was chosen. Then one card per outside group, side by side: its assessment
+of the family's Lean in plain words with the map's dot, its own term, its reason
+quoted, and its Comparator run of this statement; the lead says once that the
+assessment is of the family's Lean and the run of this statement, and the foot says
+once what a Comparator pass does not show. The detail follows in its own sections:
+reading the Lean (OpenAI's note, the AI draft, the symbol key, definitions, axioms),
+how the paper theorem was chosen (shared words, other candidates, the method), the
+full run reports, what is unchecked, where to read more, the file and the card. The
+header's action buttons and the glance table went; every anchor other pages link to
+stays (`h-glance` is the sheet, `h-claim` and `h-lean-read` its two halves,
+`h-readings` an alias on the groups), and the contents rail follows the new order.
+`lean_group_cards` and the sheet in `build_statement` (`scripts/build_site.py`) own
+this, with the `.lxb*` rules in `site/assets/lean.css`. Bullets below describe the
+earlier passes; where they disagree about the opening, this paragraph stands.
+
 - **The answer comes first.** A Lean statement page opens with "At a glance": its
   family, the paper statement and the match's state ("possible match, not
   reviewed"), then one row per group with both answers in the group's own term:

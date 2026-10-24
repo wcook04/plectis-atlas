@@ -3437,26 +3437,6 @@ def lean_symbols_html(code: str, definition_only: bool) -> str:
             f'<ul class="lsym__list">{items}</ul><p class="lsym__more">{ctext(LW("symbols.more"))}</p></div>')
 
 
-def _reading_cells(src, rd):
-    """A group's family-level assessment as one table cell: the site's plain gloss, the
-    group's own term, then their reason and note in their own words, and their record."""
-    import evidence as _ev
-    sv = rd.get("source_value") or {}
-    tone = _ev.TONE.get(rd.get("state"), "none")
-    rec = (f' <a class="ext glance__rec" href="{esc(sv["url"])}" rel="noopener">{esc(LW("glance.record"))}</a>'
-           if sv.get("url") else "")
-    note = sv.get("note") or sv.get("gap") or ""
-    note_html = (f'<p class="glance__why"><span class="glance__k">{esc(LW("readings.note"))}</span> {ctext(note)}</p>'
-                 if note and note.strip().rstrip(".").lower() != "none" else "")
-    defs = sv.get("definitions_to_check")
-    defs_html = f'<p class="glance__why"><span class="glance__k">{esc(LW("readings.defs"))}</span> {ctext(defs)}</p>' if defs else ""
-    text = sv.get("text") or ""
-    text_html = f'<p class="glance__rule">{esc(curly(text))}{rec}</p>' if text else (f"<p>{rec}</p>" if rec else "")
-    return (f'<p><span class="glance__v glance__v--{tone}">{esc(cap(_ev.say("tone." + tone)))}</span> '
-            f'<span class="glance__term">{esc(LW("glance.their_term", term=rd.get("source_term") or ""))}</span></p>'
-            f'{text_html}{note_html}{defs_html}')
-
-
 def lean_groups(doc, rec):
     """Each group with an assessment of the family or a run of this statement, in the
     site's reader order: (source, display name, reading, runs)."""
@@ -3517,85 +3497,77 @@ def lean_left_items(sid, fid, doc, rec, pinfo, paper_ok, definition_only) -> lis
     return items
 
 
-def lean_brief_html(fam, fid, doc, rec, pinfo, paper_ok, root, main_line, n_family, left) -> str:
-    """The page's answer first, as four questions a newcomer asks: which family, which
-    paper theorem it may state, what the groups say, and what is still unchecked. Every
-    value is the backend's; the detail follows in the sections below."""
+def lean_group_cards(fam, fid, doc, rec, root, definition_only) -> str:
+    """What each outside group found, as one card per group side by side (the family
+    page's grammar): its assessment of the family's Lean in plain words with a dot in the
+    map's ink, its own term, its reason quoted, then its Comparator run of this Lean
+    statement. The assessment is of the family's Lean; the run is of this statement; the
+    lead says so once. Every value is the backend's; nothing is scored here."""
     import evidence as _ev
-    rows = []
-    if fam:
-        rows.append((LW("brief.family_q"),
-                     f'<a href="{root}families/{fam["id"]}.html">{esc(LW("glance.family_id", id=fam["id"]))} {fam_title_html(fam)}</a>. '
-                     + esc(main_line) + (" " + esc(LW("brief.siblings", n=say(n_family))) if n_family > 1 else "")))
-    state = pinfo["state"] if pinfo["state"] in PAIRED_STATES and paper_ok else "unavailable"
-    if pinfo.get("target") and paper_ok:
-        ref = statement_ref_html(doc, pinfo["target"], root)
-        if len(pinfo.get("targets") or []) > 1:
-            ref += " " + esc(LW("pairing.and_more", n=say(len(pinfo["targets"]) - 1)))
-        rows.append((LW("brief.paper_q"),
-                     f'{ref}. <span class="glance__state glance__state--{"cited" if state in ("producer-cited-association", "producer-declared-binding") else state}">'
-                     f'{esc(cap(LW("glance.match." + state)))}</span> <a class="glance__more" href="#h-claim">{esc(LW("glance.see_match"))}</a>'))
-    else:
-        rows.append((LW("brief.paper_q"), esc(LW("glance.no_match")) + f' <a class="glance__more" href="#h-claim">{esc(LW("brief.see_candidates"))}</a>'))
+    fam_id = fam["id"] if fam else (fid or "f:")[2:]
+    comparator = term_link("comparator", "Comparator") if "comparator" in GLOSSARY else "Comparator"
+    cards = []
     groups = lean_groups(doc, rec)
-    said = []
-    for src, nm, rd, _rr in groups:
-        if rd:
-            tone = _ev.TONE.get(rd.get("state"), "none")
-            said.append(LW("brief.group_reading", name=nm, gloss=_ev.say("tone." + tone), term=rd.get("source_term") or ""))
-    groups_html = ""
-    if said:
-        groups_html = esc(LW("brief.on_family", id=fam["id"] if fam else (fid or "f:")[2:]) + " " + "; ".join(said) + ".") + " "
-    groups_html += esc(reruns_sentence(rec)) + f' <a class="glance__more" href="#h-groups">{esc(LW("brief.groups_link"))}</a>'
-    rows.append((LW("brief.groups_q"), groups_html))
-    if left:
-        rows.append((LW("brief.left_q"), esc(left[0]) + f' <a class="glance__more" href="#h-checks">{esc(LW("brief.left_link", n=say(len(left))) if len(left) > 1 else LW("brief.left_link_one"))}</a>'))
-    facts = "".join(f'<div><dt>{esc(k)}</dt><dd>{v}</dd></div>' for k, v in rows)
-    return (f'<section class="band band--tight lxs-glance" aria-labelledby="h-glance">'
-            f'<h2 class="h2" id="h-glance">{esc(LW("brief.heading"))}</h2>'
-            f'<dl class="brief">{facts}</dl></section>')
-
-
-def lean_groups_html(fam, fid, doc, rec, root, definition_only) -> str:
-    """The comparison the page exists for: one row per group, with its assessment of the
-    family's Lean statements and its reasons in its own words, beside its Comparator runs
-    for this Lean statement. Every value is the backend's; nothing is scored here."""
-    import evidence as _ev
-    rows = []
-    for src, nm, rd, rr in lean_groups(doc, rec):
+    for src, nm, rd, rr in groups:
         who = term_link(src, esc(nm)) if src in GLOSSARY else esc(nm)
-        read_cell = _reading_cells(src, rd) if rd else f'<p class="muted">{esc(LW("glance.no_reading"))}</p>'
+        term = ""
+        if rd:
+            sv = rd.get("source_value") or {}
+            tone = _ev.TONE.get(rd.get("state"), "none")
+            dot = {"full": "all", "part": "part", "other": "other"}.get(tone, "none")
+            defn = curly(sv.get("text") or "")
+            t = rd.get("source_term") or ""
+            if t:
+                term = (f'<p class="lxb-vd__term"><span class="lxb-vt"{f" title={chr(34)}{esc(defn)}{chr(34)}" if defn else ""}>'
+                        f'{esc(LW("glance.their_term", term=t))}</span></p>')
+            gloss = COPY_LEAN["board"]["state"].get(rd.get("state") or "") or cap(_ev.say("tone." + tone))
+            reason = (sv.get("gap") or sv.get("note") or "").strip()
+            if reason.rstrip(".").lower() == "none":
+                reason = ""
+            link = (f' <a class="ext lxb-vd__go" href="{esc(sv["url"])}" rel="noopener">{esc(LW("board.record"))}</a>'
+                    if sv.get("url") else "")
+            why = (f'<blockquote class="lxb-vd__why md-math"><p>“{ctext(reason)}”{link}</p></blockquote>' if reason
+                   else f'<p class="lxb-vd__why lxb-vd__why--none">{esc(LW("board.no_reason"))}{link}</p>')
+            defs = sv.get("definitions_to_check")
+            if defs:
+                why += f'<p class="lxb-vd__defs"><span>{esc(LW("readings.defs"))}</span> {ctext(defs)}</p>'
+            body = (f'<p class="lxb-vd__out"><span class="lxb-dot lxb-dot--{dot}" aria-hidden="true"></span>'
+                    f'{esc(LW("board.on_family", id=fam_id, what=gloss))}</p>{why}')
+        else:
+            body = f'<p class="lxb-vd__none">{esc(LW("board.not_read"))}</p>'
         if rr:
             items = []
             for x in rr:
+                st_ = x.get("state") or "unknown"
+                word = COPY_LEAN["board"]["run"].get(st_) or cap(run_state_words(x))
                 when = date_words(x["date"]) if x.get("date") else LW("runs.undated")
                 pin = "" if x.get("pin_state") == "current" else " " + LW("glance.pin_other", pin=str(x.get("pin") or "")[:7])
-                link = f' <a class="ext glance__rec" href="{esc(x["receipt"])}" rel="noopener">{esc(LW("glance.report"))}</a>' if x.get("receipt") else ""
-                lead_w = COPY_LEAN["glance"]["lead"].get(x.get("state") or "") or cap(run_state_words(x))
-                items.append(f'<li><span class="glance__v glance__v--run-{esc(x.get("state") or "unknown")}">{esc(lead_w)}</span> '
-                             f'<span class="glance__term">{esc(LW("glance.their_term", term=x.get("source_term") or ""))}</span> '
-                             f'<span class="glance__when">{esc(when + pin)}</span>{link}</li>')
-            run_cell = f'<ul class="glance__runs">{"".join(items)}</ul>'
+                rep = f' <a class="ext" href="{esc(x["receipt"])}" rel="noopener">{esc(LW("glance.report"))}</a>' if x.get("receipt") else ""
+                acct = curly((x.get("source_value") or {}).get("text") or "")
+                items.append(f'<li><p class="lxb-run__out lxb-run__out--{esc(st_)}">{esc(word)}</p>'
+                             f'<p class="lxb-run__term">{esc(LW("board.their_label"))} <span class="lxb-vt">{esc(LW("glance.their_term", term=x.get("source_term") or ""))}</span>, '
+                             f'{esc(when + pin)}{rep}</p>'
+                             + (f'<p class="lxb-run__acct">{esc(acct)}</p>' if acct else "") + '</li>')
+            run = f'<ul class="lxb-run__list">{"".join(items)}</ul>'
         else:
-            run_cell = f'<p class="muted">{esc(LW("glance.no_run"))}</p>'
-        rows.append(f'<tr><th scope="row">{who}</th><td data-k="{esc(LW("glance.col_reading_short"))}">{read_cell}</td>'
-                    f'<td data-k="{esc(LW("glance.col_runs_short" + ("_def" if definition_only else "")))}">{run_cell}</td></tr>')
-    comparator = term_link("comparator", "Comparator") if "comparator" in GLOSSARY else "Comparator"
-    col_runs = esc(LW("glance.col_runs" + ("_def" if definition_only else ""), comparator="\x00")).replace("\x00", comparator)
-    fam_id = fam["id"] if fam else (fid or "f:")[2:]
+            run = f'<p class="lxb-run__none">{esc(LW("glance.no_run"))}</p>'
+        run_k = esc(LW("board.run_k" + ("_def" if definition_only else ""), comparator="\x00")).replace("\x00", comparator)
+        cards.append(f'<article class="lxb-vd"><header class="lxb-vd__hd"><h3 class="lxb-vd__who">{who}</h3>{term}</header>'
+                     f'{body}<div class="lxb-vd__run"><p class="lxb-vd__rk">{run_k}</p>{run}</div></article>')
     ev = _ev.family_evidence(RD(), fid) if fid else None
-    lead = f'<p class="lead-sentence">{esc(ev.agreement_sentence())}</p>' if ev and (doc or {}).get("readings") else ""
-    table = (f'<div class="glance__wrap"><table class="glance">'
-             f'<caption class="vh">{esc(LW("glance.caption"))}</caption>'
-             f'<thead><tr><th scope="col">{esc(LW("glance.col_group"))}</th>'
-             f'<th scope="col">{esc(LW("glance.col_reading", id=fam_id))}</th><th scope="col">{col_runs}</th></tr></thead>'
-             f'<tbody>{"".join(rows)}</tbody></table></div>') if rows else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
-    note = esc(LW("glance.note", comparator="\x00")).replace("\x00", comparator)
-    fam_link = (f' <a href="{root}families/{esc(fam_id)}.html#h-readings">{esc(LW("page.readings_link"))}</a>' if fam else "")
-    return (f'<section class="band band--tight lxs-groups" aria-labelledby="h-groups"><span id="h-readings" class="anchor-alias"></span>'
-            f'<h2 class="h2" id="h-groups">{esc(LW("groups.heading"))} <button type="button" class="help-q" data-help="questions" aria-label="{esc(LW("glance.help_label"))}">?</button></h2>'
-            f'{lead}<p class="intro">{esc(LW("groups.intro" + ("_def" if definition_only else ""), id=fam_id))}</p>{table}'
-            f'<p class="glance__note">{note}{fam_link}</p></section>')
+    lead = []
+    if any(rd for _s, _n, rd, _r in groups):
+        lead.append(esc(LW("board.lead", id=fam_id)))
+        if ev and (doc or {}).get("readings"):
+            lead.append(esc(ev.agreement_sentence()))
+    pass_ = esc(LW("board.pass" + ("_def" if definition_only else ""), comparator="\x00")).replace("\x00", comparator)
+    fam_link = (f'<a href="{root}families/{esc(fam_id)}.html#h-readings">{esc(LW("page.readings_link"))}</a>' if fam else "")
+    grid = (f'<div class="lxb-vds">{"".join(cards)}</div>' if cards
+            else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>')
+    return (f'<section class="band band--tight lxb-groups" aria-labelledby="h-groups"><span id="h-readings" class="anchor-alias"></span>'
+            f'<h2 class="lxb-h" id="h-groups">{esc(LW("board.heading"))} <button type="button" class="help-q" data-help="questions" aria-label="{esc(LW("glance.help_label"))}">?</button></h2>'
+            + (f'<p class="lxb-lead">{" ".join(lead)}</p>' if lead else "")
+            + f'{grid}<div class="lxb-foot"><p>{pass_}</p>{f"<p>{fam_link}</p>" if fam_link else ""}</div></section>')
 
 
 def lean_next_html(fam, sid, paper_rec, paper_ref, rec, stmt, root) -> str:
@@ -3682,40 +3654,52 @@ def build_statement(stmt):
     card_rel = f"cards/{sid}.html"
     card_body = receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pinfo, lrec, standalone=True)
     write_page(card_rel, head(card_rel, label, label, noindex=True) + f'\n<body class="card-only" data-root="{root}">\n{card_body}\n{macros_script([paper_ms["id"]] if paper_ms else [])}\n</body></html>\n', index=False)
-    # After the Lean statement: the paper theorem it is paired with, under a heading that
-    # carries the pairing's state, the words at the join first, then the theorem itself.
+    # The sheet's left half: the paper theorem the Lean statement is paired with, exactly
+    # as printed (several when its parts match several), or, with none paired, why and
+    # the closest statements. The words at the join say how the two are linked, once.
     multi = len(pinfo.get("targets") or []) > 1 and bool(paper_st)
     pair_state = "multi" if multi else pinfo["state"] if pinfo["state"] in PAIRED_STATES and paper_st else "unavailable"
-    pair_heading = LW("page.claim_heading")
-    if paper_st:
-        pair_answer = esc(LW("page.claim_answer." + pair_state, ref="\x00")).replace("\x00", statement_ref_html(doc, pinfo["target"], root))
-    else:
-        pair_answer = esc(LW("page.claim_answer.unavailable"))
-    pair_answer = f'<p class="answer">{pair_answer}</p>'
-    # Other candidates stay visible, closest first, with the words each shares.
     alts = alternatives_html(doc, pinfo, root, limit=6 if paper_st else 5) if doc else ""
-    alts_html = (f'<h3 class="h3">{esc(LW("page.alternatives_heading"))}</h3><ul class="alts">{alts}</ul>' if alts else "")
-    method_html = f'<p class="small muted pair__method">{esc(LW("pairing.method"))}</p>' if doc and pinfo["state"] not in ("producer-cited-association", "producer-declared-binding") else ""
     if paper_st:
         blocks = []
         for t in (pinfo["targets"] if multi else [pinfo["target"]]):
             tm, tst, _ = ms_statement(doc, t)
             if not tst:
                 continue
-            how = (f'<p class="join__how small">{esc(" ".join(shared_words_sentence(pinfo, t)))}</p>' if multi else "")
-            blocks.append(f'<div class="pair__target"><p class="claim__src">{statement_ref_html(doc, t, root)}</p>{how}'
+            blocks.append(f'<div class="pair__target"><p class="claim__src">{statement_ref_html(doc, t, root)}</p>'
                           + render_paper_statement(tm, tst, root, conv if tm is paper_ms else TexConv(tm, root), "claim") + "</div>")
-        intro = f'<p class="intro">{esc(LW("pairing.multi_intro", n=say(len(blocks))))}</p>' if multi else ""
-        paper_read = (f'<h2 class="h2" id="h-claim">{esc(pair_heading)}</h2>' + pair_answer
-                      + intro + "".join(blocks) + join_html(doc, pinfo, root) + alts_html + method_html)
+        paper_side = "".join(blocks)
     else:
+        # With nothing paired: the backend's reason, then the closest statements by name
+        # only; the words each shares wait in "How Atlas looked for a paper theorem".
         reason = pinfo.get("reason")
-        pref = paper_pref_sentence(pinfo)
-        paper_read = (f'<h2 class="h2" id="h-claim">{esc(pair_heading)}</h2>' + pair_answer
-                      + join_html(doc, pinfo, root)
-                      + (f'<p>{esc(LW("pairing.reason", reason=reason[0].lower() + reason[1:]))}</p>' if reason else "")
-                      + (f'<p class="small">{pref}</p>' if pref else "")
-                      + alts_html + method_html)
+        shown_ = set(pinfo.get("targets") or []) | {pinfo.get("target")}
+        near = [a["target"] for a in (pinfo.get("alternatives") or [])
+                if a.get("target") and a["target"] not in shown_ and a.get("score", 1) > 0][:5] if doc else []
+        paper_side = ((f'<p class="lxb-none">{esc(cap(reason))}</p>' if reason else "")
+                      + (f'<p class="lxb-xh">{esc(LW("sheet.closest"))}</p><ul class="alts">'
+                         + "".join(f"<li>{statement_ref_html(doc, t, root)}</li>" for t in near) + '</ul>' if near else ""))
+    join_line = (f'<p class="lxb-join lxb-join--{esc(pair_state)}"><span class="lxb-jh">{esc(LW("sheet.join_head." + pair_state))}.</span> '
+                 f'{esc(LW("sheet.join_qual." + pair_state))} <a href="#h-pairing">{esc(LW("sheet.join_how"))}</a></p>')
+    # How the pairing was found, for a reader who asks: the words shared, the cited line,
+    # why one paper, the other candidates and the method. None of it repeats the join.
+    how = []
+    if pinfo["state"] == "candidate-pairing" and paper_st:
+        for t in (pinfo["targets"] if multi else [pinfo["target"]]):
+            lead_ = (statement_ref_html(doc, t, root) + ". ") if multi else ""
+            how.append(f'<p class="join__how">{lead_}{esc(" ".join(shared_words_sentence(pinfo, t)))}</p>')
+    elif pinfo["state"] == "producer-cited-association" and pinfo.get("association"):
+        how.append(join_html(doc, pinfo, root))
+    pref = paper_pref_sentence(pinfo)
+    if pref:
+        how.append(f'<p class="join__how">{pref}</p>')
+    if alts:
+        how.append(f'<h3 class="h3">{esc(LW("page.alternatives_heading" if paper_st else "sheet.closest_how"))}</h3><ul class="alts">{alts}</ul>')
+    if doc and pinfo["state"] not in ("producer-cited-association", "producer-declared-binding"):
+        how.append(f'<p class="small muted pair__method">{esc(LW("pairing.method"))}</p>')
+    pairing_section = (f'<section class="band band--tight lxb-how" aria-labelledby="h-pairing">'
+                       f'<h2 class="h2" id="h-pairing">{esc(LW("sheet.how_heading" + ("" if paper_st else "_none")))}</h2>'
+                       + "".join(how) + '</section>')
     # ... the Lean statement with the definitions needed to read it ...
     snippet_full = lean_snippet_html(stmt, lines_html)
     # The same lines as plain text for the Copy button (the rendered lines are spans).
@@ -3727,15 +3711,13 @@ def build_statement(stmt):
     defs = definitions_html(stmt, lines_html, shown=_ranges)
     holes = def_holes(stmt)
     definition_only = not stmt["comparator"]["theorem_names"] and bool(holes)
-    lean_intro = (LW("panel.intro_holes", names=", ".join(h["short"] for h in holes))
-                  if definition_only else
-                  LW("page.lean_intro" if (((lrec or {}).get("scope_draft") or {}).get("value") or {}).get("quote") and doc
-                     else "page.lean_intro_plain"))
     plain_reading = scope_draft_html(fid, doc, lrec) if doc else ""
     symbols = lean_symbols_html(lean_copy, definition_only)
     left_items = lean_left_items(sid, fid, doc, lrec, pinfo, bool(paper_st), definition_only)
-    lean_note = (LW("panel.holes_note") if definition_only else
-                 C("statement.sorry_note_axiom") if stmt["declares_axiom"] else C("statement.sorry_note"))
+    # One line under the Lean text: what stands in for the proof, or, for a file that
+    # configures definitions, what Comparator compares instead. The rest waits below.
+    lean_note = (LW("sheet.def_note", names=", ".join(h["short"] for h in holes)) if definition_only else
+                 C("statement.sorry_note_axiom") if stmt["declares_axiom"] else LW("sheet.sorry"))
     holes_html = ""
     if holes:
         items = []
@@ -3745,7 +3727,7 @@ def build_statement(stmt):
                 items.append("<li>" + ctext(C("statement.hole_item", name=h_["short"], link="\x00")).replace("\x00", link) + "</li>")
             else:
                 items.append("<li>" + ctext(C("statement.hole_item_nolink", name=h_["short"], module=stmt["comparator"].get("solution_module") or "")) + "</li>")
-        holes_html = f'<h3 class="h3" id="h-holes">{esc(C("statement.holes_heading"))} <span class="count">{len(holes)}</span></h3><p class="intro">{ctext(C("statement.holes_intro"))}</p><ul class="holes">{"".join(items)}</ul>'
+        holes_html = f'<h3 class="h3" id="h-holes">{esc(C("statement.holes_heading"))} <span class="count">{len(holes)}</span></h3><p class="intro">{ctext(C("statement.holes_intro"))}</p><ul class="holes">{"".join(items)}</ul><p class="leanc__note">{ctext(LW("panel.holes_note"))}</p>'
     # axiom note
     sol = stmt.get("solution") or []
     axiom = ""
@@ -3837,27 +3819,8 @@ def build_statement(stmt):
     subtitle = ((f'<p class="phead__sub"><span class="md-math">{esc(human_name)}</span></p>' if human_name and human_name != label else "")
                 + (f'<p class="phead__sub phead__thms"><span class="phead__thmk">{esc(target_label)}</span> {name_items}</p>' if thm_names
                    else f'<p class="phead__sub"><code>{camel_breaks(sid)}</code></p>'))
-    # The header carries the actions only; how the paper theorem is paired, and that
-    # nobody has reviewed it, is said with the theorem below the Lean.
-    reading_href = (root + paper_rec["reading_page"]) if paper_rec and paper_rec.get("reading_page") else None
-    paired = pinfo["state"] in PAIRED_STATES and bool(paper_st)
-    if paired and pinfo["state"] != "candidate-pairing" and reading_href:
-        read_primary = f'<a class="btn btn--primary" href="{esc(reading_href)}">{esc(LW("page.read_in_paper." + pinfo["state"]))}</a>'
-    elif paired:
-        read_primary = f'<a class="btn btn--primary" href="#h-claim">{esc(LW("page.read_below." + ("multi" if multi else pinfo["state"])))}</a>'
-    else:
-        read_primary = f'<a class="btn btn--primary" href="#h-claim">{esc(LW("page.read_candidates"))}</a>'
-    # The paper's own reading page, beside the possible match (unless the primary action opens it).
-    paper_btn = (f'<a class="btn btn--ghost" href="{root}papers/{quote(paper_ms["id"])}.html">{esc(LW("page.read_paper_page"))}</a>'
-                 if paper_ms and paper_ms["id"] in PAPER_READING and not (paired and pinfo["state"] != "candidate-pairing" and reading_href) else "")
-    action_group = (f'<div class="phead__go">'
-                    f'<p class="actions">{read_primary}{paper_btn}<a class="btn btn--ghost" href="#h-groups">{esc(LW("page.read_groups"))}</a></p></div>')
     runs_section = lean_runs_html(lrec, root) if lrec else f'<p class="muted">{esc(LW("runs.none_recorded"))}</p>'
-    selected_line = LW("page.selected_" + ("main" if main else "supporting"), id=(fid or "f:")[2:],
-                       what=LW("page.what_" + ("definitions" if definition_only else "theorem")))
-    brief = lean_brief_html(fam, fid, doc, lrec, pinfo, bool(paper_st), root, selected_line,
-                            len(lean_siblings(sid, root)[0]) if lean_siblings(sid, root) else 1, left_items)
-    groups_section = lean_groups_html(fam, fid, doc, lrec, root, definition_only)
+    groups_section = lean_group_cards(fam, fid, doc, lrec, root, definition_only)
     next_section = lean_next_html(fam, sid, paper_rec, backend_printed(paper_rec, paper_st) if paper_st else None, lrec, stmt, root)
     left_html = "".join(f"<li>{esc(t)}</li>" for t in left_items)
     # Contributed comparisons and runs are shown when Atlas holds some; their absence is
@@ -3870,12 +3833,17 @@ def build_statement(stmt):
                         + '</div>')
     # The contents rail beside the page on a wide screen: each section in reading order,
     # each a question the section answers.
-    toc_items = [("h-glance", LW("toc.glance")), ("h-lean-read", LW("toc.lean")), ("h-claim", LW("toc.claim")),
-                 ("h-groups", LW("toc.groups")), ("h-runs", LW("toc.runs")), ("h-checks", LW("toc.checks")),
+    # The contents rail beside the page on a wide screen, in the page's order: the Lean
+    # beside the paper, what the groups found, then the detail a reader may ask for.
+    toc_items = [("h-glance", LW("toc.glance")), ("h-groups", LW("toc.groups")), ("h-lean-notes", LW("toc.lean")),
+                 ("h-pairing", LW("toc.claim")), ("h-runs", LW("toc.runs")), ("h-checks", LW("toc.checks")),
                  ("h-next", LW("toc.next")), ("h-file", LW("toc.file")), ("h-share", LW("toc.share"))]
     toc = (f'<nav class="lxs-toc" aria-labelledby="lxs-toc-h"><p class="lxs-side__h" id="lxs-toc-h">{esc(LW("toc.heading"))}</p><ol>'
            + "".join(f'<li><a href="#{i}">{esc(t)}</a></li>' for i, t in toc_items) + '</ol></nav>')
     runs_heading = LW("page.formal_heading" + ("_def" if definition_only else ""))
+    sheet_state = {"producer-cited-association": "cited", "producer-declared-binding": "cited"}.get(pinfo["state"], "candidate") if paper_st else "none"
+    lean_side = LW("sheet.lean_h" + ("_def" if definition_only else ""))
+    notes_body = plain_reading + symbols + defs + holes_html + axiom
     body = f"""<div class="frame page page--lean">
 {trail(root, trail_items)}
 {sibling_nav("lean", lean_siblings(sid, root))}
@@ -3886,32 +3854,31 @@ def build_statement(stmt):
  {subtitle}
  <p class="phead__where">{src_link}{map_link}<span class="phead__meta">{esc(" ".join(meta))}</span></p>
  <p class="phead__what">{ctext(LW('page.what' + ('_def' if definition_only else '')))}</p>
- {action_group}
 </header>
 <div class="lxs-main">
-{brief}
+<section class="band band--tight lxb" aria-labelledby="h-glance">
+ <h2 class="vh" id="h-glance">{esc(LW('sheet.heading'))}</h2>
+ <div class="lxb-pair lxb-pair--{sheet_state}">
+  <div class="lxb-paper">
+   <h2 class="lxb-side lxb-side--paper" id="h-claim">{esc(LW('sheet.paper_h' if paper_st else 'sheet.paper_h_none'))}</h2>
+   {paper_side}
+  </div>
+  <div class="lxb-lean">
+   <h2 class="lxb-side lxb-side--lean" id="h-lean-read">{ctext(lean_side)} <button type="button" class="help-q" data-help="lean" aria-label="{esc(LW('page.lean_help_label'))}">?</button></h2>
+   <div class="lean__tools"><button class="btn btn--quiet copy" type="button" data-copy-text="{esc(lean_copy)}">{esc(LW('page.copy_lean'))}</button><pre class="lean lean--snippet lean--read lxb-code"><code>{snippet_full}</code></pre></div>
+   <p class="lxb-note">{ctext(lean_note)}</p>
+  </div>
+  {join_line}
+ </div>
+</section>
 {('<section class="band band--tight"><div class="note note--warn"><p class="note__h">' + esc(C('sources.problems_heading')) + '</p>' + findings_list(problems, root) + '</div></section>') if problems else ''}
-<div class="lxs-cmp">
-<section class="band band--tight claim claim--lean" aria-labelledby="h-lean-read">
- <h2 class="h2" id="h-lean-read">{esc(LW('page.lean_heading'))} <button type="button" class="help-q" data-help="lean" aria-label="{esc(LW('page.lean_help_label'))}">?</button></h2>
- <p class="intro">{esc(lean_intro)}</p>
- {plain_reading}
- <p class="leanc__note">{ctext(lean_note)}</p>
- <div class="lean__tools"><button class="btn btn--quiet copy" type="button" data-copy-text="{esc(lean_copy)}">{esc(LW('page.copy_lean'))}</button><pre class="lean lean--snippet lean--read"><code>{snippet_full}</code></pre></div>
- {symbols}
- {defs}
- {holes_html}
- {axiom}
-</section>
-<section class="band band--tight claim claim--paper" aria-labelledby="h-claim">
- {paper_read}
-</section>
-</div>
 {groups_section}
+{('<section class="band band--tight lxb-notes" aria-labelledby="h-lean-notes"><h2 class="h2" id="h-lean-notes">' + esc(LW('sheet.notes_heading' + ('_def' if definition_only else ''))) + '</h2>' + notes_body + '</section>') if notes_body.strip() else '<span id="h-lean-notes" class="anchor-alias"></span>'}
+{pairing_section}
 <section class="band band--tight" aria-labelledby="h-runs">
  <h2 class="h2" id="h-runs">{esc(runs_heading)}</h2>
  {runs_section}
- <div class="runs-notes"><p class="runs__scope">{esc(LW("runs.scope"))}</p>{comparator_box_html(stmt)}</div>
+ <div class="runs-notes">{comparator_box_html(stmt)}</div>
 </section>
 <section class="band band--tight explain-box" aria-labelledby="h-checks">
  <h2 class="h2" id="h-checks">{esc(LW('left.heading'))}</h2>
