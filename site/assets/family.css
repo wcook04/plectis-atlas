@@ -659,3 +659,105 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-idx__list:has(> li:nth-child(4):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @container fxmain (min-width: 1000px) { .fx-idx__list:has(> li:nth-child(4):last-child) { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @container fxmain (max-width: 520px) { .fx-idx__list:has(> li:nth-child(4):last-child) { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---- The evidence board: the overview's first screen ------------------------
+   Klara Kaleb's reading (23 October 2026): reach the concrete evidence at once. The
+   paper's exact statement and the Lean OpenAI wrote share one sheet, split by the
+   pairing's thread (dashed for a candidate found from shared wording, solid where
+   the Lean source cites the theorem or OpenAI declares the link), with the words at
+   the join along the sheet's foot. Then one card per outside group, side by side, in
+   its own words. OpenAI's description and the papers close the tab as background. */
+.fx-bd { display: grid; gap: 32px; }
+.fx-bd__pair { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "lean" "join";
+  background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-lg); }
+.fx-bd__paper { grid-area: paper; min-width: 0; padding: 20px 24px 16px; }
+.fx-bd__lean { grid-area: lean; min-width: 0; padding: 20px 24px 16px; border-top: 1px dashed color-mix(in oklab, var(--steel) 55%, var(--rule-strong)); }
+.fx-bd__pair--producer-cited-association .fx-bd__lean,
+.fx-bd__pair--producer-declared-binding .fx-bd__lean { border-top-style: solid; }
+.fx-bd__pair--unavailable .fx-bd__lean, .fx-bd__pair--nolean .fx-bd__lean { border-top: 1px solid var(--rule-strong); }
+@media (min-width: 1000px) {
+  .fx-bd__pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "paper lean" "join join"; }
+  .fx-bd__lean { border-top: 0; border-left: 1px dashed color-mix(in oklab, var(--steel) 55%, var(--rule-strong)); }
+  .fx-bd__pair--producer-cited-association .fx-bd__lean,
+  .fx-bd__pair--producer-declared-binding .fx-bd__lean { border-left-style: solid; }
+  .fx-bd__pair--unavailable .fx-bd__lean, .fx-bd__pair--nolean .fx-bd__lean { border-top: 0; border-left: 1px solid var(--rule-strong); }
+}
+.fx-bd__side { margin: 0 0 12px; font: 600 var(--fs-meta)/1.3 var(--sans); color: var(--muted); text-wrap: balance; }
+.fx-bd__side--paper { color: var(--brick-text); }
+.fx-bd__side--lean, .fx-bd__side--lean a { color: var(--steel-text); }
+.fx-bd__join { grid-area: join; margin: 0; padding: 10px 24px 12px; border-top: 1px solid var(--rule); font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); max-width: none !important; }
+.fx-bd__jh { font-weight: 600; color: var(--ink); }
+.fx-bd__join .fx-why { margin-left: 4px; }
+
+/* A statement on the sheet is the paper's text set on the page: no card inside a card. */
+.fx-st--flat { margin: 0 0 12px; padding: 0; background: none; border: 0; border-radius: 0; }
+.fx-st--flat .fx-st__head { font-size: 1.125rem; }
+.fx-st--flat .fx-st__src { margin-bottom: 10px; }
+.fx-st--flat .fx-st__body { font-size: 1.1875rem; line-height: 1.58; }
+.fx-st--flat .fx-st__foot { margin-top: 10px; padding-top: 0; border-top: 0; }
+.fx-bd__extra { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--rule-strong); }
+.fx-bd__xh { margin: 0 0 8px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.fx-bd__extra .fx-st--flat .fx-st__head { font-size: 1rem; }
+.fx-bd__extra .fx-st--flat .fx-st__body { font-size: 1.0625rem; }
+.fx-bd__said { margin: 4px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
+.fx-bd__paper .fx-quote { max-width: none; }
+
+.fx-bd__lname { margin: 0; font-family: var(--serif); font-size: 1.125rem; font-weight: 600; line-height: 1.35; }
+.fx-bd__lname a { color: var(--ink); text-decoration: none; }
+.fx-bd__lname a:hover { text-decoration: underline; }
+.fx-bd__lname code, .fx-bd__lid code, .fx-bd__more code { font-family: var(--fx-lean-mono); overflow-wrap: anywhere; }
+.fx-bd__lid { margin: 2px 0 0; font-size: var(--fs-small); color: var(--steel-text); }
+.fx-bd__code { margin: 12px 0 0; font-family: var(--fx-lean-mono); font-size: 0.8125rem; }
+.fx-bd__code code { font-family: inherit; }
+.fx-bd__sorry, .fx-bd__go, .fx-bd__more { margin: 8px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); max-width: none !important; }
+.fx-bd__sorry code { font-family: var(--fx-lean-mono); }
+.fx-bd__go { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+.fx-bd__none { margin: 0; font-size: var(--fs-body); line-height: 1.5; color: var(--ink-soft); }
+
+/* What each group says: cards of equal standing, side by side. */
+.fx-bd__groups.fx-glance { border: 0; background: none; padding: 0; border-radius: 0; }
+.fx-bd__h { margin: 0 0 4px; font-family: var(--serif); font-weight: 500; font-size: 1.375rem; line-height: 1.25; }
+.fx-bd__lead { margin: 0 0 14px; font-size: var(--fs-body); line-height: 1.5; color: var(--ink-soft); }
+.fx-vds { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); align-items: stretch; }
+.fx-vd { display: flex; flex-direction: column; min-width: 0; padding: 16px 20px 14px; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-lg); }
+.fx-vd p { margin: 0; max-width: none; }
+.fx-vd__hd { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin-bottom: 8px; }
+.fx-vd__who { margin: 0; font: 600 1.0625rem/1.3 var(--sans); color: var(--ink); }
+.fx-vd__who a { color: inherit; }
+.fx-vd__term { font-size: var(--fs-small); }
+.fx-vd__term .fx-vt { display: inline-block; padding: 1px 9px; border: 1px solid var(--rule-strong); border-radius: 999px; color: var(--ink-soft); text-decoration: none; font-weight: 600; }
+.fx-vd__term a.fx-vt:hover { border-color: var(--rule-control); color: var(--ink); }
+.fx-vd__out { font-size: var(--fs-body); font-weight: 600; line-height: 1.45; color: var(--ink); }
+.fx-vd .u-dot { display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; vertical-align: 0.04em; background: var(--u-t-none); }
+.fx-vd .u-dot--all { background: var(--u-t-all); } .fx-vd .u-dot--part { background: var(--u-t-part); } .fx-vd .u-dot--other { background: var(--u-t-other); }
+.fx-vd__why { margin: 10px 0 0; padding: 0 0 0 14px; border-left: 2px solid var(--rule-strong); }
+.fx-vd__why p { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; color: var(--ink-soft); }
+.fx-vd__why--none { margin-top: 8px !important; font-size: var(--fs-small); color: var(--muted); border: 0; padding: 0; }
+.fx-vd__why .fx-ev__go { font-family: var(--sans); font-size: var(--fs-small); margin-left: 4px; }
+.fx-vd__run { margin-top: auto; padding-top: 12px; }
+.fx-vd__run::before { content: ""; display: block; margin: 0 0 10px; border-top: 1px solid var(--rule); }
+.fx-vd__rk { font-size: var(--fs-small); font-weight: 600; color: var(--muted); margin-bottom: 2px !important; }
+.fx-vd__run .fx-ev__out { font-size: var(--fs-small); font-weight: 600; color: var(--ink); }
+.fx-vd__run .fx-ev__out--yes { color: var(--steel-text); }
+.fx-vd__run .fx-ev__term, .fx-vd__run .fx-ev__acct, .fx-vd__run .fx-ev__multi { margin-top: 2px; font-size: var(--fs-small); line-height: 1.45; color: var(--muted); }
+.fx-vd__run code, .fx-vd__why code { font-family: var(--fx-lean-mono); font-size: 0.92em; }
+.fx-bd__foot { margin: 12px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); max-width: 92ch; }
+.fx-bd__groups .fx-glance__left { margin-top: 16px; padding-top: 14px; }
+
+/* Background: OpenAI's description and the papers, after the evidence. */
+.fx-bd__back { display: grid; gap: var(--fx-block) 40px; padding-top: 24px; border-top: 1px solid var(--rule-strong); }
+@media (min-width: 1000px) { .fx-bd__back { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: start; } }
+.fx-bd__desc > .fx-quote, .fx-bd__desc > .fx-fact { max-width: none; }
+.fx-bd__desc .fx-quote__q p { font-size: 1.0625rem; line-height: 1.58; }
+.fx-bd__desc:empty { display: none; }
+.fx-bd__extra .fx-st__kind { color: var(--ink); }
+.fx-bd__end { border-top: 0; padding-top: 0; }
+.fx-bd__endrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 32px; }
+.fx-bd__endrow .fx-bd__foot { margin: 0; flex: 1 1 32rem; }
+.fx-bd__endrow .fx-glance__go { margin: 0; }
+.fx-bd__lean--none .fx-brief { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rule); }
+@media (max-width: 640px) {
+  .fx-bd__paper, .fx-bd__lean { padding: 16px 16px 12px; }
+  .fx-bd__join { padding: 10px 16px 12px; }
+  .fx-vd { padding: 14px 16px 12px; }
+}

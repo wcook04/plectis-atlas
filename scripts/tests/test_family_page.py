@@ -71,8 +71,15 @@ def main() -> int:
               .split("<main", 1)[-1].split("Their method", 1)[0], "an em dash in the page's own words")
         for what in compare_buttons(fid, html):
             check(False, what)
-        # The first screen compares the groups; the rest of the page is one tab per question.
-        check(re.search(r'class="fx-glance[ "]', html) is not None, "no comparison of what each group found")
+        # The first screen is the evidence board: the paper beside the Lean, then each group's
+        # assessment (Klara Kaleb's reading, 23 October 2026); with no Lean it says so beside the paper.
+        check('class="fx-bd__pair' in html, "no evidence board on the first tab")
+        if doc.get("lean"):
+            check(re.search(r'class="fx-glance[ "]', html) is not None, "no comparison of what each group found")
+            first = html.split('class="fx-bd__pair', 1)[1].split("</section>", 1)[0]
+            check('class="lean lean--snippet fx-bd__code"' in first, "the selected Lean statement's text is not beside the paper")
+        else:
+            check(family_page.W("board.nolean") in re.sub(r"<[^>]+>", "", html), "the board does not say the release has no Lean here")
         if doc.get("readings"):
             for rd in doc["readings"]:
                 term = rd.get("source_term")
@@ -88,7 +95,7 @@ def main() -> int:
                 if any(ru["id"] in (g.get("run_ids") or []) for g in l.get("run_groups") or []):
                     check(f'id="{family_page.run_id(ru["source"], l["id"][2:])}"' in html, f"{ru['source']}'s run of {l['id']} is not on its card")
         if doc.get("lean") and doc.get("remaining_checks"):
-            check('class="fx-glance__left"' in html, "the glance does not say what is left to check")
+            check(re.search(r'class="fx-glance__left[ "]', html) is not None, "the glance does not say what is left to check")
         check('class="fx-cmp fx-cmp--rest"' not in html, "a Lean comparison is hidden behind another")
         tabs = re.findall(r'data-fx-tab="([^"]+)"', html)
         panels = re.findall(r'id="(p-[a-z]+)" role="tabpanel"', html)

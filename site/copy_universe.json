@@ -348,30 +348,30 @@
   "unread": "not yet compared"
  },
  "example": {
-  "_note": "The worked example under the search: one family taken through the whole route (claim, Lean, the two groups' labels and reason, the colour it gives the dot, Comparator, then the page). build_universe.example_html fills the names, labels and Lean statement from Statement Map and stops the build if the family no longer fits these sentences.",
+  "_note": "The worked example under the search, as the evidence itself in miniature (Klara Kaleb's reading, 23 October 2026): what the paper states, the Lean statement, each group's own label and the Comparator reports, then the family page. build_universe.example_html fills the names, labels and Lean statement from Statement Map and stops the build if the family no longer fits these sentences.",
   "family": "017",
-  "heading": "Try an example: the irrationality exponent of π",
-  "steps": [
+  "heading": "Example: the irrationality exponent of π",
+  "open": "See the evidence side by side",
+  "open_sub": "the paper’s theorem, the Lean and both reports",
+  "try": "Try an example: π, family 017",
+  "rows": [
    {
-    "q": "What does the paper claim?",
-    "a": "That π cannot be approximated by fractions much better than almost every number can, and that the Flint–Hills series converges, as OpenAI’s catalogue describes it."
+    "k": "The paper states",
+    "v": "{formula} once {q} is large enough, for every {nu} > 2 (Theorem 1.1); and the Flint–Hills series converges (Corollary 1.2)."
    },
    {
-    "q": "What did OpenAI write in Lean?",
-    "a": "One Lean statement, {lean}, chosen for a computer to check."
+    "k": "OpenAI’s Lean",
+    "v": "One statement, {lean}, chosen for a computer to check."
    },
    {
-    "q": "What do the outside groups say?",
-    "a": "{first} labels it {first_term} and {second} labels it {second_term}. Both note that it leaves out the Flint–Hills series, so π’s dot has the colour for “they disagree”."
+    "k": "The groups say",
+    "v": "{first}: {first_term}. {second}: {second_term}. Both note that the Flint–Hills series is left out."
    },
    {
-    "q": "Was the proof checked?",
-    "a": "Both groups report that Comparator, a program that checks Lean proofs, accepted OpenAI’s proof of {lean}. That is the proof of this Lean statement, not of everything the paper claims."
+    "k": "Comparator",
+    "v": "Both groups report that it accepted OpenAI’s proof of {lean}."
    }
-  ],
-  "open": "Open the π family",
-  "open_sub": "the paper, the Lean and both reports side by side",
-  "try": "Try an example: π, family 017"
+  ]
  },
  "rowline": {
   "_note": "The second line of each family row in a subject's list, after its number and size: what the dot's colour means, as a sentence.",

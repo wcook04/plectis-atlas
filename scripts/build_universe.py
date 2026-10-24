@@ -1160,11 +1160,14 @@ def example_html(M) -> str:
     lean = f'<code class="u-ex__code">{esc(leans[0]["name"])}</code>'
     names = ["\u2019s ".join(r["name"].split(", ", 1)) for r in rows]
     quoted = [f'\u201c{esc(r["term"])}\u201d' for r in rows]
-    fill = dict(lean=lean, first=esc(names[0]), second=esc(names[1]), first_term=quoted[0], second_term=quoted[1])
-    steps = "".join(f'<li><b class="u-example__q">{esc(st["q"])}</b> {linked(st["a"], **fill)}</li>' for st in ex["steps"])
+    v = lambda x: f'<var>{x}</var>'
+    formula = f'<span class="u-ex__m">|π − {v("p")}/{v("q")}| ≥ {v("q")}<sup>−{v("ν")}</sup></span>'
+    fill = dict(lean=lean, first=esc(names[0]), second=esc(names[1]), first_term=quoted[0], second_term=quoted[1],
+                formula=formula, q=v("q"), nu=v("ν"))
+    rows_html = "".join(f'<div class="u-ex__row"><dt>{esc(r["k"])}</dt><dd>{linked(r["v"], **fill)}</dd></div>' for r in ex["rows"])
     return (f'<section class="u-example" aria-labelledby="u-ex-h">'
             f'<h2 class="u-h2 u-example__h" id="u-ex-h"><span class="u-dot u-dot--{f["tone"]}" aria-hidden="true"></span>{esc(ex["heading"])}</h2>'
-            f'<ol class="u-example__steps">{steps}</ol>'
+            f'<dl class="u-ex">{rows_html}</dl>'
             f'<a class="u-example__go" href="{esc(f["href"])}"><span class="u-example__open">{esc(ex["open"])}</span>'
             f'<span class="u-example__sub">{esc(ex["open_sub"])}</span></a></section>')
 

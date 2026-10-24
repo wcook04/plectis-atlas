@@ -97,6 +97,12 @@ map for where things are, the list for reading them.
   layout packs below that bar and above the hover line, subject circles start
   at the top of the stage and rows spread down it, and the explorer stands in
   the site frame so the sidebar starts on the header's left edge.
+- **The front door's example is the evidence in miniature** (24 October 2026,
+  Klara Kaleb's feedback). The four question-and-answer paragraphs became four
+  labelled rows: the paper's inequality and corollary as stated, the Lean
+  statement's name, each group's own label with the omission both name, and the
+  Comparator reports; the action reads "See the evidence side by side". The
+  build checks below still stop it if family 017 stops fitting the rows.
 - **The front door teaches by one worked example** (round 2, 19 October 2026).
   Under the search, π's family (017) is taken through the whole route in four
   short sentences: what OpenAI's catalogue says the paper proves; the one Lean
@@ -191,6 +197,30 @@ whole and sit under a heading that says so.
 ## Reading a family
 
 The family page is the beginning of mathematical work, not of an audit.
+
+**The first tab is the evidence itself** (24 October 2026, after Klara Kaleb's
+feedback: the site "feels quite text-heavy, with some explanations repeated";
+she wanted "the paper's claim, the formal statement, and what each assessment
+says, with the detailed explanations available when needed"). The tab is called
+**Evidence** and opens on one sheet: on the left the paper's statement exactly
+as printed (the theorem the selected Lean statement is paired with, else the
+backend's candidate, else OpenAI's description in its place); on the right the
+selected Lean statement's own text. The divider between them is the thread
+(dashed for a candidate found from shared wording, solid where the Lean source
+cites the theorem or OpenAI declares the link), and the pairing's qualification
+runs along the sheet's foot. Other statements matching OpenAI's description that
+no Lean statement is paired with sit under the paper's theorem with OpenAI's own
+sentence on what its Lean leaves out, so an omission such as π's Flint–Hills
+corollary is visible beside the Lean rather than described. Under the sheet,
+one card per outside group, side by side: its label in plain words, its own term,
+its reason quoted, its Comparator run. OpenAI's description and the papers close
+the tab. Definitions of Lean, Comparator and the groups are glossary links on
+the words, not paragraphs; the qualification that no review is recorded is said
+once, at the join. A family with no Lean puts its papers in the sheet's right
+half under one sentence saying so. `board_pair` and `groups_board` in
+`scripts/family_page.py` own this; `scripts/tests/test_family_page.py` pins the
+board and the Lean text beside the paper. Paragraphs below describe earlier
+passes; where they disagree about the first tab, this one stands.
 
 **The first screen answers the page's question** (19 October 2026). The page
 was 8,800px tall at 1440×900, and the comparison of what each group said
