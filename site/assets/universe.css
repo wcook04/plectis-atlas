@@ -695,10 +695,13 @@ a.u-key__n { color: var(--steel-text); text-decoration: underline; text-underlin
 .u-bc--l.u-bc--also { background: transparent; padding-block: 0.4em; }
 .u-bc--l.u-bc--also .u-bc__lt { font-size: 0.92em; }
 
-/* The worked example follows the browser, with one quiet link from its list.
+/* The worked example follows the browser, with quiet shortcuts beside search.
    It reuses the statement/Lean renderers; methods are native disclosures. */
-.u-example-entry { margin: 8px 0 6px; font: 400 var(--fs-small)/1.5 var(--sans); }
+.u-example-entry { margin: 12px 0 0; font: 400 var(--fs-small)/1.5 var(--sans); }
 .u-example-entry a { color: var(--steel-text); }
+.u-example-entry__title { display: inline-block; font-weight: 600; padding: 2px 0; }
+.u-example-entry__links { display: flex; flex-wrap: wrap; gap: 0 14px; }
+.u-example-entry__links a { display: inline-flex; align-items: center; min-height: 28px; font-size: 0.75rem; }
 .u-opening { padding: 30px 0 28px; }
 .u-opening__head { margin: 6px 0 12px; }
 .u-opening .u-band__links .btn { padding: 7px 16px; display: inline-flex; }

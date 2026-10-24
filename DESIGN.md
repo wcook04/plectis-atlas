@@ -49,8 +49,10 @@ its map labels every problem with plain counts.)
 ## The front door: the browser, with an optional example
 
 Search, subject navigation and the release map come first. The pi comparison
-sits below the explorer and is available through a small link in the release
-list. It is an optional introduction, not a compulsory first screen on every visit.
+sits below the explorer. A compact entry below search names the pi paper and
+links directly to its claims, formal statement and assessments. Keep these
+shortcuts visible while the reader browses or searches, outside the scrolling
+list. The example remains an optional introduction.
 The example leads with the paper’s exact statements, its selected Lean challenge
 and each outside report’s term and reason. Preserve the original source links
 and visible limits; definitions and methods can be opened when needed. Do not
@@ -260,9 +262,9 @@ the paper and the Lean page: the backend's ids, never rebuilt from TeX.
 - At most four primary actions at any decision point; an expert's contents can show more.
 - Lists filter and never dump.
 
-**Teaching by example.** The front page opens with the pi paper’s claims,
-selected statement and attributed assessments. Opening a family leads to its
-claim, formal comparison and assessments before its paper inventory. Keep each
+**Teaching by example.** The front page offers direct links to the pi paper’s
+claims, selected statement and attributed assessments beside search. Opening a
+family leads to its claim, formal comparison and assessments before its paper inventory. Keep each
 assessment’s reason visible; its definition and method are available through
 the existing inspection control. Avoid repeating the same labels in a summary. The
 README links a concrete family before offering its full source comparison.

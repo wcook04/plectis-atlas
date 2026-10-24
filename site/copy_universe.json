@@ -355,7 +355,8 @@
   "family_counts": "{papers}, {lean}"
  },
  "example": {
-  "entry": "See a worked example",
+  "entry": "Example: the pi paper",
+  "entry_nav": "Open the pi example",
   "intro": "One paper from OpenAI’s mathematics release",
   "paper": "The paper’s claims",
   "formal": "The selected formal statement",

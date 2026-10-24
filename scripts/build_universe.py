@@ -1369,11 +1369,14 @@ def page_body(M, gen, data_version=None) -> str:
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
     <input id="u-search-in" class="u-search__in" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(U('search.placeholder'))}" data-u-search>
    </form>
+   <nav class="u-example-entry" aria-label="{esc(U('example.entry_nav'))}">
+    <a class="u-example-entry__title" href="#example">{esc(U('example.entry'))}</a>
+    <div class="u-example-entry__links"><a href="#example-paper-h">{esc(U('example.claim_link'))}</a><a href="#example-lean-h">{esc(U('example.formal_link'))}</a><a href="#example-reports-h">{esc(U('example.assessments_link'))}</a></div>
+   </nav>
   </div>
   <div class="u-panel__body" data-u-scroll>
    <div class="u-results" data-u-results hidden></div>
    <div class="u-view" data-u-view>
-    <p class="u-example-entry"><a href="#example">{esc(U('example.entry'))}</a></p>
     <details class="u-more u-release-context"><summary>{esc(U('example.map_context'))}</summary>
      <p class="u-lede">{number_sentence(M, 's1')} {number_sentence(M, 's2')}</p>
      {since_html(M)}
