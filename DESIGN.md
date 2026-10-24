@@ -674,6 +674,30 @@ every kind of content took the same width. The rules that came out of it:
 
 ## The map sidebar at each selection level
 
+**The family entry is the evidence in miniature** (24 October 2026, after Klara
+Kaleb's "text-heavy, with some explanations repeated"). Pointing at a family's
+circle, or focusing its row, opens its entry in the subject's list as four
+labelled rows like the front page's example: OpenAI's catalogue (the first
+sentence, typeset), OpenAI's Lean (the statement the family page shows first,
+from the backend's selection, and how many more), each group's own label in its
+own words (MathVet "full", cert-machine "NARROWER — DECLARED"), and who reports
+Comparator accepted OpenAI's proof of that statement; its last line, "See the
+evidence side by side", names what the row's link opens, the family page's
+Evidence tab. `build_universe.family_board` writes those fields into each
+family's detail record. The family view the map API can still select leads
+with the same rows in a card. Repeated sentences were cut at each level: the
+subject's lede is its counts (the map bar already says what a circle is and how
+to open it); the release key asks its one question once, with MathVet,
+cert-machine and Lean as glossary links, and drops the citation sentence the
+subject's map bar carries; the search hint that repeated the placeholder is
+kept only for screen readers; the "Try an example" button that pointed at the
+example directly below it is gone; the family view drops the full catalogue
+quote, the assessment-scope sentence, the headline-selection note and the
+citation caveat, all of which the family page holds. One quiet line under "How
+to use the Atlas" offers the videos (Will, 24 October 2026): "New here? Watch
+the Atlas walkthrough", then, smaller and fainter, "or the Maths Map video",
+both plain off-site links that hide with the rest of the head's ground text.
+
 On desktop, the colour key stands on the map at the release and in a subject;
 the sidebar starts with the release's figures and where to start, then the
 subjects. Each family in a subject's list is one title and one short line:

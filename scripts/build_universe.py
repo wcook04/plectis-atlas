@@ -835,6 +835,26 @@ def reader_rows(ev, doc) -> list:
     return out
 
 
+def short_name(name: str) -> str:
+    """A group called by its project, as the family pages call it: "Carlos Toledo,
+    cert-machine" is cert-machine; the person is credited on the family page."""
+    return (name or "").split(", ")[-1]
+
+
+def family_board(D, f, doc, ev, names) -> dict:
+    """The evidence in miniature for the map's family entry: the Lean statement the family
+    page shows first (the backend's selection), how many others there are, each group's own
+    label, and which groups report Comparator accepted OpenAI's proof of that statement."""
+    leans = [D["lean"][li] for li in f["lean"]]
+    if not leans:
+        return {"lean": None}
+    sel = (doc.get("selection") or {}).get("lean")
+    chosen = next((L for L in leans if L["id"] == sel), leans[0])
+    groups = [{"who": short_name(r["name"]), "term": r.get("term") or ""} for r in reader_rows(ev, doc)]
+    acc = [short_name(names.get(s, s)) for s in dict.fromkeys(chosen["acc"])]
+    return {"lean": chosen["name"], "more": len(leans) - 1, "groups": groups, "acc": acc}
+
+
 def build_detail(M, names):
     """The panel's words, one shard per discipline: each family's catalogue sentences and
     evidence in words, each result's statement typeset as printed, each Lean statement's
@@ -861,6 +881,7 @@ def build_detail(M, names):
             "headline": "candidate" if claim.get("state") == "candidate" else "unresolved",
             "candidate": claim.get("primary_candidate") if claim.get("state") == "candidate" else None,
             "editions": ev.editions, "withdrawn": ev.withdrawn,
+            "board": family_board(D, f, doc, ev, names),
         }
         stmts = {s["id"]: s for s in doc.get("statements") or []}
         for pi in f["papers"]:
@@ -1234,9 +1255,24 @@ def key_html(M) -> str:
                      numbers=f'<a href="numbers.html#n-statements_lean">{esc(U("key.counted_numbers"))}</a>',
                      drafts=f'<a href="numbers.html#h-n-scope">{esc(U("key.counted_drafts"))}</a>')
     return (f'<h2 class="u-h2" id="u-key-h">{esc(U("key.heading"))}</h2>'
-            f'<p class="u-note">{esc(U("key.intro"))} <a href="sources.html">{esc(U("key.readers"))}</a></p><ul class="u-key" aria-labelledby="u-key-h">{"".join(rows)}</ul>'
+            f'<p class="u-note">{linked(U("key.intro"), mathvet=term_link("mathvet", "MathVet"), certmachine=term_link("cert-machine", "cert-machine"), lean=term_link("lean", "Lean"))}</p>'
+            f'<ul class="u-key" aria-labelledby="u-key-h">{"".join(rows)}</ul>'
             f'<p class="u-note u-key__counted">{counted}</p>'
-            f'<p class="u-note">{esc(U("key.size"))} {esc(U("key.citations"))}</p>')
+            f'<p class="u-note">{esc(U("key.size"))}</p>')
+
+
+def term_link(tid: str, text: str) -> str:
+    """A word linked to its glossary entry; atlas.js shows the short definition on pointing."""
+    return f'<a class="term" href="glossary.html#{esc(tid)}" data-term="{esc(tid)}">{esc(text)}</a>'
+
+
+def videos_html() -> str:
+    """One quiet line in the panel head: the Atlas walkthrough, then a smaller link to the
+    wider project's video (Will, 24 October 2026). Both are off-site."""
+    v = COPY_U["page"]["videos"]
+    out = lambda url, text, cls: f'<a class="ext {cls}" href="{esc(url)}" rel="noopener">{esc(text)}</a>'
+    return (f'<p class="u-videos" data-u-ground>{esc(v["lead"])} {out(v["atlas_url"], v["atlas"], "u-videos__atlas")}'
+            f' <span class="u-videos__more">{esc(v["or"])} {out(v["map_url"], v["map"], "u-videos__map")}</span></p>')
 
 
 def since_html(M) -> str:
@@ -1391,12 +1427,13 @@ def page_body(M, gen, data_version=None) -> str:
    <nav class="u-step" aria-label="{esc(U('step.label'))}" data-u-step hidden></nav>
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
    <p class="u-ground" data-u-ground>{esc(U('page.job'))} <span class="u-ground__ind">{esc(U('page.independent'))}</span></p>
-   <p class="u-starts" data-u-ground><a class="u-gbtn" href="help.html" data-help="">{esc(U('page.how'))}</a><a class="u-gbtn" href="families/{esc(COPY_U['example']['family'])}.html">{esc(U('example.try'))}</a></p>
+   <p class="u-starts" data-u-ground><a class="u-gbtn" href="help.html" data-help="">{esc(U('page.how'))}</a></p>
+   {videos_html()}
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
     <svg class="u-search__icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>
     <input id="u-search-in" class="u-search__in" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(U('search.placeholder'))}" aria-describedby="u-search-hint" data-u-search>
-    <p class="u-search__hint" id="u-search-hint" data-u-ground>{esc(U('search.hint'))}</p>
+    <p class="u-search__hint u-visually-hidden" id="u-search-hint">{esc(U('search.hint'))}</p>
    </form>
   </div>
   <div class="u-panel__body" data-u-scroll>
