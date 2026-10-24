@@ -513,10 +513,6 @@ a.fx-find__name:hover { text-decoration-color: currentColor; }
 /* ---- The overview: the claim beside what each group found ------------------
    The first screen answers the page's question: what is claimed, and what each
    outside group says about the Lean and the proof, in their own words. */
-.fx-overview { display: grid; gap: var(--fx-block) 40px; margin: 0; }
-@media (min-width: 1100px) { .fx-overview { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: start; } }
-.fx-overview__claim > .fx-quote, .fx-overview__claim > .fx-fact { max-width: none; }
-.fx-overview .fx-quote__q p { font-size: 1.0625rem; line-height: 1.58; }
 /* The map's tone inks (universe.css), held equal by scripts/tests/test_family_page.py. */
 .fx { --u-t-all: #2a5982; --u-t-part: #86a8c6; --u-t-other: #8a77a8; --u-t-split: #b5801f; --u-t-none: #978a7c; --u-t-unread: #978a7c; }
 @media (prefers-color-scheme: dark) {
@@ -529,22 +525,11 @@ a.fx-find__name:hover { text-decoration-color: currentColor; }
 .fx-q { margin: 0 0 4px; font: 600 var(--fs-body)/1.3 var(--sans); color: var(--ink); text-wrap: balance; }
 .fx-q .help-q { vertical-align: 0.05em; margin-left: 2px; }
 .fx-qa { margin: 0 0 10px; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; max-width: 78ch; }
-.fx-qa code, .fx-ev code { font-family: var(--fx-lean-mono); font-size: 0.92em; color: var(--ink); }
+.fx-qa code { font-family: var(--fx-lean-mono); font-size: 0.92em; color: var(--ink); }
 .fx-glance__left { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule-strong); }
-.fx-overview__claim > .fx-q:first-child { margin-bottom: 8px; }
 /* The evidence table: one row per outside group, its coverage label and its proof run side
    by side. Each cell reads in three steps: the plain outcome, the group's own label and
    reason, then the date and its account. */
-.fx-ev { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); margin: 4px 0 0; }
-.fx-ev thead th { padding: 0 16px 8px 0; text-align: left; vertical-align: bottom; font-size: var(--fs-meta); font-weight: 600; line-height: 1.35; color: var(--muted); border-bottom: 1px solid var(--rule-strong); }
-.fx-ev thead th:first-child { width: 7.5rem; }
-.fx-ev tbody th, .fx-ev td { padding: 12px 16px 12px 0; text-align: left; vertical-align: top; border-bottom: 1px solid var(--rule); }
-.fx-ev tbody tr:last-child > * { border-bottom: 0; padding-bottom: 4px; }
-.fx-ev tr > :last-child { padding-right: 0; }
-.fx-ev--two td + td { padding-left: 16px; border-left: 1px solid var(--rule); }
-.fx-ev--two thead th:last-child { padding-left: 16px; }
-.fx-ev tbody th { font-weight: 600; color: var(--ink); overflow-wrap: anywhere; }
-.fx-ev p { margin: 0; max-width: none; }
 .fx-ev__out { font-weight: 600; color: var(--ink); }
 .fx-ev__out--yes { color: var(--steel-text); }
 .fx-ev__term { margin-top: 4px !important; color: var(--muted); }
@@ -556,9 +541,6 @@ a.fx-find__name:hover { text-decoration-color: currentColor; }
 .fx-ev__w { font-weight: 600; color: var(--ink); }
 .fx-ev__w--yes { color: var(--steel-text); }
 .fx-ev__go { white-space: nowrap; }
-.fx-ev .u-dot { display: inline-block; width: 9px; height: 9px; margin-right: 7px; border-radius: 50%; vertical-align: 0.02em; background: var(--u-t-none); }
-.fx-ev .u-dot--all { background: var(--u-t-all); } .fx-ev .u-dot--part { background: var(--u-t-part); }
-.fx-ev .u-dot--other { background: var(--u-t-other); } .fx-ev .u-dot--split { background: var(--u-t-split); }
 .fx-glance__pass { margin: 10px 0 0; padding-top: 10px; border-top: 1px solid var(--rule); font-size: var(--fs-meta); line-height: 1.45; color: var(--muted); max-width: 78ch; }
 /* A group's own word (its label or its run word) is a quotation, set as a small boxed tag so
    it never reads as a glossary term (those keep their dotted underline). */
@@ -571,21 +553,11 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx .ins { min-height: 24px; }
 .fx-glance__left .fx-qa { margin: 0; }
 .fx-glance__note { margin: 8px 0 0; font-size: var(--fs-meta); line-height: 1.45; color: var(--muted); }
-/* Narrow: each group stacks with its own two labelled answers. */
-@media (max-width: 760px) {
-  .fx-ev, .fx-ev tbody, .fx-ev tr, .fx-ev tbody th, .fx-ev td { display: block; width: auto; }
-  .fx-ev thead { display: none; }
-  .fx-ev tr { padding: 10px 0; border-bottom: 1px solid var(--rule); }
-  .fx-ev tbody tr:last-child { border-bottom: 0; }
-  .fx-ev tbody th, .fx-ev td, .fx-ev--two td + td { padding: 2px 0; border: 0; }
-  .fx-ev td::before { content: attr(data-label); display: block; margin: 8px 0 3px; font-size: var(--fs-meta); font-weight: 600; color: var(--muted); }
-}
 
 /* ---- Tabs: one reading question per panel, the bar kept in view ------------- */
 .fx-tabs { position: sticky; top: 0; z-index: 20; margin-top: var(--fx-block); background: var(--page); border-bottom: 1px solid var(--rule-strong); }
 .fx-tabs { display: flex; align-items: center; gap: var(--fx-gap); }
 .fx-tabs .help-q { flex: none; margin-left: auto; }
-.fx-ev thead .help-q { vertical-align: 0.05em; }
 .fx-tabs__list { min-width: 0; flex: 1 1 auto; display: flex; gap: 0 28px; margin: 0; padding: 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
 .fx-tabs__list::-webkit-scrollbar { display: none; }
 .fx-tab { display: block; padding: 13px 0 10px; margin-bottom: -1px; border-bottom: 2px solid transparent; font: 500 var(--fs-small)/1.2 var(--sans); color: var(--muted); text-decoration: none; white-space: nowrap; }
@@ -610,11 +582,6 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-brief__l code { font-family: var(--fx-lean-mono); font-size: 0.92em; }
 .fx-brief__m { font-size: var(--fs-small); color: var(--muted); }
 .fx-brief__more a { font-family: var(--sans); font-size: var(--fs-small); }
-.fx-overview__side { display: grid; gap: var(--fx-block); align-content: start; }
-.fx-overview__side .fx-brief { margin: 0; padding: 0; border: 0; }
-@media (min-width: 1100px) {
-  .fx-overview--single { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
-}
 /* A phone: the trail and the two tools share one row, the list position is dropped
    (the previous and next links stay), and the title follows at once. */
 @media (max-width: 640px) {
@@ -633,7 +600,6 @@ a.fx-vt:hover { border-color: var(--ink); }
 /* A wide screen: the claim column beside the evidence, which takes the room its table
    needs; the "left open" note and its two routes share one row. */
 @media (min-width: 1280px) {
-  .fx-overview:not(.fx-overview--single) { grid-template-columns: minmax(0, 4fr) minmax(0, 9fr); gap: var(--fx-block) 36px; }
   .fx-glance__left { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 32px; align-items: end; }
   .fx-glance__left .fx-glance__go { flex-direction: column; align-items: stretch; margin: 0; }
 }
@@ -650,8 +616,6 @@ a.fx-vt:hover { border-color: var(--ink); }
   #p-result:has(.fx-claim--many) .fx-grid--papers > .pp { display: grid; grid-template-columns: minmax(16rem, 2fr) minmax(0, 3fr); column-gap: 48px; align-content: start; }
   #p-result:has(.fx-claim--many) .fx-grid--papers > .pp > * { grid-column: 1; }
   #p-result:has(.fx-claim--many) .fx-grid--papers > .pp > .pp__abstract { grid-column: 2; grid-row: 1 / span 12; margin: 0; }
-  /* The overview's claim column travels beside the taller evidence card. */
-  .fx-overview__claim { position: sticky; top: 64px; }
 }
 
 /* Four Lean statements: one row of four on a wide screen, two by two when narrower,
