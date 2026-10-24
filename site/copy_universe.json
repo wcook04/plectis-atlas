@@ -355,7 +355,7 @@
   "family_counts": "{papers}, {lean}"
  },
  "example": {
-  "intro": "A paper’s claims from OpenAI’s mathematics release",
+  "intro": "One paper from OpenAI’s mathematics release",
   "paper": "The paper’s claims",
   "formal": "The selected formal statement",
   "assessments": "The assessments",
@@ -368,6 +368,10 @@
   "full": "Read the full comparison",
   "browse": "Explore the release map",
   "about": "About Atlas and its sources",
-  "map_context": "Release details and colour key"
+  "map_context": "Release details and colour key",
+  "nav": "Read the example",
+  "claim_link": "Paper claims",
+  "formal_link": "Formal statement",
+  "assessments_link": "Assessments"
  }
 }

@@ -36,7 +36,11 @@
    "editions_many": "{n} replaced by later editions",
    "joined": "{current}; {rest}."
   },
-  "catalogue_details": "OpenAI’s catalogue description"
+  "catalogue_details": "OpenAI’s catalogue description",
+  "evidence_nav": "Read the evidence",
+  "claim_link": "Paper claims",
+  "formal_link": "Formal statement",
+  "assessments_link": "Assessments"
  },
  "actions": {
   "compare": "Compare with Lean",
@@ -81,7 +85,8 @@
   "cites": "Connections",
   "explain": "Explain, check or correct",
   "said": "What people have said",
-  "claim_unresolved": "What the papers state"
+  "claim_unresolved": "What the papers state",
+  "assessments": "Assessments"
  },
  "claim": {
   "heading_unresolved": "What the papers state",
@@ -110,13 +115,13 @@
   "unresolved_one": "The release does not say which paper theorem its catalogue describes. The statement above shares the most wording with the description; the atlas has not reviewed that choice.",
   "unresolved_none": "The release does not say which paper theorem its catalogue describes, and no statement in its papers shares the description’s wording.",
   "unresolved_left": "Identifying it is listed under {link}.",
-  "state_primary": "Possible match to the catalogue description: of the papers’ main statements, it shares the most wording with it. Not reviewed as the catalogue’s statement.",
-  "state_alt": "Possible match to the catalogue description, found from shared wording; not reviewed as the catalogue’s statement.",
-  "no_lean_paired": "No Lean statement in the release is paired with this theorem.",
+  "state_primary": "Closest wording to the catalogue description; match not reviewed.",
+  "state_alt": "Possible catalogue match; not reviewed.",
+  "no_lean_paired": "No recorded Lean pairing for this statement.",
   "more_one": "One more possible match",
   "more_many": "{n} more possible matches",
-  "state_main": "Possible match to the catalogue description: the paper’s main theorem. Not reviewed as the catalogue’s statement.",
-  "state_words": "Possible match to the catalogue description: of the papers’ statements, it shares the most wording with it. Not reviewed as the catalogue’s statement.",
+  "state_main": "The paper’s main theorem; catalogue match not reviewed.",
+  "state_words": "Closest wording to the catalogue description; match not reviewed.",
   "two_note": "The release does not say which paper theorem its catalogue describes. Both statements above are shown whole: the paper’s main theorem first, then the statement that shares the most wording with the description. The atlas has not reviewed either choice.",
   "two_note_same": "The release does not say which paper theorem its catalogue describes. Both statements above are shown whole, the closer match to the description’s wording first. The atlas has not reviewed either choice."
  },
@@ -169,13 +174,15 @@
   "row_cited": "Its source cites {label} in {paper}; the match is not reviewed.",
   "row_declared": "The release binds it to {label} in {paper}; the match is not reviewed.",
   "row_none": "No paper theorem is paired with it.",
-  "comparator_once": "A [[comparator|Comparator]] re-run checks OpenAI’s separate proof against a Lean statement, allowing only the axioms the [[challenge|challenge file]] permits. It does not say whether the statement matches the paper’s theorem; that is the outside readers’ question, below."
+  "comparator_once": "A [[comparator|Comparator]] re-run checks OpenAI’s separate proof against a Lean statement, allowing only the axioms the [[challenge|challenge file]] permits. It does not say whether the statement matches the paper’s theorem; that is the outside readers’ question, below.",
+  "pair_details": "Why these passages are paired",
+  "heading_integrated": "Paper and formal statement"
  },
  "checked": {
   "heading": "Reported checks"
  },
  "readings": {
-  "heading": "Assessments of the family’s headline",
+  "heading": "What the assessments say",
   "intro": "Two outside readers, {names}, have judged whether the release’s Lean states this family’s headline. Their readings concern the headline as a whole, not one paper theorem.",
   "says": "{name} finds that {finds} (their term: “{term}”).",
   "state": {

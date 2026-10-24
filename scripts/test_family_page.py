@@ -46,9 +46,10 @@ def main() -> int:
             check(h in ids, f"in-page link #{h} has no target")
         for t in set(re.findall(r'data-inspect="([^"]+)"', html)):
             check(f'<template id="{t}">' in html, f"inspection record {t} missing")
-        # Only catalogue context folds; the claim, comparison and assessments remain visible.
+        # Only background context folds; statements, qualifications and assessments remain visible.
         folds = re.findall(r"<details\b.*?</details>", html, re.S)
-        check(all('class="fx-context"' in fold and 'id="h-desc"' in fold for fold in folds),
+        check(all(('id="h-desc"' in fold or 'fx-pair-context' in fold)
+                  and 'class="fx-st' not in fold and 'class="fx-rd' not in fold for fold in folds),
               "primary evidence hidden in a disclosure")
         check(html.index('id="compare"') < html.index('id="readings"') < html.index('id="papers"'),
               "paper inventory interrupts the claim, formal statement and assessments")
@@ -81,6 +82,7 @@ def main() -> int:
     fails += tied_order()
     fails += definition_only_statement(tmp)
     fails += complete_theorem_snippets(tmp)
+    fails += integrated_openings(tmp)
     for f in fails:
         print("FAIL", f)
     print(f"family page: {len(SPECIMENS)} specimens, {len(fails)} failures")
@@ -163,13 +165,40 @@ def compare_buttons(fid: str, html: str) -> list:
     for sid, body in zip(shown, cards):
         lean = family_page.paired_lean(c, sid)
         hrefs = re.findall(r'href="#([^"]+)"[^>]*>' + re.escape(family_page.W("actions.compare")) + "<", body)
-        if lean and hrefs != [f"lean-{lean}"]:
+        target = f"formal-{lean}" if family_page.integrated_comparison(c) else f"lean-{lean}"
+        if lean and hrefs != [target]:
             out.append(f"{sid}: paired with {lean}, but its compare links are {hrefs}")
         if not lean and hrefs:
             out.append(f"{sid}: no Lean statement is paired with it, yet it offers {hrefs}")
         if not lean and c.leans and family_page.W("claim.no_lean_paired") not in body:
             out.append(f"{sid}: no Lean statement is paired with it, and the card does not say so")
     return out
+
+
+def integrated_openings(tmp: Path) -> list:
+    """One copy of each opening statement, with stable comparison anchors and limits."""
+    fails = []
+    for fid, f in S.FAM.items():
+        c = family_page.Ctx(S, f)
+        if not family_page.integrated_comparison(c):
+            continue
+        family_page.build(S, f)
+        html = (tmp / "families" / f"{fid}.html").read_text()
+        visible = re.sub(r"<template\b.*?</template>", "", html, flags=re.S)
+        full, _ = family_page.opening_statements(c)
+        for sid in full:
+            if visible.count(c.stmt_body(sid)) != 1:
+                fails.append(f"{fid}: opening statement {sid} is absent or repeated")
+        pair = c.pairs[c.leans[0]["id"]]
+        for i, sid in enumerate(pair["targets"]):
+            anchor = "paired-" + family_page.slug_id(c.leans[0]["id"][2:]) + (f"-{i + 1}" if i else "")
+            if f'id="{anchor}"' not in visible:
+                fails.append(f"{fid}: shared statement lost #{anchor}")
+        if family_page.W("compare.state_qual." + pair["state"]) not in visible:
+            fails.append(f"{fid}: pairing qualification missing")
+        if not visible.index('id="readings"') < visible.index('id="h-standing"'):
+            fails.append(f"{fid}: status summary delays the assessments")
+    return fails
 
 
 def tied_order() -> list:

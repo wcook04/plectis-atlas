@@ -84,6 +84,7 @@
         var id = this.getAttribute('data-cmp-tab');
         show(id, true);
         if (history.replaceState) history.replaceState(null, '', '#' + id);
+        doc.getElementById(id).scrollIntoView({ block: 'start' });
       });
     }
     if (!fromHash()) show(tabs[0].getAttribute('data-cmp-tab'), false);

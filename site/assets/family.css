@@ -56,8 +56,7 @@
 /* ---- Sections ------------------------------------------------------------ */
 .fx-sec { margin-top: 56px; padding-top: 36px; border-top: 1px solid var(--rule); scroll-margin-top: 12px; }
 .fx-sec--theorem { margin-top: 26px; padding-top: 0; border-top: 0; }
-/* The theorem section ends on the status lines' bottom rule, which is also the next
-   section's rule: no second rule and no empty band between them. */
+/* Keep a separate theorem and comparison close together. */
 .fx-sec--theorem + .fx-sec { margin-top: 0; border-top: 0; }
 .fx-sec--quiet .fx-h2 { font-size: 1.375rem; color: var(--ink-soft); }
 .fx-h2 { font-family: var(--serif); font-weight: 500; font-size: 1.75rem; line-height: 1.25; letter-spacing: -0.008em; margin: 0 0 10px; text-wrap: balance; }
@@ -194,18 +193,17 @@
 .fx-cmp__state { margin: 0; font-size: var(--fs-meta); font-weight: 600; color: var(--ink); }
 .fx-cmp__qual { margin: 0; font-size: var(--fs-small); font-style: italic; color: var(--ink-soft); }
 .fx-st__role { margin: 0 0 4px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
-.fx-cmp__grid { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "join" "lean"; gap: 0; }
+.fx-cmp__grid { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "lean"; gap: 0; }
 .fx-cmp__paper { grid-area: paper; min-width: 0; }
 .fx-cmp__lean { grid-area: lean; min-width: 0; }
 .fx-cmp__grid .fx-st { margin-bottom: 0; max-width: none; }
 .fx-cmp__why { margin: 6px 0; font-size: var(--fs-small); color: var(--muted); }
-/* The join: the words that qualify the two statements' being side by side. Between
-   them when they stack; a band across both, above them, when they stand side by side. */
-.fx-join { grid-area: join; margin: 14px 0; padding: 8px 0 8px 14px; border-left: 2px solid var(--steel); font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); max-width: 48rem; }
+/* Matching words and source comments sit in the optional pairing details. */
+.fx-join { margin: 14px 0; padding: 8px 0 8px 14px; border-left: 2px solid var(--steel); font-size: var(--fs-body); line-height: 1.55; color: var(--ink-soft); max-width: 48rem; }
 .fx-join--unavailable { border-left-color: var(--rule-control); }
 .fx-join__quote { display: block; margin-top: 6px; font-size: var(--fs-small); color: var(--muted); }
-@container fxmain (min-width: 860px) {
-  .fx-cmp__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "join join" "paper lean"; gap: 0 24px; align-items: start; }
+@container fxmain (min-width: 760px) {
+  .fx-cmp__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "paper lean"; gap: 0 24px; align-items: start; }
   .fx-join { margin: 0 0 16px; }
 }
 
@@ -432,3 +430,22 @@
 .fx-context summary { cursor: pointer; color: var(--steel-text); font: 500 var(--fs-meta)/1.5 var(--sans); padding: 5px 0; width: fit-content; }
 .fx-context summary:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 3px; }
 .fx-context[open] summary { margin-bottom: 10px; }
+
+/* Reuse the comparison columns for the opening claim when both views name the
+   same passages. Qualifications stay visible; matching evidence is optional. */
+.fx-evidence-nav { display: flex; flex-wrap: wrap; gap: 4px 24px; margin: 0 0 10px; }
+.fx-evidence-nav a { padding: 6px 0; font: 500 var(--fs-small)/1.5 var(--sans); color: var(--steel-text); }
+.fx-sec--opening { border-top: 0; margin-top: 12px; padding-top: 0; }
+@media (min-width: 1240px) and (max-width: 1699px) {
+  .fx--integrated { --fx-col: min(68rem, calc(100vw - 328px)); }
+}
+.fx-sec--opening .fx-sec--theorem { margin: 0; }
+.fx-sec--opening + .fx-sec { margin-top: 24px; padding-top: 24px; }
+.fx-sec--opening .fx-h2--theorem { font-size: 1.2rem; margin-bottom: 10px; }
+.fx-sec--opening .fx-cmp__grid .fx-st { margin-bottom: 14px; }
+.fx-sec--opening .fx-cmp__state { font: 600 1.2rem/1.3 var(--serif); margin-bottom: 4px; }
+.fx-sec--opening .fx-cmp__lhead { margin-bottom: 12px; }
+.fx-cmp__h.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.fx-pair-context { margin: 10px 0 0; }
+.fx-pair-context .fx-join { margin: 0; }
+.fx-main > .sib { margin-top: 36px; }

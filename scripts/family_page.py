@@ -710,7 +710,7 @@ def head_html(c: Ctx) -> str:
     # Keep unresolved headline context visible; matched passages can lead directly.
     if (doc.get("claim") or {}).get("state") == "candidate" and (doc.get("claim") or {}).get("primary_candidate") in c.stmts:
         quote = f'<details class="fx-context"><summary>{esc(W("head.catalogue_details"))}</summary>{quote}</details>'
-    extra = [verdict_line(c), papers_line(c)]
+    extra = [papers_line(c)]
     erd = S.sourced(f, "erdos_problems")
     if erd and erd.get("value"):
         probs_ = [f'<a class="ext" href="{esc(p["url"])}" rel="noopener">{esc(W("head.erdos_number", n=p["number"]))}</a>' for p in erd["value"]]
@@ -721,10 +721,11 @@ def head_html(c: Ctx) -> str:
         p = W("head.problems_one") if len(probs) == 1 else W("head.problems_many", n=cap(S.say(len(probs))))
         extra.append(f'<a href="#problems">{esc(p)}</a>')
     facts = "".join(f'<p class="fx-fact{" fx-fact--lede" if i < 2 else ""}">{x}</p>' for i, x in enumerate(extra) if x)
+    formal_anchor = f'formal-{c.leans[0]["id"][2:]}' if len(c.leans) == 1 else "compare"
     return f"""<header class="fx-head">
  <div class="fx-bar">{trail}{tools}</div>
- {S.sibling_nav("family", S.family_siblings(c.num, root), discipline=disc)}
  <h1 class="fx-title{' fx-title--long' if len(title_plain) > 64 else ''}"><span class="tex-auto">{S.rich(curly_tex(f["title"]))}</span></h1>
+ <nav class="fx-evidence-nav" aria-label="{esc(W('head.evidence_nav'))}"><a href="#claim">{esc(W('head.claim_link'))}</a><a href="#{esc(formal_anchor)}">{esc(W('head.formal_link'))}</a><a href="#readings">{esc(W('head.assessments_link'))}</a></nav>
  {quote}{facts}
 </header>"""
 
@@ -878,7 +879,7 @@ def why_button(c: Ctx, sid: str, terms, *, primary: bool, lean: str | None = Non
                              label=c.label_plain(sid), where=c.where_plain(sid), lean=lean or ""))
 
 
-def theorem_html(c: Ctx) -> str:
+def theorem_html(c: Ctx, *, integrated: bool = False) -> str:
     """The page's centrepiece: the theorem the backend names as the candidate for the
     catalogue's headline, exactly as printed, with the way into the paper and to the Lean.
     When the headline is unresolved the catalogue's words (above) lead, one sentence says
@@ -889,6 +890,20 @@ def theorem_html(c: Ctx) -> str:
     alts = [a for a in claim.get("alternatives") or [] if a.get("statement_id") in c.stmts]
     cand = claim.get("primary_candidate")
     parts = []
+
+    def card(sid, **kwargs):
+        # Keep incoming comparison anchors at the original statement when the two
+        # views share one card. No second copy of the paper's words is needed.
+        aliases = ""
+        if integrated:
+            name = c.leans[0]["id"][2:]
+            targets = c.pairs[c.leans[0]["id"]]["targets"]
+            if sid in targets:
+                k = targets.index(sid)
+                aid = f"paired-{slug_id(name)}" + (f"-{k + 1}" if k else "")
+                aliases = f'<span class="fx-alias" id="{aid}"></span>'
+            kwargs["big"] = False
+        return aliases + c.stmt_card(sid, **kwargs)
 
     def state(sid, primary, extra=""):
         """The qualification, in the card's heading group beside the paper and date: what
@@ -912,20 +927,16 @@ def theorem_html(c: Ctx) -> str:
                       else "claim.state_main" if main else "claim.state_alt")
             terms = next((a.get("matched_terms") for a in alts if a.get("statement_id") == sid), None) or []
             st_html = f'<p class="fx-st__qual">{esc(words)} {why_button(c, sid, terms, primary=(sid == cand))}</p>'
-            parts.append(c.stmt_card(sid, aid="claim-theorem" if i == 0 else f"claim-alt-{i}", level=3,
+            parts.append(card(sid, aid="claim-theorem" if i == 0 else f"claim-alt-{i}", level=3,
                                      state=st_html, note=unpaired(sid), actions=compare_action(c, sid)))
-        main_first = is_main(c.stmts[full[0]]) and not is_main(c.stmts[full[1]])
-        parts.append(f'<p class="fx-cand fx-cand--note">{esc(W("claim.two_note" if main_first else "claim.two_note_same"))}</p>')
         if rest:
             parts.append(f'<div class="fx-others" id="claim-more"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
-        parts.append(status_html(c))
     elif claim.get("state") == "candidate" and cand in c.stmts:
         rest = [a for a in alts if a.get("statement_id") != cand]
-        parts.append(c.stmt_card(cand, aid="claim-theorem", level=2, big=True, actions=compare_action(c, cand),
+        parts.append(card(cand, aid="claim-theorem", level=2, big=True, actions=compare_action(c, cand),
                                  state=state(cand, True, alt_line(c, cand, rest)), note=unpaired(cand)))
         if len(rest) > ALT_INLINE:
             parts.append(f'<div class="fx-others" id="claim-more"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
-        parts.append(status_html(c))
     else:
         # No pairing is decided: the page still leads with mathematics. The statements the
         # papers print come first, each with its own one-line state; how they were chosen
@@ -950,7 +961,6 @@ def theorem_html(c: Ctx) -> str:
                 parts.append(f'<div class="fx-others" id="claim-more"><h3 class="fx-h3">{esc(more_label(c, len(rest)))}</h3>{alt_list(c, rest)}</div>')
         else:
             parts.append(f'<p class="fx-cand fx-cand--open">{note_html}</p>')
-        parts.append(status_html(c))
     lab = "claim-theorem-h" if (claim.get("state") == "candidate" and cand in c.stmts and len(full) < 2) else "claim-h"
     return (f'<section class="fx-sec fx-sec--theorem" id="claim" aria-labelledby="{lab}">'
             f'<span class="fx-alias" id="h-bench"></span><span class="fx-alias" id="bench-theorem"></span>{"".join(parts)}</section>')
@@ -1061,7 +1071,8 @@ def compare_action(c: Ctx, sid: str) -> str:
     """"Compare with Lean" on a theorem card, only when a Lean statement is paired with that
     theorem; it opens that pairing's comparison."""
     name = paired_lean(c, sid)
-    return f'<a class="btn btn--ghost" href="#lean-{esc(name)}">{esc(W("actions.compare"))}</a>' if name else ""
+    anchor = f"formal-{name}" if integrated_comparison(c) else f"lean-{name}"
+    return f'<a class="btn btn--ghost" href="#{esc(anchor)}">{esc(W("actions.compare"))}</a>' if name else ""
 
 
 def more_label(c: Ctx, n: int) -> str:
@@ -1115,19 +1126,15 @@ def lean_card(c: Ctx, l) -> str:
     if holes:
         shown = ", ".join(f'<code translate="no">{esc(h.split(".")[-1])}</code>' for h in holes[:6]) + (f" {esc(W('left.names_more', n=len(holes) - 6))}" if len(holes) > 6 else "")
         holes_html = f'<p class="fx-lean__note">{W("compare.holes_one", names=shown) if len(holes) == 1 else W("compare.holes_many", n=cap(S.say(len(holes))), names=shown)}</p>'
-    acc = [c.source_name(x) for x in l.get("accepted_current_sources") or []]
-    runs = runs_sentence(c, l)
-    terms = run_terms(c, l)
     return (f'<article class="fx-lean" aria-labelledby="lean-{esc(name)}-h">'
             f'<h4 class="fx-lean__head" id="lean-{esc(name)}-h"><a href="{c.root}statements/{esc(name)}.html"><span class="md-math">{esc(curly_tex(l.get("name") or name))}</span></a></h4>'
             f'<p class="fx-lean__file"><code translate="no">{S.lean_breaks(">" + esc(name))[1:]}.lean</code>, {esc(role)}.</p>'
             f'{code}' + (f'<p class="fx-lean__note">{W("compare.sorry")}</p>' if code and s["comparator"]["theorem_names"] and "sorry" in s["lean"] else "") + f'{more}{holes_html}'
-            f'<p class="fx-lean__runs">{esc(runs)} <a href="#reruns-{esc(name)}">{esc(W("compare.runs_link"))}</a></p>'
-            + (f'<ul class="fx-lean__terms">{"".join(f"<li>{esc(t)}</li>" for t in terms)}</ul>' if terms else "")
+            f'<p class="fx-lean__runs"><a href="#reruns-{esc(name)}">{esc(W("compare.runs_link"))}</a></p>'
             + f'<p class="fx-lean__go"><a href="{c.root}statements/{esc(name)}.html">{esc(W("compare.lean_open"))}</a></p></article>')
 
 
-def comparison_one(c: Ctx, l, *, first: bool, rest: bool = False) -> str:
+def comparison_one(c: Ctx, l, *, first: bool, rest: bool = False, integrated: bool = False) -> str:
     """One Lean statement beside the paper theorem it is paired with. The words at the
     join say how the two were joined and that nobody has reviewed the match. With several
     Lean statements, every one but the first is marked fx-cmp--rest at build time, which
@@ -1138,7 +1145,9 @@ def comparison_one(c: Ctx, l, *, first: bool, rest: bool = False) -> str:
     rec = c.pairs[lid]
     state = rec["state"] if rec["target"] else "unavailable"
     shown = [t for t in rec.get("targets") or [] if t in c.stmts]
-    if shown:
+    if integrated:
+        paper = theorem_html(c, integrated=True)
+    elif shown:
         # A Lean statement paired with several theorems shows each of them, the clearest first.
         paper = "".join(c.stmt_card(t, aid=f"paired-{slug_id(name)}" + (f"-{k + 1}" if k else ""), level=4)
                         for k, t in enumerate(shown))
@@ -1166,22 +1175,22 @@ def comparison_one(c: Ctx, l, *, first: bool, rest: bool = False) -> str:
                 words += f' <span class="fx-join__quote">{W("compare.cited_quote", quote=code_spans(q))}</span>'
     lean_head = (f'<p class="fx-cmp__state">{esc(W("compare.state_head." + state))}</p>'
                  f'<p class="fx-cmp__qual">{esc(W("compare.state_qual." + state))}</p>')
-    join = f'<p class="fx-join fx-join--{esc(state)}">{words}</p>' if words else ""
+    join = (f'<details class="fx-context fx-pair-context"><summary>{esc(W("compare.pair_details"))}</summary>'
+            f'<p class="fx-join fx-join--{esc(state)}">{words}</p></details>') if words else ""
     aliases = ('<span class="fx-alias" id="bench-lean"></span>' + (f'<span class="fx-alias" id="thread-{esc(c.num)}"></span>' if rec["target"] else "")) if first else ""
     return (f'<section class="fx-cmp{" fx-cmp--rest" if rest else ""}" id="lean-{esc(name)}" data-cmp aria-labelledby="lean-{esc(name)}-ch">{aliases}'
-            f'<h3 class="fx-cmp__h" id="lean-{esc(name)}-ch"><code translate="no">{esc(name)}</code></h3>'
+            f'<h3 class="fx-cmp__h{" sr-only" if integrated else ""}" id="lean-{esc(name)}-ch"><code translate="no">{esc(name)}</code></h3>'
             f'<div class="fx-cmp__grid fx-cmp__grid--{esc(state)}">'
-            f'<div class="fx-cmp__paper"><p class="fx-cmp__side">{esc(W("compare.paper_side"))}</p>{paper}</div>'
-            f'{join}'
-            f'<div class="fx-cmp__lean"><div class="fx-cmp__lhead">{lean_head}</div>{lean_card(c, l)}</div>'
+            f'<div class="fx-cmp__paper">' + ('' if integrated else f'<p class="fx-cmp__side">{esc(W("compare.paper_side"))}</p>') + f'{paper}</div>'
+            f'<div class="fx-cmp__lean" id="formal-{esc(name)}"><div class="fx-cmp__lhead">{lean_head}</div>{lean_card(c, l)}{join}</div>'
             f'</div></section>')
 
 
 def lean_index(c: Ctx) -> str:
     """Every Lean statement in the family, one entry each, every entry in the same rhythm:
     its mathematical name (the link that chooses its comparison on this page), its formal
-    identifier on a line of its own (the link that opens its Lean page), then two labelled lines with separate jobs, the paper theorem it is paired
-    with (and by what evidence) and who reports re-running it."""
+    identifier on a line of its own (the link that opens its Lean page), then the
+    paper theorem it is paired with and by what evidence. Re-runs follow the assessments."""
     rows = []
     for i, l in enumerate(c.leans):
         name = l["id"][2:]
@@ -1198,13 +1207,11 @@ def lean_index(c: Ctx) -> str:
             pair = W("compare." + key, label=label, paper=c.short_title_plain(slug))
         else:
             pair = W("compare.row_none")
-        runs = runs_sentence(c, l)
         role = W("compare.index_main") if l.get("main_result") else W("compare.index_support")
         rows.append(f'<li class="fx-idx__i"><a class="fx-idx__a" href="#lean-{esc(name)}" data-cmp-tab="lean-{esc(name)}"{" aria-current=\"true\"" if i == 0 else ""}>'
                     f'<span class="fx-idx__t md-math">{esc(curly_tex(l.get("name") or name))}</span></a>'
                     f'<p class="fx-idx__id"><a class="fx-idx__lean" href="{c.root}statements/{esc(name)}.html" title="{esc(W("compare.lean_open"))}"><code translate="no">{c.S.lean_breaks(">" + esc(name))[1:]}</code></a><span class="fx-idx__role">, {esc(role)}</span></p>'
-                    f'<dl class="fx-idx__dl"><div><dt>{esc(W("compare.index_paper"))}</dt><dd>{esc(pair)}</dd></div>'
-                    f'<div><dt>{esc(W("compare.index_runs"))}</dt><dd>{esc(runs)}</dd></div></dl></li>')
+                    f'<dl class="fx-idx__dl"><div><dt>{esc(W("compare.index_paper"))}</dt><dd>{esc(pair)}</dd></div></dl></li>')
     return (f'<nav class="fx-idx" id="h-index" aria-label="{esc(W("toc.compare"))}">'
             f'<ol class="fx-idx__list">{"".join(rows)}</ol></nav>')
 
@@ -1230,7 +1237,20 @@ def run_terms(c: Ctx, l) -> list:
     return out
 
 
-def comparison_html(c: Ctx) -> str:
+def integrated_comparison(c: Ctx) -> bool:
+    """Share the opening cards only when the one Lean comparison uses those passages.
+
+    Multiple Lean choices and unresolved/missing matches keep their existing views.
+    The presentation never promotes a candidate pairing to a reviewed match.
+    """
+    full, _ = opening_statements(c)
+    if len(c.leans) != 1 or not full:
+        return False
+    targets = c.pairs[c.leans[0]["id"]].get("targets") or []
+    return bool(targets) and set(targets) <= set(full)
+
+
+def comparison_html(c: Ctx, *, integrated: bool = False) -> str:
     S = c.S
     alias = '<span class="fx-alias" id="h-lean"></span>'
     if not c.leans:
@@ -1241,16 +1261,16 @@ def comparison_html(c: Ctx) -> str:
     sel = c.doc.get("selection") or {}
     supporting = sel.get("scope_context") == "supporting-or-different"
     n = len(c.leans)
-    heading = W("compare.heading_one") if n == 1 else W("compare.heading_many", n=cap(S.say(n)))
+    heading = W("compare.heading_integrated") if integrated else W("compare.heading_one") if n == 1 else W("compare.heading_many", n=cap(S.say(n)))
     intro = W("compare.index_intro") if n > 1 else ""
     if supporting:
         intro += " " + sayc("scope_context.supporting-or-different")
     idx = lean_index(c) if n > 1 else ""
-    cmps = "".join(comparison_one(c, l, first=(i == 0), rest=(i > 0)) for i, l in enumerate(c.leans))
-    return (f'<section class="fx-sec" id="compare" aria-labelledby="compare-h" data-cmp-host>{alias}'
+    cmps = "".join(comparison_one(c, l, first=(i == 0), rest=(i > 0), integrated=integrated) for i, l in enumerate(c.leans))
+    return (f'<section class="fx-sec{" fx-sec--opening" if integrated else ""}" id="compare" aria-labelledby="compare-h" data-cmp-host>{alias}'
             f'<h2 class="fx-h2" id="compare-h">{esc(heading)}</h2>'
             + (f'<p class="fx-intro">{esc(intro.strip())}</p>' if intro else "") +
-            f'{idx}<div class="fx-cmps">{cmps}</div>{CMP_HASH_SCRIPT if n > 1 else ""}{formulations_html(c)}</section>')
+            f'{idx}<div class="fx-cmps">{cmps}</div>{CMP_HASH_SCRIPT if n > 1 else ""}</section>')
 
 
 # Before the first paint, a link to one comparison (families/003.html#lean-SiegelZeros, or
@@ -1319,7 +1339,7 @@ def reader_note_for(c: Ctx, text: str) -> str | None:
 
 def readings_html(c: Ctx) -> str:
     S, ev = c.S, c.ev
-    head = f'<h3 class="fx-h3" id="readings">{esc(W("readings.heading"))}</h3>'
+    head = f'<h2 class="fx-h2" id="readings">{esc(W("readings.heading"))}</h2>'
     if not c.leans and not c.readings:
         return f'<span class="fx-alias" id="h-readings"></span>{head}<p class="fx-prose">{esc(W("readings.nolean"))}</p>'
     names_full = reader_full_names()
@@ -1596,7 +1616,7 @@ def checked_html(c: Ctx) -> str:
     probs = c.problems()
     finds = c.doc.get("findings") or []
     ex = c.cfind.get("explanation") or []
-    parts = [readings_html(c), reruns_html(c), other_checks_html(c)]
+    parts = [status_html(c), reruns_html(c), other_checks_html(c), formulations_html(c)]
     if probs:
         parts.append(f'<h3 class="fx-h3" id="problems"><span class="fx-alias" id="h-problems"></span>{esc(W("checks.problems_heading"))}</h3>'
                      f'<p class="fx-intro">{esc(W("checks.problems_intro"))}</p>{finds_list(c, probs)}')
@@ -1919,16 +1939,21 @@ def build(S, f) -> None:
     head = head_html(c)
     # The claim, its formal comparison and assessments precede the paper inventory;
     # the forms for what is left to check close the page.
-    sections = [("claim", theorem_html(c)), ("compare", comparison_html(c)),
+    integrated = integrated_comparison(c)
+    sections = [("claim", "" if integrated else theorem_html(c)), ("compare", comparison_html(c, integrated=integrated)),
+                ("assessments", f'<section class="fx-sec" id="assessments" aria-labelledby="readings">{readings_html(c)}</section>'),
                 ("checks", checked_html(c)), ("papers", papers_html(c)), ("cites", connections_html(c)), ("explain", explain_html(c)),
                 ("said", said_html(c)), ("left", left_html(c))]
     present = [k for k, h in sections if h]
+    if integrated:
+        present.insert(0, "claim")
     head, main = link_first_terms(head + "\x00" + "".join(h for _, h in sections)).split("\x00", 1)
-    body = f"""<div class="frame page fx">
+    body = f"""<div class="frame page fx{' fx--integrated' if integrated else ''}">
 {head}
 <div class="fx-body">
  <div class="fx-main">
 {main}
+{S.sibling_nav("family", S.family_siblings(c.num, c.root), discipline=S.DISCIPLINES[S.DISC_OF[c.num]]["name"])}
  </div>
  <aside class="fx-aside" aria-label="{esc(W('toc.label'))}"><div class="fx-aside__in">{rail_html()}{toc_html(c, present)}</div></aside>
 </div>

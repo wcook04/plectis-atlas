@@ -54,6 +54,16 @@ and visible limits; definitions and methods can be opened when needed. Do not
 turn the two reports into a new Atlas verdict. Existing object links still open
 directly at their selected map object.
 
+On family pages with one Lean statement paired to the opening paper passages,
+show those passages once, beside the Lean. Keep unpaired consequences visible
+and keep candidate qualifications beside each object. Multiple Lean choices or
+unresolved matches retain their separate views. Put the attributed assessments
+before proof-run summaries and other formulations. Matching words and catalogue
+background can be opened on demand; the statements and assessment reasons stay
+visible. Direct evidence links precede this material, and neighbouring families
+follow it. Choosing a Lean statement scrolls to its comparison; the chooser
+does not repeat the proof-run reports that appear below the assessments.
+
 The release then appears on one screen as our map, with a readable list beside it, the way
 a good maps app pairs a map with its results. 700-plus results need both: the
 map for where things are, the list for reading them.

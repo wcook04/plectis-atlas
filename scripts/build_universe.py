@@ -1316,8 +1316,8 @@ def example_html() -> str:
     return f"""<section class="u-band u-opening" aria-labelledby="example-h" id="example">
  <div class="frame">
   <p class="u-example__num">{esc(U('example.intro'))}</p>
-  <div class="u-opening__head"><h1 id="example-h">{S.rich(c.f['title'])}</h1>
-   <a class="btn btn--ghost" href="families/017.html">{esc(U('example.full'))}</a></div>
+  <div class="u-opening__head"><h1 id="example-h">{S.rich(c.f['title'])}</h1></div>
+  <nav class="u-example__nav" aria-label="{esc(U('example.nav'))}"><a href="#example-paper-h">{esc(U('example.claim_link'))}</a><a href="#example-lean-h">{esc(U('example.formal_link'))}</a><a href="#example-reports-h">{esc(U('example.assessments_link'))}</a></nav>
   <div class="u-evidence-grid">
    <section class="u-example__card" aria-labelledby="example-paper-h">
     <h2 id="example-paper-h">{esc(U('example.paper'))}</h2>
@@ -1336,7 +1336,7 @@ def example_html() -> str:
     <p class="u-example__note">{esc(U('example.assessment_note'))}</p>
    </section>
   </div>
-  <p class="u-band__links"><a href="#browse">{esc(U('example.browse'))}</a><a href="about.html">{esc(U('example.about'))}</a></p>
+  <p class="u-band__links"><a class="btn btn--ghost" href="families/017.html">{esc(U('example.full'))}</a><a href="#browse">{esc(U('example.browse'))}</a><a href="about.html">{esc(U('example.about'))}</a></p>
  </div>
 </section>{S.macros_script([slug])}
 """
