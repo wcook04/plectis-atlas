@@ -1427,7 +1427,7 @@ def page_body(M, gen, data_version=None) -> str:
    <nav class="u-step" aria-label="{esc(U('step.label'))}" data-u-step hidden></nav>
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
    <p class="u-ground" data-u-ground>{esc(U('page.job'))} <span class="u-ground__ind">{esc(U('page.independent'))}</span></p>
-   <p class="u-starts" data-u-ground><a class="u-gbtn" href="help.html" data-help="">{esc(U('page.how'))}</a></p>
+   <p class="u-starts" data-u-ground><a class="u-gbtn" href="help.html" data-help="">{esc(U('page.how'))}</a><a class="u-gbtn" href="families/{esc(COPY_U['example']['family'])}.html">{esc(U('example.try'))}</a></p>
    {videos_html()}
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
