@@ -1179,7 +1179,8 @@ def example_html(M) -> str:
     if problems:
         raise SystemExit("example: the copy no longer describes family " + ex["family"] + ": " + "; ".join(problems))
     lean = f'<code class="u-ex__code">{esc(leans[0]["name"])}</code>'
-    names = ["\u2019s ".join(r["name"].split(", ", 1)) for r in rows]
+    # The groups' short names, as the map's list and the family page call them.
+    names = [r["name"].split(", ")[-1] for r in rows]
     quoted = [f'\u201c{esc(r["term"])}\u201d' for r in rows]
     v = lambda x: f'<var>{x}</var>'
     formula = f'<span class="u-ex__m">|π − {v("p")}/{v("q")}| ≥ {v("q")}<sup>−{v("ν")}</sup></span>'

@@ -512,16 +512,32 @@
   "lean_h": "OpenAI’s [[lean|Lean]] states",
   "extra_nolean": "Also matching OpenAI’s description, with no Lean statement paired",
   "extra": "Also matching OpenAI’s description",
-  "nolean": "The release has no Lean statement for this family, so no group has compared one with the paper or made a Comparator run.",
-  "sorry": "<code>sorry</code> stands in for the proof here. OpenAI supplies the proof in a separate file, and Comparator checks it against this statement.",
+  "nolean": "The release has no [[lean|Lean]] statement for this family, so no group has compared one with the paper or made a Comparator run.",
+  "sorry": "<code>sorry</code> marks the proof, which OpenAI supplies in a separate file.",
   "compare_tab": "Compare in detail",
   "more_one": "OpenAI selected one more Lean statement for this family: {which}.",
   "more_many": "OpenAI selected {n} more Lean statements for this family: {which}.",
+  "join": {
+   "_note": "The sheet's foot: how the paper statement and the Lean came to stand side by side, said once. The groups compared the Lean with OpenAI's description, so this never implies they reviewed the pairing.",
+   "candidate-pairing": "Atlas put these side by side because they share wording; nobody has reviewed whether they say the same thing.",
+   "producer-cited-association": "The Lean source cites this theorem; nobody has reviewed whether they say the same thing.",
+   "producer-declared-binding": "OpenAI links these statements; nobody has reviewed whether they say the same thing.",
+   "unavailable": "No paper theorem is paired with this Lean statement."
+  },
+  "verdicts_h": "The outside groups, below:",
+  "finds": "{who} finds {what}",
+  "short": {
+   "all": "the whole result stated",
+   "part": "part of the result stated",
+   "narrower": "a narrower statement",
+   "weaker": "a weaker statement",
+   "supporting": "a supporting result",
+   "different": "a different result"
+  },
   "groups_h": "What the outside groups say",
-  "groups_lead_one": "One outside group compared the Lean with the advertised result, OpenAI’s description quoted below.",
-  "groups_lead_many": "{n} outside groups compared the Lean with the advertised result, OpenAI’s description quoted below.",
-  "run_k": "Did OpenAI’s proof pass [[comparator|Comparator]]?",
-  "pass": "A [[comparator|Comparator]] pass checks OpenAI’s proof of the Lean statement. It does not show that the statement says everything the paper says. Atlas links these reports and has not repeated any run.",
+  "compared_here": "They compared the Lean with OpenAI’s description of the result, not with the theorem above:",
+  "compared_above": "They compared the Lean with OpenAI’s description of the result, shown above.",
+  "run_k": "OpenAI’s proof of the Lean statement, run through [[comparator|Comparator]]",
   "desc_h": "OpenAI’s description",
   "desc_credit": "From {link}:"
  }

@@ -632,7 +632,8 @@ a.fx-vt:hover { border-color: var(--ink); }
    the join along the sheet's foot. Then one card per outside group, side by side, in
    its own words. OpenAI's description and the papers close the tab as background. */
 .fx-bd { display: grid; gap: 32px; }
-.fx-bd__pair { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "lean" "join";
+/* On a phone the Lean follows its own theorem; other statements come after it. */
+.fx-bd__pair { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "lean" "extra" "foot";
   background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-lg); }
 .fx-bd__paper { grid-area: paper; min-width: 0; padding: 20px 24px 16px; }
 .fx-bd__lean { grid-area: lean; min-width: 0; padding: 20px 24px 16px; border-top: 1px dashed color-mix(in oklab, var(--steel) 55%, var(--rule-strong)); }
@@ -640,7 +641,10 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-bd__pair--producer-declared-binding .fx-bd__lean { border-top-style: solid; }
 .fx-bd__pair--unavailable .fx-bd__lean, .fx-bd__pair--nolean .fx-bd__lean { border-top: 1px solid var(--rule-strong); }
 @media (min-width: 1000px) {
-  .fx-bd__pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-areas: "paper lean" "join join"; }
+  .fx-bd__pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr auto; grid-template-areas: "paper lean" "extra lean" "foot foot"; }
+  /* With no Lean the paper takes the whole sheet. */
+  .fx-bd__pair--nolean { grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "extra" "foot"; }
+  .fx-bd__pair--nolean .fx-bd__paper { max-width: 60rem; }
   .fx-bd__lean { border-top: 0; border-left: 1px dashed color-mix(in oklab, var(--steel) 55%, var(--rule-strong)); }
   .fx-bd__pair--producer-cited-association .fx-bd__lean,
   .fx-bd__pair--producer-declared-binding .fx-bd__lean { border-left-style: solid; }
@@ -649,7 +653,10 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-bd__side { margin: 0 0 12px; font: 600 var(--fs-meta)/1.3 var(--sans); color: var(--muted); text-wrap: balance; }
 .fx-bd__side--paper { color: var(--brick-text); }
 .fx-bd__side--lean, .fx-bd__side--lean a { color: var(--steel-text); }
-.fx-bd__join { grid-area: join; margin: 0; padding: 10px 24px 12px; border-top: 1px solid var(--rule); font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); max-width: none !important; }
+.fx-bd__foot2 { grid-area: foot; padding: 10px 24px 12px; border-top: 1px solid var(--rule); }
+.fx-bd__join, .fx-bd__verdicts { margin: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); max-width: none !important; }
+.fx-bd__verdicts { margin-top: 4px; color: var(--ink); }
+.fx-bd__verdicts a { font-weight: 600; }
 .fx-bd__jh { font-weight: 600; color: var(--ink); }
 .fx-bd__join .fx-why { margin-left: 4px; }
 
@@ -659,7 +666,7 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-st--flat .fx-st__src { margin-bottom: 10px; }
 .fx-st--flat .fx-st__body { font-size: 1.1875rem; line-height: 1.58; }
 .fx-st--flat .fx-st__foot { margin-top: 10px; padding-top: 0; border-top: 0; }
-.fx-bd__extra { margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--rule-strong); }
+.fx-bd__extra { grid-area: extra; min-width: 0; margin: 0 24px 16px; padding-top: 12px; border-top: 1px dashed var(--rule-strong); }
 .fx-bd__xh { margin: 0 0 8px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
 .fx-bd__extra .fx-st--flat .fx-st__head { font-size: 1rem; }
 .fx-bd__extra .fx-st--flat .fx-st__body { font-size: 1.0625rem; }
@@ -689,7 +696,7 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-vd__who { margin: 0; font: 600 1.0625rem/1.3 var(--sans); color: var(--ink); }
 .fx-vd__who a { color: inherit; }
 .fx-vd__term { font-size: var(--fs-small); }
-.fx-vd__term .fx-vt { display: inline-block; padding: 1px 9px; border: 1px solid var(--rule-strong); border-radius: 999px; color: var(--ink-soft); text-decoration: none; font-weight: 600; }
+.fx-vd__term .fx-vt { display: inline-block; padding: 1px 9px; border: 1px solid var(--rule); border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 400; font-size: 0.8125rem; }
 .fx-vd__term a.fx-vt:hover { border-color: var(--rule-control); color: var(--ink); }
 .fx-vd__out { font-size: var(--fs-body); font-weight: 600; line-height: 1.45; color: var(--ink); }
 .fx-vd .u-dot { display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; vertical-align: 0.04em; background: var(--u-t-none); }
@@ -722,6 +729,13 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-bd__lean--none .fx-brief { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rule); }
 @media (max-width: 640px) {
   .fx-bd__paper, .fx-bd__lean { padding: 16px 16px 12px; }
-  .fx-bd__join { padding: 10px 16px 12px; }
+  .fx-bd__foot2 { padding: 10px 16px 12px; }
+  .fx-bd__extra { margin: 0 16px 14px; }
+  /* The tab bar scrolls sideways: fade its edge so a cut-off tab reads as more to come. */
+  .fx-tabs__list { -webkit-mask-image: linear-gradient(to right, #000 85%, transparent); mask-image: linear-gradient(to right, #000 85%, transparent); padding-right: 24px; }
   .fx-vd { padding: 14px 16px 12px; }
 }
+.fx-vd__run .fx-vt { font-weight: 400; color: var(--muted); }
+.fx-bd__groups .fx-quote { margin: 4px 0 0; max-width: 72ch; }
+.fx-bd__groups .fx-quote__q p { font-size: 1.0625rem; line-height: 1.55; }
+.fx-bd__agree { margin: 12px 0 14px; font-size: var(--fs-body); line-height: 1.5; color: var(--ink); }

@@ -79,7 +79,8 @@ def main() -> int:
             first = html.split('class="fx-bd__pair', 1)[1].split("</section>", 1)[0]
             check('class="lean lean--snippet fx-bd__code"' in first, "the selected Lean statement's text is not beside the paper")
         else:
-            check(family_page.W("board.nolean") in re.sub(r"<[^>]+>", "", html), "the board does not say the release has no Lean here")
+            said = re.sub(r"\[\[[^|\]]*\|([^\]]*)\]\]", r"\1", family_page.W("board.nolean"))
+            check(said in re.sub(r"<[^>]+>", "", html),"the board does not say the release has no Lean here")
         if doc.get("readings"):
             for rd in doc["readings"]:
                 term = rd.get("source_term")

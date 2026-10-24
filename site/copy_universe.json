@@ -374,11 +374,11 @@
    },
    {
     "k": "The groups say",
-    "v": "{first}: {first_term}. {second}: {second_term}. Both note that the Flint–Hills series is left out."
+    "v": "{first} labels it {first_term} and {second} labels it {second_term}; both note that the Flint–Hills series is left out."
    },
    {
     "k": "Comparator",
-    "v": "Both groups report that it accepted OpenAI’s proof of {lean}."
+    "v": "Both groups report that Comparator accepted OpenAI’s proof of {lean}."
    }
   ]
  },

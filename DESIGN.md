@@ -222,6 +222,21 @@ half under one sentence saying so. `board_pair` and `groups_board` in
 board and the Lean text beside the paper. Paragraphs below describe earlier
 passes; where they disagree about the first tab, this one stands.
 
+A fresh-eyes critique the same day refined it. The sheet's foot says once how
+the two statements came to stand together ("Atlas put these side by side
+because they share wording; nobody has reviewed whether they say the same
+thing") and then, on the first screen, what each group finds, each name linking
+to its card. The groups compared the Lean with OpenAI's description, so the
+description is quoted at the head of their section, introduced as what they
+compared; it is never implied that they reviewed the pairing. The board never
+repeats the no-review sentence or Comparator's limit; the card says whose proof
+of what was run. A group's note is quoted whole, its own term is a small tag
+beside its finding, and with several Lean statements each run label stands
+beside the statements it was given for. With no Lean the paper takes the whole
+sheet. On a phone the Lean follows its own theorem and the tab bar fades at its
+edge. Declined: having Atlas explain a group's label in its own words (MathVet's
+"full" concerns the headline), since Atlas does not characterise anyone's work.
+
 **The first screen answers the page's question** (19 October 2026). The page
 was 8,800px tall at 1440×900, and the comparison of what each group said
 started on its fourth screen. Now, under the title, the catalogue's claim sits
