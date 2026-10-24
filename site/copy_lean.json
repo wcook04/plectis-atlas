@@ -92,31 +92,13 @@
    "challenge": "Lean statement:",
    "other": "Lean file:"
   },
-  "lean_heading": "What does the Lean statement say?",
   "formal_heading": "Which proof did Comparator accept, and what does that show?",
   "readings_link": "Read every group’s full assessment on the family page.",
   "draft_heading": "OpenAI’s note and an AI-drafted interpretation",
   "alternatives_heading": "Other possible paper matches, closest wording first",
   "alternatives_more": "Other possible paper matches, closest wording first",
   "alternatives_none": "Atlas’s source records list no other possible paper match.",
-  "read_in_paper": {
-   "candidate-pairing": "Read the possible match in the paper",
-   "producer-cited-association": "Read the cited theorem in the paper",
-   "producer-declared-binding": "Read the linked theorem in the paper"
-  },
-  "read_below": {
-   "candidate-pairing": "See the possible match",
-   "producer-cited-association": "See the cited theorem",
-   "producer-declared-binding": "See the linked theorem",
-   "multi": "See the possible matches"
-  },
-  "pair_line": {
-   "candidate-pairing": "Possible match to {ref}, selected because the statements share words. Atlas records no review of whether they mean the same thing.",
-   "producer-cited-association": "The Lean source cites {ref} by its label. Atlas records no review of whether the statements mean the same thing.",
-   "producer-declared-binding": "OpenAI’s release explicitly links this Lean statement to {ref}. Atlas records no review of whether the statements mean the same thing."
-  },
   "report_check": "Report a comparison with the paper (GitHub issue)",
-  "read_candidates": "See the closest possible matches",
   "theorem_name": "Theorem selected for verification:",
   "theorem_names": "Theorems selected for verification:",
   "copy_name": "Copy name",
@@ -124,25 +106,9 @@
   "definition_name": "Definition selected for comparison:",
   "definition_names": "Definitions selected for comparison:",
   "lean_help_label": "What a Lean statement is",
-  "what": "A precise statement OpenAI wrote in [[lean|Lean]], a language in which a computer checks every step of a proof. OpenAI supplies the proof separately, and a program called [[comparator|Comparator]] tests it against this statement. Below: which paper theorem it may express, what each outside group concluded, and what nobody has checked yet.",
-  "what_def": "A precise statement OpenAI wrote in [[lean|Lean]], a language in which a computer checks every step of a proof. This file configures definitions rather than a theorem, and a program called [[comparator|Comparator]] compares OpenAI’s versions of them by name and type. Below: which paper statement it may express, what each outside group concluded, and what nobody has checked yet.",
-  "claim_heading": "Which paper theorem might it state?",
-  "claim_answer": {
-   "candidate-pairing": "Possibly {ref}. Nobody has recorded checking that the two say the same thing.",
-   "producer-cited-association": "{ref}, which the Lean source cites by its label. Nobody has recorded checking that the two say the same thing.",
-   "producer-declared-binding": "{ref}, which OpenAI’s release links to this Lean statement. Nobody has recorded checking that the two say the same thing.",
-   "multi": "Possibly several theorems: the parts of this Lean statement share words with {ref} and the others below. Nobody has recorded checking that they say the same thing.",
-   "unavailable": "No paper theorem matches clearly enough to pair. The closest candidates are listed below so that you can compare them yourself."
-  },
-  "formal_heading_def": "What did Comparator compare, and what does that show?",
-  "read_groups": "Compare what the groups found",
-  "lean_intro": "OpenAI’s own description first, then the Lean lines that state the theorem, with a key to their symbols.",
-  "lean_intro_plain": "The Lean lines that state the theorem, with a key to their symbols, then the definitions in the file that they use.",
-  "read_paper_page": "Open the paper",
-  "selected_main": "OpenAI set Comparator to check {what} in this file, and its Lean catalogue lists the file as a main result.",
-  "selected_supporting": "OpenAI set Comparator to check {what} in this file. Its Lean catalogue does not list the file as a main result; the release’s Lean notes for family {id} link it.",
-  "what_theorem": "the theorem shown below",
-  "what_definitions": "the definitions shown below"
+  "what": "A statement OpenAI wrote in [[lean|Lean]], a language in which a computer checks every step of a proof.",
+  "what_def": "Definitions OpenAI wrote in [[lean|Lean]], a language in which a computer checks every step of a proof.",
+  "formal_heading_def": "What did Comparator compare, and what does that show?"
  },
  "pairing": {
   "ref": "{name} of {title}",
@@ -152,7 +118,6 @@
   "join_label": "How the paper theorem and the Lean statement are linked",
   "assoc_unresolved": "The Lean source cites labels that do not resolve to a single theorem, so no theorem is paired.",
   "no_record": "Atlas’s source records list no possible paper match for this Lean statement.",
-  "reason": "Why none: {reason}",
   "no_confident": "no paper statement matches the Lean text clearly enough to pair, so the closest possible matches are listed below.",
   "and_more": "and {n} more",
   "how_lean": "Words of the Lean statement, its names split into words, that also appear in the theorem: {words}.",
@@ -272,65 +237,29 @@
    "unavailable": "no possible match recorded"
   },
   "see_match": "Compare them",
-  "caption": "What each group reports about this Lean statement and its family",
-  "col_group": "Group",
-  "col_reading": "Do family {id}’s Lean statements state the advertised result?",
-  "col_reading_short": "States the advertised result?",
-  "col_runs": "Did OpenAI’s proof pass {comparator} for this Lean statement?",
-  "col_runs_short": "Passed Comparator?",
   "their_term": "“{term}”",
-  "record": "their record",
   "report": "their report",
-  "no_reading": "No assessment recorded",
   "no_run": "No run reported",
   "pin_other": "(release version {pin}, not the one shown here)",
-  "note": "A {comparator} pass does not show that the Lean says what the paper says. Atlas has not repeated the runs.",
   "full_reports": "Each group’s report in full",
-  "help_label": "How to read these two questions",
-  "col_runs_def": "Did OpenAI’s definitions pass {comparator} for this Lean statement?",
-  "col_runs_short_def": "Passed Comparator?",
-  "lead": {
-   "reported-accepted": "Yes, accepted:",
-   "reported-rejected": "No, rejected:",
-   "reported-undecided": "No verdict:",
-   "reported-built": "Not run:"
-  }
+  "help_label": "How to read these two questions"
  },
  "toc": {
   "heading": "On this page",
   "side_label": "Contents and file facts",
-  "glance": "What is known so far",
-  "lean": "What the Lean says",
-  "claim": "Which paper theorem",
+  "glance": "The Lean and the paper",
+  "lean": "Reading the Lean",
+  "claim": "How the theorem was chosen",
   "runs": "Which proof was checked",
   "file": "The complete file",
   "share": "Shareable summary",
   "checks": "What is unchecked",
-  "groups": "What the groups conclude",
+  "groups": "What the groups found",
   "next": "Where to read more"
  },
  "trail": {
   "family": "Family {id}:",
   "lean": "Lean statement"
- },
- "brief": {
-  "heading": "What is known so far",
-  "family_q": "Which result is it part of?",
-  "siblings": "The family has {n} Lean statements; arrows above step through them.",
-  "paper_q": "Which paper theorem might it state?",
-  "see_candidates": "See the closest candidates",
-  "groups_q": "What do the outside groups say?",
-  "on_family": "On family {id}’s Lean statements as a whole:",
-  "group_reading": "{name} {gloss} (“{term}”)",
-  "groups_link": "Compare their reasons",
-  "left_q": "What is still unchecked?",
-  "left_link_one": "Details and how to help",
-  "left_link": "All {n} open questions"
- },
- "groups": {
-  "heading": "What do the groups conclude, and why?",
-  "intro": "Two separate answers. Does the Lean state the advertised result? That is judged for all of family {id}’s Lean statements together. Did OpenAI’s proof pass Comparator? That is reported for this Lean statement alone. Their labels differ, so read the reasons in their own words.",
-  "intro_def": "Two separate answers. Does the Lean state the advertised result? That is judged for all of family {id}’s Lean statements together. Did OpenAI’s definitions pass Comparator? That is reported for this Lean statement alone. Their labels differ, so read the reasons in their own words."
  },
  "left": {
   "heading": "What is still unchecked",
@@ -459,5 +388,62 @@
  },
  "facts": {
   "solution_note": "The Lean module holding OpenAI’s proof, kept apart from the statement."
+ },
+ "sheet": {
+  "heading": "The Lean statement beside the paper",
+  "paper_h": "The paper states",
+  "paper_h_none": "No paper theorem is paired",
+  "closest": "The closest statements by shared wording",
+  "lean_h": "OpenAI’s [[lean|Lean]] states",
+  "lean_h_def": "OpenAI’s [[lean|Lean]] defines",
+  "sorry": "[[sorry|`sorry`]] stands in for the proof here. OpenAI’s proof is in a separate file, and [[comparator|Comparator]] checks it against this statement.",
+  "def_note": "The verification settings name no theorem. [[comparator|Comparator]] tests whether OpenAI’s library defines {names} with the types written here, by name and type only.",
+  "join_head": {
+   "candidate-pairing": "Possible match",
+   "producer-cited-association": "Cited in the Lean source",
+   "producer-declared-binding": "Linked in OpenAI’s release",
+   "multi": "Possible matches",
+   "unavailable": "Nothing paired"
+  },
+  "join_qual": {
+   "candidate-pairing": "Atlas selected this theorem because the two share words. No review of whether they mean the same thing is recorded.",
+   "producer-cited-association": "The Lean source cites this theorem by its label. No review of whether they mean the same thing is recorded.",
+   "producer-declared-binding": "OpenAI’s release links this Lean statement to this theorem. No review of whether they mean the same thing is recorded.",
+   "multi": "Parts of this Lean statement share words with each theorem shown. No review of whether they mean the same thing is recorded.",
+   "unavailable": "None of the statements on the left is recorded as this Lean statement’s counterpart, and none has been reviewed against it."
+  },
+  "join_how": "How it was chosen",
+  "how_heading": "How the paper theorem was chosen",
+  "how_heading_none": "How Atlas looked for a paper theorem",
+  "notes_heading": "Reading the Lean statement",
+  "notes_heading_def": "Reading the Lean definitions",
+  "closest_how": "The closest statements, and the words each shares"
+ },
+ "board": {
+  "heading": "What the outside groups found",
+  "lead": "Each group assessed family {id}’s Lean as a whole; each Comparator run is of this statement.",
+  "on_family": "Family {id}: {what}.",
+  "state": {
+   "all": "its Lean expresses or implies the whole advertised result",
+   "part": "its Lean expresses part of the advertised result",
+   "narrower": "its Lean expresses a narrower statement than the advertised result",
+   "weaker": "its Lean expresses a weaker statement than the advertised result",
+   "supporting": "its Lean expresses a supporting result",
+   "different": "its Lean expresses a different result"
+  },
+  "record": "Their assessment",
+  "no_reason": "Their record names nothing missing.",
+  "not_read": "No coverage assessment recorded.",
+  "their_label": "Their label:",
+  "run_k": "Did OpenAI’s proof of this statement pass {comparator}?",
+  "run_k_def": "Did OpenAI’s definitions pass {comparator} here?",
+  "run": {
+   "reported-accepted": "Acceptance reported",
+   "reported-rejected": "Rejection reported",
+   "reported-undecided": "No verdict reported",
+   "reported-built": "Built; Comparator not run"
+  },
+  "pass": "A {comparator} pass checks OpenAI’s proof of this Lean statement. It does not show that the statement says everything the paper says. Atlas links these reports and has not repeated any run.",
+  "pass_def": "A {comparator} pass checks that OpenAI’s library defines these names with these types. It does not show that they mean what the paper means. Atlas links these reports and has not repeated any run."
  }
 }
