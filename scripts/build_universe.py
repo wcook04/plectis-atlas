@@ -1280,7 +1280,7 @@ def checked_band() -> str:
 
 
 def example_html() -> str:
-    """A source-backed first example, using the family reader's statement renderer.
+    """An optional worked example, using the family reader's statement renderer.
 
     The chosen passages are an editorial example, not a new pairing or verdict.
     All mathematical text, assessment terms and reasons come from pinned inputs.
@@ -1294,7 +1294,7 @@ def example_html() -> str:
         sid = f"r:{slug}:{label}"
         statements.append(
             f'<div class="u-example__statement" data-macros="{esc(slug)}">'
-            f'<h3 class="u-example__num">{esc(c.label(sid))}</h3>'
+            f'<h4 class="u-example__num">{esc(c.label(sid))}</h4>'
             f'<div class="u-example__desc">{c.stmt_body(sid)}</div>'
             f'<a href="{esc(c.passage_href(sid))}">{esc(U("example.paper_link"))}</a></div>')
     s = S.ST["PiExponent"]
@@ -1306,7 +1306,7 @@ def example_html() -> str:
         notes = "".join(f'<p class="md-math">{F.code_spans(value[key])}</p>'
                         for key in F.READER_NOTE_KEYS if value.get(key))
         reports.append(
-            f'<article class="u-example__report"><h3>{esc(credit["name"])}</h3>'
+            f'<article class="u-example__report"><h4>{esc(credit["name"])}</h4>'
             f'<p class="u-example__term">{esc(rd.term)}</p>{notes}'
             f'<a class="ext" href="{esc(value["url"])}" rel="noopener">{esc(U("example.report_link"))}</a>'
             f'<details class="u-more"><summary>{esc(U("example.details"))}</summary>'
@@ -1316,22 +1316,22 @@ def example_html() -> str:
     return f"""<section class="u-band u-opening" aria-labelledby="example-h" id="example">
  <div class="frame">
   <p class="u-example__num">{esc(U('example.intro'))}</p>
-  <div class="u-opening__head"><h1 id="example-h">{S.rich(c.f['title'])}</h1></div>
+  <div class="u-opening__head"><h2 id="example-h">{S.rich(c.f['title'])}</h2></div>
   <nav class="u-example__nav" aria-label="{esc(U('example.nav'))}"><a href="#example-paper-h">{esc(U('example.claim_link'))}</a><a href="#example-lean-h">{esc(U('example.formal_link'))}</a><a href="#example-reports-h">{esc(U('example.assessments_link'))}</a></nav>
   <div class="u-evidence-grid">
    <section class="u-example__card" aria-labelledby="example-paper-h">
-    <h2 id="example-paper-h">{esc(U('example.paper'))}</h2>
+    <h3 id="example-paper-h">{esc(U('example.paper'))}</h3>
     {''.join(statements)}
    </section>
    <section class="u-example__card" aria-labelledby="example-lean-h">
-    <h2 id="example-lean-h">{esc(U('example.formal'))}</h2>
+    <h3 id="example-lean-h">{esc(U('example.formal'))}</h3>
     <p class="u-example__num"><a href="statements/PiExponent.html">PiExponent</a></p>
     <pre class="lean lean--snippet u-example__lean"><code>{code}</code></pre>
     <p class="u-example__note">{esc(U('example.lean_note'))}</p>
     <a href="statements/PiExponent.html">{esc(U('example.lean_link'))}</a>
    </section>
    <section class="u-example__card" aria-labelledby="example-reports-h">
-    <h2 id="example-reports-h">{esc(U('example.assessments'))}</h2>
+    <h3 id="example-reports-h">{esc(U('example.assessments'))}</h3>
     {''.join(reports)}
     <p class="u-example__note">{esc(U('example.assessment_note'))}</p>
    </section>
@@ -1351,7 +1351,7 @@ def page_body(M, gen, data_version=None) -> str:
     copy_json = json.dumps(copy, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     D = M.data
     canvas_label = U("controls.canvas_label", families=len(D["families"]), disciplines=len(D["disciplines"]))
-    return f"""{example_html()}<div class="u-explorer" id="browse" data-universe data-view="list"
+    return f"""<div class="u-explorer" id="browse" data-universe data-view="list"
  data-universe-data="data/universe-data.json?v={data_v}" data-universe-parts="data/universe-parts.json?v={data_v}" data-universe-layout="data/universe-layout.json?v={data_v}"
  data-universe-detail="data/universe-detail-{{d}}.json?v={data_v}" data-universe-search="data/universe-search.json?v={data_v}"
  data-generation="{esc(gen)}">
@@ -1363,7 +1363,7 @@ def page_body(M, gen, data_version=None) -> str:
   <div class="u-panel__head">
    <nav class="u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail hidden></nav>
    <nav class="u-step" aria-label="{esc(U('step.label'))}" data-u-step hidden></nav>
-   <h2 class="u-title" id="u-title">{esc(U('page.title'))}</h2>
+   <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
    <p class="u-ground" data-u-ground>{esc(U('page.independent'))}</p>
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
@@ -1373,6 +1373,7 @@ def page_body(M, gen, data_version=None) -> str:
   <div class="u-panel__body" data-u-scroll>
    <div class="u-results" data-u-results hidden></div>
    <div class="u-view" data-u-view>
+    <p class="u-example-entry"><a href="#example">{esc(U('example.entry'))}</a></p>
     <details class="u-more u-release-context"><summary>{esc(U('example.map_context'))}</summary>
      <p class="u-lede">{number_sentence(M, 's1')} {number_sentence(M, 's2')}</p>
      {since_html(M)}
@@ -1398,6 +1399,7 @@ def page_body(M, gen, data_version=None) -> str:
  </div>
  <script type="application/json" id="universe-copy">{copy_json}</script>
 </div>
+{example_html()}
 <section class="u-band u-band--index" id="catalogue" aria-labelledby="h-index" tabindex="-1">
  <div class="frame u-band__in">
   <h2 class="u-band__h" id="h-index">{esc(U('bands.index_heading'))}</h2>

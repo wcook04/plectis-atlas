@@ -2,7 +2,7 @@
  "_note": "Every visible string of the front door (index.html, assets/universe.js): the map and the list. Built by scripts/build_universe.py. Plain words, sentence case, no em dashes. Numbers come from Statement Map at build time (the numbers index, or counts of what the map draws); none is written here.",
  "page": {
   "title": "Explore the release",
-  "description": "Compare a paper’s claims, its selected Lean statement and attributed assessments, then explore OpenAI’s mathematics release.",
+  "description": "Browse OpenAI’s mathematics release by subject or search, then inspect the papers, Lean statements and attributed assessments.",
   "redirect_title": "The map has moved",
   "redirect_text": "The map of the release is now the front page.",
   "redirect_link": "Open the map",
@@ -355,6 +355,7 @@
   "family_counts": "{papers}, {lean}"
  },
  "example": {
+  "entry": "See a worked example",
   "intro": "One paper from OpenAI’s mathematics release",
   "paper": "The paper’s claims",
   "formal": "The selected formal statement",

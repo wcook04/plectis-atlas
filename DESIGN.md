@@ -7,9 +7,10 @@ what a page teaches, so the next pass starts from it.
 
 A public reading room for OpenAI's mathematics release, for mathematicians
 first and AI researchers second. It is set in a publication register and kept
-as quiet as a good journal. The front door starts with one paper: its claims, selected formal statement and
-attributed assessments. The whole release follows as a map with a readable list.
-Keep the evidence prominent and put supporting explanations one action away.
+as quiet as a good journal. The front door opens the release browser, with search,
+subjects and the map ready to use. A quiet link opens a worked comparison of one
+paper, its selected formal statement and attributed assessments. Keep the evidence
+prominent when a reader opens a result, with supporting explanations one action away.
 
 The release arrives as 719 papers, 416 Lean files and a catalogue. A
 mathematician wants something smaller and sharper: what exactly is claimed,
@@ -45,11 +46,13 @@ old tile map as just as bad. The Plectis maths site is the model: a problem is
 introduced in words with its mathematics typeset, its status is a sentence, and
 its map labels every problem with plain counts.)
 
-## The front door: one example, then the map and the list
+## The front door: the browser, with an optional example
 
-The pi example leads with the paper’s exact statements, its selected Lean
-challenge and each outside report’s term and reason. Read this evidence before
-explaining the catalogue, colours or methods. Preserve the original source links
+Search, subject navigation and the release map come first. The pi comparison
+sits below the explorer and is available through a small link in the release
+list. It is an optional introduction, not a compulsory first screen on every visit.
+The example leads with the paper’s exact statements, its selected Lean challenge
+and each outside report’s term and reason. Preserve the original source links
 and visible limits; definitions and methods can be opened when needed. Do not
 turn the two reports into a new Atlas verdict. Existing object links still open
 directly at their selected map object.
@@ -64,7 +67,7 @@ visible. Direct evidence links precede this material, and neighbouring families
 follow it. Choosing a Lean statement scrolls to its comparison; the chooser
 does not repeat the proof-run reports that appear below the assessments.
 
-The release then appears on one screen as our map, with a readable list beside it, the way
+The release appears on one screen as our map, with a readable list beside it, the way
 a good maps app pairs a map with its results. 700-plus results need both: the
 map for where things are, the list for reading them.
 
