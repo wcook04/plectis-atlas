@@ -459,7 +459,7 @@ a.fx-find__name:hover { text-decoration-color: currentColor; }
 .fx-shead .fx-how, .fx-grphead .fx-how { margin-bottom: 0; max-width: 80ch; }
 .fx-shead .fx-ans, .fx-grphead .fx-ans { margin-bottom: 6px; }
 /* The paper's theorem stays in view beside a longer Lean card. */
-@media (min-width: 1100px) { .fx-cmp__paper > .fx-st { position: sticky; top: 64px; } }
+/* (family.js marks it .fx-travel when it is the shorter side and fits the window.) */
 .fx-grphead { margin-bottom: var(--fx-block); }
 .fx-grphead > .fx-h3 { margin-top: 0; font-size: var(--fs-body); font-family: var(--sans); color: var(--muted); }
 .fx-st__body p, .fx-st__body li { max-width: 72ch; }
@@ -758,3 +758,96 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-bd__ghead .fx-bd__lead, .fx-bd__ghead .fx-bd__agree { max-width: none; }
 .fx-bd__ghead .fx-bd__agree { margin-bottom: 0; }
 .fx-bd__gdesc .fx-quote { margin: 4px 0 0; max-width: none; }
+
+/* ---- Space (24 October 2026) ---------------------------------------------
+   Will: "I hate it when we don't use up the space." A column that ends far short of
+   its neighbour travels with it (sticky) or takes a second column of the page's own
+   content; reading text keeps its measure. DESIGN.md "## Space". */
+
+/* The evidence tab closes on one row: the papers on the left, the note and the route to
+   the groups' reasons on the right, under one hairline. */
+.fx-bd__endrow--papers { display: grid; gap: 14px 40px; align-items: start; padding-top: 14px; border-top: 1px solid var(--rule); }
+@media (min-width: 900px) { .fx-bd__endrow--papers { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } }
+.fx-bd__endpapers .fx-brief { margin: 0; padding: 0; border: 0; }
+.fx-bd__endnote { display: grid; gap: 10px; justify-items: start; }
+@media (min-width: 900px) { .fx-bd__endnote { justify-items: end; text-align: right; } }
+.fx-bd__endnote .fx-bd__foot { margin: 0; }
+.fx-bd__endnote .fx-glance__go { margin: 0; }
+.fx-glance__left.fx-bd__end:has(> .fx-bd__endrow--papers) { display: block; }
+.fx-glance__left.fx-bd__end:has(> .fx-bd__endrow--papers) > .fx-glance__lt { margin-bottom: 14px; }
+
+/* OpenAI's Lean, one statement: the section's answer on the left, the statement's name
+   and the groups' runs of it on the right. */
+.fx-shead--split { display: grid; gap: var(--fx-block) 48px; }
+.fx-shead--split > .fx-cmp__top { margin: 0; }
+@media (min-width: 1000px) {
+  .fx-shead--split { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: start; }
+  .fx-shead--split > .fx-cmp__top { padding: 4px 0 2px 24px; border-left: 1px solid var(--rule-strong); }
+}
+.fx-shead__text > :last-child { margin-bottom: 0; }
+
+/* An Atlas source note at a reading measure, its sources listed beside it. */
+.fx-srcnote { display: grid; gap: 8px 48px; }
+.fx-srcnote + .fx-srcnote { margin-top: var(--fx-block); }
+.fx-srcnote .fx-prose { margin: 0; }
+.fx-srcnote__links { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; font-size: var(--fs-small); }
+@media (min-width: 1000px) {
+  .fx-srcnote { grid-template-columns: minmax(0, 72ch) minmax(0, 1fr); align-items: start; }
+  .fx-srcnote__links { padding-left: 24px; border-left: 1px solid var(--rule); }
+}
+
+/* The shorter of two columns standing side by side travels with the longer as the page
+   scrolls, under the tab bar. family.js adds .fx-travel only to a column that is shorter
+   than its neighbour and fits the window, so a long theorem always scrolls to be read. */
+.fx-travel { position: sticky; top: calc(var(--fx-tabs-h, 48px) + 16px); }
+
+/* "What the paper claims": the note under several statements keeps a reading measure. */
+.fx-claim__main .fx-cand--note { max-width: 80ch; margin: 14px 0 0; }
+/* A paper side holding only OpenAI's description spans the sheet's height, so it can
+   travel beside a longer Lean; the papers follow the description. */
+@media (min-width: 1000px) { .fx-bd__pair--travel > .fx-bd__paper { grid-row: 1 / 3; } }
+.fx-bd__sidepapers .fx-brief { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--rule); }
+@media (min-width: 1000px) {
+  .fx-bd__ghead--solo { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: end; }
+  .fx-bd__ghead--solo .fx-bd__lead { margin-bottom: 0; }
+  .fx-bd__ghead--solo .fx-bd__agree { margin: 0; padding-left: 24px; border-left: 1px solid var(--rule-strong); }
+}
+
+/* Related reading: several follow-up works read in two columns at a reading measure, the
+   routes beside them in a third; the line on citations inside the release heads them. */
+@media (min-width: 1200px) {
+  .fx-cites2--wide { grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); }
+  .fx-finds--cols { columns: 2; column-gap: 40px; }
+  .fx-finds--cols > .fx-find--row { break-inside: avoid; }
+  .fx-finds--cols > .fx-find--row:nth-child(n) { border-top: 1px solid var(--rule); padding-top: var(--fx-tight); }
+  .fx-finds--cols > .fx-find--row:first-child { border-top: 0; padding-top: 0; }
+}
+.fx-main p.fx-cites2__none { max-width: none; margin: 0; font-size: var(--fs-small); }
+
+/* Other reports: one long record beside two short ones stacked. */
+@media (min-width: 900px) {
+  .fx-cards--lead { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .fx-cards--lead > .fx-card--lead { grid-row: span 2; }
+}
+.fx-srcnote__links li { margin: 0; }
+.fx-cards--lead { grid-template-rows: auto 1fr; }
+
+/* A section's answer and its how-to-read line share the band under the heading, side by
+   side on a wide screen, rather than one short column with the width beside it empty. */
+@media (min-width: 1100px) {
+  .fx-shead:not(.fx-shead--split):has(> .fx-ans):has(> .fx-how),
+  .fx-grphead:has(> .fx-ans):has(> .fx-how) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 48px; align-items: start; }
+  .fx-shead:not(.fx-shead--split):has(> .fx-ans):has(> .fx-how) > :not(.fx-ans):not(.fx-how),
+  .fx-grphead:has(> .fx-ans):has(> .fx-how) > :not(.fx-ans):not(.fx-how) { grid-column: 1 / -1; }
+  .fx-shead:not(.fx-shead--split):has(> .fx-ans) > .fx-how,
+  .fx-grphead:has(> .fx-ans) > .fx-how { margin: 0; padding-left: 24px; border-left: 1px solid var(--rule); }
+  .fx-shead:not(.fx-shead--split):has(> .fx-how) > .fx-ans,
+  .fx-grphead:has(> .fx-how) > .fx-ans { margin: 0; }
+}
+/* Several Lean statements: each comparison's name on the left of its head, the groups'
+   runs of it on the right. */
+@container fxmain (min-width: 860px) {
+  .fx-cmp > .fx-cmp__top { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); column-gap: 40px; }
+}
+/* Stacked on a narrow screen, the note on the groups' reports stays next to their cards. */
+@media (max-width: 899px) { .fx-bd__endrow--papers > .fx-bd__endnote { order: -1; } }

@@ -748,7 +748,11 @@ def head_html(c: Ctx) -> str:
     if not shown:
         # No paper statement is identified: OpenAI's description is the claim, in the paper's
         # place, under the side's own heading.
-        pair = pair.replace("\x02", quote)
+        # The papers follow it there, so the short side carries the family's own routes.
+        side_papers = papers if c.leans else ""
+        pair = pair.replace("\x02", quote + (f'<div class="fx-bd__sidepapers">{side_papers}</div>' if side_papers else ""))
+        if side_papers:
+            papers = ""
         bq = ""
     elif c.readings:
         groups_desc, bq = quote, ""
@@ -756,7 +760,15 @@ def head_html(c: Ctx) -> str:
         # No Lean: the description, papers and facts fill the sheet's second column.
         pair = pair.replace("\x03", (f'<div class="fx-bd__sidedesc">{quote}</div>' if bq else "") + papers + facts)
         bq = papers = facts = ""
-    groups = groups_board(c, desc=groups_desc) if (c.leans or c.readings) else ""
+    groups = ""
+    if c.leans or c.readings:
+        # With nothing else in the background row, the papers close the groups' row beside
+        # its last note and route, rather than standing alone under a band of space (Will,
+        # 24 October 2026: "I hate the empty space").
+        end_papers = papers if (papers and not bq and not facts) else ""
+        groups = groups_board(c, desc=groups_desc, papers=end_papers)
+        if end_papers:
+            papers = ""
     back = (f'<div class="fx-bd__back"><div class="fx-bd__desc">{bq}{facts}</div>'
             + (f'<div class="fx-bd__papers">{papers}</div>' if papers else "") + '</div>') if (bq or facts or papers) else ""
     overview = f'<div class="fx-bd">{pair}{groups}{back}</div>'
@@ -1083,11 +1095,14 @@ def board_pair(c: Ctx) -> tuple:
         why = " " + why_button(c, rec["target"], rec["shared"], primary=False, lean=name)
     join = f'<p class="fx-bd__join fx-bd__join--{esc(state)}">{esc(W("board.join." + state))}{why}</p>'
     foot = f'<div class="fx-bd__foot2">{join}{board_verdicts(c)}</div>'
-    return (f'<section class="fx-bd__pair fx-bd__pair--{esc(state)}" aria-labelledby="ov-paper-h">'
+    # A paper side holding only OpenAI's description is short: it takes the sheet's whole
+    # height and travels beside the Lean (family.js), with the papers under it.
+    travel = " fx-bd__pair--travel" if not shown and not extra_html else ""
+    return (f'<section class="fx-bd__pair fx-bd__pair--{esc(state)}{travel}" aria-labelledby="ov-paper-h">'
             f'<div class="fx-bd__paper"><div class="fx-bd__in">{paper_h}{paper}</div></div>{lean}{extra_html}{foot}</section>'), shown
 
 
-def groups_board(c: Ctx, desc: str = "") -> str:
+def groups_board(c: Ctx, desc: str = "", papers: str = "") -> str:
     """The board's second row: what the groups compared (OpenAI's description, quoted here
     when the sheet shows a theorem, since that is what they judged), whether they agree, then
     one card per outside group, side by side: its finding in plain words, its own term as a
@@ -1109,8 +1124,13 @@ def groups_board(c: Ctx, desc: str = "") -> str:
         # The section's words beside the description they refer to, so neither runs the
         # full width with an empty half.
         head = f'<div class="fx-bd__ghead"><div class="fx-bd__gtext">{head}</div><div class="fx-bd__gdesc">{desc}</div></div>'
+    elif k:
+        # With the description already on the sheet, whether the groups agree stands
+        # beside the heading rather than under it.
+        head = (f'<div class="fx-bd__ghead fx-bd__ghead--solo"><div class="fx-bd__gtext"><h2 class="fx-bd__h" id="glance-h">{esc(W("board.groups_h"))}</h2>{lead}</div>'
+                f'<div class="fx-bd__gdesc">{agree}</div></div>')
     return (f'<section class="fx-glance fx-bd__groups" aria-labelledby="glance-h">{head}'
-            f'<div class="fx-vds">{"".join(cards)}</div>{glance_left(c, board=True)}</section>')
+            f'<div class="fx-vds">{"".join(cards)}</div>{glance_left(c, board=True, papers=papers)}</section>')
 
 
 def help_q(step: str, label: str) -> str:
@@ -1131,7 +1151,7 @@ def producer_left_out(c: Ctx) -> list:
     return [s for s in sents if _LEFT_OUT.search(s)][:2]
 
 
-def glance_left(c: Ctx, board: bool = False) -> str:
+def glance_left(c: Ctx, board: bool = False, papers: str = "") -> str:
     """The glance's end: what nobody has checked yet (the review no one has recorded, named
     by its Lean statement where there is one, and OpenAI's own sentence on what its Lean
     leaves out, quoted exactly), then the route to each group's full report. It states what
@@ -1160,6 +1180,10 @@ def glance_left(c: Ctx, board: bool = False) -> str:
     if board:
         # The board ends on Comparator's limit and the route to the groups' full reasons, in one row.
         foot = f'<p class="fx-bd__foot">{esc(W("glance.left_atlas"))}</p>' if c.leans else ""
+        if papers:
+            # The papers on the left of the closing row; the note and the route on the right.
+            return (f'<div class="fx-glance__left fx-bd__end">{lt}<div class="fx-bd__endrow fx-bd__endrow--papers">'
+                    f'<div class="fx-bd__endpapers">{papers}</div><div class="fx-bd__endnote">{foot}<p class="fx-glance__go">{"".join(btns)}</p></div></div></div>')
         return f'<div class="fx-glance__left fx-bd__end">{lt}<div class="fx-bd__endrow">{foot}<p class="fx-glance__go">{"".join(btns)}</p></div></div>'
     return f'<div class="fx-glance__left">{lt}<p class="fx-glance__go">{"".join(btns)}</p></div>'
 
@@ -1594,7 +1618,7 @@ def run_chips(c: Ctx, l) -> str:
             + (f'<ul class="fx-chips__l">{"".join(chips)}</ul>' if chips else "") + line + "</div>")
 
 
-def comparison_one(c: Ctx, l, *, first: bool, rest: bool = False) -> str:
+def comparison_one(c: Ctx, l, *, first: bool, rest: bool = False, head_out: list | None = None) -> str:
     """One Lean statement beside the paper theorem it is paired with. The words at the
     join say how the two were joined and that nobody has reviewed the match. With several
     Lean statements, every one but the first is marked fx-cmp--rest at build time, which
@@ -1639,9 +1663,14 @@ def comparison_one(c: Ctx, l, *, first: bool, rest: bool = False) -> str:
     t_html = f'<span class="fx-cmp__t md-math">{esc(curly_tex(title))}</span> ' if title and title != name else ""
     # One wide row per Lean statement: its name and the groups' Comparator runs as its
     # head, then the paper theorem and the Lean side by side, the pairing's words between.
+    top = (f'<header class="fx-cmp__top"><h3 class="fx-cmp__h" id="lean-{esc(name)}-ch">{t_html}<code translate="no">{esc(name)}</code></h3>'
+           f'{run_chips(c, l)}</header>')
+    if head_out is not None:
+        # With one Lean statement its name and runs stand beside the section's answer.
+        head_out.append(top)
+        top = ""
     return (f'<section class="fx-cmp" id="lean-{esc(name)}" data-cmp aria-labelledby="lean-{esc(name)}-ch">{aliases}'
-            f'<header class="fx-cmp__top"><h3 class="fx-cmp__h" id="lean-{esc(name)}-ch">{t_html}<code translate="no">{esc(name)}</code></h3>'
-            f'{run_chips(c, l)}</header>'
+            f'{top}'
             f'<div class="fx-cmp__grid fx-cmp__grid--{esc(state)}">'
             f'<div class="fx-cmp__paper"><p class="fx-cmp__side">{esc(W("compare.paper_side"))}</p>{paper}</div>'
             f'{join}'
@@ -1732,10 +1761,16 @@ def comparison_html(c: Ctx) -> str:
     if supporting:
         intro += " " + sayc("scope_context.supporting-or-different")
     idx = lean_index(c) if n > 1 else ""
-    cmps = "".join(comparison_one(c, l, first=(i == 0)) for i, l in enumerate(c.leans))
+    head_out: list = [] if n == 1 else None
+    cmps = "".join(comparison_one(c, l, first=(i == 0), head_out=head_out) for i, l in enumerate(c.leans))
+    shead = (f'<h2 class="fx-h2" id="compare-h">{esc(heading)}</h2><p class="fx-ans">{esc(intro)}</p>'
+             f'<p class="fx-how">{S.ctext(W("compare.comparator_once"))}</p>')
+    # One Lean statement: the answer on the left, the statement's name and the groups'
+    # runs of it on the right, so neither runs the width with an empty half.
+    shead = (f'<div class="fx-shead fx-shead--split"><div class="fx-shead__text">{shead}</div>{head_out[0]}</div>' if head_out
+             else f'<div class="fx-shead">{shead}</div>')
     return (f'<section class="fx-sec" id="compare" aria-labelledby="compare-h" data-cmp-host>{alias}'
-            f'<div class="fx-shead"><h2 class="fx-h2" id="compare-h">{esc(heading)}</h2><p class="fx-ans">{esc(intro)}</p>'
-            f'<p class="fx-how">{S.ctext(W("compare.comparator_once"))}</p></div>'
+            f'{shead}'
             f'{idx}<div class="fx-cmps">{cmps}</div>{source_notes_html(c)}{formulations_html(c)}</section>')
 
 
@@ -1754,10 +1789,11 @@ def source_notes_html(c: Ctx) -> str:
         if key in seen:
             continue
         seen.add(key)
-        links = " · ".join(f'<a class="ext" href="{esc(x["url"])}" rel="noopener">{esc(x["label"])}</a>'
-                           for x in note.get("links") or [])
-        notes.append(f'<p class="fx-prose"><strong>{esc(W("checks.atlas_source_note", date=note.get("inspected") or ""))}.</strong> '
-                     f'{code_spans(note["text"])}</p>' + (f'<p class="fx-prose">{links}</p>' if links else ""))
+        links = "".join(f'<li><a class="ext" href="{esc(x["url"])}" rel="noopener">{esc(x["label"])}</a></li>'
+                        for x in note.get("links") or [])
+        # The note at a reading measure, its sources listed beside it.
+        notes.append(f'<div class="fx-srcnote"><p class="fx-prose"><strong>{esc(W("checks.atlas_source_note", date=note.get("inspected") or ""))}.</strong> '
+                     f'{code_spans(note["text"])}</p>' + (f'<ul class="fx-plain fx-srcnote__links">{links}</ul>' if links else "") + '</div>')
     if not notes:
         return ""
     return (f'<div class="fx-c fx-forms-wrap" id="h-source-notes"><h3 class="fx-c__h">{esc(W("compare.source_notes_heading"))}</h3>'
@@ -2171,9 +2207,21 @@ def other_checks_html(c: Ctx) -> str:
         links = "".join(f'<li><a class="ext" href="{esc(u.get("url") or "")}" rel="noopener">{esc(u.get("name") or u.get("source") or u.get("url"))}</a></li>' for u in unav)
         items.append(f'<li class="fx-c fx-card"><p class="fx-c__kind">{esc(W("checks.unavailable_heading"))}</p><ul class="fx-plain">{links}</ul></li>')
     intro = checks_intro(c, cards) if cards else W("reruns.others_intro")
+    cls = f'fx-cards {flow_class(len(items))}'
+    # Three records where one is much longer than the others: the long one takes the left
+    # column and the two short ones stack beside it, rather than standing in one row with
+    # two holes under the short ones.
+    if len(items) == 3:
+        sizes = [len(re.sub(r"<[^>]+>", "", x)) for x in items]
+        big = max(range(3), key=lambda i: sizes[i])
+        rest = sorted(sizes[i] for i in range(3) if i != big)
+        if sizes[big] > 1.6 * rest[-1] and sizes[big] > 0.8 * sum(rest):
+            items = [items[big]] + [items[i] for i in range(3) if i != big]
+            items[0] = items[0].replace('class="fx-c ', 'class="fx-c fx-card--lead ', 1)
+            cls += " fx-cards--lead"
     return (f'<span class="fx-alias" id="h-hol"></span><span class="fx-alias" id="h-finite"></span><span class="fx-alias" id="h-reported"></span>'
             f'<h3 class="fx-h3" id="other-checks">{esc(W("checks.heading"))}</h3><p class="fx-how">{esc(intro)}</p>'
-            f'<ul class="fx-cards {flow_class(len(items))}">{"".join(items)}</ul>')
+            f'<ul class="{cls}">{"".join(items)}</ul>')
 
 
 def checked_html(c: Ctx) -> str:
@@ -2353,11 +2401,18 @@ def connections_html(c: Ctx) -> str:
         # Follow-up work is one more card of the same grid, its items as rows inside it.
         rows_ = "".join(find_card(c, x).replace('<li class="fx-c fx-find">', '<li class="fx-find fx-find--row">', 1)
                         for x in sorted(fol, key=lambda x: x.get("date") or "", reverse=True))
-        fol_html = f'<div class="fx-c fx-followups" id="h-followups"><h3 class="fx-c__h">{esc(W("followups.heading"))}</h3><ul class="fx-finds">{rows_}</ul></div>'
+        # Three or more read in two columns of their own on a wide screen, each at a reading measure.
+        cols = " fx-finds--cols" if len(fol) >= 3 else ""
+        fol_html = f'<div class="fx-c fx-followups" id="h-followups"><h3 class="fx-c__h">{esc(W("followups.heading"))}</h3><ul class="fx-finds{cols}">{rows_}</ul></div>'
     # Follow-up work is the principal reading; the citation and reference routes stack in a
-    # narrower companion column beside it, each at its natural height.
-    grid = (f'<div class="fx-cites2">{fol_html}<div class="fx-cites2__side">{"".join(cards)}</div></div>' if fol_html
-            else f'<div class="fx-grid fx-grid--wide fx-grid--cites">{"".join(cards)}</div>')
+    # narrower companion column beside it, each at its natural height, with the line on
+    # citations inside the release at their head rather than across the page.
+    if fol_html:
+        side = (none_line.replace('class="fx-none"', 'class="fx-none fx-cites2__none"', 1) if none_line else "") + "".join(cards)
+        none_line = ""
+        grid = f'<div class="fx-cites2{" fx-cites2--wide" if cols else ""}">{fol_html}<div class="fx-cites2__side">{side}</div></div>'
+    else:
+        grid = f'<div class="fx-grid fx-grid--wide fx-grid--cites">{"".join(cards)}</div>'
     return (f'<section class="fx-sec" id="cites" aria-labelledby="cites-h"><span class="fx-alias" id="h-cites"></span>'
             f'<div class="fx-shead"><h2 class="fx-h2" id="cites-h">{esc(W("cites.heading"))}</h2><p class="fx-ans">{esc(W("cites.ans"))}</p><p class="fx-how">{esc(S.C("family.citations_intro"))}</p></div>'
             f'{none_line}{grid}</section>')
