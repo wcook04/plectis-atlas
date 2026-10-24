@@ -642,9 +642,14 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-bd__pair--unavailable .fx-bd__lean, .fx-bd__pair--nolean .fx-bd__lean { border-top: 1px solid var(--rule-strong); }
 @media (min-width: 1000px) {
   .fx-bd__pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr auto; grid-template-areas: "paper lean" "extra lean" "foot foot"; }
-  /* With no Lean the paper takes the whole sheet. */
-  .fx-bd__pair--nolean { grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "extra" "foot"; }
-  .fx-bd__pair--nolean .fx-bd__paper { max-width: 60rem; }
+  /* With no Lean the paper takes the wider column and the description, papers and facts
+     the other, so no part of the sheet stands empty (Will, 24 October 2026: "I hate the
+     empty space"). */
+  .fx-bd__pair--nolean { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); grid-template-rows: auto 1fr; grid-template-areas: "paper lean" "extra lean"; }
+  /* The right half (the Lean, capped at fourteen lines, or the no-Lean column) travels beside
+     a long theorem as the page scrolls, under the tab bar. The paper never sticks: a theorem
+     taller than the window must scroll to be read. */
+  .fx-bd__lean > .fx-bd__in { position: sticky; top: 60px; }
   .fx-bd__lean { border-top: 0; border-left: 1px dashed color-mix(in oklab, var(--steel) 55%, var(--rule-strong)); }
   .fx-bd__pair--producer-cited-association .fx-bd__lean,
   .fx-bd__pair--producer-declared-binding .fx-bd__lean { border-left-style: solid; }
@@ -739,3 +744,17 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-bd__groups .fx-quote { margin: 4px 0 0; max-width: 72ch; }
 .fx-bd__groups .fx-quote__q p { font-size: 1.0625rem; line-height: 1.55; }
 .fx-bd__agree { margin: 12px 0 14px; font-size: var(--fs-body); line-height: 1.5; color: var(--ink); }
+/* No-Lean side column: the status, OpenAI's description, the papers and facts. */
+.fx-bd__lean--none .fx-bd__none { font-size: var(--fs-small); }
+.fx-bd__sidedesc { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.fx-bd__sidedesc .fx-quote { max-width: none; }
+.fx-bd__sidedesc .fx-quote__q p { font-size: 1rem; line-height: 1.55; }
+.fx-bd__lean--none .fx-brief { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.fx-bd__lean--none .fx-fact { margin: 10px 0 0; font-size: var(--fs-small); color: var(--ink-soft); max-width: none; }
+.fx-bd__pair--nolean .fx-bd__extra { margin-bottom: 20px; }
+/* The groups' words beside the description they compared the Lean with. */
+.fx-bd__ghead { display: grid; gap: 12px 40px; margin-bottom: 18px; }
+@media (min-width: 1000px) { .fx-bd__ghead { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); align-items: start; } }
+.fx-bd__ghead .fx-bd__lead, .fx-bd__ghead .fx-bd__agree { max-width: none; }
+.fx-bd__ghead .fx-bd__agree { margin-bottom: 0; }
+.fx-bd__gdesc .fx-quote { margin: 4px 0 0; max-width: none; }

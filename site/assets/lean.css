@@ -421,3 +421,6 @@
   .lxb-join { padding: 10px 16px 12px; }
   .lxb-vd { padding: 14px 16px 12px; }
 }
+/* The claim line above already names the statement ("Theorem 1.1 of …"): a heading that
+   only repeats its kind is dropped; one that carries the paper's title for it stays. */
+.page--lean .lxb-paper .stmt__head:has(> .stmt__kind:only-child) { display: none; }

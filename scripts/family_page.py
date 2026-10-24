@@ -752,6 +752,10 @@ def head_html(c: Ctx) -> str:
         bq = ""
     elif c.readings:
         groups_desc, bq = quote, ""
+    if not c.leans:
+        # No Lean: the description, papers and facts fill the sheet's second column.
+        pair = pair.replace("\x03", (f'<div class="fx-bd__sidedesc">{quote}</div>' if bq else "") + papers + facts)
+        bq = papers = facts = ""
     groups = groups_board(c, desc=groups_desc) if (c.leans or c.readings) else ""
     back = (f'<div class="fx-bd__back"><div class="fx-bd__desc">{bq}{facts}</div>'
             + (f'<div class="fx-bd__papers">{papers}</div>' if papers else "") + '</div>') if (bq or facts or papers) else ""
@@ -1044,9 +1048,13 @@ def board_pair(c: Ctx) -> tuple:
         extra_html = f'<div class="fx-bd__extra">{extra_html}</div>'
     paper_h = f'<h2 class="fx-bd__side fx-bd__side--paper" id="ov-paper-h">{esc(W("board.paper_h") if shown else W("board.paper_h_desc"))}</h2>'
     if not l:
-        foot = f'<div class="fx-bd__foot2"><p class="fx-bd__join">{S.ctext(W("board.nolean"))}</p></div>'
+        # No Lean: the sheet's second column says so and holds the papers and facts (\x03),
+        # travelling beside a long theorem so no part of the sheet stands empty.
+        side = (f'<div class="fx-bd__lean fx-bd__lean--none"><div class="fx-bd__in">'
+                f'<h2 class="fx-bd__side fx-bd__side--lean">{S.ctext(W("board.lean_none_h"))}</h2>'
+                f'<p class="fx-bd__none">{S.ctext(W("board.nolean"))}</p>\x03</div></div>')
         return (f'<section class="fx-bd__pair fx-bd__pair--nolean" aria-labelledby="ov-paper-h">'
-                f'<div class="fx-bd__paper">{paper_h}{paper}</div>{extra_html}{foot}</section>'), shown
+                f'<div class="fx-bd__paper"><div class="fx-bd__in">{paper_h}{paper}</div></div>{side}{extra_html}</section>'), shown
     name = l["id"][2:]
     s = S.ST.get(name)
     code = ""
@@ -1064,11 +1072,11 @@ def board_pair(c: Ctx) -> tuple:
         n_more = len(c.leans) - 1
         others = (f'<p class="fx-bd__more">' + esc(W("board.more_one" if n_more == 1 else "board.more_many", n=S.say(n_more), which="\x00")).replace("\x00", links)
                   + (f' {esc(W("brief.more", n=S.say(n_more - 5)))}' if n_more > 5 else "") + '</p>')
-    lean = (f'<div class="fx-bd__lean"><h2 class="fx-bd__side fx-bd__side--lean">{S.ctext(W("board.lean_h"))}</h2>'
+    lean = (f'<div class="fx-bd__lean"><div class="fx-bd__in"><h2 class="fx-bd__side fx-bd__side--lean">{S.ctext(W("board.lean_h"))}</h2>'
             f'<h3 class="fx-bd__lname"><a href="{c.root}statements/{esc(name)}.html">{t_html or f"<code translate=\"no\">{esc(name)}</code>"}</a></h3>'
             + (f'<p class="fx-bd__lid"><code translate="no">{S.lean_breaks(">" + esc(name))[1:]}</code></p>' if t_html else "")
             + f'{code}<p class="fx-bd__go"><a href="{c.root}statements/{esc(name)}.html">{esc(W("compare.lean_open"))}</a>'
-            f' <a href="#lean-{esc(name)}">{esc(W("board.compare_tab"))}</a></p>{others}</div>')
+            f' <a href="#lean-{esc(name)}">{esc(W("board.compare_tab"))}</a></p>{others}</div></div>')
     state = rec["state"] if rec.get("target") else "unavailable"
     why = ""
     if rec.get("target") and state == "candidate-pairing" and rec.get("shared"):
@@ -1076,7 +1084,7 @@ def board_pair(c: Ctx) -> tuple:
     join = f'<p class="fx-bd__join fx-bd__join--{esc(state)}">{esc(W("board.join." + state))}{why}</p>'
     foot = f'<div class="fx-bd__foot2">{join}{board_verdicts(c)}</div>'
     return (f'<section class="fx-bd__pair fx-bd__pair--{esc(state)}" aria-labelledby="ov-paper-h">'
-            f'<div class="fx-bd__paper">{paper_h}{paper}</div>{lean}{extra_html}{foot}</section>'), shown
+            f'<div class="fx-bd__paper"><div class="fx-bd__in">{paper_h}{paper}</div></div>{lean}{extra_html}{foot}</section>'), shown
 
 
 def groups_board(c: Ctx, desc: str = "") -> str:
@@ -1096,9 +1104,12 @@ def groups_board(c: Ctx, desc: str = "") -> str:
     k = len(c.readings)
     lead = f'<p class="fx-bd__lead">{esc(W("board.compared_here" if desc else "board.compared_above"))}</p>' if k else ""
     agree = f'<p class="fx-bd__agree">{esc(ev.agreement_sentence())}</p>' if k else ""
-    return (f'<section class="fx-glance fx-bd__groups" aria-labelledby="glance-h">'
-            f'<h2 class="fx-bd__h" id="glance-h">{esc(W("board.groups_h"))}</h2>'
-            f'{lead}{desc if k else ""}{agree}'
+    head = f'<h2 class="fx-bd__h" id="glance-h">{esc(W("board.groups_h"))}</h2>{lead}{agree}'
+    if desc and k:
+        # The section's words beside the description they refer to, so neither runs the
+        # full width with an empty half.
+        head = f'<div class="fx-bd__ghead"><div class="fx-bd__gtext">{head}</div><div class="fx-bd__gdesc">{desc}</div></div>'
+    return (f'<section class="fx-glance fx-bd__groups" aria-labelledby="glance-h">{head}'
             f'<div class="fx-vds">{"".join(cards)}</div>{glance_left(c, board=True)}</section>')
 
 

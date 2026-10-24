@@ -510,6 +510,7 @@
   "paper_h": "The paper states",
   "paper_h_desc": "What is claimed, in OpenAI’s description",
   "lean_h": "OpenAI’s [[lean|Lean]] states",
+  "lean_none_h": "No [[lean|Lean]] statement",
   "extra_nolean": "Also matching OpenAI’s description, with no Lean statement paired",
   "extra": "Also matching OpenAI’s description",
   "nolean": "The release has no [[lean|Lean]] statement for this family, so no group has compared one with the paper or made a Comparator run.",
@@ -535,7 +536,7 @@
    "different": "a different result"
   },
   "groups_h": "What the outside groups say",
-  "compared_here": "They compared the Lean with OpenAI’s description of the result, not with the theorem above:",
+  "compared_here": "They compared the Lean with OpenAI’s description of the result, quoted here, not with the theorem above.",
   "compared_above": "They compared the Lean with OpenAI’s description of the result, shown above.",
   "run_k": "OpenAI’s proof of the Lean statement, run through [[comparator|Comparator]]",
   "desc_h": "OpenAI’s description",
