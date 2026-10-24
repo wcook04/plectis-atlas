@@ -83,6 +83,51 @@
     fromHash(true);
   }
 
+  /* ---- The shorter column travels --------------------------------------------
+     Where two columns stand side by side and one ends far short of the other, the
+     shorter travels beside the longer as the page scrolls, just under the tab bar, so
+     neither leaves a dead gap. Only a column that fits the window travels: a theorem
+     taller than the window scrolls to be read. Measured again whenever a column's size
+     changes (a tab opens, mathematics is typeset, the window is resized). */
+  var TRAVEL = [
+    ['#p-result', ':scope > .fx-sec'],
+    ['.fx-cmp__grid', ':scope > .fx-cmp__paper > .fx-st, :scope > .fx-cmp__lean > .fx-lean'],
+    ['.fx-cites2', ':scope > *'],
+    ['.fx-bd__pair--travel', ':scope > .fx-bd__paper > .fx-bd__in, :scope > .fx-bd__lean > .fx-bd__in'],
+  ];
+  var travelBoxes = [];
+  TRAVEL.forEach(function (spec) {
+    Array.prototype.forEach.call(doc.querySelectorAll(spec[0]), function (box) { travelBoxes.push([box, spec[1]]); });
+  });
+  if (travelBoxes.length) {
+    var bar = doc.querySelector('.fx-tabs');
+    var travel = function () {
+      var barH = bar ? bar.getBoundingClientRect().height : 0;
+      doc.documentElement.style.setProperty('--fx-tabs-h', Math.round(barH) + 'px');
+      var room = window.innerHeight - barH - 32;
+      travelBoxes.forEach(function (bx) {
+        var cols = Array.prototype.slice.call(bx[0].querySelectorAll(bx[1]));
+        cols.forEach(function (el) { el.classList.remove('fx-travel'); });
+        cols = cols.filter(function (el) { return el.offsetParent !== null; });
+        if (cols.length !== 2) return;
+        var a = cols[0].getBoundingClientRect(), b = cols[1].getBoundingClientRect();
+        // Side by side only: stacked columns on a narrow screen never travel.
+        if (a.right > b.left + 1 && b.right > a.left + 1) return;
+        var short = a.height < b.height ? cols[0] : cols[1];
+        var h = Math.min(a.height, b.height);
+        if (Math.abs(a.height - b.height) > 120 && h <= room) short.classList.add('fx-travel');
+      });
+    };
+    var queued = false;
+    var later = function () { if (!queued) { queued = true; requestAnimationFrame(function () { queued = false; travel(); }); } };
+    if (window.ResizeObserver) {
+      var ro = new ResizeObserver(later);
+      travelBoxes.forEach(function (bx) { ro.observe(bx[0]); });
+    }
+    window.addEventListener('resize', later);
+    later();
+  }
+
   /* ---- A cited passage, read in place ---------------------------------------
      A number a theorem cites, such as (1.5), links to its place on the paper's
      reading page. Activating it fetches that page once, takes the cited passage

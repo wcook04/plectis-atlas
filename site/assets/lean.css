@@ -185,9 +185,6 @@
 /* The action that opens the paper theorem and the qualification of the pairing it
    follows, as one group: which theorem it opens and that nobody has reviewed the match,
    then the actions (build_site.build_statement). */
-.page--lean .phead__go { margin-top: 16px; }
-.page--lean .phead__pair { margin: 0; max-width: 72ch; font-size: var(--fs-meta); line-height: 1.5; color: var(--ink-soft); text-wrap: pretty; }
-.page--lean .phead__go .actions { margin-top: 10px; }
 .claim--paper .claim__src { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink); margin: 0 0 10px; }
 /* The join: the words between the paper theorem and the Lean statement it is paired
    with. A steel rule runs down from the theorem; dashed for a candidate pairing,
@@ -235,14 +232,12 @@
 .page--lean .lxs-head .phead__sub { margin: 0 0 8px; }
 .page--lean .lxs-head .phead__where { margin: 0 0 8px; }
 .page--lean .lxs-head .intro { margin: 0 0 8px; max-width: 110ch; color: var(--ink-soft); font-size: var(--fs-meta); }
-.page--lean .lxs-head .phead__go { margin-top: 12px; }
-.page--lean .lxs-head .phead__go .actions { margin: 0; }
 .lxs-main { min-width: 0; }
 .lxs-main > .band:first-child { border-top: 0; }
 
 /* the side column */
 .lxs-side { min-width: 0; font-size: var(--fs-small); }
-.lxs-side__h { font-family: var(--sans); font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+.lxs-side__h { font-family: var(--sans); font-size: var(--fs-small); font-weight: 600; color: var(--muted); margin: 0 0 6px; }
 .lxs-toc { display: none; }
 .lxs-toc ol { list-style: none; margin: 0; padding: 0; }
 .lxs-toc li { margin: 0; }
@@ -255,35 +250,9 @@
 .lxs-facts .dl dd { font-size: var(--fs-small); }
 .lxs-facts .dl__note { display: block; color: var(--muted); }
 
-/* at a glance */
-.lxs-glance .h2 { margin-bottom: 10px; }
-.glance__facts { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 0 0 14px; }
-.glance__facts > div { min-width: 0; }
-.glance__facts dt { font-size: var(--fs-small); color: var(--muted); }
-.glance__facts dd { margin: 2px 0 0; font-size: var(--fs-body); }
-.glance__state { display: inline-block; margin-left: 6px; padding: 0 8px; border: 1px dashed var(--steel); border-radius: 999px; font-size: var(--fs-small); color: var(--ink-soft); white-space: nowrap; }
-.glance__state--cited { border-style: solid; }
-.glance__state--unavailable { border-color: var(--rule-strong); }
-.glance__more { margin-left: 8px; font-size: var(--fs-small); white-space: nowrap; }
-.glance__wrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--surface); }
-.glance { width: 100%; border-collapse: collapse; font-size: var(--fs-body); }
-.glance th, .glance td { text-align: left; vertical-align: top; padding: 10px var(--lx-pad); border-top: 1px solid var(--rule); }
-.glance thead th { border-top: 0; font-size: var(--fs-small); font-weight: 600; color: var(--muted); background: var(--sunk); }
-.glance tbody th { font-weight: 700; white-space: nowrap; width: 1%; }
-.glance td { width: 49.5%; }
-.glance__v { font-weight: 600; color: var(--ink); }
-.glance__term { color: var(--ink-soft); }
-.glance__when { color: var(--muted); font-size: var(--fs-small); }
-.glance__rec { font-size: var(--fs-small); white-space: nowrap; }
-.glance__runs { list-style: none; margin: 0; padding: 0; }
-.glance__runs li + li { margin-top: 4px; }
-.glance__note { margin: 10px 0 0; max-width: 100ch; font-size: var(--fs-small); color: var(--muted); }
 
 /* the Lean statement beside the paper statement */
-.lxs-cmp { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 var(--lx-gap-lg); }
-.lxs-cmp > .band { min-width: 0; }
 .lean__tools > .copy { margin: 0 0 6px auto; }
-.lxs-cmp .join, .lxs-cmp .alts, .lxs-cmp .join__words, .lxs-cmp .join__how { max-width: none; }
 
 /* the run reports and the assessments as cards */
 .runs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr)); gap: var(--lx-pad); margin: 12px 0; }
@@ -298,9 +267,6 @@
 .page--lean .band > .note { max-width: 90ch; }
 
 
-@media (min-width: 1100px) {
-  .lxs-cmp { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-}
 @media (min-width: 1280px) {
   .lxs { grid-template-columns: minmax(0, 1fr) var(--lx-side); grid-template-rows: auto 1fr; }
   .lxs-head { grid-column: 1; grid-row: 1; }
@@ -313,16 +279,6 @@
   .lxs-side { margin-top: var(--lx-gap); }
   .lxs-facts { margin-top: 0; }
   .lxs-facts .dl { grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 0 32px; }
-}
-/* phones: the table becomes one card per group */
-@media (max-width: 700px) {
-  .glance, .glance tbody, .glance tr, .glance th, .glance td { display: block; width: auto; }
-  .glance thead { display: none; }
-  .glance tbody tr { padding: 10px var(--lx-pad); border-top: 1px solid var(--rule); }
-  .glance tbody tr:first-child { border-top: 0; }
-  .glance tbody th, .glance td { padding: 0; border: 0; white-space: normal; }
-  .glance td { margin-top: 6px; }
-  .glance td::before { content: attr(data-k); display: block; font-size: var(--fs-small); color: var(--muted); }
 }
 /* what a run establishes: the scope and the configuration's box, side by side */
 .runs-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: var(--lx-pad); align-items: stretch; margin: 0 0 8px; }
@@ -340,23 +296,10 @@
    groups conclude and why, which proof was checked, what is unchecked, where to
    read more. Each section opens with its answer (.answer, .lead-sentence). */
 .page--lean .phead__what { margin: 0 0 8px; max-width: 78ch; color: var(--ink-soft); font-size: var(--fs-body); line-height: 1.5; text-wrap: pretty; }
-.brief { display: grid; grid-template-columns: minmax(10rem, 15rem) minmax(0, 1fr); margin: 0; border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--surface); }
-.brief > div { display: contents; }
-.brief dt, .brief dd { padding: 10px var(--lx-pad); border-top: 1px solid var(--rule); }
-.brief > div:first-child dt, .brief > div:first-child dd { border-top: 0; }
-.brief dt { font-weight: 600; color: var(--ink); background: var(--sunk); font-size: var(--fs-body); }
-.brief dd { margin: 0; font-size: var(--fs-body); color: var(--ink); line-height: 1.5; text-wrap: pretty; max-width: none; }
-@media (max-width: 700px) {
-  .brief { grid-template-columns: minmax(0, 1fr); }
-  .brief dt { padding-bottom: 4px; }
-  .brief dd { border-top: 0; padding-top: 4px; }
-}
-.claim .answer { margin: 0 0 12px; font-family: var(--serif); font-size: var(--fs-lede); line-height: 1.45; color: var(--ink); text-wrap: pretty; }
-.claim--paper .join { margin-top: 14px; }
-.claim--lean .scope { margin: 0 0 12px; }
-.claim--lean .scope__src { margin: 0 0 4px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
-.claim--lean .scope .quote { margin: 0 0 6px; }
-.claim--lean .scope__draft { margin: 0; font-size: var(--fs-small); color: var(--muted); }
+.page--lean .scope { margin: 0 0 12px; }
+.page--lean .scope__src { margin: 0 0 4px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.page--lean .scope .quote { margin: 0 0 6px; }
+.page--lean .scope__draft { margin: 0; font-size: var(--fs-small); color: var(--muted); }
 /* the key to the notation, beside the code it explains */
 .lsym { margin: 14px 0 0; padding: 12px var(--lx-pad); background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); }
 .lsym__h { margin: 0 0 6px; font-weight: 700; font-size: var(--fs-body); color: var(--ink); }
@@ -365,11 +308,6 @@
 .lsym__list code, .lsym__more code { font-family: var(--lean-mono); font-size: 0.95em; color: var(--ink); }
 .lsym__more { margin: 6px 0 0; font-size: var(--fs-small); color: var(--muted); }
 /* the groups' comparison: their reasons in their own words inside each cell */
-.lxs-groups .glance td > p { margin: 0 0 6px; }
-.lxs-groups .glance td > p:last-child { margin-bottom: 0; }
-.glance__rule { color: var(--ink-soft); }
-.glance__why { color: var(--ink-soft); font-size: var(--fs-small); overflow-wrap: anywhere; }
-.glance__k { font-weight: 600; color: var(--ink); }
 .anchor-alias { display: block; height: 0; scroll-margin-top: calc(var(--top-h, 64px) + 16px); }
 /* what is unchecked; the records beside each other */
 .left { margin: 4px 0 12px; padding-left: 1.2em; max-width: 90ch; }
@@ -392,5 +330,116 @@
 @media (min-width: 1600px) {
   .page--lean { --lx-side: 18rem; }
   .page--lean .lean--read { font-size: 0.875rem; }
-  .brief { grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr); }
+}
+
+/* ---- The evidence first (24 October 2026, after Klara Kaleb's feedback) ---------
+   The family page's evidence board, on a Lean statement's own page: one sheet with
+   the paper's exact statement on the left and the Lean text on the right, split by
+   the pairing's thread (dashed for a candidate found from shared wording, solid
+   where the Lean source cites the theorem or the release declares the link, plain
+   where nothing is paired), the pairing's qualification along the sheet's foot.
+   Then one card per outside group, side by side. Detail follows below. The tone
+   inks are the map's (universe.css), as family.css copies them. */
+.page--lean { --u-t-all: #2a5982; --u-t-part: #86a8c6; --u-t-other: #8a77a8; --u-t-none: #978a7c; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .page--lean { --u-t-all: #7fb4e8; --u-t-part: #6c8399; --u-t-other: #a493c6; --u-t-none: #8a8396; }
+}
+:root[data-theme="dark"] .page--lean { --u-t-all: #7fb4e8; --u-t-part: #6c8399; --u-t-other: #a493c6; --u-t-none: #8a8396; }
+
+.page--lean .lxb { padding-top: 8px; }
+.lxb-pair { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "lean" "join";
+  background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-lg); }
+.lxb-paper { grid-area: paper; min-width: 0; padding: 18px 24px 14px; }
+.lxb-lean { grid-area: lean; min-width: 0; padding: 18px 24px 14px; border-top: 1px dashed color-mix(in oklab, var(--steel) 55%, var(--rule-strong)); }
+.lxb-pair--cited .lxb-lean { border-top-style: solid; }
+.lxb-pair--none .lxb-lean { border-top: 1px solid var(--rule-strong); }
+@media (min-width: 1000px) {
+  .lxb-pair { grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); grid-template-areas: "paper lean" "join join"; }
+  .lxb-lean { border-top: 0; border-left: 1px dashed color-mix(in oklab, var(--steel) 55%, var(--rule-strong)); }
+  .lxb-pair--cited .lxb-lean { border-left-style: solid; }
+  .lxb-pair--none .lxb-lean { border-top: 0; border-left: 1px solid var(--rule-strong); }
+}
+.page--lean .lxb-side { margin: 0 0 10px; font: 600 var(--fs-meta)/1.3 var(--sans); color: var(--muted); letter-spacing: 0; }
+.page--lean .lxb-side--paper { color: var(--brick-text); }
+.page--lean .lxb-side--lean, .page--lean .lxb-side--lean a { color: var(--steel-text); }
+.lxb-paper .claim__src { margin: 0 0 8px; font-family: var(--serif); font-size: 1.0625rem; color: var(--ink); }
+.lxb-paper .stmt { max-width: none; margin: 0; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; }
+.lxb-paper .stmt__body { font-size: 1.125rem; line-height: 1.58; }
+.lxb-paper .stmt__foot { margin-top: 10px; padding-top: 0; border-top: 0; }
+.lxb-paper .pair__target + .pair__target { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--rule-strong); }
+.lxb-none { margin: 0 0 10px; font-size: var(--fs-body); line-height: 1.5; color: var(--ink-soft); }
+.lxb-xh { margin: 12px 0 4px; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.lxb-paper .alts { max-width: none; }
+.page--lean .lxb-lean .lean__tools { position: relative; }
+.page--lean .lxb-lean .lean__tools > .copy { position: absolute; top: -40px; right: 0; margin: 0; }
+.page--lean .lxb-code { margin: 0; padding: 12px 0; max-height: min(70vh, 44rem); overflow: auto; background: var(--code-bg); border-radius: var(--r-md); }
+.lxb-note { margin: 10px 0 0; max-width: none; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
+.lxb-note code { font-family: var(--lean-mono); }
+.lxb-join { grid-area: join; margin: 0; padding: 10px 24px 12px; border-top: 1px solid var(--rule); font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); max-width: none; }
+.lxb-jh { font-weight: 600; color: var(--ink); }
+.lxb-join a { margin-left: 4px; white-space: nowrap; }
+
+/* What each group found: cards of equal standing, side by side. */
+.page--lean .lxb-groups { padding-top: 28px; }
+.page--lean .lxb-h { margin: 0 0 4px; font-family: var(--serif); font-weight: 500; font-size: 1.375rem; line-height: 1.25; }
+.lxb-lead { margin: 0 0 14px; max-width: 90ch; font-size: var(--fs-body); line-height: 1.5; color: var(--ink-soft); }
+.lxb-vds { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); align-items: stretch; }
+.lxb-vd { display: flex; flex-direction: column; min-width: 0; padding: 16px 20px 14px; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-lg); }
+.lxb-vd p { margin: 0; max-width: none; }
+.lxb-vd__hd { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; margin-bottom: 8px; }
+.lxb-vd__who { margin: 0; font: 600 1.0625rem/1.3 var(--sans); color: var(--ink); }
+.lxb-vd__who a { color: inherit; }
+.lxb-vt { display: inline-block; padding: 0 8px; border: 1px solid var(--rule-strong); border-radius: 999px; font-size: var(--fs-small); font-weight: 600; color: var(--ink-soft); }
+.lxb-vd__term .lxb-vt[title] { cursor: help; }
+.lxb-vd__out { font-size: var(--fs-body); font-weight: 600; line-height: 1.45; color: var(--ink); }
+.lxb-dot { display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; vertical-align: 0.04em; background: var(--u-t-none); }
+.lxb-dot--all { background: var(--u-t-all); } .lxb-dot--part { background: var(--u-t-part); } .lxb-dot--other { background: var(--u-t-other); }
+.lxb-vd__why { margin: 10px 0 0; padding: 0 0 0 14px; border-left: 2px solid var(--rule-strong); }
+.lxb-vd__why p { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; color: var(--ink-soft); }
+.lxb-vd__why--none { margin-top: 8px !important; padding: 0; border: 0; font-size: var(--fs-small); color: var(--muted); }
+.lxb-vd__go { margin-left: 4px; font-family: var(--sans); font-size: var(--fs-small); white-space: nowrap; }
+.lxb-vd__defs { margin-top: 8px !important; font-size: var(--fs-small); color: var(--ink-soft); }
+.lxb-vd__defs span { font-weight: 600; color: var(--ink); }
+.lxb-vd__none, .lxb-run__none { font-size: var(--fs-small); color: var(--muted); }
+.lxb-vd__run { margin-top: auto; padding-top: 12px; }
+.lxb-vd__run::before { content: ""; display: block; margin: 0 0 10px; border-top: 1px solid var(--rule); }
+.lxb-vd__rk { margin-bottom: 2px !important; font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.lxb-run__list { list-style: none; margin: 0; padding: 0; }
+.lxb-run__list li + li { margin-top: 8px; }
+.lxb-run__out { font-size: var(--fs-small); font-weight: 600; color: var(--ink); }
+.lxb-run__out--reported-accepted { color: var(--steel-text); }
+.lxb-run__term, .lxb-run__acct { margin-top: 2px !important; font-size: var(--fs-small); line-height: 1.45; color: var(--muted); }
+.lxb-run__term .lxb-vt { padding: 0 6px; color: var(--ink); }
+.lxb-run__term a { margin-left: 4px; }
+.lxb-vd code { font-family: var(--lean-mono); font-size: 0.92em; }
+.lxb-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 32px; margin-top: 12px; font-size: var(--fs-small); line-height: 1.5; color: var(--muted); }
+.lxb-foot p { margin: 0; max-width: 92ch; }
+.page--lean .lxb-notes .scope .quote { max-width: 70ch; }
+.page--lean .lxb-how .join__how { max-width: 90ch; }
+@media (max-width: 640px) {
+  .lxb-paper, .lxb-lean { padding: 14px 16px 12px; }
+  .lxb-join { padding: 10px 16px 12px; }
+  .lxb-vd { padding: 14px 16px 12px; }
+}
+/* The claim line above already names the statement ("Theorem 1.1 of …"): a heading that
+   only repeats its kind is dropped; one that carries the paper's title for it stays. */
+.page--lean .lxb-paper .stmt__head:has(> .stmt__kind:only-child) { display: none; }
+
+/* ---- Space (24 October 2026) -----------------------------------------------
+   Will: "I hate it when we don't use up the space." Where a section's text keeps a
+   reading measure, its other real content stands beside it. DESIGN.md "## Space". */
+.lxb-notes__cols, .lxb-how__cols { display: grid; gap: 14px var(--lx-gap-lg); }
+@media (min-width: 1000px) {
+  .lxb-notes__cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  .lxb-notes__cols .lsym { margin-top: 0; }
+  .lxb-how__cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+  .lxb-how__b > .h3:first-child { margin-top: 0; }
+  .page--lean .lxb-how__cols .join__how, .page--lean .lxb-how__cols .alts { max-width: none; }
+}
+/* What is still unchecked: the list, and the questions to resolve beside it. */
+@media (min-width: 1000px) {
+  .page--lean .explain-box:has(> .left):has(> .note):not(:has(> .note ~ .note)) { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); column-gap: var(--lx-gap-lg); align-items: start; }
+  .page--lean .explain-box:has(> .left):has(> .note):not(:has(> .note ~ .note)) > * { grid-column: 1 / -1; }
+  .page--lean .explain-box:has(> .left):has(> .note):not(:has(> .note ~ .note)) > .left { grid-column: 1; grid-row: 3; }
+  .page--lean .explain-box:has(> .left):has(> .note):not(:has(> .note ~ .note)) > .note { grid-column: 2; grid-row: 3; margin-top: 4px; }
 }

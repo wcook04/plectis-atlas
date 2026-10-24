@@ -148,11 +148,20 @@ main.u-main { padding: 0; max-width: none; }
 .u-ground__ind { display: block; margin-top: 2px; font-size: var(--fs-small); color: var(--muted); }
 .u-ground[hidden] { display: none; }
 /* Two small first actions under the purpose line: the guide and the worked example. */
-.u-starts { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.u-starts { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 6px; }
 .u-starts[hidden] { display: none; }
 .u-gbtn { display: inline-flex; align-items: center; min-height: 28px; padding: 3px 10px; border: 1px solid var(--rule-control); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); font: 500 var(--fs-small)/1.3 var(--sans); text-decoration: none; }
 .u-gbtn:hover { border-color: var(--rule-strong); color: var(--ink); }
 .u-gbtn:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 1px; }
+/* The videos, offered quietly (Will, 24 October 2026): one plain line under the guide
+   button, the walkthrough first, the wider project's video smaller and fainter. */
+.u-videos { margin: 0 0 12px; font: 400 var(--fs-small)/1.45 var(--sans); color: var(--muted); text-wrap: pretty; }
+.u-videos[hidden] { display: none; }
+.u-videos a { text-underline-offset: 3px; }
+.u-videos a:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; border-radius: 2px; }
+.u-videos__atlas { color: var(--ink-soft); font-weight: 500; }
+.u-videos__more { font-size: var(--fs-micro); }
+.u-videos__map { color: var(--muted); }
 .u-nobr { display: inline-block; } /* whole where it fits, wrapping inside itself where its line is narrower */
 .u-band__note { font: 400 var(--fs-body)/1.6 var(--sans); color: var(--ink-soft); margin: 14px 0 0; max-width: 66ch; }
 .u-band__note a { color: var(--steel-text); font-weight: 600; }
@@ -585,9 +594,14 @@ a.u-key__n { color: var(--steel-text); text-decoration: underline; text-underlin
 .u-example { margin: 14px 0 6px; padding: 12px 14px 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); }
 .u-example__h { display: flex; align-items: baseline; gap: 7px; margin: 0 0 6px; text-wrap: balance; }
 .u-example__h .u-dot { flex: none; transform: translateY(-0.05em); }
-.u-example__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
-.u-example__steps li { font: 400 var(--fs-small)/1.5 var(--sans); color: var(--ink-soft); text-wrap: pretty; }
-.u-example__q { display: block; font-weight: 600; color: var(--ink); }
+/* The example as the evidence in miniature: a label column and what each source says. */
+.u-ex { display: grid; gap: 0; margin: 2px 0 0; }
+.u-ex__row { display: grid; grid-template-columns: 6.6rem minmax(0, 1fr); gap: 0 10px; padding: 7px 0; border-top: 1px solid var(--rule); }
+.u-ex__row:first-child { border-top: 0; padding-top: 2px; }
+.u-ex dt { font: 600 var(--fs-small)/1.45 var(--sans); color: var(--muted); }
+.u-ex dd { margin: 0; font: 400 var(--fs-small)/1.45 var(--sans); color: var(--ink-soft); text-wrap: pretty; min-width: 0; }
+.u-ex__m { font-family: var(--serif); font-size: 1.0625rem; color: var(--ink); white-space: nowrap; }
+.u-ex dd var { font-family: var(--serif); }
 .u-ex__code { font-size: 0.95em; color: var(--ink); }
 .u-example__go { display: flex; flex-direction: column; gap: 1px; margin-top: 10px; padding: 8px 12px 9px; border-radius: var(--r-sm); background: var(--ink); color: var(--on-ink); text-decoration: none; }
 .u-example__open { font: 600 var(--fs-meta)/1.3 var(--sans); }
@@ -608,3 +622,19 @@ a.u-key__n { color: var(--steel-text); text-decoration: underline; text-underlin
 .u-tbar__s--other { background: var(--u-t-other); } .u-tbar__s--split { background: var(--u-t-split); }
 .u-tbar__s--none, .u-tbar__s--unread { background: var(--u-struct-soft); }
 .u-since { margin-top: 18px; }
+
+/* A family's entry, opened by pointing at its circle or focusing its row: the evidence
+   in miniature, labelled rows as in the front page's example (Klara Kaleb, 24 October 2026). */
+.u-mini { display: grid; margin: 7px 0 0 18px; }
+.u-mini__r { display: grid; grid-template-columns: 6.6rem minmax(0, 1fr); gap: 0 10px; padding: 5px 0; border-top: 1px solid var(--rule); }
+.u-mini__r:first-child { border-top: 0; padding-top: 0; }
+.u-mini__k { font: 600 var(--fs-small)/1.45 var(--sans); color: var(--muted); }
+.u-mini__v { font: 400 var(--fs-small)/1.45 var(--sans); color: var(--ink-soft); text-wrap: pretty; min-width: 0; overflow-wrap: anywhere; }
+.u-mini__r:first-child .u-mini__v { font: 400 var(--fs-meta)/1.5 var(--serif); color: var(--ink); }
+.u-mini__code { font-size: 0.95em; color: var(--ink); }
+.u-mini__go { display: inline-block; margin: 8px 0 0 18px; font: 600 var(--fs-small)/1.3 var(--sans); color: var(--ink); text-decoration: underline; text-decoration-color: color-mix(in oklab, currentColor 40%, transparent); text-underline-offset: 3px; }
+.u-mini__go::after { content: "\00a0\2192"; }
+.u-mini-card { margin: 10px 0 14px; padding: 10px 12px 12px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); }
+.u-mini-card .u-mini { margin-left: 0; }
+.u-mini-card .u-doors { margin: 10px 0 0; }
+@media (max-width: 420px) { .u-mini__r { grid-template-columns: 1fr; } .u-mini__k { margin-bottom: 1px; } }

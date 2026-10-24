@@ -459,7 +459,7 @@
   "said": "What others wrote",
   "contribute": "How to help",
   "none": "(none in the release)",
-  "overview": "Overview"
+  "overview": "Evidence"
  },
  "brief": {
   "_note": "Under the claim: the family's current papers and selected Lean statements, each linked.",
@@ -504,5 +504,42 @@
   "proof_some": "Groups report that Comparator accepted OpenAI’s proofs of {k} of the {n} Lean statements: {which}.",
   "found": "What did the outside groups find?",
   "left_pairing": "Paper–Lean match: no review recorded"
+ },
+ "board": {
+  "_note": "The family page's first screen (Klara Kaleb's reading, 23 October 2026): the paper's exact statement beside the Lean OpenAI wrote, then each outside group's assessment in its own words; OpenAI's description and the papers follow.",
+  "paper_h": "The paper states",
+  "paper_h_desc": "What is claimed, in OpenAI’s description",
+  "lean_h": "OpenAI’s [[lean|Lean]] states",
+  "lean_none_h": "No [[lean|Lean]] statement",
+  "extra_nolean": "Also matching OpenAI’s description, with no Lean statement paired",
+  "extra": "Also matching OpenAI’s description",
+  "nolean": "The release has no [[lean|Lean]] statement for this family, so no group has compared one with the paper or made a Comparator run.",
+  "sorry": "<code>sorry</code> marks the proof, which OpenAI supplies in a separate file.",
+  "compare_tab": "Compare in detail",
+  "more_one": "OpenAI selected one more Lean statement for this family: {which}.",
+  "more_many": "OpenAI selected {n} more Lean statements for this family: {which}.",
+  "join": {
+   "_note": "The sheet's foot: how the paper statement and the Lean came to stand side by side, said once. The groups compared the Lean with OpenAI's description, so this never implies they reviewed the pairing.",
+   "candidate-pairing": "Atlas put these side by side because they share wording; nobody has reviewed whether they say the same thing.",
+   "producer-cited-association": "The Lean source cites this theorem; nobody has reviewed whether they say the same thing.",
+   "producer-declared-binding": "OpenAI links these statements; nobody has reviewed whether they say the same thing.",
+   "unavailable": "No paper theorem is paired with this Lean statement."
+  },
+  "verdicts_h": "The outside groups, below:",
+  "finds": "{who} finds {what}",
+  "short": {
+   "all": "the whole result stated",
+   "part": "part of the result stated",
+   "narrower": "a narrower statement",
+   "weaker": "a weaker statement",
+   "supporting": "a supporting result",
+   "different": "a different result"
+  },
+  "groups_h": "What the outside groups say",
+  "compared_here": "They compared the Lean with OpenAI’s description of the result, quoted here, not with the theorem above.",
+  "compared_above": "They compared the Lean with OpenAI’s description of the result, shown above.",
+  "run_k": "OpenAI’s proof of the Lean statement, run through [[comparator|Comparator]]",
+  "desc_h": "OpenAI’s description",
+  "desc_credit": "From {link}:"
  }
 }

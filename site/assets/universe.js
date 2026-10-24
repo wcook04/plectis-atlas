@@ -1498,14 +1498,42 @@
       var size = count('papers', f.papers.length) + (f.lean.length ? ', ' + count('lean', f.lean.length) : '');
       return T('rowline.size', { num: f.num, counts: size }) + ' ' + T('rowline.' + (f.tone || 'none'));
     }
+    // A copy template escaped, then filled with markup the caller has already escaped.
+    function Th(path, vars) { return fill(escapeHtml(T(path)), vars); }
+    function andWords(list) {
+      return list.length < 2 ? list.join('') : list.slice(0, -1).join(', ') + ' ' + T('mini.and') + ' ' + list[list.length - 1];
+    }
+    // The evidence in miniature, read the way the front page's example reads: the
+    // catalogue's first sentence, the Lean statement the family page shows first, each
+    // group's own label in its own words, and who reports Comparator accepted the proof.
+    // Inside a list entry (itself the link) the action is the entry's last line.
+    function miniHtml(f, det, door_) {
+      var b = det.board || {}, rows = [];
+      var row = function (k, v) {
+        rows.push('<span class="u-mini__r"><span class="u-mini__k">' + escapeHtml(T('mini.' + k)) + '</span><span class="u-mini__v">' + v + '</span></span>');
+      };
+      if (det.first) row('claim', '<span class="tex-auto">' + det.first + '</span>');
+      if (!b.lean) row('lean', escapeHtml(T('mini.lean_none')));
+      else {
+        var code = '<code class="u-mini__code">' + escapeHtml(b.lean) + '</code>';
+        row('lean', b.more ? Th(b.more === 1 ? 'mini.lean_more_one' : 'mini.lean_more', { lean: code, n: b.more }) : code);
+        var groups = b.groups || [], acc = b.acc || [];
+        row('groups', groups.length ? groups.map(function (g) {
+          return escapeHtml(g.who) + ': ' + (g.term ? '\u201c' + escapeHtml(g.term) + '\u201d' : escapeHtml(T('mini.term_none'))) + '.';
+        }).join(' ') : escapeHtml(T('mini.groups_none')));
+        var both = acc.length === 2 && groups.length === 2 && groups.every(function (g) { return acc.indexOf(g.who) >= 0; });
+        row('comparator', Th('mini.' + (!acc.length ? 'acc_none' : both ? 'acc_both' : acc.length === 1 ? 'acc_one' : 'acc_many'),
+          { lean: code, names: escapeHtml(andWords(acc)) }));
+      }
+      return '<span class="u-mini">' + rows.join('') + '</span>' +
+        (door_ ? '<p class="u-doors">' + door(f.href, T('mini.open'), true) + '</p>' : '<span class="u-mini__go">' + escapeHtml(T('mini.open')) + '</span>');
+    }
     function entryHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
       return '<li><a class="u-entry" href="' + escapeHtml(f.href) + '" data-go="' + escapeHtml(f.id) + '">' +
         '<span class="u-entry__t">' + dot(f.tone) + '<span class="tex-auto">' + (det ? det.titleHtml : escapeHtml(f.title)) + '</span></span>' +
         '<span class="u-entry__s">' + escapeHtml(statusLine(f)) + '</span>' +
-        (det ? '<span class="u-entry__more">' +
-          (det.first ? '<span class="u-entry__c"><span class="u-role">' + escapeHtml(T('family.catalogue')) + '</span> <span class="tex-auto">' + det.first + '</span></span>' : '') +
-          '<span class="u-entry__e">' + escapeHtml(det.evidence) + '</span></span>' : '') + '</a></li>';
+        (det ? '<span class="u-entry__more">' + miniHtml(f, det, false) + '</span>' : '') + '</a></li>';
     }
     // Leave enough scroll range to bring even the last family to the reading edge.
     // Keep that range when its synopsis closes, so leaving the map does not jump the list.
@@ -1582,7 +1610,6 @@
     function familyEvidence(det, f, inResult) {
       var section = evidenceSection(det);
       var h = sectionHeading(section, section === 'readers' ? (inResult ? 'result.family_readers_heading' : 'family.readers_heading') : 'family.evidence_heading');
-      if (section === 'readers') h += para(T('family.readers_scope'));
       h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(det ? det.evidence : T('key.' + f.tone) + '.') + '</span></p>';
       return h + readersHtml(det);
     }
@@ -1611,13 +1638,8 @@
       h += sectionNav(['papers', 'lean', evidenceSection(det), 'connections'].filter(function (part) { return part !== 'lean' || f.lean.length; }));
       h += para(T('panel.family_counts', { papers: count('papers', f.papers.length), lean: count('lean', f.lean.length) }), 'u-facts');
       h += '<p class="u-tone">' + dot(f.tone) + '<span>' + escapeHtml(T('key.' + f.tone)) + '</span></p>';
-      h += '<figure class="u-cat"><figcaption>' + link(D.catalogue_url, T('family.catalogue')) + ' ' + escapeHtml(T('family.catalogue_says')) + '</figcaption>' +
-        '<blockquote class="tex-auto">' + det.desc + '</blockquote>' +
-        '</figure>';
-      // "Compare the theorem with its Lean" only when a Lean statement is paired with the
-      // candidate theorem; it opens that pairing on the family page.
-      var co = det.candidate ? obj(det.candidate) : null, cr = co && co.kind === 'r' ? D.results[co.i] : null;
-      h += '<p class="u-doors">' + door(f.href, T('family.page_link'), true) + (cr && cr.lean.length ? door(f.href + '#lean-' + D.lean[cr.lean[0]].name, T('family.compare_link')) : '') + '</p>';
+      // The evidence in miniature, then one action: the family page opens on its Evidence tab.
+      h += '<div class="u-mini-card">' + miniHtml(f, det, true) + '</div>';
       h += sectionHeading('papers', 'family.papers_heading') + '<ol class="u-papers">';
       f.papers.forEach(function (pi, n) {
         var p = D.papers[pi];
@@ -1629,7 +1651,6 @@
       h += '</ol>';
       if (f.lean.length) h += sectionHeading('lean', 'family.lean_list_heading') + '<ul class="u-subrows u-subrows--lean">' + f.lean.map(leanRow).join('') + '</ul>';
       h += familyEvidence(det, f, false);
-      h += para(T(det.headline === 'candidate' ? 'family.headline_candidate' : 'family.headline_unresolved'));
       var more = [];
       if (det.checks) more.push(det.checks);
       if (det.editions) more.push(plural(det.editions, 'family.editions_one', 'family.editions'));
@@ -1646,7 +1667,6 @@
           return '<li>' + goBtn(g.id, '<span class="u-row__t">' + dot(g.tone) + escapeHtml(g.title) + '</span><span class="u-row__n">' + escapeHtml(count('links', c[1])) + '</span>', 'u-row') + '</li>';
         }).join('') + '</ul>';
       });
-      if (f.cites.length || f.citedBy.length) h += para(T('family.connections_note'));
       return h;
     }
     function paperHtml(pi) {

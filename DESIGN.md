@@ -97,6 +97,12 @@ map for where things are, the list for reading them.
   layout packs below that bar and above the hover line, subject circles start
   at the top of the stage and rows spread down it, and the explorer stands in
   the site frame so the sidebar starts on the header's left edge.
+- **The front door's example is the evidence in miniature** (24 October 2026,
+  Klara Kaleb's feedback). The four question-and-answer paragraphs became four
+  labelled rows: the paper's inequality and corollary as stated, the Lean
+  statement's name, each group's own label with the omission both name, and the
+  Comparator reports; the action reads "See the evidence side by side". The
+  build checks below still stop it if family 017 stops fitting the rows.
 - **The front door teaches by one worked example** (round 2, 19 October 2026).
   Under the search, π's family (017) is taken through the whole route in four
   short sentences: what OpenAI's catalogue says the paper proves; the one Lean
@@ -191,6 +197,45 @@ whole and sit under a heading that says so.
 ## Reading a family
 
 The family page is the beginning of mathematical work, not of an audit.
+
+**The first tab is the evidence itself** (24 October 2026, after Klara Kaleb's
+feedback: the site "feels quite text-heavy, with some explanations repeated";
+she wanted "the paper's claim, the formal statement, and what each assessment
+says, with the detailed explanations available when needed"). The tab is called
+**Evidence** and opens on one sheet: on the left the paper's statement exactly
+as printed (the theorem the selected Lean statement is paired with, else the
+backend's candidate, else OpenAI's description in its place); on the right the
+selected Lean statement's own text. The divider between them is the thread
+(dashed for a candidate found from shared wording, solid where the Lean source
+cites the theorem or OpenAI declares the link), and the pairing's qualification
+runs along the sheet's foot. Other statements matching OpenAI's description that
+no Lean statement is paired with sit under the paper's theorem with OpenAI's own
+sentence on what its Lean leaves out, so an omission such as π's Flint–Hills
+corollary is visible beside the Lean rather than described. Under the sheet,
+one card per outside group, side by side: its label in plain words, its own term,
+its reason quoted, its Comparator run. OpenAI's description and the papers close
+the tab. Definitions of Lean, Comparator and the groups are glossary links on
+the words, not paragraphs; the qualification that no review is recorded is said
+once, at the join. A family with no Lean puts its papers in the sheet's right
+half under one sentence saying so. `board_pair` and `groups_board` in
+`scripts/family_page.py` own this; `scripts/tests/test_family_page.py` pins the
+board and the Lean text beside the paper. Paragraphs below describe earlier
+passes; where they disagree about the first tab, this one stands.
+
+A fresh-eyes critique the same day refined it. The sheet's foot says once how
+the two statements came to stand together ("Atlas put these side by side
+because they share wording; nobody has reviewed whether they say the same
+thing") and then, on the first screen, what each group finds, each name linking
+to its card. The groups compared the Lean with OpenAI's description, so the
+description is quoted at the head of their section, introduced as what they
+compared; it is never implied that they reviewed the pairing. The board never
+repeats the no-review sentence or Comparator's limit; the card says whose proof
+of what was run. A group's note is quoted whole, its own term is a small tag
+beside its finding, and with several Lean statements each run label stands
+beside the statements it was given for. With no Lean the paper takes the whole
+sheet. On a phone the Lean follows its own theorem and the tab bar fades at its
+edge. Declined: having Atlas explain a group's label in its own words (MathVet's
+"full" concerns the headline), since Atlas does not characterise anyone's work.
 
 **The first screen answers the page's question** (19 October 2026). The page
 was 8,800px tall at 1440×900, and the comparison of what each group said
@@ -554,6 +599,30 @@ is reading, delay the mathematics, or run in a loop.
 
 ## Lean statement and paper reading pages (UX pass, 19 October 2026)
 
+**The evidence leads on the Lean statement page too** (24 October 2026, after Klara
+Kaleb's feedback). The page opened on a paragraph repeated on all 416 pages, then a
+"What is known so far" table of paragraph answers, and only then the Lean and the
+paper. Now, under a one-sentence header (what Lean is, a glossary link), the page
+opens on the family board's sheet: the paired paper theorem exactly as printed on
+the left (several when the Lean's parts match several; with nothing paired, the
+backend's reason and the closest statements by name), the Lean text on the right
+with one line on `sorry` (or, for a definition-only file, what Comparator compares
+instead), and the pairing's qualification once along the sheet's foot, with a link
+to how it was chosen. Then one card per outside group, side by side: its assessment
+of the family's Lean in plain words with the map's dot, its own term, its reason
+quoted, and its Comparator run of this statement; the lead says once that the
+assessment is of the family's Lean and the run of this statement, and the foot says
+once what a Comparator pass does not show. The detail follows in its own sections:
+reading the Lean (OpenAI's note, the AI draft, the symbol key, definitions, axioms),
+how the paper theorem was chosen (shared words, other candidates, the method), the
+full run reports, what is unchecked, where to read more, the file and the card. The
+header's action buttons and the glance table went; every anchor other pages link to
+stays (`h-glance` is the sheet, `h-claim` and `h-lean-read` its two halves,
+`h-readings` an alias on the groups), and the contents rail follows the new order.
+`lean_group_cards` and the sheet in `build_statement` (`scripts/build_site.py`) own
+this, with the `.lxb*` rules in `site/assets/lean.css`. Bullets below describe the
+earlier passes; where they disagree about the opening, this paragraph stands.
+
 - **The answer comes first.** A Lean statement page opens with "At a glance": its
   family, the paper statement and the match's state ("possible match, not
   reviewed"), then one row per group with both answers in the group's own term:
@@ -642,7 +711,52 @@ every kind of content took the same width. The rules that came out of it:
 - **An absent record is not a refusal.** A group with no recorded coverage assessment is
   described as "Atlas has no record of … assessing", never "did not assess".
 
+**The paper and its evidence at once** (24 October 2026, after Klara Kaleb's feedback that
+the site repeats its explanations and is slow to reach the concrete example). Above the
+paper's first words there is now only the title, authors and date, the three reading
+actions and one quiet line of credit and caution (OpenAI's paper, the licence, that Atlas
+converted the TeX and is not affiliated, that the text and numbers can differ from the PDF,
+the version to cite); the separate numbering note joined that line. "Before you read" went:
+its four answers repeated the panel beside the text and the note at each theorem. The panel
+is now the one summary, in the family board's grammar: each Lean statement as a small pair,
+the paper's theorem on the left (linked in place, or to the other paper that holds it), the
+Lean statement on the right, the divider dashed for a candidate and solid for a cited or
+declared link, the pairing's state at the join and each group's Comparator run under it;
+then the paper's main statements no Lean statement is paired with ("No Lean statement for
+Corollary 1.2"); then one row per group with its own term and the plain gloss. It sits
+beside the text from 1000px and before the text on a narrower screen, so a phone meets the
+evidence before the abstract. The note after a paired theorem is two lines in a box marked
+"Atlas": the Lean statement's name linked with the pairing's state in a few words (the full
+sentence is its title), then each group's term and its Comparator run. The heading no longer
+repeats the Lean link the note gives just below it. Lean and Comparator are glossary links
+on the words. Where this disagrees with "A paper says where it fits before its text" above,
+this stands.
+
 ## The map sidebar at each selection level
+
+**The family entry is the evidence in miniature** (24 October 2026, after Klara
+Kaleb's "text-heavy, with some explanations repeated"). Pointing at a family's
+circle, or focusing its row, opens its entry in the subject's list as four
+labelled rows like the front page's example: OpenAI's catalogue (the first
+sentence, typeset), OpenAI's Lean (the statement the family page shows first,
+from the backend's selection, and how many more), each group's own label in its
+own words (MathVet "full", cert-machine "NARROWER — DECLARED"), and who reports
+Comparator accepted OpenAI's proof of that statement; its last line, "See the
+evidence side by side", names what the row's link opens, the family page's
+Evidence tab. `build_universe.family_board` writes those fields into each
+family's detail record. The family view the map API can still select leads
+with the same rows in a card. Repeated sentences were cut at each level: the
+subject's lede is its counts (the map bar already says what a circle is and how
+to open it); the release key asks its one question once, with MathVet,
+cert-machine and Lean as glossary links, and drops the citation sentence the
+subject's map bar carries; the search hint that repeated the placeholder is
+kept only for screen readers; the "Try an example" button that pointed at the
+example directly below it is gone; the family view drops the full catalogue
+quote, the assessment-scope sentence, the headline-selection note and the
+citation caveat, all of which the family page holds. One quiet line under "How
+to use the Atlas" offers the videos (Will, 24 October 2026): "New here? Watch
+the Atlas walkthrough", then, smaller and fainter, "or the Maths Map video",
+both plain off-site links that hide with the rest of the head's ground text.
 
 On desktop, the colour key stands on the map at the release and in a subject;
 the sidebar starts with the release's figures and where to start, then the
@@ -754,6 +868,48 @@ readable, while keeping those circles clickable.
 - **The footer** is the name, independence and licence, then three short labelled
   lists (the Atlas, lists and credits, source). It sits directly after the page's
   last section, with no stacked margins above it.
+
+## Space
+
+**Use the width; never leave a dead gap** (24 October 2026). Will, on a family page
+whose theorem sat in a narrow column beside an empty half: "I hate it when we don't
+use up the space ... It needs to be better. Just visually, aesthetically, creatively,
+artistically." A pass at 1440, 1280, 1920 and a 390 phone, in both schemes, applied
+these rules; later passes keep them.
+
+- **Compose, never pad.** Dead space is a column ending far short of its neighbour, a
+  wide band holding one short line, a grid row with a lonely item, or a page that is a
+  narrow strip down the left. It is fixed by re-placing content the page already has,
+  never by filler, padding or invented content.
+- **Reading text keeps its measure** (about 60 to 75 characters); the freed width takes
+  a second column of real content: a section's answer beside its how-to-read line
+  (`.fx-shead`, `.fx-grphead`), a general page's purpose beside its longer account
+  (`.phead--split` on Numbers, Sources, About and the two citation lists), an Atlas source
+  note beside its source links, OpenAI's note on a Lean statement beside the symbol key,
+  the shared words beside the other candidate theorems, the unchecked list beside its
+  questions.
+- **The shorter column travels.** Where two columns stand side by side and one is more
+  than 120px shorter, `family.js` marks the shorter `.fx-travel` (sticky under the tab bar)
+  only when it fits the window, so a theorem taller than the window always scrolls to be
+  read. It is measured again when a column changes size. This replaced the unconditional
+  sticky paper theorem on the Lean tab, which could be taller than a laptop window. A
+  paper side holding only OpenAI's description takes the sheet's height and travels, with
+  the papers under it; Help's "same route" column travels beside the worked example.
+- **Close a tab on one row.** The evidence tab ends with the papers on the left and the
+  note and route to the groups' reasons on the right, under one hairline, not a band of
+  space and a second rule.
+- **Unequal records.** Three records where one is much longer: the long one on the left,
+  the two short ones stacked beside it. Five to twelve source cards of unequal length flow
+  in balanced columns; longer lists keep rows. Ranked works run one per row across the
+  frame with their citing papers in as many columns as fit, so the ranking reads straight
+  down. The careful-reading list runs row-wise across the frame.
+- **One Lean statement's name and runs stand beside the Lean tab's answer**; with several,
+  each comparison's head sets the name left and the runs right.
+
+Deliberately left: the Lean half of the evidence sheet under a long theorem (it already
+travels), the group cards' equal heights (their runs share one line), the glossary's
+first list (thirteen indivisible cards balance as well as columns allow), the Numbers
+grid's odd last card, and the front page.
 
 ## Quality floor
 
