@@ -7,9 +7,7 @@
 .pr-facts { color: var(--muted); font-size: var(--fs-meta); }
 .pr-facts .pr-m { font-size: 1em; }
 
-/* Status: a quiet note when accepted, a banner when partial. */
-.pr-status { margin: 14px 0 22px; padding: 2px 0 2px 12px; border-left: 3px solid var(--rule-strong); color: var(--muted); font-size: var(--fs-meta); max-width: 46em; }
-.pr-status p { margin: 0; }
+/* A partial page: a banner listing what did not convert, linking the PDF. */
 .pr-banner { margin: 14px 0 22px; padding: 12px 16px; border: 1px solid color-mix(in oklab, var(--brick) 55%, var(--rule)); border-left-width: 4px; border-radius: var(--r-md); background: var(--surface); font-size: var(--fs-body); max-width: 46em; }
 .pr-banner p { margin: 0 0 6px; }
 .pr-banner__h { font-weight: 700; color: var(--brick-text); }
@@ -58,25 +56,32 @@
 .pr-thm-n, .pr-thm-p { font-weight: 700; }
 .pr-thm--remark .pr-thm-n, .pr-thm--remark .pr-thm-p { font-weight: 400; font-style: italic; }
 .pr-thm-note { font-style: normal; }
-/* What the backend records at a theorem, in words: the Lean statement paired with it
-   (a steel rule, dashed for a candidate pairing, solid for a cited link) and, at a
-   headline candidate, a quiet note. Never italic, even inside a plain theorem. */
-.pr-lean, .pr-head-note { margin: 0.7em 0 0; padding: 2px 0 2px 12px; font-family: var(--sans); font-size: var(--fs-meta); line-height: 1.5; font-style: normal; color: var(--ink-soft); max-width: 62ch; }
-.pr-lean { border-left: 2px dashed var(--steel); }
-.pr-lean--cited { border-left-style: solid; }
-.pr-lean__k { font-weight: 700; color: var(--steel-text); }
-.pr-lean code { font-family: var(--mono); font-size: 0.92em; }
-.pr-lean__ev { display: block; margin-top: 2px; color: var(--muted); }
-.pr-head-note { border-left: 2px solid var(--rule-strong); color: var(--muted); }
-.pr-thm .pr-lean, .pr-thm .pr-lean *, .pr-thm .pr-head-note, .pr-thm .pr-head-note * { font-style: normal; }
-/* What the atlas records at a theorem: a box of its own just after the author's text,
-   in the interface face and named as the atlas's, so it never reads as the paper. */
+/* What the atlas records at a theorem: a compact box of its own just after the author's
+   text, in the interface face and marked "Atlas", so it never reads as the paper. Two
+   lines: the Lean statement's name and the pairing's state (a steel rule, dashed for a
+   candidate pairing, solid for a cited or declared link); then each group's own term
+   and its Comparator run. Never italic, even inside a plain theorem. */
 .paper > .pr-atlas { max-width: 40em; }
-.pr-atlas { display: grid; gap: 6px; margin: 0 0 1.2em; padding: 8px 12px 10px; border: 1px solid var(--rule); border-radius: var(--r-sm, 6px);
-  background: var(--surface); font-family: var(--sans); }
+.pr-atlas { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 12px; row-gap: 3px; margin: 0 0 1.2em; padding: 7px 12px 8px;
+  border: 1px solid var(--rule); border-radius: var(--r-sm, 6px); background: var(--surface); font-family: var(--sans); font-size: var(--fs-small); line-height: 1.45; font-style: normal; }
 .pr-thm + .pr-atlas { margin-top: -0.45em; }
 .paper .pr-atlas p { margin: 0; }
-.pr-atlas__k { font: 600 var(--fs-micro, 0.75rem)/1.3 var(--sans); color: var(--muted); }
+.pr-atlas > * { grid-column: 1; }
+.pr-atlas > .pr-atlas__k { grid-column: 2; grid-row: 1; font-size: var(--fs-micro, 0.75rem); font-weight: 600; color: var(--muted); }
+.pr-lean, .pr-head-note, .pr-groups { padding-left: 10px; color: var(--ink-soft); font-style: normal; }
+.pr-lean { border-left: 2px dashed var(--steel); }
+.pr-lean--cited { border-left-style: solid; }
+.pr-lean__k { font-weight: 700; }
+.paper .pr-lean__k a.term { color: var(--steel-text); }
+.pr-lean code { font-family: var(--mono); font-size: 0.95em; font-weight: 600; }
+.pr-lean__st { color: var(--muted); }
+.pr-lean__st::before { content: "· "; }
+.pr-groups { display: flex; flex-wrap: wrap; gap: 0 18px; border-left: 2px solid transparent; }
+.pr-g__who { font-weight: 600; color: var(--ink); }
+.pr-g--note { color: var(--muted); }
+.pr-term { white-space: nowrap; }
+.pr-head-note { border-left: 2px solid var(--rule-strong); color: var(--muted); }
+.pr-atlas *, .pr-thm .pr-atlas * { font-style: normal; }
 .pr-thm > p:last-child, .pr-proof > p:last-child { margin-bottom: 0; }
 
 /* Proofs */
@@ -196,8 +201,6 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
 .paper a.pr-tool { color: var(--muted); }
 .pr-tool:hover, .paper a.pr-tool:hover { color: var(--accent); text-decoration: underline; }
 .pr-tool:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
-.pr-tool--lean, .paper a.pr-tool--lean { color: var(--steel-text); }
-.pr-tool__k { font-weight: 700; }
 .pr-tool code { font-family: var(--mono); font-size: 0.95em; }
 .pr-tools .copy-fallback { font: inherit; width: 14em; }
 
@@ -227,40 +230,60 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
    panel after it. */
 .pr-page { --pr-col: 46rem; --pr-toc: 15rem; --pr-side: 19rem; --pr-gap: 40px; padding-bottom: 24px; }
 .pr-grid { display: grid; grid-template-columns: minmax(0, var(--pr-col)); justify-content: center; gap: 0 var(--pr-gap);
-  grid-template-areas: "head" "toc" "main" "side"; }
+  grid-template-areas: "head" "side" "toc" "main"; }
 .pr-head { grid-area: head; max-width: none; }
 .pr-grid > .pr-toc { grid-area: toc; }
 .pr-col { grid-area: main; min-width: 0; }
 .pr-side { grid-area: side; min-width: 0; }
-.pr-col > .pr-abstract, .pr-col > .pr-status, .pr-col > .pr-banner { max-width: 40em; }
+.pr-col > .pr-abstract, .pr-col > .pr-banner { max-width: 40em; }
 /* A display or table wider than the column scrolls inside its own box. */
 .pr-col .pr-eq, .pr-col .pr-tbl, .pr-col .pr-verb { max-width: 100%; }
 .pr-col .pr-m[data-d="1"] { max-width: 100%; }
 .pr-col .katex-display { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
 
-/* the family panel */
-.pr-side { font-family: var(--sans); font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft);
-  padding: 14px 16px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); margin-top: 28px; }
+/* The evidence panel, in the family board's grammar (family.css .fx-bd, .fx-vd): the
+   paper's theorem on the left of a pair, the Lean statement on the right, the divider the
+   pairing (dashed for a candidate, solid for a cited or declared link), its state at the
+   join, then each group's term. Beside the text on a wide screen, before it on a narrow one. */
+.pr-side { --u-t-all: #2a5982; --u-t-part: #86a8c6; --u-t-other: #8a77a8; --u-t-none: #978a7c;
+  font-family: var(--sans); font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft);
+  padding: 12px 14px 12px; background: var(--surface); border: 1px solid var(--rule); border-radius: var(--r-md); margin: 0 0 24px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pr-side { --u-t-all: #7fb4e8; --u-t-part: #6c8399; --u-t-other: #a493c6; --u-t-none: #8a8396; } }
+:root[data-theme="dark"] .pr-side { --u-t-all: #7fb4e8; --u-t-part: #6c8399; --u-t-other: #a493c6; --u-t-none: #8a8396; }
 .pr-side p { margin: 0; }
-.pr-side__k { font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
-.pr-side__fam { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.3; margin: 2px 0 10px !important; }
+.pr-side a { color: var(--accent); }
+.pr-side__fam { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.3; margin: 0 0 8px !important; }
 .pr-side__fam a { color: var(--ink); text-decoration: none; }
 .pr-side__fam a:hover { text-decoration: underline; }
-.pr-side__h { font-family: var(--sans); font-size: var(--fs-small); font-weight: 700; color: var(--ink); margin: 14px 0 6px; line-height: 1.35; }
-.pr-side__list, .pr-side__runs { list-style: none; margin: 0; padding: 0; }
-.pr-side__lean { padding: 8px 0; border-top: 1px solid var(--rule); }
-.pr-side__lean:first-child { border-top: 0; padding-top: 0; }
-.pr-side__lid code { font-family: var(--lean-mono, var(--mono)); font-size: 0.95em; color: var(--steel-text); font-weight: 600; overflow-wrap: anywhere; }
-.pr-side__match { margin: 2px 0 4px !important; }
-.pr-side__state { color: var(--muted); }
-.pr-side__state::before { content: "("; }
-.pr-side__state::after { content: ")"; }
-.pr-side__rk { color: var(--muted); }
-.pr-side__runs li { margin: 2px 0; }
-.pr-side__who { font-weight: 600; color: var(--ink); }
+.pr-side__fid { display: block; font-family: var(--sans); font-size: var(--fs-small); font-weight: 600; color: var(--muted); }
+.pr-side__h { font-family: var(--sans); font-size: var(--fs-small); font-weight: 600; color: var(--muted); margin: 12px 0 6px; line-height: 1.35; }
+.pr-side__h a.term { color: inherit; }
+.pr-pairs, .pr-pair__runs, .pr-reads { list-style: none; margin: 0; padding: 0; }
+.pr-pair { border: 1px solid var(--rule-strong); border-radius: var(--r-sm, 6px); background: var(--bg); overflow: hidden; }
+.pr-pair + .pr-pair { margin-top: 8px; }
+.pr-pair__row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.pr-pair__paper, .pr-pair__lean { padding: 7px 10px; min-width: 0; }
+.pr-pair__paper { font-family: var(--serif); font-size: 1rem; }
+.pr-pair__paper a { color: var(--brick-text); font-weight: 600; }
+.pr-pair__away { display: block; font-family: var(--sans); font-size: var(--fs-small); line-height: 1.4; color: var(--muted); }
+.pr-pair__lean { border-left: 1px dashed color-mix(in oklab, var(--steel) 55%, var(--rule-strong)); }
+.pr-pair--cited .pr-pair__lean { border-left-style: solid; }
+.pr-pair--none .pr-pair__lean { border-left: 1px solid var(--rule-strong); }
+.pr-pair__lean code { font-family: var(--lean-mono, var(--mono)); font-size: 0.95em; font-weight: 600; color: var(--steel-text); overflow-wrap: anywhere; }
+.pr-pair__join { padding: 5px 10px; border-top: 1px solid var(--rule); color: var(--ink-soft); }
+.pr-pair__rk { padding: 5px 10px 0; border-top: 1px solid var(--rule); color: var(--muted); }
+.pr-pair__runs { padding: 0 10px 7px; }
+.pr-pair__runs li { margin: 1px 0; overflow-wrap: anywhere; }
+.pr-pair__rk:last-child { padding-bottom: 7px; }
+.pr-g__who { font-weight: 600; color: var(--ink); }
+.pr-side__more, .pr-side__gap { margin-top: 8px !important; }
+.pr-side__gap { color: var(--ink-soft); }
+.pr-read { position: relative; margin: 0 0 6px; padding-left: 17px; }
+.pr-dot { position: absolute; left: 0; top: 0.42em; width: 9px; height: 9px; border-radius: 50%; background: var(--u-t-none); }
+.pr-dot--full { background: var(--u-t-all); } .pr-dot--part { background: var(--u-t-part); } .pr-dot--other { background: var(--u-t-other); }
+.pr-read__gloss { display: block; color: var(--muted); }
 .pr-side__none { color: var(--muted); }
-.pr-side__note { margin-top: 12px !important; padding-top: 8px; border-top: 1px solid var(--rule); color: var(--muted); }
-.pr-side a { color: var(--accent); }
+.pr-side__note { margin-top: 10px !important; padding-top: 8px; border-top: 1px solid var(--rule); color: var(--muted); }
 
 /* the contents beside the text */
 .pr-grid > .pr-toc a[aria-current="true"] { color: var(--ink); font-weight: 600; }
@@ -268,7 +291,7 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
 @media (min-width: 1000px) {
   .pr-grid { grid-template-columns: minmax(0, var(--pr-col)) var(--pr-side);
     grid-template-areas: "head side" "toc side" "main side"; grid-template-rows: auto auto 1fr; }
-  .pr-side { align-self: start; position: sticky; top: calc(var(--top-h, 64px) + 16px); margin-top: 0;
+  .pr-side { align-self: start; position: sticky; top: calc(var(--top-h, 64px) + 16px); margin: 0;
     max-height: calc(100vh - var(--top-h, 64px) - 32px); overflow: auto; overscroll-behavior: contain; }
 }
 @media (min-width: 1280px) {
@@ -278,7 +301,7 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
     grid-template-areas: "toc head" "toc main"; }
   .pr-grid > .pr-toc { align-self: start; position: sticky; top: calc(var(--top-h, 64px) + 16px); margin: 0;
     max-height: calc(100vh - var(--top-h, 64px) - 32px); overflow: auto; overscroll-behavior: contain; font-size: var(--fs-small); padding-right: 4px; }
-  .pr-grid > .pr-toc summary { font-size: var(--fs-micro); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); pointer-events: none; list-style: none; }
+  .pr-grid > .pr-toc summary { font-size: var(--fs-small); font-weight: 600; color: var(--muted); pointer-events: none; list-style: none; }
   .pr-grid > .pr-toc summary::-webkit-details-marker { display: none; }
   .pr-grid > .pr-toc .pr-toc-list { margin-top: 2px; }
   .pr-grid > .pr-toc li { margin: 0; }
@@ -291,25 +314,13 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
 @media (min-width: 1700px) { .pr-page { --pr-col: 48rem; --pr-toc: 17rem; --pr-side: 22rem; --pr-gap: 56px; } }
 .pr-m--wide { display: inline-block; max-width: 100%; overflow-x: auto; overflow-y: hidden; vertical-align: bottom; }
 
-/* ---- Before the text (UX pass round 2, 19 October): what the paper is, which result
-   it belongs to, which of its theorems have a Lean statement and what the groups report,
-   as questions answered in a sentence each (build_papers.orient_html). */
-.pr-what { margin: 4px 0 10px; max-width: 46em; color: var(--ink-soft); font-size: var(--fs-meta); line-height: 1.5; text-wrap: pretty; }
-.pr-orient { margin: 0 0 22px; }
-.pr-orient__h { margin: 0 0 8px; font-family: var(--serif); font-size: 1.1875rem; font-weight: 600; color: var(--ink); }
-.pr-brief { display: grid; grid-template-columns: minmax(8.5rem, 12rem) minmax(0, 1fr); margin: 0; border: 1px solid var(--rule); border-radius: var(--r-md); background: var(--surface); font-family: var(--sans); }
-.pr-brief > div { display: contents; }
-.pr-brief dt, .pr-brief dd { padding: 9px 14px; border-top: 1px solid var(--rule); font-size: var(--fs-meta); line-height: 1.5; }
-.pr-brief > div:first-child dt, .pr-brief > div:first-child dd { border-top: 0; }
-.pr-brief dt { font-weight: 600; color: var(--ink); background: var(--sunk); }
-.pr-brief dd { margin: 0; color: var(--ink); text-wrap: pretty; }
-.pr-brief code { font-size: 0.92em; }
-.pr-orient__go { white-space: nowrap; font-size: var(--fs-small); }
-@media (max-width: 640px) {
-  .pr-brief { grid-template-columns: minmax(0, 1fr); }
-  .pr-brief dt { padding-bottom: 3px; }
-  .pr-brief dd { border-top: 0; padding-top: 3px; }
-}
+/* ---- Above the text (24 October): the title, authors and date, the reading actions, and
+   one quiet line of credit and caution; the evidence panel and then the paper. */
+.pr-head { margin-bottom: 18px; }
+.pr-head .phead__title { margin-bottom: 6px; }
+.pr-actions { margin-top: 12px; }
+.pr-actions .btn { min-height: 34px; padding: 5px 14px; font-size: var(--fs-small); }
+.pr-what { margin: 10px 0 0; max-width: 52em; color: var(--muted); font-size: var(--fs-small); line-height: 1.5; text-wrap: pretty; }
 
 /* ---- Reading choices and wide formulas (20 October) ------------------------------
    The PDF is one click away wherever the reader is: in the header, and at the head of
@@ -320,7 +331,6 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
     font-family: var(--sans); font-size: var(--fs-small); font-weight: 600; color: var(--ink); text-decoration: none; background: var(--surface); }
   .pr-grid > .pr-toc .pr-pdf:hover { border-color: var(--rule-strong); background: var(--sunk); }
 }
-.pr-what { max-width: 52em; }
 /* A formula waiting for KaTeX shows nothing rather than its raw TeX, which flashed as
    code while a long paper loaded. If typesetting never comes, the TeX shows after 6s. */
 :root.js .pr-m:not(.pr-m--ok):not(.pr-m--fail) { color: transparent; animation: pr-tex-late 0s linear 6s forwards; }

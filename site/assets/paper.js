@@ -111,10 +111,9 @@
     return s;
   }
 
-  /* ---- The heading of a statement: Lean, Link, Copy TeX ----------------------
-     A short link to each Lean statement the atlas pairs with the theorem (from the
-     atlas note after it), a button copying the address of the statement, and one
-     copying its TeX. The copying is atlas.js's data-copy-text. Added here, not in
+  /* ---- The heading of a statement: Link, Copy TeX ---------------------------
+     A button copying the address of the statement and one copying its TeX. The Lean
+     statement paired with a theorem is named once, in the atlas note just after it. The copying is atlas.js's data-copy-text. Added here, not in
      the HTML, so a passage cloned into another page carries none of them. */
   function addTools() {
     var base = art.getAttribute('data-url') || location.href.split('#')[0];
@@ -126,23 +125,6 @@
       var name = (h.querySelector('.pr-thm-n') || h).textContent.trim();
       var bar = doc.createElement('span');
       bar.className = 'pr-tools';
-      var note = thm.nextElementSibling;
-      if (note && note.classList.contains('pr-atlas')) {
-        var leans = note.querySelectorAll('.pr-lean a[data-tag]');
-        for (var j = 0; j < leans.length; j++) {
-          var a = doc.createElement('a');
-          a.className = 'pr-tool pr-tool--lean';
-          a.href = leans[j].getAttribute('href');
-          var lean = leans[j].textContent.trim();
-          var tag = leans[j].getAttribute('data-tag');
-          a.setAttribute('aria-label', W('lean_label', { lean: lean, tag: tag }));
-          a.innerHTML = '<span class="pr-tool__k"></span> <code></code><span class="pr-tool__tag"></span>';
-          a.firstChild.textContent = W('lean');
-          a.querySelector('code').textContent = lean;
-          a.lastChild.textContent = ', ' + tag;
-          bar.appendChild(a);
-        }
-      }
       var link = doc.createElement('button');
       link.type = 'button';
       link.className = 'pr-tool';
