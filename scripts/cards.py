@@ -42,6 +42,8 @@ def _qualification(ev: E.FamilyEvidence) -> str:
         return E.say("no_lean")
     if ev.agreement == "disagree":
         return ev.agreement_sentence()
+    if ev.pairing_kind == "source-reading":
+        return "An AI agent read both sources and linked the paper theorem to the Lean; nobody has reviewed the link."
     if ev.pairing == "candidate-pairing":
         return "The paper theorem paired with the Lean was found by shared words; nobody has reviewed the pairing."
     return ev.agreement_sentence()

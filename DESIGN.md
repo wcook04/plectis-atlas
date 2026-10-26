@@ -493,6 +493,7 @@ Each of these states has its own wording. Unknown is neither red nor green.
 | Recorded state | What the reader sees |
 |---|---|
 | Candidate pairing | A proposed correspondence, its method, and that nobody has reviewed it |
+| Source reading | Who read the two sources (named, and said to be an AI agent when it is one), each link as Lean declaration, paper statement and relation, the reader's own limits quoted, the explanation on request, and that no person has reviewed it |
 | Reported re-run | A named outside group reports this result; the atlas did not re-run it |
 | Name linked from the source text | A link found by reading the Lean source, with no claim that Lean elaborated it |
 | Paper rendered in full | The reading page passed its rendering checks; this says nothing about the mathematics |
@@ -910,6 +911,42 @@ Deliberately left: the Lean half of the evidence sheet under a long theorem (it 
 travels), the group cards' equal heights (their runs share one line), the glossary's
 first list (thirteen indivisible cards balance as well as columns allow), the Numbers
 grid's odd last card, and the front page.
+
+## Source readings link declaration to statement (26 October 2026)
+
+Reader v9 gives each Lean statement one pairing decision, and 140 of them are
+attributed source readings: a named reader, so far always an AI agent, read the
+Lean source and the paper and recorded which configured declaration states which
+paper statement, how the two relate (the same claim; the paper statement is one
+part of the Lean; the Lean is one part of the paper statement; the Lean is a
+consequence of it) and what the link leaves out. The site renders them as such.
+
+- **A reading is a small table read across**: Lean declaration, paper statement
+  with its title, relation in words. Above it, one line names the reader, says it is
+  an AI agent when it is, and says no person has reviewed the links and no proof was
+  checked. That line is the only disclaimer: a recorded limit that only repeats it
+  is not quoted again, and every other clause the reader wrote is quoted as written
+  under its row.
+- **The explanation opens in the inspection rail** ("Why they were linked", beside the
+  relation), with the reader, the declarations in full, the relation, the limits and
+  the ways to the paper passage and the Lean page, so the rows stay one line each; a
+  bundle of nine links fits in about ten lines. The family page keeps its rule of no
+  folds.
+- **The Lean declaration is in the Lean's ink and the paper statement in the
+  paper's**, joined by the dashed rule the sheet already uses for an unreviewed link.
+  A screen reader hears the row as a sentence ("main and Theorem 10.1: the paper
+  statement is one part of the Lean").
+- **The evidence sheet shows at most three links** and sends the rest to the Lean
+  tab; the Lean statement's page lists every link in full, with each explanation and
+  limit set out.
+- **A reading that links nothing says who read the sources and quotes their reason**
+  instead of listing the nearest statements by shared words.
+- **Never call a reading a word match, a review or a check.** The word-match
+  wording ("matched by the words of the Lean statement") belongs only to the
+  backend's source-text candidates, and Atlas is not named as the one who chose.
+- **A paper column holding several linked statements is one stack**, so the
+  caption row still lines the first card up with the Lean card (nine cards once
+  overlapped in the subgrid's two rows).
 
 ## Quality floor
 

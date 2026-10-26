@@ -3,10 +3,11 @@
 
     python3 scripts/check_paper_links.py [site/_build]
 
-Run after scripts/build_site.py and scripts/build_papers.py. A statement page whose
-paired paper statement has a reading page links down to it (papers/<slug>.html#<anchor>);
-that theorem on the reading page links back up to the statement page. This fails when
-a link goes one way only, lands on another paper or theorem, or names an anchor the
+Run after scripts/build_site.py and scripts/build_papers.py. A statement page links
+down to each paper statement it is paired with that has a reading page
+(papers/<slug>.html#<anchor>; a Lean statement can be linked to several); each of those
+theorems on its reading page links back up to the statement page. This fails when a
+link goes one way only, lands on another paper or theorem, or names an anchor the
 reading page does not have. Standard library only.
 """
 from __future__ import annotations
@@ -71,11 +72,11 @@ class PaperAnchors(HTMLParser):
 
 def main() -> int:
     build = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "site" / "_build"
-    down = {}  # statement id -> (paper slug, anchor)
+    down = {}  # statement id -> {(paper slug, anchor)}
     for p in sorted((build / "statements").glob("*.html")):
-        m = re.search(r'class="claim__src"><a href="\.\./papers/([^"#]+)\.html#([^"]+)"', p.read_text(encoding="utf-8"))
-        if m:
-            down[p.stem] = (unquote(m.group(1)), html.unescape(unquote(m.group(2))))
+        found = re.findall(r'class="claim__src"><a href="\.\./papers/([^"#]+)\.html#([^"]+)"', p.read_text(encoding="utf-8"))
+        if found:
+            down[p.stem] = {(unquote(a), html.unescape(unquote(b))) for a, b in found}
     up = {}  # statement id -> set of (paper slug, theorem id)
     pages = {}
     for p in sorted((build / "papers").glob("*.html")):
@@ -89,15 +90,14 @@ def main() -> int:
     problems += [f"{s}: links down to its paper statement, which does not link back" for s in sorted(set(down) - set(up))]
     problems += [f"{s}: linked up from a theorem, but its statement page does not link down" for s in sorted(set(up) - set(down))]
     for s in sorted(set(down) & set(up)):
-        slug, anchor = down[s]
-        page = pages.get(slug)
-        target = (slug, page.aliases.get(anchor, anchor) if page else anchor)
-        if up[s] != {target}:
-            problems.append(f"{s}: links down to {down[s]} but is linked up from {sorted(up[s], key=str)}")
-    for s, (slug, anchor) in sorted(down.items()):
-        page = pages.get(slug)
-        if page is None or anchor not in page.ids:
-            problems.append(f"{s}: anchor #{anchor} is missing from papers/{slug}.html")
+        targets = {(slug, pages[slug].aliases.get(anchor, anchor) if slug in pages else anchor) for slug, anchor in down[s]}
+        if up[s] != targets:
+            problems.append(f"{s}: links down to {sorted(down[s])} but is linked up from {sorted(up[s], key=str)}")
+    for s, links in sorted(down.items()):
+        for slug, anchor in sorted(links):
+            page = pages.get(slug)
+            if page is None or anchor not in page.ids:
+                problems.append(f"{s}: anchor #{anchor} is missing from papers/{slug}.html")
     for line in problems[:40]:
         print(line)
     print(f"paper links: {len(down)} statements link down, {len(up)} are linked up; "

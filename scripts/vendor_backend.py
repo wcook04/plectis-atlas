@@ -30,7 +30,12 @@ Run it against Statement Map's accepted output for the release whose pin
 matches upstream.json:
 
     python3 scripts/vendor_backend.py --from ../statement-map --data <accepted output> \\
-        --receipt ../statement-map/receipts/reader-v7-acceptance.json
+        --receipt ../statement-map/receipts/reader-v9-acceptance.json
+
+Statement Map delivers an accepted output as one verified archive. Copy it to a local
+disk, extract it into an empty directory and pass that directory as --data: reading
+thousands of small packets from an external drive took 40 minutes, the extracted copy
+two seconds.
 
 It refuses a release with another pin or schema, an asset whose bytes differ
 from the manifest, and any packet from another release, pin or generation.

@@ -1697,7 +1697,8 @@
     // a citation in the Lean source or a declared binding said plainly.
     function whyHtml(l, ld) {
       var join = '<span class="u-join u-join--' + (l.pairing === 'candidate-pairing' ? 'candidate' : 'cited') + '" aria-hidden="true"></span>';
-      if (l.pairing !== 'candidate-pairing') return '<p class="u-sub__w">' + join + escapeHtml(ld.pairing) + '</p>';
+      /* A source reading and a recorded link are said plainly; only a word match folds its words away. */
+      if (l.pairing !== 'candidate-pairing' || l.rd) return '<p class="u-sub__w">' + join + escapeHtml(ld.pairing) + '</p>';
       return '<details class="u-why"><summary>' + join + escapeHtml(T('lean.why')) + '</summary><p>' + escapeHtml(ld.pairing) +
         (ld.terms && ld.terms.length ? ' ' + escapeHtml(T('lean.shared_words', { words: ld.terms.join(', ') })) : '') + '</p></details>';
     }
@@ -1722,11 +1723,11 @@
       }
       h += '<p class="u-doors">' + door(r.href || p.href || p.pdf, T('result.read'), true) +
         (r.lean.length ? door(f.href + '#lean-' + D.lean[r.lean[0]].name, T('result.compare')) : '') + door(f.href, T('result.family_page')) + '</p>';
-      var states = r.lean.map(function (li) { return D.lean[li].pairing; });
-      var kind = function (st) { return st === 'candidate-pairing' ? 'candidate' : st === 'producer-declared-binding' ? 'declared' : 'cited'; };
-      var one = states.length && states.every(function (st) { return kind(st) === kind(states[0]); }) ? kind(states[0]) : null;
+      var kind = function (l) { return l.rd ? 'reading' : l.pairing === 'candidate-pairing' ? 'candidate' : l.pairing === 'producer-declared-binding' ? 'declared' : 'cited'; };
+      var kinds = r.lean.map(function (li) { return kind(D.lean[li]); });
+      var one = kinds.length && kinds.every(function (k) { return k === kinds[0]; }) ? kinds[0] : null;
       h += '<h2 class="u-h2" id="u-section-lean" tabindex="-1">' + escapeHtml(T(r.lean.length ? (one ? 'result.lean_heading_' + one : 'result.lean_heading_mixed') : 'result.lean_heading_none')) + '</h2>';
-      if (one === 'candidate') h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_candidate')) + '</p>';
+      if (one === 'candidate' || one === 'reading') h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_' + one)) + '</p>';
       if (r.lean.length) {
         var pp = pinnedPair();
         h += '<ul class="u-subrows u-subrows--lean">' + r.lean.map(function (li) {
@@ -1753,9 +1754,9 @@
       if (l.main) h += para(T('lean.main'));
       if (det && det.snippet) h += '<pre class="lean lean--snippet u-lean"><code>' + det.snippet + '</code></pre>' + para(T('lean.challenge_note'));
       h += '<p class="u-doors">' + door(l.href, T('lean.page'), true) + (l.results.length ? door(f.href + '#lean-' + l.name, T('result.compare')) : '') + door(f.href, T('lean.family_page')) + '</p>';
-      var lk = l.pairing === 'candidate-pairing' ? 'candidate' : l.pairing === 'producer-declared-binding' ? 'declared' : l.pairing === 'unavailable' ? 'none' : 'cited';
+      var lk = l.rd ? 'reading' : l.pairing === 'candidate-pairing' ? 'candidate' : l.pairing === 'producer-declared-binding' ? 'declared' : l.pairing === 'unavailable' ? 'none' : 'cited';
       h += '<h2 class="u-h2" id="u-section-results" tabindex="-1">' + escapeHtml(T('lean.paper_heading_' + (l.results.length ? lk : 'none'))) + '</h2>';
-      if (l.results.length && lk === 'candidate') h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_candidate')) + '</p>';
+      if (l.results.length && (lk === 'candidate' || lk === 'reading')) h += '<p class="u-qual">' + escapeHtml(T('result.lean_sub_' + lk)) + '</p>';
       if (l.results.length) {
         var lp = pinnedPair();
         h += '<ul class="u-subrows">' + l.results.map(function (ri) {

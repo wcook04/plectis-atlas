@@ -2,20 +2,20 @@
  "_note": "What backend/ holds and where it came from. scripts/reader.py checks these four files against their hashes, every packet under web/ against the manifest, and the schema, release, pin and generation of each packet, before a page uses it.",
  "schema": "plectis-atlas-backend-export/2",
  "backend": "Statement Map, by Will Cook (not yet published)",
- "backend_commit": "0fb16b5e23612323172ade2d33f893c08fc21970",
+ "backend_commit": "7c6ac6d6aa8049c6265889419f3037744b45b8b2",
  "acceptance_receipt": {
-  "file": "reader-v7-acceptance.json",
-  "tested_commit": "854c4074603ba85e9023cfac6a757ceb1792372d",
-  "exporter": "reader-projection/7",
-  "sha256": "sha256:5b5a4242d098d7626067abe6e318d28d9e3372b4b95ef6ef6b7b6ca2a71f624b"
+  "file": "reader-v9-acceptance.json",
+  "tested_commit": "5a6ba064e6cd443bc437c1ec06090cecbaa83a02",
+  "exporter": "reader-projection/9",
+  "sha256": "sha256:818a6bbcc7614b7b927afb200a57d933fe4dda29b234a79190d338ca36ee59bf"
  },
  "release_id": "openai-math",
  "pin": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
- "generation_id": "sha256:eb85d3603ec7254e8723f8292d2014fbb295087c537d4a9a7c22689061a82822",
+ "generation_id": "sha256:c701139844a2d825c371ded7486924e7dae7de0af77a69dc9c1abaf1129191a1",
  "reader_schema": "statement-map-web/2",
  "packets": {
-  "count": 3589,
-  "bytes": 107360964,
+  "count": 3753,
+  "bytes": 110781534,
   "kinds": [
    "citation-entries",
    "citation-shard",
@@ -36,20 +36,20 @@
  },
  "files": {
   "catalog.json": {
-   "bytes": 1838,
-   "sha256": "sha256:d2e95426ae6a8e589a6f37f352abf7aab43a8c3111c8fc08508c6cbfafdce19d"
+   "bytes": 1744,
+   "sha256": "sha256:334ada1b13758d77d8267c8fe0d9dac21724a789476abc70da628abc787126af"
   },
   "NOTICE.md": {
-   "bytes": 5565,
-   "sha256": "sha256:533d6a821250d106c52d97c1a65eea3b585043152d3033c7ae4653263e58af7e"
+   "bytes": 5912,
+   "sha256": "sha256:6dbfe8494d977cb150c1402b93227bf5e1b7a503640893ee7a602e0a819a237f"
   },
   "openai-math/targets.json": {
-   "bytes": 2738689,
-   "sha256": "sha256:d68bb0840a841962973291fb51e54dd8740404fe576bb3d1333ea51598fa4663"
+   "bytes": 2739649,
+   "sha256": "sha256:8131113de8a2485f250d28517fbafed061e86533923891c1888207943f9b29ad"
   },
   "openai-math/web/manifest.json": {
-   "bytes": 1406726,
-   "sha256": "sha256:745862bb4a7341fc3f7b3167e593d955f5029ae52486e9f9a485917bcb3898eb"
+   "bytes": 1470723,
+   "sha256": "sha256:a766acd3ece55624acef3428621209cffaa8fc8904a9c645acf95255a6605bde"
   }
  }
 }

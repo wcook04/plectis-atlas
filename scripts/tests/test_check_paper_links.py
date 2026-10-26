@@ -28,8 +28,9 @@ class PaperLinkTests(unittest.TestCase):
             (root / "statements").mkdir()
             (root / "papers").mkdir()
             if down is not None:
-                (root / "statements/Demo.html").write_text(
-                    f'<p class="claim__src"><a href="../papers/{slug}.html#{down}">Theorem</a></p>')
+                downs = [down] if isinstance(down, str) else down
+                (root / "statements/Demo.html").write_text("".join(
+                    f'<p class="claim__src"><a href="../papers/{slug}.html#{d}">Theorem</a></p>' for d in downs))
             if paper is not None:
                 (root / "papers/paper.html").write_text(paper)
             if other is not None:
@@ -68,6 +69,14 @@ class PaperLinkTests(unittest.TestCase):
     def test_duplicate_reciprocal_link_to_another_theorem_fails(self):
         paper = theorem() + NOTE + theorem("thm:other", "L-main.tex-2") + NOTE
         self.assertEqual(self.check(paper=paper), 1)
+
+    def test_several_linked_theorems_each_link_back(self):
+        paper = theorem() + NOTE + theorem("thm:other", "L-main.tex-2") + NOTE
+        self.assertEqual(self.check(["thm:main", "thm:other"], paper), 0)
+
+    def test_several_links_down_with_one_missing_back_fails(self):
+        paper = theorem() + NOTE + theorem("thm:other", "L-main.tex-2")
+        self.assertEqual(self.check(["thm:main", "thm:other"], paper), 1)
 
     def test_empty_build_fails(self):
         self.assertEqual(self.check(None), 1)

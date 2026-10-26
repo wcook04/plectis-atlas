@@ -378,6 +378,16 @@
 .lxb-proofs { list-style: none; margin: 4px 0 0; padding: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
 .lxb-proofs li { padding: 2px 0; overflow-wrap: anywhere; }
 .lxb-proofs code { font-family: var(--lean-mono); }
+/* How a source reading links the statements (build_site.reading_how_html): who read
+   the sources, then each link in full with the reader's explanation and limits. */
+.rl { font-size: var(--fs-small); line-height: 1.55; color: var(--ink-soft); }
+.rl p { margin: 0; max-width: 72ch; }
+.rl__by { color: var(--muted); }
+.rl__l { margin: 8px 0 0; padding-left: 1.4em; display: grid; gap: 10px; }
+.rl__link { color: var(--ink); }
+.rl__link code { font-family: var(--lean-mono); font-size: 0.92em; color: var(--steel-text); overflow-wrap: anywhere; }
+.rl__expl { margin-top: 2px !important; }
+.rl__lim { margin-top: 2px !important; color: var(--muted); }
 .lxb-join { grid-area: join; margin: 0; padding: 10px 24px 12px; border-top: 1px solid var(--rule); font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); max-width: none; }
 .lxb-jh { font-weight: 600; color: var(--ink); }
 .lxb-join a { margin-left: 4px; white-space: nowrap; }

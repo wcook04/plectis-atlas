@@ -95,7 +95,7 @@ All counts describe the release at the commit in [`upstream.json`](upstream.json
 - **Independent assessments.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine) each assessed whether every family's Lean statements express the result OpenAI advertises, independently of OpenAI and of each other. Their findings, in their own terms, are on each family page and in the Families list.
 - **Every paper in the browser.** 696 of the 719 current manuscripts have a full reading page made from their TeX, with formulas that KaTeX can typeset and links that resolve to their references, citations and theorems (figures are shown as placeholders); the other 23 have a reading page with a banner listing what did not convert. These tests validate the conversion, not the mathematics. They use the same KaTeX version as the site. The PDF stays the reference (`data/paper_acceptance.json`).
 
-Counted by Statement Map from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb), generation `eb85d3603ec7`. The unit, rule, state and credit behind each number, and its members, are on the site's Numbers page.
+Counted by Statement Map from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb), generation `c701139844a2`. The unit, rule, state and credit behind each number, and its members, are on the site's Numbers page.
 <!-- numbers:end -->
 
 </details>
