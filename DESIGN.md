@@ -541,7 +541,7 @@ is reading, delay the mathematics, or run in a loop.
 | `statements/<id>.html` | Read the Lean statement whole, and what you must check |
 | `explain.html` | Every family as a list, with who has explained it |
 | `sources.html`, `glossary.html`, `numbers.html`, `contribute.html` (footer only), `about.html` | Credit, terms, counts with receipts, how to contribute, why it is built this way |
-| `help.html`, and the `?` guide in every header | How to use the Atlas: the route through one result and the words on the way |
+| `help.html`, and the `?` guide in every header | How to use the Atlas: four steps to read any result, a link to try them on π, and five words |
 
 ## What the October rebuild taught
 
@@ -895,7 +895,7 @@ these rules; later passes keep them.
   read. It is measured again when a column changes size. This replaced the unconditional
   sticky paper theorem on the Lean tab, which could be taller than a laptop window. A
   paper side holding only OpenAI's description takes the sheet's height and travels, with
-  the papers under it; Help's "same route" column travels beside the worked example.
+  the papers under it.
 - **Close a tab on one row.** The evidence tab ends with the papers on the left and the
   note and route to the groups' reasons on the right, under one hairline, not a band of
   space and a second rule.
@@ -947,6 +947,19 @@ consequence of it) and what the link leaves out. The site renders them as such.
 - **A paper column holding several linked statements is one stack**, so the
   caption row still lines the first card up with the Lean card (nine cards once
   overlapped in the subgrid's two rows).
+
+## The guide is four steps (26 October 2026)
+
+Will asked for the `?` guide to be simplified drastically, so that it explains how to
+use the site at the most basic level. The guide had a six-step worked example, a six-step general
+route and ten definitions, about three screens. It is now one screen: a sentence on what
+a page shows, four numbered steps (find a result; read the first screen, paper on the
+left and Lean on the right; see what the outside groups found, keeping "does the Lean
+say what the paper says" apart from "did the proof pass Comparator"; use the tabs for
+more), one button to try them on family 017, and five words beside the steps. Each step
+says what is on the screen and what to do with it; Lean and Comparator are defined in
+the step that first needs them. The steps keep the ids `lean`, `questions` and `tabs`
+that pages use to open the guide at a step.
 
 ## Quality floor
 

@@ -51,130 +51,69 @@
   "plectis_title": "Plectis: Will Cook's mathematics and projects, of which the Atlas is one"
  },
  "help": {
-  "_note": "The how-to-use guide behind the ? button in every page's header, on help.html, and the 404 page's route (build_site.help_dialog). It teaches through one worked example (family 017, the site's example) before the general route, then the words in the order a reader meets them. __ROOT__ in a link is the page's root. Every quoted group term in the example is checked against the data by scripts/tests/test_help_guide.py. Each step has an id so a page can open the guide at it with data-help=\"<id>\".",
+  "_note": "The how-to-use guide behind the ? button in every page's header, on help.html, and the 404 page's route (build_site.help_dialog). Four steps a first-time reader can follow, one link to try them on family 017, and the few words every page uses. __ROOT__ in a link is the page's root. Each step has an id so a page can open the guide at it with data-help=\"<id>\" (lean, questions and tabs are used).",
   "title": "How to use the Atlas",
-  "what": "Atlas puts one result from OpenAI’s mathematics release on one page: what the paper claims, the Lean statement OpenAI chose for computer checking, and what outside groups say about both, in their own words, with links to their reports.",
-  "steps_heading": "The same route for any result",
+  "what": "Each Atlas page is about one result from OpenAI’s mathematics release. It puts the paper’s theorem beside the Lean statement OpenAI wrote for a computer to check, and shows what outside groups found.",
+  "steps_heading": "How to read a result",
   "steps": [
    [
     "find",
-    "<strong>Find a result.</strong> Search for a word from its title, theorem or Lean file name (press <kbd>/</kbd>), or choose a subject on the map and then a dot. Each dot is one family of related papers."
-   ],
-   [
-    "family",
-    "<strong>Read the claim.</strong> A family page opens with OpenAI’s description of the result, then its paper and the Lean statement selected for checking."
+    "<strong>Find a result.</strong> Press <kbd>/</kbd> and type a few words from its title, or click a subject on the map and then a dot. Each dot is one result and its papers."
    ],
    [
     "lean",
-    "<strong>Open the Lean statement.</strong> Its page shows the Lean beside the paper statement it may match, and each group’s Comparator run."
+    "<strong>Read the first screen.</strong> The paper’s theorem is on the left. On the right is the statement OpenAI wrote in Lean, a language in which a computer checks every step of a proof. The line underneath says how the two were linked and whether anyone has reviewed that they say the same thing."
    ],
    [
     "questions",
-    "<strong>Read two separate answers.</strong> First, does the Lean say what the paper says? MathVet and Carlos Toledo’s cert-machine, two outside groups, each give a verdict in their own words, such as “full” or “NARROWER — DECLARED”, with a reason. Second, did OpenAI’s proof pass Comparator? A pass is about the proof of the Lean statement only; it does not show that the Lean says what the paper says."
+    "<strong>See what the outside groups found.</strong> They answer two separate questions, each in its own words: whether the Lean says what the paper claims, and whether OpenAI’s proof passed Comparator, the program that checks the proof against the Lean. A pass means the proof proves the Lean statement, not that the Lean says what the paper says."
    ],
    [
     "tabs",
-    "<strong>Read further.</strong> The tabs hold the papers, every Lean statement, each group’s full report with a link to the original, connections to other families, and explanations by others."
-   ],
-   [
-    "contribute",
-    "<strong>Find the disagreements.</strong> In Families, the colour filter’s “The groups disagree” lists every family where the two groups’ verdicts differ. Each family’s overview names the paper–Lean match that has no recorded review."
+    "<strong>Use the tabs for more.</strong> They hold the full papers, every Lean statement, each group’s full reasons with a link to its report, and related reading."
    ]
   ],
-  "terms_heading": "Words you will meet, in the order you meet them",
+  "example_open": "Try it on one result: the irrationality exponent of π",
+  "terms_heading": "Words you will see",
   "terms": [
    [
     "family",
     "Family",
-    "OpenAI’s group of related papers about one main result. For example, family 017 holds the paper “The irrationality exponent of pi is 2”."
-   ],
-   [
-    "headline",
-    "Headline result",
-    "The main claim OpenAI’s catalogue gives for a family. Family 017’s headline is that π’s irrationality exponent is 2, with the Flint–Hills series converging as a consequence."
-   ],
-   [
-    "lean",
-    "Lean",
-    "A language for writing mathematical statements and proofs that a computer can verify step by step."
+    "OpenAI’s group of papers about one result. Each dot on the map is a family."
    ],
    [
     "challenge",
     "Lean statement",
-    "A Lean file stating one theorem, with the proof left as sorry; OpenAI supplies the proof separately. For example, PiExponent states the exponent of π."
+    "A theorem written in Lean with its proof left out (the file says sorry in its place). OpenAI supplies the proof in a separate file."
    ],
    [
     "comparator",
     "Comparator",
-    "The program that tests OpenAI’s proof against a Lean statement. A pass shows the proof proves that statement; it does not show that the statement means what the paper says."
-   ],
-   [
-    "rerun",
-    "Comparator run",
-    "One group’s report of running Comparator. For example, cert-machine ran PiExponent and recorded “CERTIFIED”. Atlas shows the report and has not repeated the run."
+    "The program that checks OpenAI’s proof against a Lean statement. A pass does not show that the Lean means what the paper says."
    ],
    [
     "readers",
-    "The groups",
-    "MathVet and Carlos Toledo’s cert-machine, two outside groups that each read every family’s Lean statements against its headline, under their own published rules."
-   ],
-   [
-    "readers",
-    "A group’s label",
-    "Each group’s own word for its verdict, quoted exactly, with Atlas’s plain sentence beside it. For family 017 MathVet says “full” and cert-machine says “NARROWER — DECLARED”."
+    "The outside groups",
+    "MathVet and Carlos Toledo’s cert-machine compared each family’s Lean statements with OpenAI’s description of the result and gave their verdicts in their own words. Other groups report Comparator runs."
    ],
    [
     "pairing",
     "Possible match",
-    "A paper statement Atlas has linked to a Lean statement from the words they share, such as Theorem 1.1 of the π paper for PiExponent. No review that they mean the same thing is recorded."
-   ],
-   [
-    "map-colours",
-    "Map colours",
-    "They compare the two groups’ assessments of each family’s Lean statements. They do not say whether a paper’s proof is correct."
+    "A paper theorem linked to a Lean statement by a citation in the Lean source, by an AI agent’s reading of both, or by words they share. No review that they mean the same thing is recorded."
    ]
   ],
   "glossary_link": "Every term, in the glossary",
   "page_link": "This guide as a page",
-  "limit": "Atlas links these reports and runs no checks itself.",
+  "limit": "Atlas collects these reports and links to them. It runs no checks itself.",
   "keys": "Press <kbd>?</kbd> to open this guide and <kbd>Esc</kbd> to close it.",
   "close": "Close",
   "hint": "New here? Follow one result from claim to checked proof.",
   "hint_open": "How to use it",
   "hint_example": "Try an example",
   "hint_close": "Dismiss",
-  "page_description": "How to use the Plectis Atlas, taught through one example: find the π result, read its claim, see its Lean statement, compare what MathVet and cert-machine say and why, and see what is still unchecked.",
+  "page_description": "How to use the Plectis Atlas: find a result, read the paper’s theorem beside OpenAI’s Lean statement, see what outside groups found, and use the tabs for more.",
   "column_help": "What this column means",
-  "example_heading": "A worked example: the irrationality exponent of π",
-  "example_intro": "Family 017 shows the whole route in six steps. Follow it once and every other family reads the same way.",
-  "example_steps": [
-   [
-    "ex-find",
-    "<strong>Find the result.</strong> Press <kbd>/</kbd> and type “irrationality exponent”, or click Number theory on the map and then its dot. Either way you reach <a href=\"__ROOT__families/017.html\">family 017, “The irrationality exponent of π is 2”</a>."
-   ],
-   [
-    "ex-claim",
-    "<strong>Read what is claimed.</strong> OpenAI’s description at the top of the page makes two claims: the irrationality exponent of π is exactly 2, and, as a consequence, the Flint–Hills series Σ 1/(n³ sin² n) converges."
-   ],
-   [
-    "ex-lean",
-    "<strong>See the Lean statement.</strong> OpenAI chose one Lean statement, <a href=\"__ROOT__statements/PiExponent.html\">PiExponent</a>, for checking by Comparator, a program that tests OpenAI’s proof against it. PiExponent states the exponent claim. OpenAI’s own note says the Flint–Hills claim is outside it."
-   ],
-   [
-    "ex-compare",
-    "<strong>Compare the two outside groups by their reasons.</strong> MathVet and Carlos Toledo’s cert-machine each read the Lean against OpenAI’s claim and give a verdict in their own words. MathVet says “full”: it reads the exponent as the headline, and its note adds that the Flint–Hills corollary is not stated. cert-machine says “NARROWER — DECLARED”: it counts the Flint–Hills claim as part of the headline, so the Lean states less, and OpenAI’s note says so. Both notes name the same omission; the labels differ because the groups draw the headline differently."
-   ],
-   [
-    "ex-proof",
-    "<strong>See which proof was checked.</strong> Both groups report that Comparator accepted OpenAI’s proof of PiExponent: MathVet in its own term, “comparator-sandboxed-pass”, and cert-machine as “CERTIFIED”, with a second checking program, nanoda, switched on. A pass is about the proof of PiExponent, not about every claim in the paper."
-   ],
-   [
-    "ex-left",
-    "<strong>See what is still unchecked.</strong> No review is recorded of whether PiExponent means the same as the paper’s Theorem 1.1, and none of the reported Comparator runs covers the Flint–Hills claim."
-   ]
-  ],
-  "example_open": "Try the π example (family 017)",
-  "page_lede": "This page is for anyone opening the Atlas for the first time. Follow the worked example once; the same route then works for any of the release’s results.",
+  "page_lede": "This page is for anyone opening the Atlas for the first time: four steps, and the few words you will see on every page.",
   "route_alone": "How to read any result"
  },
  "siblings": {
