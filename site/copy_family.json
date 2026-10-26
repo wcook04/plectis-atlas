@@ -580,6 +580,7 @@
   },
   "and": "and",
   "all_one": "All {n} links are to one Lean declaration, {decls}, which bundles several results.",
+  "all_two": "Both links are to one Lean declaration, {decls}, which bundles several results.",
   "col_lean": "Lean declaration",
   "col_paper": "Paper statement",
   "col_relation": "Relation recorded",

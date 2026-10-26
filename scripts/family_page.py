@@ -1695,7 +1695,8 @@ def reading_links_html(c: Ctx, rec: dict, cls: str = "fx-rl", keep: int = 0) -> 
         all_decl = ""
         if one_decl:
             names = ", ".join(f'<code translate="no">{esc(d)}</code>' for d in rd["targets"][0]["declarations"]) or esc(W("reading.the_lean"))
-            all_decl = f'<p class="fx-rl__all">{esc(W("reading.all_one", n=S.say(len(rows)), decls="\x00")).replace("\x00", names)}</p>'
+            key = "reading.all_two" if len(rows) == 2 else "reading.all_one"
+            all_decl = f'<p class="fx-rl__all">{esc(W(key, n=S.say(len(rows)), decls="\x00")).replace("\x00", names)}</p>'
         shown, rest = (rows[:keep], rows[keep:]) if keep else (rows, [])
         more = (f'<p class="fx-rl__more"><a href="#lean-{esc(rec.get("lean_name") or "")}">{esc(W("reading.more", n=S.say(len(rest))))}</a></p>'
                 if rest else "")
