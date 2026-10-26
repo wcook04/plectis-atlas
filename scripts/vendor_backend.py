@@ -18,15 +18,19 @@ not make them again. This script copies what the site reads:
                                              backend's immutable asset bytes:
                                              family readers, the map's universe and
                                              overview, the numbers index with its
-                                             receipts and member pages, and the
-                                             search index with its shards
+                                             receipts and member pages, the
+                                             search index with its shards, each
+                                             family's evidence packet with its Lean
+                                             previews and statement details, and
+                                             the citation index with its shards
     backend/EXPORT.json                      what was exported, from which commit,
                                              runtime and generation
 
 Run it against Statement Map's accepted output for the release whose pin
 matches upstream.json:
 
-    python3 scripts/vendor_backend.py --from ../statement-map --data ../statement-map/data-local/reader-v6
+    python3 scripts/vendor_backend.py --from ../statement-map --data <accepted output> \\
+        --receipt ../statement-map/receipts/reader-v7-acceptance.json
 
 It refuses a release with another pin or schema, an asset whose bytes differ
 from the manifest, and any packet from another release, pin or generation.
@@ -48,9 +52,14 @@ SCHEMA = "statement-map-web/2"
 
 # The packet kinds the site reads. Archival packets (full family records,
 # manuscripts, Lean details, objects, navigation, the full numbers registry
-# and the legacy search file) stay in Statement Map.
+# and the legacy search file) stay in Statement Map. A family's evidence packet,
+# its Lean statements' previews and its paper statements' details are what a
+# family page opens on; the citation index, entries and shards answer "who
+# cites this author or work" without reading any manuscript packet.
 KINDS = ("family-reader", "universe", "overview", "numbers-index", "number-receipt",
-         "number-members", "search-index", "search-shard", "search-entries")
+         "number-members", "search-index", "search-shard", "search-entries",
+         "family-evidence", "lean-preview", "statement-detail",
+         "citations-index", "citation-entries", "citation-shard")
 
 
 def sha256_bytes(b: bytes) -> str:

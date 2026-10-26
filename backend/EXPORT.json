@@ -2,22 +2,27 @@
  "_note": "What backend/ holds and where it came from. scripts/reader.py checks these four files against their hashes, every packet under web/ against the manifest, and the schema, release, pin and generation of each packet, before a page uses it.",
  "schema": "plectis-atlas-backend-export/2",
  "backend": "Statement Map, by Will Cook (not yet published)",
- "backend_commit": "48bc2ee63c98ae4ac9e70d4a9d76eb932ebf9f02",
+ "backend_commit": "0fb16b5e23612323172ade2d33f893c08fc21970",
  "acceptance_receipt": {
-  "file": "reader-v6-outside-assessments-acceptance.json",
-  "tested_commit": "e1f4a67a37fce08815c89085e353ab05af401402",
-  "exporter": "reader-projection/6",
-  "sha256": "sha256:de8a84275f4f9d09e2c6e47c9b6d2fe95a4e7d90eb23d958dabe95aa9d1c9955"
+  "file": "reader-v7-acceptance.json",
+  "tested_commit": "854c4074603ba85e9023cfac6a757ceb1792372d",
+  "exporter": "reader-projection/7",
+  "sha256": "sha256:5b5a4242d098d7626067abe6e318d28d9e3372b4b95ef6ef6b7b6ca2a71f624b"
  },
  "release_id": "openai-math",
  "pin": "fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb",
- "generation_id": "sha256:a00a259f585f0a66241826b8c638852175265af1b921a7b1889127dc7d3cc9b3",
+ "generation_id": "sha256:eb85d3603ec7254e8723f8292d2014fbb295087c537d4a9a7c22689061a82822",
  "reader_schema": "statement-map-web/2",
  "packets": {
-  "count": 1675,
-  "bytes": 79689853,
+  "count": 3589,
+  "bytes": 107360964,
   "kinds": [
+   "citation-entries",
+   "citation-shard",
+   "citations-index",
+   "family-evidence",
    "family-reader",
+   "lean-preview",
    "number-members",
    "number-receipt",
    "numbers-index",
@@ -25,13 +30,14 @@
    "search-entries",
    "search-index",
    "search-shard",
+   "statement-detail",
    "universe"
   ]
  },
  "files": {
   "catalog.json": {
    "bytes": 1838,
-   "sha256": "sha256:6fc708018509cc6acd618d9092cf191d055cf45280a28b8ad6513f0ed7ae805e"
+   "sha256": "sha256:d2e95426ae6a8e589a6f37f352abf7aab43a8c3111c8fc08508c6cbfafdce19d"
   },
   "NOTICE.md": {
    "bytes": 5565,
@@ -39,11 +45,11 @@
   },
   "openai-math/targets.json": {
    "bytes": 2738689,
-   "sha256": "sha256:b6374fb065bf845164bc87404681d74a6e74c05405661d3dea78914f4a9b201f"
+   "sha256": "sha256:d68bb0840a841962973291fb51e54dd8740404fe576bb3d1333ea51598fa4663"
   },
   "openai-math/web/manifest.json": {
-   "bytes": 657123,
-   "sha256": "sha256:11a8950685b9d460853484bad2417f3647ae6408510782d0fb3343ca7eb6240f"
+   "bytes": 1406726,
+   "sha256": "sha256:745862bb4a7341fc3f7b3167e593d955f5029ae52486e9f9a485917bcb3898eb"
   }
  }
 }

@@ -198,6 +198,42 @@ class Reader:
             raise ReaderError(f"the reader route of {fam['id']} leads to {doc.get('id')}")
         return doc
 
+    def evidence(self, family_id: str) -> dict | None:
+        """A family's evidence packet (statement-map-evidence/1): the catalogue claim, one
+        case per Lean statement with its paper statements, preview and pairing routes,
+        the assessments each kept apart by what they assess, and the routes to details.
+        None for an export without one."""
+        doc = self.family(family_id)
+        route = doc.get("evidence")
+        if not route:
+            return None
+        ev = self.resolve(route)
+        if ev.get("version") != "statement-map-evidence/1" or ev.get("kind") != "family-evidence":
+            raise ReaderError(f"{doc['id']}: the evidence route leads to {ev.get('kind')} {ev.get('version')}")
+        return ev
+
+    def lean_preview(self, family_id: str, lean_id: str) -> dict | None:
+        """The compact preview of one Lean statement in a family: the configured theorem's
+        signature as source text, the backend's pairing decision for every family it is in,
+        and its source roles (the challenge, the solution declarations, the solution entry
+        file, the Comparator configuration). None when the family has no case for it."""
+        lid = lean_id if lean_id.startswith("l:") else "l:" + lean_id
+        ev = self.evidence(family_id)
+        case = next((c for c in (ev or {}).get("cases") or [] if c.get("id") == lid), None)
+        if not case or not case.get("preview"):
+            return None
+        pv = self.resolve(case["preview"])
+        if pv.get("id") != lid or pv.get("kind") != "lean-preview":
+            raise ReaderError(f"the preview route of {lid} leads to {pv.get('id')}")
+        return pv
+
+    def pairing_decision(self, family_id: str, lean_id: str) -> dict | None:
+        """The backend's one pairing decision for a Lean statement in a family: state,
+        target, targets, method, reason, review_state. Pages, filters and the map all
+        read this; the site never re-ranks it."""
+        pv = self.lean_preview(family_id, lean_id)
+        return ((pv or {}).get("pairings") or {}).get(self.fid(family_id))
+
     def lean_summary(self, lean_id: str) -> dict | None:
         """The overview's compact record of a Lean statement ("SiegelZeros" or "l:SiegelZeros")."""
         return self._lean.get(lean_id if lean_id.startswith("l:") else "l:" + lean_id)
