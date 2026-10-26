@@ -165,6 +165,15 @@ class AgentNavigation(unittest.TestCase):
         for path in ('index.html', 'families/159.html', 'statements/ErdosReciprocal.html'):
             self.assertIn('agents.md', (BUILT / path).read_text())
 
+    def test_no_page_keeps_the_root_placeholder(self):
+        """Shared HTML marks the site root as __ROOT__ until a page is written; a page
+        written outside build_site.write_page (the map's index.html once) kept it, so its
+        guide linked to .../__ROOT__families/017.html."""
+        if BUILT is None:
+            self.skipTest('pass --built after the complete build')
+        kept = [str(p.relative_to(BUILT)) for p in BUILT.rglob('*.html') if '__ROOT__' in p.read_text(encoding='utf-8')]
+        self.assertEqual(kept, [], f'{len(kept)} built pages keep __ROOT__')
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)

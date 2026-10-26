@@ -1486,13 +1486,13 @@ def header(rel: str, current: str | None) -> str:
 {help_dialog(root)}"""
 
 
-def help_steps_html(prefix: str = "help-", key: str = "steps") -> str:
-    """A numbered list of the guide's steps: the worked example (key "example_steps") or
-    the general route ("steps"), shared by the help dialog, help.html and the 404 page.
-    Each step carries an id, so data-help="<step>" opens the guide at it."""
-    cls = "help__steps help__steps--ex" if key == "example_steps" else "help__steps"
+def help_steps_html(prefix: str = "help-", lead: bool = False) -> str:
+    """The guide's numbered steps, shared by the help dialog, help.html and the 404 page;
+    lead sets them as the guide's main card. Each step carries an id, so
+    data-help="<step>" opens the guide at it."""
+    cls = "help__steps help__steps--ex" if lead else "help__steps"
     return f'<ol class="{cls}">' + "".join(
-        f'<li id="{prefix}{esc(sid)}"><span class="help__step">{text}</span></li>' for sid, text in COPY["help"][key]) + "</ol>"
+        f'<li id="{prefix}{esc(sid)}"><span class="help__step">{text}</span></li>' for sid, text in COPY["help"]["steps"]) + "</ol>"
 
 
 def help_terms_html(root: str) -> str:
@@ -1509,17 +1509,15 @@ def help_more_html(root: str, page_link=True) -> str:
 
 
 def help_guide_html(root: str, h: str = "h3", prefix: str = "help-", page_link=True) -> str:
-    """The guide's teaching order: one worked example (family 017) first, then the same
-    route for any result beside it, then the words in the order a reader meets them."""
+    """The guide: four steps to read any result, a link to try them on family 017, and
+    beside them the few words every page uses, each linked to its glossary entry."""
     hc = "help__h" if h == "h3" else "h2"
     return f"""<div class="help__cols">
-  <section class="help__example" aria-labelledby="{prefix}ex-h"><{h} class="{hc}" id="{prefix}ex-h">{esc(C('help.example_heading'))}</{h}>
-   <p class="help__intro">{esc(C('help.example_intro'))}</p>{help_steps_html(prefix, "example_steps")}
+  <section class="help__example" aria-labelledby="{prefix}steps-h"><{h} class="{hc}" id="{prefix}steps-h">{esc(C('help.steps_heading'))}</{h}>{help_steps_html(prefix, lead=True)}
    <p class="help__more"><a class="btn btn--primary btn--small" href="{root}families/017.html">{esc(C('help.example_open'))}</a></p></section>
-  <section class="help__route" aria-labelledby="{prefix}steps-h"><{h} class="{hc}" id="{prefix}steps-h">{esc(C('help.steps_heading'))}</{h}>{help_steps_html(prefix)}</section>
- </div>
- <section class="help__words" aria-labelledby="{prefix}terms-h"><{h} class="{hc}" id="{prefix}terms-h">{esc(C('help.terms_heading'))}</{h}>{help_terms_html(root)}
-  {help_more_html(root, page_link)}</section>"""
+  <section class="help__words help__words--side" aria-labelledby="{prefix}terms-h"><{h} class="{hc}" id="{prefix}terms-h">{esc(C('help.terms_heading'))}</{h}>{help_terms_html(root)}
+   {help_more_html(root, page_link)}</section>
+ </div>"""
 
 
 def help_dialog(root: str) -> str:

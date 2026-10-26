@@ -139,10 +139,11 @@ class Teaching(unittest.TestCase):
                 self.assertTrue(t.get("example"), f"core term {t['id']} has no example")
             self.assertNotIn("—", (t["short"] + t.get("example", "")).replace("NARROWER — DECLARED", ""))
 
-    def test_guide_teaches_the_example_first(self):
+    def test_guide_teaches_the_steps_first(self):
+        # The four steps lead, then the link to try them on family 017, then the words.
         d = S.help_dialog("../")
-        self.assertLess(d.index('class="help__example"'), d.index('class="help__route"'))
-        self.assertLess(d.index('class="help__route"'), d.index('class="help__words"'))
+        self.assertLess(d.index('class="help__steps help__steps--ex"'), d.index('href="../families/017.html"'))
+        self.assertLess(d.index('href="../families/017.html"'), d.index('class="help__words'))
 
 if __name__ == "__main__":
     unittest.main()

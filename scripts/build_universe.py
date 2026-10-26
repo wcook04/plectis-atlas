@@ -1710,6 +1710,9 @@ def main():
     body = page_body(M, gen, v)
     html_text = S.page("index.html", U("page.title"), U("page.description"), body, current="map",
                        extra_head=extra, main_class="u-main")
+    # Shared HTML (the guide's links, glossary terms) carries __ROOT__ for the page's root;
+    # build_site.write_page fills it in, and this page is written here, at the root.
+    html_text = html_text.replace("__ROOT__", "")
     (OUT / "index.html").write_text(html_text, encoding="utf-8")
     (OUT / "universe.html").write_text(redirect_stub(), encoding="utf-8")
     sizes = {p.name: p.stat().st_size for p in sorted(ddir.glob("universe-*.json"))}

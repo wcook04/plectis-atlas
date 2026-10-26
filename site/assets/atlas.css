@@ -1332,6 +1332,10 @@ th[aria-sort="descending"] > a.term + .sort--arrow::after { content: "\2193"; }
 .help__words { margin-top: var(--sp-5); padding-top: var(--sp-4); border-top: 1px solid var(--rule); }
 .help__words .help__terms { grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: var(--sp-3) var(--sp-5); }
 .help__words .help__term, .help__words .help__term:first-child { padding: 0; border: 0; }
+/* The words stand beside the steps, one under another, so the guide fits one screen. */
+.help__words--side { margin-top: 0; padding-top: 0; border-top: 0; }
+.help__words--side .help__terms { grid-template-columns: minmax(0, 1fr); gap: var(--sp-3); }
+.help__words--side > .help__h { font-family: var(--serif); font-size: 1.125rem; font-weight: 500; color: var(--ink); margin-bottom: var(--sp-3); }
 .page--help .help__cols { margin-top: var(--sp-2); }
 .page--help .help__example .help__steps li { font-size: var(--fs-base); }
 .page--help .help__route .help__steps li { font-size: var(--fs-body); }
