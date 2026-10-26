@@ -375,6 +375,9 @@
 .page--lean .lxb-code { margin: 0; padding: 12px 0; max-height: min(70vh, 44rem); overflow: auto; background: var(--code-bg); border-radius: var(--r-md); }
 .lxb-note { margin: 10px 0 0; max-width: none; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
 .lxb-note code { font-family: var(--lean-mono); }
+.lxb-proofs { list-style: none; margin: 4px 0 0; padding: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
+.lxb-proofs li { padding: 2px 0; overflow-wrap: anywhere; }
+.lxb-proofs code { font-family: var(--lean-mono); }
 .lxb-join { grid-area: join; margin: 0; padding: 10px 24px 12px; border-top: 1px solid var(--rule); font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); max-width: none; }
 .lxb-jh { font-weight: 600; color: var(--ink); }
 .lxb-join a { margin-left: 4px; white-space: nowrap; }

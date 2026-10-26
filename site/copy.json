@@ -1031,7 +1031,32 @@
   "credit": "The list records the works cited by the papers and links the papers that cite them.",
   "cited_by": "Cited by {n} papers",
   "how": "References are grouped automatically by DOI, then arXiv identifier, then normalised title, which can merge two works or split one. Each paper counts once per reference.",
-  "purpose": "The earlier work outside the release that its papers cite most, for anyone looking for background reading. Each entry links the papers that cite it."
+  "purpose": "The earlier work outside the release that its papers cite most, for anyone looking for background reading. Each entry links the papers that cite it.",
+  "find_heading": "Which papers cite a person or a work",
+  "find_intro": "Type an author’s surname, or words from a title. Every paper in the release whose bibliography has a matching entry is listed, with that entry and the section where the paper cites it.",
+  "find_label": "Author or title words",
+  "find_placeholder": "e.g. Duminil-Copin",
+  "find_button": "Find citations",
+  "find_field_author": "In author names",
+  "find_field_text": "Anywhere in the reference",
+  "find_try": "Try:",
+  "find_boundary": "A match is an entry in a paper’s bibliography. It does not say how the paper uses the cited work, and the same name can belong to different people.",
+  "js": {
+   "searching": "Searching the bibliographies…",
+   "found": "{papers} papers in the release cite “{q}”, in {refs} bibliography entries.",
+   "found_one": "One paper in the release cites “{q}”, in {refs} bibliography entries.",
+   "none_author": "No bibliography entry lists “{q}” among its authors.",
+   "none_text": "No bibliography entry contains all of “{q}”.",
+   "no_words": "Type a name or some words to search for.",
+   "coverage": "{missing} of the {total} bibliography entries record no separate author list, so an author search can miss them.",
+   "wider": "Show {n} more entries with these words elsewhere in the reference",
+   "wider_one": "Show one more entry with these words elsewhere in the reference",
+   "family": "Family {id}",
+   "in_bibliography": "See it in the paper’s bibliography",
+   "cited_in": "Cited in: {sections}",
+   "more": "Show more papers ({n} left)",
+   "failed": "The citation data could not be loaded. Reload the page to try again."
+  }
  },
  "citations_within": {
   "title": "Citations within the release",

@@ -397,6 +397,10 @@
   "lean_h": "OpenAI’s [[lean|Lean]] states",
   "lean_h_def": "OpenAI’s [[lean|Lean]] defines",
   "sorry": "[[sorry|`sorry`]] stands in for the proof here. OpenAI’s proof is in a separate file, and [[comparator|Comparator]] checks it against this statement.",
+  "proof_one": "OpenAI’s proof of it:",
+  "proof_many": "OpenAI’s proofs of these:",
+  "proof_line": "line {line}",
+  "proof_settings": "Comparator’s settings for this file",
   "def_note": "The verification settings name no theorem. [[comparator|Comparator]] tests whether OpenAI’s library defines {names} with the types written here, by name and type only.",
   "join_head": {
    "candidate-pairing": "Possible match",

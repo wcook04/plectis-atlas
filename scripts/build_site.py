@@ -3628,6 +3628,27 @@ def paper_marks():
     return _PAPER_MARKS
 
 
+def proof_sources_html(fid, sid) -> str:
+    """The solution declarations Comparator checks against this challenge, each linked at
+    its own pinned file and line, and the Comparator configuration: the backend's source
+    roles (lean-preview packets). The challenge's `sorry` is a placeholder, never the
+    submitted proof; this line says where the proof is."""
+    pv = RD().lean_preview(fid, sid) if fid else None
+    roles = (pv or {}).get("source_roles") or {}
+    sols = [x for x in roles.get("solutions") or [] if (x.get("source") or {}).get("url")]
+    if not sols:
+        return ""
+    items = []
+    for x in sols:
+        src = x["source"]
+        where = f'<code>{esc(src["file"].rsplit("/", 1)[-1])}</code>' + (", " + esc(LW("sheet.proof_line", line=src["line"])) if src.get("line") else "")
+        items.append(f'<li><a class="ext" href="{esc(src["url"])}" rel="noopener"><code translate="no">{esc(x["name"])}</code></a> ({where})</li>')
+    cfg = ((roles.get("configuration") or {}).get("source") or {}).get("url")
+    settings = f'<p class="lxb-note"><a class="ext" href="{esc(cfg)}" rel="noopener">{esc(LW("sheet.proof_settings"))}</a></p>' if cfg else ""
+    return (f'<p class="lxb-note lxb-proof">{esc(LW("sheet.proof_one" if len(sols) == 1 else "sheet.proof_many"))}</p>'
+            f'<ul class="lxb-proofs">{"".join(items)}</ul>{settings}')
+
+
 OG_DONE: dict = {}   # statement id -> (generic og block, per-statement og block)
 
 
@@ -3875,7 +3896,7 @@ def build_statement(stmt):
   <div class="lxb-lean">
    <h2 class="lxb-side lxb-side--lean" id="h-lean-read">{ctext(lean_side)} <button type="button" class="help-q" data-help="lean" aria-label="{esc(LW('page.lean_help_label'))}">?</button></h2>
    <div class="lean__tools"><button class="btn btn--quiet copy" type="button" data-copy-text="{esc(lean_copy)}">{esc(LW('page.copy_lean'))}</button><pre class="lean lean--snippet lean--read lxb-code"><code>{snippet_full}</code></pre></div>
-   <p class="lxb-note">{ctext(lean_note)}</p>
+   <p class="lxb-note">{ctext(lean_note)}</p>{proof_sources_html(fid, sid) if not definition_only and not stmt["declares_axiom"] else ""}
   </div>
   {join_line}
  </div>
@@ -4609,7 +4630,38 @@ def build_references_outside():
   <ul class="work__list">{cites}</ul>
  </div>
 </article>""")
-    body = f"""<div class="frame page">
+    r = RD()
+    copy_citation_packets(r)
+    # Three names to try, taken from the most-cited works' recorded authors.
+    tries = []
+    for w in hl:
+        first = (clean_ref_text(w.get("authors")) or "").split(" and ")[0].split(",")[0].strip()
+        # A person's surname, not a collective author ("The Stacks Project Authors").
+        if first and first not in tries and " " not in first and first[:1].isupper():
+            tries.append(first)
+        if len(tries) == 3:
+            break
+    try_html = " ".join(f'<button type="button" class="chip" data-cite-try="{esc(t)}">{esc(t)}</button>' for t in tries)
+    find = f"""<section class="band band--tight cite" id="find-citations" aria-labelledby="h-cite">
+ <h2 class="h2" id="h-cite">{esc(C('references_outside.find_heading'))}</h2>
+ <p class="intro">{esc(C('references_outside.find_intro'))}</p>
+ <form class="cite-form" id="cite-form" role="search">
+  <label class="cite-form__l" for="cite-q">{esc(C('references_outside.find_label'))}</label>
+  <div class="cite-form__row">
+   <input class="cite-form__q" id="cite-q" type="search" name="cites" autocomplete="off" spellcheck="false" placeholder="{esc(C('references_outside.find_placeholder'))}">
+   <button class="btn btn--primary" type="submit">{esc(C('references_outside.find_button'))}</button>
+  </div>
+  <fieldset class="cite-form__in"><legend class="vh">{esc(C('references_outside.find_label'))}</legend>
+   <label><input type="radio" name="cite-field" value="author" checked> {esc(C('references_outside.find_field_author'))}</label>
+   <label><input type="radio" name="cite-field" value="text"> {esc(C('references_outside.find_field_text'))}</label>
+  </fieldset>
+  {('<p class="cite-form__try">' + esc(C('references_outside.find_try')) + ' ' + try_html + '</p>') if tries else ''}
+ </form>
+ <p class="cite-status" id="cite-status" role="status" aria-live="polite"></p>
+ <div class="cite-out" id="cite-out"></div>
+ <p class="muted small">{esc(C('references_outside.find_boundary'))}</p>
+</section>"""
+    body = f"""<div class="frame page" data-generation="{esc(r.generation)}">
 {section_trail("", "explain", C("references_outside.title"))}
 <header class="phead phead--split">
  <h1 class="phead__title">{esc(C('references_outside.title'))}</h1>
@@ -4620,9 +4672,28 @@ def build_references_outside():
  </div>
  <p class="muted small">{esc(C('references_outside.how'))}</p>
 </header>
+{find}
 <section class="band band--tight"><div class="works">{''.join(rows)}</div></section>
-</div>"""
-    write_page(rel, page(rel, C("references_outside.title"), C("references_outside.lede", works=NUM("external_works_cited"), citations=NUM("external_citations"), n=len(hl)), body, current="explain"))
+</div>
+{json_script('cite-words', COPY['references_outside']['js'])}"""
+    extra = f'<script defer src="assets/{asset_v("cite.js")}"></script>'
+    write_page(rel, page(rel, C("references_outside.title"), C("references_outside.lede", works=NUM("external_works_cited"), citations=NUM("external_citations"), n=len(hl)), body, current="explain", extra_head=extra))
+
+
+CITATION_PACKETS = ("citations-index", "citation-entries", "citation-shard")
+
+
+def copy_citation_packets(r):
+    """Copy Statement Map's citation index (data/citations-index.json), entry chunks and
+    shards (data/citations/) at their logical paths, each checked first, for the lookup on
+    references-outside.html (site/assets/cite.js). A query reads only the index, its
+    shards and the chunks it needs."""
+    dst = OUT / "data"
+    for logical, path in r.browser_files(CITATION_PACKETS):
+        r.packet(logical)       # checks bytes, release, pin and generation
+        out = dst / logical
+        out.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, out)
 
 
 def used_on(nf: int, nfam: int) -> str:
@@ -4909,7 +4980,7 @@ def search_statement_name(entry):
     Search packets and the source statement retain the original title. Only the
     displayed label is rendered here, without links nested inside a result link.
     """
-    name = entry.get("name") or ""
+    name = entry.get("source_name") or entry.get("name") or ""
     if entry["kind"] != "statement" or not re.search(r"\\(?:" + "|".join(CITE_CMDS) + r")\b", name):
         return None
     slug = entry["id"][2:].partition(":")[0]
@@ -4928,7 +4999,10 @@ def search_statement_name(entry):
     rendered = NameConv(ms, "").text(name, inline=True)
     rendered = re.sub(r'<span class="m"[^>]*>(.*?)</span>',
                       lambda m: esc(_plain_math(html.unescape(m.group(1)))), rendered, flags=re.S)
-    return tex_plain(rendered)
+    rendered = tex_plain(rendered)
+    # With a printed number the backend names the statement by it; the title follows,
+    # as in the paper ("Theorem 1.1 (Finite-level ... decomposition)"), as atlas.js does.
+    return f'{entry["name"]} ({rendered})' if entry.get("source_name") else rendered
 
 
 def build_search_data():
