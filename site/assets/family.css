@@ -240,6 +240,8 @@
 .fx-cmp__paper { grid-area: paper; min-width: 0; }
 .fx-cmp__lean { grid-area: lean; min-width: 0; }
 .fx-cmp__grid .fx-st { margin-bottom: 0; max-width: none; }
+.fx-cmp__cards { display: grid; gap: 16px; min-width: 0; }
+.fx-cmp__cards > .fx-cmp__many { margin: 0; }
 .fx-cmp__why { margin: 6px 0; font-size: var(--fs-small); color: var(--muted); }
 /* The join: the words that qualify the two statements' being side by side. Between
    them when they stack; a band across both, above them, when they stand side by side. */
@@ -254,6 +256,8 @@
     .fx-cmp__paper, .fx-cmp__lean { display: grid; grid-template-rows: subgrid; align-items: end; }
     .fx-cmp__paper > :last-child, .fx-cmp__lean > :last-child { align-self: start; }
   }
+  /* The Lean travels beside a long column of linked paper statements, under the tab bar. */
+  .fx-cmp__lean > :last-child { position: sticky; top: 64px; }
 }
 
 .fx-lean { padding: 16px 18px 12px; background: var(--surface); border: 1px solid color-mix(in oklab, var(--steel) 40%, var(--rule-strong)); border-radius: var(--r-lg); }
@@ -665,6 +669,41 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-bd__jh { font-weight: 600; color: var(--ink); }
 .fx-bd__join .fx-why { margin-left: 4px; }
 
+/* A source reading (Statement Map reader v9): who read the Lean source and the paper,
+   then one row per link, the Lean declaration in the Lean's ink and the paper statement
+   in the paper's, the relation in words. The dashed rule is the sheet's own mark for a
+   link nobody has reviewed. The reader's explanation opens on request. */
+.fx-rl { font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); }
+.fx-rl p { margin: 0; max-width: none; }
+.fx-rl__by { color: var(--muted); }
+.fx-rl__l { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; }
+/* Each link reads across: the Lean declaration, the paper statement, the relation. On a
+   phone the three stack. The dashed rule is the sheet's mark for an unreviewed link. */
+.fx-rl__i, .fx-rl__hd { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 18px; max-width: none; }
+.fx-rl__i { padding-left: 12px; border-left: 2px dashed color-mix(in oklab, var(--steel) 55%, var(--rule-strong)); }
+.fx-rl__hd { display: none; padding-left: 14px; font-size: var(--fs-meta); font-weight: 600; color: var(--muted); }
+@media (min-width: 760px) {
+  .fx-rl__i, .fx-rl__hd { grid-template-columns: fit-content(24rem) minmax(0, 1.4fr) minmax(0, 1fr); align-items: baseline; }
+  .fx-rl__l--one .fx-rl__i, .fx-rl__l--one .fx-rl__hd { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+  .fx-rl__hd { display: grid; }
+}
+.fx-rl__decl code { font-family: var(--fx-lean-mono); font-size: 0.92em; color: var(--steel-text); overflow-wrap: anywhere; }
+.fx-rl__st { color: var(--ink); }
+.fx-rl__st a, .fx-rl__n { color: var(--brick-text); font-weight: 600; }
+.fx-rl__t { color: var(--ink-soft); }
+.fx-rl__rel { color: var(--ink); }
+.fx-rl__under { grid-column: 1 / -1; }
+.fx-rl__more { margin-top: 4px; }
+.fx-rl__all { margin-top: 4px !important; color: var(--ink-soft); }
+.fx-rl__all code { font-family: var(--fx-lean-mono); font-size: 0.92em; color: var(--steel-text); overflow-wrap: anywhere; }
+.fx-rl__lim { color: var(--ink-soft); }
+.fx-rl.fx-join { max-width: none; }
+.fx-main .fx-rl :is(p, li) { max-width: none; }
+.fx-rl--join .fx-rl__i, .fx-rl--join .fx-rl__hd { padding-left: 0; border-left: 0; }
+.fx-rl--none .fx-rl__lim { margin-top: 4px; }
+.fx-rl + .fx-bd__verdicts { margin-top: 8px; }
+.fx-rl__rel .fx-why { margin-left: 8px; white-space: normal; }
+
 /* A statement on the sheet is the paper's text set on the page: no card inside a card. */
 .fx-st--flat { margin: 0 0 12px; padding: 0; background: none; border: 0; border-radius: 0; }
 .fx-st--flat .fx-st__head { font-size: 1.125rem; }
@@ -683,6 +722,7 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-bd__lname a:hover { text-decoration: underline; }
 .fx-bd__lname code, .fx-bd__lid code, .fx-bd__more code { font-family: var(--fx-lean-mono); overflow-wrap: anywhere; }
 .fx-bd__lid { margin: 2px 0 0; font-size: var(--fs-small); color: var(--steel-text); }
+.fx-bd__unpaired { margin: -6px 0 10px; font-size: var(--fs-small); line-height: 1.45; color: var(--ink-soft); font-style: italic; }
 .fx-bd__code { margin: 12px 0 0; font-family: var(--fx-lean-mono); font-size: 0.8125rem; }
 .fx-bd__code code { font-family: inherit; }
 .fx-bd__sorry, .fx-bd__go, .fx-bd__more { margin: 8px 0 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); max-width: none !important; }

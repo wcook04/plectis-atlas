@@ -29,6 +29,7 @@ from urllib.parse import quote, urlencode
 
 import evidence
 import attribution
+import reader
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -2593,16 +2594,32 @@ def receipt_card(stmt, root, page_url, paper_ms, paper_st, conv, lines_html, pin
     fam = FAM.get(stmt["families"][0]) if stmt.get("families") else None
     label = (stmt.get("labels") or [stmt["id"]])[0]
     vtext = vocab_text(stmt)
-    state = pinfo["state"]
+    state = pairing_kind(pinfo)
+    # A reading or a word match that links several paper statements names the others too.
+    also = ""
+    if paper_st and len(pinfo.get("targets") or []) > 1:
+        doc_ = lean_family_doc(stmt["id"])[1]
+        others = []
+        for t in pinfo["targets"][1:] if doc_ else []:
+            _m, st_, rec_ = ms_statement(doc_, t)
+            others.append(backend_printed(rec_, st_))
+        if others:
+            also = f'<p class="rc__loc">{esc(LW("card.also_linked", which=", ".join(others)))}</p>'
     if paper_st:
         kind = esc(paper_st["display"]) + (f' <span class="rc__sttitle">({conv.text(paper_st["title"], inline=True)})</span>' if paper_st.get("title") else "")
         paper_body = statement_blocks(conv, paper_st["text"])
         loc = C("statement.card_locator", label=paper_st["label"], file=paper_st["file"], line=paper_st["line"]) if paper_st.get("label") else C("statement.card_locator_nolabel", file=paper_st["file"], line=paper_st["line"])
-        paper_src = f'<p class="rc__src"><span class="tex-auto">{rich(paper_ms["title"])}</span></p><p class="rc__loc">{esc(loc)}</p>'
+        paper_src = f'<p class="rc__src"><span class="tex-auto">{rich(paper_ms["title"])}</span></p><p class="rc__loc">{esc(loc)}</p>{also}'
         paper_label = cap(evidence.say("pairing_short." + state))
     else:
         kind = ""
-        paper_body = f'<p class="rc__none">{esc(pinfo.get("reason") or evidence.say("pairing.unavailable"))}</p>'
+        if pinfo.get("readings"):
+            rd = pinfo["readings"][0]
+            why_ = reading_limits(pinfo.get("reason") or rd.get("limitations") or "")
+            paper_body = (f'<p class="rc__none">{esc(READING_WORDS["unresolved"].format(author=rd.get("author") or READING_WORDS["someone"]))}</p>'
+                          + (f'<p class="rc__none">“{esc(curly_prose(why_))}”</p>' if why_ else ""))
+        else:
+            paper_body = f'<p class="rc__none">{esc(pinfo.get("reason") or evidence.say("pairing.unavailable"))}</p>'
         paper_src = ""
         paper_label = C("statement.card_paper_none")
     snippet = lean_snippet_html(stmt, lines_html, max_lines=18)
@@ -2843,360 +2860,146 @@ def backend_pairing(doc: dict, lid: str) -> dict:
     return out
 
 
-# The atlas's own reading of a Lean statement against its family's statements, used
-# only where the backend records no citation or binding. The backend's lexical
-# candidate matched catalogue and scope-note wording, which often names a different
-# theorem from the one the Lean states; this reading starts from the Lean text itself
-# (identifiers split at capitals and underscores, the definitions it reaches, its
-# docstrings), uses the release's name and note for the Lean statement only as a
-# secondary source, prefers the paper the Lean belongs to when the release's names say
-# which, and prefers a main theorem on a tie. It is a candidate, never a review.
-
-_PAIR_STOP = frozenset("""
-a about above after again all also an and any are as at be been being below between both but by can do does each
-either for from further given has have having here hold holds if in into is it its itself let more most no nor of on
-once only or other our out over own same she so some such than that the their them then there these they this those
-through thus to too under until up very was we were what when where whether which while who whom why will with
-would every exist exists satisfy satisfies satisfying fixed following define defined denote denotes write written
-theorem lemma def abbrev fun sorry namespace end oai noncomputable section classical exact open show type prop true
-false set finset card filter icc ico ioc ioo nat mk val coe sub add mul div pow succ fin ne lt le gt ge iff not
-main statement problem answer claim corollary proposition instance structure class decide simp intro use refine
-mathrm mathbb mathcal mathfrak mathbf mathsf operatorname frac tfrac dfrac left right leq geq neq cdot cdots ldots
-dots text textbf textit emph begin label ref cite eqref quad qquad sum prod int lim limsup liminf sup inf infty
-mid subset subseteq langle rangle big bigl bigr bigg biggl biggr displaystyle tag nonumber align equation itemize
-item enumerate colon mapsto vert lvert rvert lfloor rfloor lceil rceil hat bar tilde overline underline sim approx
-""".split())
-_LEAN_SYMBOLS = {"Fintype": " finite type ", "ℝ": " real ", "ℕ": " natural integer ", "ℤ": " integer ", "ℂ": " complex ", "ℚ": " rational ", "π": " pi ", "ζ": " zeta "}
-_TEX_SETS = {"R": "real", "N": "natural integer", "Z": "integer", "C": "complex", "Q": "rational"}
-
-
-_STEMS: dict = {}
-
-
-def _pair_stem(w: str) -> str:
-    """A crude English stem so 'colouring', 'colorable' and 'colors' meet."""
-    if w in _STEMS:
-        return _STEMS[w]
-    key = w
-    w = w.replace("colour", "color")
-    for suf, rep in (("abilities", ""), ("ability", ""), ("ables", ""), ("able", ""), ("ings", ""), ("ing", ""),
-                     ("ations", ""), ("ation", ""), ("ies", "y"), ("es", ""), ("ed", ""), ("s", "")):
-        if w.endswith(suf) and len(w) - len(suf) >= 3 and not w.endswith("ss"):
-            w = w[: len(w) - len(suf)] + rep
-            break
-    if len(w) > 4 and w.endswith("e"):
-        w = w[:-1]
-    _STEMS[key] = w
-    return w
-
-
-_WORDS: dict = {}
-
-
-def _pair_words(text: str, lean: bool = False) -> dict:
-    """{stem: the word as first written} for a Lean or TeX text (cached per text)."""
-    key = (text, lean)
-    if key not in _WORDS:
-        _WORDS[key] = _pair_words_uncached(text, lean)
-    return _WORDS[key]
-
-
-_PW_SPLIT = re.compile(r"[A-Z]+(?![a-z])|[A-Z]?[a-z]+")
-_PW_IDENT = re.compile(r"[A-Za-z][A-Za-z0-9']*")
-
-
-def _pair_words_uncached(text: str, lean: bool) -> dict:
-    out = {}
-    t = text or ""
-    # Constants such as 7/8 or 26m/75 are the most telling words two statements share:
-    # \frac{26m}{75} and 26 * (m : ℚ) / 75 both become 26m/75.
-    if lean:
-        f = re.sub(r"\(\s*([\w.']+)\s*:\s*[^()]*\)", r"\1", t)
-        f = re.sub(r"(\d)\s*\*\s*([A-Za-z])", r"\1\2", f)
-    else:
-        f = re.sub(r"\\[td]?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}", r" \1/\2 ", t)
-        f = re.sub(r"\\[td]?frac\s*(\w)\s*(\w)", r" \1/\2 ", f)
-    for m in re.finditer(r"(?<![\w.\\])([0-9]+[a-z]?|[a-z])\s*/\s*([0-9]+)(?![\w.])", f):
-        if any(ch.isdigit() for ch in m[1] + m[2]):
-            k = f"{m[1]}/{m[2]}"
-            out.setdefault(k, k)
-    if lean:
-        for k, v in _LEAN_SYMBOLS.items():
-            t = t.replace(k, v)
-    else:
-        t = re.sub(r"\\mathbb\s*\{?\s*([RNZCQ])\s*\}?", lambda m: " " + _TEX_SETS[m[1]] + " ", t)
-        t = re.sub(r"\\([A-Za-z]+)", r" \1 ", t)
-    for part in set(_PW_IDENT.findall(t)):
-        for w in _PW_SPLIT.findall(part.replace("'", "")):
-            lw = w.lower()
-            if len(lw) < 2 or lw in _PAIR_STOP:
-                continue
-            s = _pair_stem(lw)
-            if len(s) >= 2 and s not in _PAIR_STOP:
-                out.setdefault(s, lw)
-    return out
-
-
-def _depth0_split(text: str, sep: str) -> list:
-    parts, depth, cur = [], 0, []
-    for ch in text:
-        if ch in "([{⟨":
-            depth += 1
-        elif ch in ")]}⟩":
-            depth -= 1
-        if ch == sep and depth == 0:
-            parts.append("".join(cur))
-            cur = []
-        else:
-            cur.append(ch)
-    parts.append("".join(cur))
-    return [p for p in parts if p.strip()]
-
-
-def _lean_reading(stmt) -> dict:
-    """The pieces of a Lean statement the reading matches on: the checked statement's
-    conjuncts, the definitions each reaches by name, and the file's docstrings."""
-    spans, lines = decl_spans(stmt)
-    shorts = {full.split(".")[-1]: full for full in spans}
-    names = (stmt["comparator"]["theorem_names"] or stmt["comparator"].get("definition_names") or stmt["theorems"][:1])
-    body_of = lambda full: "\n".join(lines[spans[full][0]:spans[full][1] + 1])
-
-    def after_assign(txt):
-        return txt.split(":=", 1)[1] if ":=" in txt else txt
-
-    def idents(txt):
-        found = set()
-        for tok in re.findall(r"[\w'.]+", txt):
-            found.add(tok)
-            found.update(tok.split("."))
-        return [shorts[t] for t in found if t in shorts]
-
-    uses = {}
-
-    def reach(txt, skip=(), names_only=False, as_list=False):
-        seen, queue, out = set(skip), list(idents(txt)), []
-        while queue:
-            full = queue.pop(0)
-            if full in seen:
-                continue
-            seen.add(full)
-            b = body_of(full)
-            out.append(full.split(".")[-1] if names_only else b)
-            if full not in uses:
-                uses[full] = idents(b)
-            queue.extend(uses[full])
-        return out if as_list else "\n".join(out)
-
-    conjuncts, statement = [], []
-    for t in names:
-        if t not in spans:
-            continue
-        txt = body_of(t)
-        if t in stmt["comparator"]["theorem_names"] or t in stmt["theorems"]:
-            head = txt.split(":=", 1)[0]
-            depth, cut = 0, None
-            for k, ch in enumerate(head):
-                if ch in "([{⟨":
-                    depth += 1
-                elif ch in ")]}⟩":
-                    depth -= 1
-                elif ch == ":" and depth == 0:
-                    cut = k
-                    break
-            typ = head[cut + 1:] if cut is not None else head
-            ident = typ.strip()
-            if re.fullmatch(r"[\w.']+", ident) and ident.split(".")[-1] in shorts:
-                typ = after_assign(body_of(shorts[ident.split(".")[-1]]))
-            statement.append(head)
-            # A conjunction under a quantifier is one statement's clauses; only a
-            # top-level conjunction states several results outright.
-            under = re.match(r"\s*(∀|∃|fun\b|λ|¬|Π)", typ) is not None
-            conjuncts += [(c, under) for c in _depth0_split(typ, "∧")]
-        else:
-            statement.append(txt)
-            conjuncts.append((txt, False))
-    docs = " ".join([d for d in stmt.get("docstrings") or [] if isinstance(d, str)]
-                    + [d.get("doc") or "" for d in stmt.get("declarations") or []])
-    return {"statement": "\n".join(statement), "conjuncts": conjuncts, "reach": reach,
-            "skip": tuple(n for n in names), "docs": docs}
-
-
-def _lean_vector(r, text) -> dict:
-    """{stem: (weight, word, where)}: the checked text at full weight, its docstrings a
-    little lower, the bodies of the definitions it reaches lower still."""
-    vec = {}
-    pieces = [(1.0, text), (0.9, r["reach"](text, r["skip"], names_only=True)), (0.8, r["docs"])]
-    pieces += [(0.25, b) for b in r["reach"](text, r["skip"], as_list=True)]
-    for w, txt in pieces:
-        for s, word in _pair_words(txt, lean=True).items():
-            if s not in vec or vec[s][0] < w:
-                vec[s] = (w, word, "lean")
-    return vec
-
-
-_PAIR_POOL: dict = {}
-
-
-def _pair_pool(doc) -> dict:
-    """The family's statements as the reading sees them: words, paper, main-theorem flag."""
-    key = doc.get("id")
-    if key in _PAIR_POOL:
-        return _PAIR_POOL[key]
-    rows = []
-    for s in doc.get("statements") or []:
-        m, st, rec = ms_statement(doc, s["id"])
-        text = ((st or {}).get("text") or "") + " " + ((st or {}).get("title") or "")
-        words = _pair_words(text)
-        if not words:
-            continue
-        label = s["id"].rsplit(":", 1)[-1] if s["id"].count(":") >= 2 else ""
-        num = s.get("printed_number") or ""
-        main = ("main" in label.lower()) or (s.get("display") == "Theorem" and num in ("1", "1.1", "A"))
-        title = _pair_words((m or {}).get("title") or "") if main else {}
-        rows.append({"id": s["id"], "paper": (s.get("manuscript_id") or "")[2:], "words": words, "main": main,
-                     "headline": bool((st or {}).get("headline")),
-                     "title": {k: v for k, v in title.items() if k not in words}})
-    df = Counter(t for r_ in rows for t in set(r_["words"]) | set(r_["title"]))
-    n = len(rows)
-    import math
-    idf = {t: math.log((n + 1) / (c + 0.5)) for t, c in df.items()}
-    _PAIR_POOL[key] = {"rows": rows, "idf": idf, "avg": (sum(len(r_["words"]) for r_ in rows) / n) if n else 1}
-    return _PAIR_POOL[key]
-
-
-def _lean_paper(stmt, doc, lrec, pool) -> tuple:
-    """(paper slug, [evidence keys]) when the release's names for the Lean statement say
-    which paper it belongs to, else (None, [])."""
-    papers = sorted({r_["paper"] for r_ in pool["rows"]})
-    listed = [p for p in stmt.get("papers") or [] if p in papers]
-    if len(papers) == 1:
-        return papers[0], []
-    if len(listed) == 1:
-        return listed[0], ["listed"]
-    names = " ".join(stmt.get("labels") or [])
-    files = " ".join([stmt["file"].rsplit("/", 1)[-1].rsplit(".", 1)[0], stmt["comparator"].get("solution_module") or ""])
-    draft = (((lrec or {}).get("scope_draft") or {}).get("value") or {}).get("note") or ""
-    titles = {p: set(_pair_words((MS.get(p) or {}).get("title") or p.replace("-", " "))) for p in papers}
-    # Each source in turn, the release's own name first: the first that singles out
-    # one paper by at least two title words decides.
-    for keyname, txt in (("label", names), ("files", files), ("draft", draft)):
-        words = set(_pair_words(txt, lean=keyname == "files"))
-        hits = sorted(((len(words & titles[p]), p) for p in papers), reverse=True)
-        if hits and hits[0][0] >= 2 and (len(hits) == 1 or hits[0][0] > hits[1][0]):
-            return hits[0][1], [keyname]
-    return None, []
-
-
-def _rank(vec, note, pool, paper=None):
-    """Statements ranked by the words they share with the Lean (vec) and, at a third of
-    the weight, with the release's name and note for it (note)."""
-    out = []
-    idf = pool["idf"]
-    for r_ in pool["rows"]:
-        lean_hit = [(s, vec[s]) for s in r_["words"] if s in vec]
-        title_hit = [(s, vec[s]) for s in r_["title"] if s in vec]
-        note_hit = [s for s in r_["words"] if s in note and s not in vec]
-        lean_score = sum(w * idf[s] for s, (w, _, _) in lean_hit) + sum(0.6 * w * idf[s] for s, (w, _, _) in title_hit)
-        score = lean_score + sum(0.35 * idf[s] for s in note_hit)
-        # A long statement shares more words by its length alone.
-        norm = 0.6 + 0.4 * len(r_["words"]) / pool["avg"]
-        lean_score /= norm
-        score /= norm
-        if r_["main"]:
-            score *= 1.15
-        if paper and r_["paper"] == paper:
-            score *= 1.6
-        out.append({"target": r_["id"], "score": round(score, 3), "lean_score": round(lean_score, 3),
-                    "lean_terms": [r_["words"][s] for s, _ in sorted(lean_hit, key=lambda x: -idf[x[0]])],
-                    "note_terms": [r_["words"][s] for s in sorted(note_hit, key=lambda x: -idf[x])],
-                    "title_terms": [r_["title"][s] for s, _ in sorted(title_hit, key=lambda x: -idf[x[0]])],
-                    "paper": r_["paper"], "main": r_["main"], "headline": r_["headline"]})
-    out.sort(key=lambda a: (-a["score"], not a["main"], a["target"]))
-    for a in out:
-        a["matched_terms"] = a["lean_terms"] + a["title_terms"] + a["note_terms"]
-        a["shared_words"] = len(a["matched_terms"])
-    return out
-
-
-def _confident(ranked, floor=1.4, ratio=1.25, one_constant=False) -> bool:
-    """A clear match: enough of the Lean's own words, at least two of them (or, for one
-    conjunct, a single shared constant such as 26m/75), and well ahead of the next."""
-    if not ranked or ranked[0]["lean_score"] < floor:
-        return False
-    terms = ranked[0]["lean_terms"] + ranked[0]["title_terms"]
-    if len(terms) < 2 and not (one_constant and any("/" in t for t in terms)):
-        return False
-    return len(ranked) == 1 or ranked[0]["score"] >= ratio * ranked[1]["score"]
-
-
 _LEAN_PAIRING: dict = {}
 
 
+def _reading_record(r, cr: dict) -> dict:
+    """One attributed source reading, as the decision names it and with the explanation
+    from its full contribution (the Lean preview the reading's detail route reaches):
+    {author, kind, provenance, review_state, decision, body, limitations, targets:
+    [{target, declarations, relation, limitations, explanation}]}."""
+    full = {}
+    try:
+        full = r.resolve(cr["detail"]) if cr.get("detail") else {}
+    except reader.ReaderError:
+        full = {}
+    nav = (full or {}).get("navigation") or {}
+    expl = {}
+    for t in nav.get("targets") or []:
+        row = (t.get("row_id") or "").replace("#", ":", 1)
+        expl[row] = t.get("explanation") or ""
+    targets = []
+    for t in cr.get("targets") or []:
+        tid = t.get("target") or ""
+        targets.append({"target": tid, "declarations": list(t.get("declarations") or []), "relation": t.get("relation"),
+                        "limitations": t.get("limitations") or "", "explanation": expl.get(tid[2:], "")})
+    return {"author": (cr.get("author") or {}).get("name") or "", "kind": (cr.get("author") or {}).get("kind") or "",
+            "provenance": (cr.get("provenance") or {}).get("kind") or "", "review_state": cr.get("review_state") or "unreviewed",
+            "decision": cr.get("decision") or "", "body": (full or {}).get("body") or "",
+            "limitations": nav.get("limitations") or "", "targets": targets}
+
+
 def lean_pairing(doc: dict, lid: str) -> dict:
-    """One Lean statement's pairing with the family's paper statements.
+    """One Lean statement's pairing with the family's paper statements: Statement Map's one
+    decision for it (reader v9, Reader.pairing_decision), never re-ranked here. A citation
+    in the Lean source or a binding in the release's manifest comes first; then an
+    attributed source reading, which names each configured declaration, the paper
+    statement it is linked to, the relation and the reading's limits; then the backend's
+    source-text candidate from the Lean's own words; otherwise nothing is paired and the
+    backend's reason is shown. Every pairing is unreviewed unless a review is recorded.
 
-    A citation in the Lean source or a binding in the release's manifest, as the backend
-    records it, stands. Otherwise the atlas reads the Lean text against the family's
-    statements (see _rank above) and pairs it when one statement, or one per conjunct of
-    the Lean, is a clear match; when none is clear it falls back to the backend's
-    catalogue-word candidate only if that candidate lies in the Lean's own paper, and
-    otherwise pairs nothing and lists the closest statements.
-
-    Returns {state, target, targets, evidence, paper, paper_why, reason, alternatives,
-    method, association, record}; evidence is one of declared, cited, lean-words,
-    catalogue-words, none. A candidate is never a review."""
+    Returns {state, kind, target, targets, evidence, method, reason, readings, alternatives,
+    paper, paper_why, association, record}. state is the backend's; kind is the display
+    state, "source-reading" for an attributed reading. evidence is one of declared, cited,
+    reading, lean-words, none. targets keeps every linked statement in the backend's order."""
     lid = lid if lid.startswith("l:") else "l:" + lid
     key = (doc.get("id"), lid)
     if key in _LEAN_PAIRING:
         return _LEAN_PAIRING[key]
-    out = backend_pairing(doc, lid)
-    backend_alts = out["alternatives"]
-    out.update(targets=[out["target"]] if out["target"] else [], paper=None, paper_why=[],
-               evidence={"producer-declared-binding": "declared", "producer-cited-association": "cited"}.get(out["state"], "none"))
-    stmt = ST.get(lid[2:])
-    pool = _pair_pool(doc)
-    if not stmt or not pool["rows"]:
-        if out["state"] == "candidate-pairing":
-            out["evidence"] = "catalogue-words"
-        _LEAN_PAIRING[key] = out
-        return out
-    lrec = next((l for l in doc.get("lean") or [] if l.get("id") == lid), None)
-    r = _lean_reading(stmt)
-    vec = _lean_vector(r, r["statement"])
-    draft = (((lrec or {}).get("scope_draft") or {}).get("value") or {})
-    note = set(_pair_words(" ".join((stmt.get("labels") or []) + [draft.get("quote") or ""])))
-    paper, paper_why = _lean_paper(stmt, doc, lrec, pool)
-    ranked = _rank(vec, note, pool, paper)
-    out.update(alternatives=ranked[:8], paper=paper, paper_why=paper_why, method="atlas-lean-words")
-    if out["evidence"] in ("declared", "cited"):
-        _LEAN_PAIRING[key] = out
-        return out
-    in_paper = [a for a in ranked if not paper or a["paper"] == paper]
-    targets = []
-    if len(r["conjuncts"]) >= 2:
-        for c, under in r["conjuncts"]:
-            cr = [a for a in _rank(_lean_vector(r, c), set(), pool, paper) if not paper or a["paper"] == paper]
-            if under and cr and not any("/" in t for t in cr[0]["lean_terms"]):
-                continue   # a clause under a quantifier counts only when it shares a constant
-            # Several targets only among the paper's headline results, the ones its
-            # introduction states: a conjunct matching an inner proposition is a step.
-            if _confident(cr, floor=1.0, ratio=1.35, one_constant=True) and cr[0]["headline"] and cr[0]["target"] not in targets:
-                targets.append(cr[0]["target"])
-        if not 2 <= len(targets) <= 3:
-            targets = []
-    if not targets and _confident(in_paper):
-        targets = [in_paper[0]["target"]]
-    if targets:
-        targets.sort(key=lambda t: next(i for i, a in enumerate(ranked) if a["target"] == t))
-        out.update(state="candidate-pairing", target=targets[0], targets=targets, evidence="lean-words", reason=None)
-    elif out["state"] == "candidate-pairing" and (not paper or out["target"].split(":")[1] == paper):
-        b = next((a for a in backend_alts if a.get("target") == out["target"]), {})
-        out.update(targets=[out["target"]], evidence="catalogue-words", backend_terms=list(b.get("matched_terms") or []))
+    r = RD()
+    base = backend_pairing(doc, lid)
+    try:
+        d = r.pairing_decision(doc["id"], lid) or {}
+    except reader.ReaderError:
+        d = {}
+    stc = d.get("source_text_candidate") or {}
+    state = d.get("state") or base["state"]
+    targets = list(dict.fromkeys(d.get("targets") or ([d["target"]] if d.get("target") else [])))
+    if not d:
+        targets = [base["target"]] if base.get("target") else []
+    if not targets and state in PAIRED_STATES:
+        state = "unavailable"
+    method = d.get("method") or base.get("method")
+    readings = [_reading_record(r, cr) for cr in d.get("contributed_readings") or []]
+    reading = method == "contributed-source-reading"
+    if state == "producer-declared-binding":
+        ev = "declared"
+    elif state == "producer-cited-association":
+        ev = "cited"
+    elif state == "candidate-pairing":
+        ev = "reading" if reading else "lean-words"
     else:
-        out.update(state="unavailable", target=None, targets=[], evidence="none",
-                   reason=LW("pairing.no_confident"))
+        ev = "none"
+    out = {"state": state, "kind": "source-reading" if (reading and targets) else state,
+           "target": targets[0] if targets else None, "targets": targets, "evidence": ev, "method": method,
+           "reason": None if targets else (d.get("reason") or base.get("reason") or LW("pairing.no_confident")),
+           "readings": readings, "alternatives": list(stc.get("alternatives") or []),
+           "paper": stc.get("paper"), "paper_why": list(stc.get("paper_why") or []),
+           "association": base.get("association"), "record": d or base.get("record")}
     _LEAN_PAIRING[key] = out
     return out
+
+
+def pairing_kind(pinfo: dict) -> str:
+    """The display state of a pairing: the backend's state, or "source-reading" when an
+    attributed source reading links the statements (it is still an unreviewed candidate)."""
+    return pinfo.get("kind") or pinfo.get("state") or "unavailable"
+
+
+# A reading's own limits often repeat the disclaimer the line naming the reader gives
+# ("an agent source reading, not a proof replay"); that clause is not repeated beside
+# every link. Every other clause the reader recorded is quoted as written.
+_READING_DISCLAIMER = re.compile(
+    r"agent[- ](?:source reading|authored)|no human approval|source[- ]level (?:formulation )?comparison only"
+    r"|\bnot (?:an? )?(?:independent(?:ly)? (?:verification|review|reviewed|proof)|(?:lean |proof )(?:verification|replay|execution|certification)"
+    r"|proof verification|independent verification|mathematical verification)", re.I)
+
+
+# The words for a source reading are the family page's own (site/copy_family.json), so
+# the Lean statement page says the same thing in the same words.
+READING_WORDS = json.loads((SITE / "copy_family.json").read_text(encoding="utf-8"))["reading"]
+
+
+def reading_limits(text: str) -> str:
+    """What a source reader recorded as a link's limits, clause by clause, without the
+    general disclaimer that the line naming the reader already gives."""
+    keep = [x for x in re.split(r"(?<=[.;])\s+", (text or "").strip()) if x and not _READING_DISCLAIMER.search(x)]
+    out = " ".join(keep).strip()
+    out = out[:-1] + "." if out.endswith(";") else out
+    return out[:1].upper() + out[1:]
+
+
+def reading_how_html(doc: dict, pinfo: dict, root: str) -> str:
+    """How a source reading links a Lean statement to the paper, in full: who read the
+    two sources, then each link (the configured declarations, the paper statement with
+    its paper, the relation recorded), the reader's explanation and the limits they
+    recorded, quoted as written."""
+    F = READING_WORDS
+    out = []
+    for rd in pinfo.get("readings") or []:
+        by = (F["by_agent"] if rd.get("kind") == "agent" else F["by_person"]).format(author=rd.get("author") or F["someone"])
+        items = []
+        for t in rd["targets"]:
+            decls = ", ".join(f'<code translate="no">{esc(d)}</code>' for d in t["declarations"]) or esc(F["the_lean"])
+            rel = F["relation"].get(t.get("relation") or "", "")
+            line = F["link"].format(decls="\x00", label="\x01", relation=esc(rel)).replace("\x00", decls).replace("\x01", statement_ref_html(doc, t["target"], root))
+            expl = (f'<p class="rl__expl">{esc(curly_prose(t["explanation"]))}</p>') if t.get("explanation") else ""
+            lim = reading_limits(t.get("limitations"))
+            lim_html = f'<p class="rl__lim">{esc(F["limit"])} “{esc(curly_prose(lim))}”</p>' if lim else ""
+            items.append(f'<li class="rl__i"><p class="rl__link">{line}</p>{expl}{lim_html}</li>')
+        if items:
+            out.append(f'<p class="rl__by">{ctext(by)}</p><ol class="rl__l">{"".join(items)}</ol>')
+    return f'<div class="rl">{"".join(out)}</div>' if out else ""
+
+
+def reading_link(pinfo: dict, target: str) -> dict | None:
+    """The source reading's record for one linked paper statement: its declarations,
+    relation, limitations and explanation, with the reading's author."""
+    for rd in pinfo.get("readings") or []:
+        for t in rd["targets"]:
+            if t["target"] == target:
+                return dict(t, author=rd["author"], author_kind=rd["kind"], review_state=rd["review_state"])
+    return None
 
 
 # Every page counts the pairing these pages show (the Families list, the cards, the map).
@@ -3254,7 +3057,51 @@ def ms_statement(doc: dict, stmt_id: str):
     if st is None and rec and rec.get("source"):
         f = (rec["source"].get("file") or "").split(f"preprints/{slug}/", 1)[-1]
         st = next((s for s in m["statements"] if s.get("file") == f and s.get("line") == rec["source"].get("line")), None)
+    if st is None and rec and rec.get("source"):
+        st = backend_only_statement(doc, rec, slug)
     return m, st, rec
+
+
+_LABEL_LEAD = re.compile(r"^\s*\\label\{[^{}]*\}\s*")
+
+
+def statement_detail(doc: dict, stmt_id: str) -> dict | None:
+    """A paper statement's statement-detail packet, through the family's evidence case
+    that names it (the exact TeX, its source file and line, its printed number)."""
+    try:
+        ev = RD().evidence(doc["id"]) if doc else None
+    except reader.ReaderError:
+        return None
+    for case in (ev or {}).get("cases") or []:
+        for ps in case.get("paper_statements") or []:
+            if ps.get("id") == stmt_id and ps.get("detail"):
+                return RD().resolve(ps["detail"])
+    return None
+
+
+def backend_only_statement(doc: dict, rec: dict, slug: str) -> dict | None:
+    """A statement the Atlas's extraction does not hold (a lemma, or a statement the backend
+    imported by its exact anchor), in that extraction's shape, from the backend's record
+    and its statement-detail packet. The text is the source's own TeX without its label."""
+    text = rec.get("text") or ""
+    det = None
+    if not text.strip():
+        det = statement_detail(doc, rec["id"])
+        text = (det or {}).get("text") or ""
+    if not text.strip():
+        return None
+    src = rec.get("source") or (det or {}).get("source") or {}
+    # The statement's TeX label is its id's anchor (r:<slug>:<label>); a location anchor
+    # (L-<file>-<line>) has none. The record's name is a label or the statement's title.
+    anchor = (rec.get("id") or "")[2:].partition(":")[2].split("@", 1)[0]
+    label = anchor if anchor and not anchor.startswith("L-") else ""
+    name = rec.get("name") or ""
+    title = "" if (not name or name == label or name == rec.get("display")) else name
+    return {"file": (src.get("file") or "").split(f"preprints/{slug}/", 1)[-1], "line": src.get("line"),
+            "label": label or None, "title": title or None, "text": _LABEL_LEAD.sub("", text),
+            "display": rec.get("display") or "Statement", "kind": rec.get("statement_kind"),
+            "env": rec.get("statement_kind"), "section": rec.get("section"), "section_title": rec.get("section_title"),
+            "appendix": bool(rec.get("appendix")), "headline": False, "sha256": None, "backend_only": True}
 
 
 def backend_printed(rec: dict | None, st: dict | None = None) -> str:
@@ -3266,11 +3113,25 @@ def backend_printed(rec: dict | None, st: dict | None = None) -> str:
     return f"{kind} ({C('family.num_' + ('unnumbered' if status == 'unnumbered' else 'unavailable'))})"
 
 
+def statement_reading_page(rec: dict | None, st: dict | None, m: dict | None) -> str | None:
+    """Where a paper statement is read: the backend's reading_page, else, for a statement
+    the backend imported by its exact TeX label (a lemma the Atlas's extraction does not
+    hold), that label's anchor on the paper's reading page. check_paper_links.py fails the
+    build if such an anchor is missing."""
+    if rec and rec.get("reading_page"):
+        return rec["reading_page"]
+    label = (st or {}).get("label")
+    if m and label and (st or {}).get("backend_only") and m["id"] in PAPER_READING:
+        return f"papers/{quote(m['id'])}.html#{quote(label, safe=':')}"
+    return None
+
+
 def statement_ref_html(doc, stmt_id, root) -> str:
     """'Theorem 1.1 of <paper title>', linked to its place on the paper's reading page."""
     m, st, rec = ms_statement(doc, stmt_id)
     name = backend_printed(rec, st)
-    href = (root + rec["reading_page"]) if rec and rec.get("reading_page") else (f"{root}papers/{quote(m['id'])}.html" if m else None)
+    page = statement_reading_page(rec, st, m)
+    href = (root + page) if page else (f"{root}papers/{quote(m['id'])}.html" if m else None)
     title = ms_title_html(m) if m else esc(stmt_id)
     link = f'<a href="{esc(href)}">{esc(name)}</a>' if href else esc(name)
     return LW("pairing.ref", name="\x00", title="\x01").replace("\x00", link).replace("\x01", f'<span class="tex-auto">{title}</span>')
@@ -3324,7 +3185,9 @@ def join_html(doc, pinfo, root) -> str:
     if state == "candidate-pairing":
         ev_key = pinfo.get("evidence", "lean-words") + ("-multi" if len(pinfo.get("targets") or []) > 1 else "")
         parts.append(f'<p class="join__words">{esc(LW("pairing.evidence." + ev_key))}</p>')
-        if len(pinfo.get("targets") or []) < 2:
+        if pinfo.get("evidence") == "reading":
+            parts.append(reading_how_html(doc, pinfo, root))
+        elif len(pinfo.get("targets") or []) < 2:
             parts.append(f'<p class="join__how">{esc(" ".join(shared_words_sentence(pinfo)))}</p>')
         pref = paper_pref_sentence(pinfo)
         if pref:
@@ -3366,7 +3229,7 @@ def lean_runs_html(rec, root) -> str:
         names.setdefault(x["source"], prose_credit((x.get("credit") or {}).get("name") or x["source"]))
     acc = [names.get(s, s) for s in rec.get("accepted_current_sources") or []]
     lead = (evidence.say("reruns.none") if not acc else evidence.say("reruns.one", names=acc[0]) if len(acc) == 1
-            else evidence.say("reruns.many", n=say(len(acc)), names=evidence.join_names(acc)))
+            else cap(evidence.say("reruns.many", n=say(len(acc)), names=evidence.join_names(acc))))
     groups = []
     for g in rec.get("run_groups") or []:
         rows = [runs[i] for i in g.get("run_ids") or [] if i in runs]
@@ -3477,9 +3340,15 @@ def lean_left_items(sid, fid, doc, rec, pinfo, paper_ok, definition_only) -> lis
     kinds = {x.get("kind") for x in (doc or {}).get("remaining_checks") or []
              if x.get("target") in ("l:" + sid, fid)}
     if paper_ok and pinfo.get("target") and not CONTRIB["checks"].get(sid):
-        _m, _st, _r = ms_statement(doc, pinfo["target"])
-        ref = backend_printed(_r, _st)
-        items.append(LW("left.match", ref=ref))
+        refs = []
+        for t in pinfo.get("targets") or [pinfo["target"]]:
+            _m, _st, _r = ms_statement(doc, t)
+            refs.append(backend_printed(_r, _st))
+        ref = ", ".join(refs[:-1]) + (" " + C("family.and") + " " if len(refs) > 1 else "") + refs[-1]
+        # A source reading recorded a relation; what is unchecked is a person's review of it.
+        items.append(LW("left.match_reading" if pairing_kind(pinfo) == "source-reading" else "left.match", ref=ref))
+    elif not paper_ok and pinfo.get("readings"):
+        items.append(LW("left.no_match_reading"))
     elif not paper_ok:
         items.append(LW("left.no_match"))
     if "replay" in kinds:
@@ -3611,14 +3480,17 @@ def paper_marks():
             pinfo = lean_pairing(doc, rec["id"])
             if pinfo["state"] not in PAIRED_STATES or not pinfo["target"]:
                 continue
-            m, st, _ = ms_statement(doc, pinfo["target"])
-            if not st:
-                continue
-            row = marks[(m["id"], st["file"], st["line"])]
-            if all(x["id"] != rec["id"] for x in row["lean"]):
-                row["lean"].append({"id": rec["id"], "state": pinfo["state"],
-                                    "accepted": len(rec.get("accepted_current_sources") or []),
-                                    "holes": len(rec["definition_holes"]) if isinstance(rec.get("definition_holes"), list) else None})
+            # Every statement the Lean is linked to carries the note, not only the first.
+            for target in pinfo.get("targets") or [pinfo["target"]]:
+                m, st, _ = ms_statement(doc, target)
+                if not st:
+                    continue
+                row = marks[(m["id"], st["file"], st["line"])]
+                if any(x["id"] == rec["id"] for x in row["lean"]):
+                    continue
+                row["lean"].append({"id": rec["id"], "state": pairing_kind(pinfo),
+                                        "accepted": len(rec.get("accepted_current_sources") or []),
+                                        "holes": len(rec["definition_holes"]) if isinstance(rec.get("definition_holes"), list) else None})
         claim = doc.get("claim") or {}
         if claim.get("state") == "candidate" and claim.get("primary_candidate"):
             m, st, _ = ms_statement(doc, claim["primary_candidate"])
@@ -3679,7 +3551,9 @@ def build_statement(stmt):
     # as printed (several when its parts match several), or, with none paired, why and
     # the closest statements. The words at the join say how the two are linked, once.
     multi = len(pinfo.get("targets") or []) > 1 and bool(paper_st)
-    pair_state = "multi" if multi else pinfo["state"] if pinfo["state"] in PAIRED_STATES and paper_st else "unavailable"
+    reading = pairing_kind(pinfo) == "source-reading"
+    pair_state = ("reading" if reading and paper_st else "multi" if multi
+                  else pinfo["state"] if pinfo["state"] in PAIRED_STATES and paper_st else "unavailable")
     alts = alternatives_html(doc, pinfo, root, limit=6 if paper_st else 5) if doc else ""
     if paper_st:
         blocks = []
@@ -3694,29 +3568,42 @@ def build_statement(stmt):
         # With nothing paired: the backend's reason, then the closest statements by name
         # only; the words each shares wait in "How Atlas looked for a paper theorem".
         reason = pinfo.get("reason")
+        if pinfo.get("readings"):
+            # A source reading that links nothing: who read the sources and their reason.
+            F = READING_WORDS
+            rd = pinfo["readings"][0]
+            reason = None
+            paper_side_lead = (f'<p class="lxb-none">{esc(F["unresolved"].format(author=rd.get("author") or F["someone"]))}</p>'
+                               f'<p class="lxb-none rl__lim">“{esc(curly_prose(reading_limits(pinfo.get("reason") or rd.get("limitations") or "")))}”</p>')
+        else:
+            paper_side_lead = ""
         shown_ = set(pinfo.get("targets") or []) | {pinfo.get("target")}
         near = [a["target"] for a in (pinfo.get("alternatives") or [])
-                if a.get("target") and a["target"] not in shown_ and a.get("score", 1) > 0][:5] if doc else []
-        paper_side = ((f'<p class="lxb-none">{esc(cap(reason))}</p>' if reason else "")
+                if a.get("target") and a["target"] not in shown_ and a.get("score", 1) > 0][:5] if doc and not pinfo.get("readings") else []
+        paper_side = (paper_side_lead + (f'<p class="lxb-none">{esc(cap(reason))}</p>' if reason else "")
                       + (f'<p class="lxb-xh">{esc(LW("sheet.closest"))}</p><ul class="alts">'
                          + "".join(f"<li>{statement_ref_html(doc, t, root)}</li>" for t in near) + '</ul>' if near else ""))
     join_line = (f'<p class="lxb-join lxb-join--{esc(pair_state)}"><span class="lxb-jh">{esc(LW("sheet.join_head." + pair_state))}.</span> '
-                 f'{esc(LW("sheet.join_qual." + pair_state))} <a href="#h-pairing">{esc(LW("sheet.join_how"))}</a></p>')
+                 f'{esc(LW("sheet.join_qual." + pair_state))} <a href="#h-pairing">{esc(LW("sheet.join_how" + ("_reading" if reading else "")))}</a></p>')
     # How the pairing was found, for a reader who asks: the words shared, the cited line,
     # why one paper, the other candidates and the method. None of it repeats the join.
     how = []
-    if pinfo["state"] == "candidate-pairing" and paper_st:
+    if reading and paper_st:
+        how.append(reading_how_html(doc, pinfo, root))
+    elif pinfo["state"] == "candidate-pairing" and paper_st:
         for t in (pinfo["targets"] if multi else [pinfo["target"]]):
             lead_ = (statement_ref_html(doc, t, root) + ". ") if multi else ""
             how.append(f'<p class="join__how">{lead_}{esc(" ".join(shared_words_sentence(pinfo, t)))}</p>')
     elif pinfo["state"] == "producer-cited-association" and pinfo.get("association"):
         how.append(join_html(doc, pinfo, root))
-    pref = paper_pref_sentence(pinfo)
+    pref = "" if reading else paper_pref_sentence(pinfo)
     if pref:
         how.append(f'<p class="join__how">{pref}</p>')
-    if alts:
+    if alts and not reading and not pinfo.get("readings"):
         how.append(f'<h3 class="h3">{esc(LW("page.alternatives_heading" if paper_st else "sheet.closest_how"))}</h3><ul class="alts">{alts}</ul>')
-    if doc and pinfo["state"] not in ("producer-cited-association", "producer-declared-binding"):
+    if doc and (reading or pinfo.get("readings")):
+        how.append(f'<p class="small muted pair__method">{esc(LW("pairing.method_reading"))}</p>')
+    elif doc and pinfo["state"] not in ("producer-cited-association", "producer-declared-binding"):
         how.append(f'<p class="small muted pair__method">{esc(LW("pairing.method"))}</p>')
     # The shared words and the method on the left, the other candidates beside them, so
     # neither column runs half the width with the other half empty (24 October 2026).
@@ -3725,7 +3612,7 @@ def build_statement(stmt):
         rest = [x for i, x in enumerate(how) if i != alt_i]
         how = [f'<div class="lxb-how__cols"><div class="lxb-how__a">{"".join(rest)}</div><div class="lxb-how__b">{how[alt_i]}</div></div>']
     pairing_section = (f'<section class="band band--tight lxb-how" aria-labelledby="h-pairing">'
-                       f'<h2 class="h2" id="h-pairing">{esc(LW("sheet.how_heading" + ("" if paper_st else "_none")))}</h2>'
+                       f'<h2 class="h2" id="h-pairing">{esc(LW("sheet.how_heading" + ("_reading" if reading and paper_st else "" if paper_st else "_none")))}</h2>'
                        + "".join(how) + '</section>')
     # ... the Lean statement with the definitions needed to read it ...
     snippet_full = lean_snippet_html(stmt, lines_html)

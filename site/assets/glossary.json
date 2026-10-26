@@ -12,6 +12,7 @@
   "mathvet",
   "cert-machine",
   "pairing",
+  "source-reading",
   "scope-note",
   "map-colours"
  ],
@@ -114,8 +115,8 @@
   {
    "id": "pairing",
    "term": "Possible match",
-   "short": "A possible link between a paper statement and a Lean statement, selected automatically from words they share (also called a candidate pairing). Atlas records no review that their mathematical meanings agree.",
-   "example": "Atlas shows Theorem 1.1 of the π paper as PiExponent’s possible match, from shared words such as pi, integer and real."
+   "short": "A possible link between a paper statement and a Lean statement, also called a candidate pairing. It comes from a citation in the Lean source, from a source reading, or from words the two statements share. No person has reviewed that their mathematical meanings agree.",
+   "example": "Atlas shows Theorem 1.1 of the π paper as PiExponent’s possible match, from words the two share, such as pi, integer and real."
   },
   {
    "id": "reading-page",
@@ -154,23 +155,23 @@
   },
   {
    "id": "pairing-lean-words",
-   "term": "Paired from the Lean statement’s own words",
-   "short": "Atlas selects a possible paper match from words in the Lean statement, when one statement has a sufficiently clear match. Atlas records no review that their mathematical meanings agree.",
+   "term": "Paired by shared words",
+   "short": "With no citation and no source reading, Statement Map, the program that collects Atlas’s records, selects a possible paper match by comparing words in the Lean statement with every statement in the family, and pairs one only when the match is clear. No person has reviewed that their mathematical meanings agree.",
    "example": "PiExponent is matched to Theorem 1.1 of its paper this way."
   },
   {
    "id": "pairing-catalogue-words",
    "term": "Paired from the catalogue’s words, as a fallback",
-   "short": "When Lean wording gives no clear paper match, Atlas uses a possible match selected from OpenAI’s catalogue description, provided it belongs to the relevant paper. Atlas records no review that their mathematical meanings agree."
+   "short": "Earlier releases of Atlas’s records fell back to words in OpenAI’s catalogue description when the Lean wording gave no clear match. Since reader v9 (26 October 2026) this fallback is not used: nothing is paired instead."
   },
   {
    "id": "pairing-none",
-   "term": "A Lean statement with no confident match",
-   "short": "Neither the Lean text nor the catalogue words picked out one paper statement clearly, so the atlas pairs nothing and lists the closest statements instead."
+   "term": "No paper counterpart recorded",
+   "short": "No citation, source reading or clear word match links the Lean statement to one paper statement, so nothing is paired. When an AI agent read both sources and found no counterpart, its reason is shown."
   },
   {
    "id": "pairing-cited",
-   "term": "Paired by a citation in the Lean source",
+   "term": "Paired by a citation in the Lean",
    "short": "The Lean source cites a paper statement, and Atlas records that citation. Atlas records no review that the statements mean the same thing."
   },
   {
@@ -183,6 +184,12 @@
    "term": "Map colours",
    "short": "The map’s colours compare the two groups’ assessments of each family’s Lean statements. They do not say whether a paper’s proof is correct.",
    "example": "A family whose groups disagree, like family 017 (“full” against “NARROWER — DECLARED”), is coloured to show the disagreement."
+  },
+  {
+   "id": "source-reading",
+   "term": "Source reading",
+   "short": "A record by a named reader, so far always an AI agent (recorded as Codex source review 1 to 4), who read a Lean statement’s source and the paper and noted which Lean declaration states which paper statement, how the two relate and what the link leaves out. It compares statements, not proofs, and no person has reviewed it.",
+   "example": "A source reading records that ErdosReciprocal and Corollary 1.2 of its paper state the same claim."
   }
  ]
 }

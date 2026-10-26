@@ -31,9 +31,10 @@ PAIRINGS = ("candidate-pairing", "producer-cited-association", "producer-declare
 # How each Lean statement is paired with a paper theorem, as build_site.lean_pairing
 # decides it (its "evidence"), and the class a family carries in the Families list when
 # any of its Lean statements is paired that way. The order is the order a reader meets
-# them: the two kinds of recorded link first, then the atlas's readings, then none.
-PAIRING_EVIDENCE = ("cited", "declared", "lean-words", "catalogue-words", "none")
-PAIRING_CLASS = {"cited": "pair_cited", "declared": "pair_declared", "lean-words": "pair_lean_words",
+# them: the two kinds of recorded link first, then an attributed source reading, then the
+# backend's candidate from the Lean's own words, then none.
+PAIRING_EVIDENCE = ("cited", "declared", "reading", "lean-words", "catalogue-words", "none")
+PAIRING_CLASS = {"cited": "pair_cited", "declared": "pair_declared", "reading": "pair_reading", "lean-words": "pair_lean_words",
                  "catalogue-words": "pair_catalogue_words", "none": "pair_none"}
 PAIRING_CLASSES = tuple(PAIRING_CLASS[e] for e in PAIRING_EVIDENCE)
 # build_site registers lean_pairing here when it loads, so the evidence every page counts
@@ -96,6 +97,7 @@ class FamilyEvidence:
     checks: tuple = field(default=())   # kinds of outside checks by another method ("hol_checks", ...)
     findings: int = 0
     community_findings: int = 0
+    pairing_kind: str = ""            # the selected Lean statement's display state: its pairing state, or "source-reading"
     contributions: int = 0
     comparison: str = "unavailable"   # the backend's finer reader_comparison.state
     community: tuple = ()             # (kind, count) of attributed community findings, e.g. ("explanation", 2)
@@ -187,12 +189,14 @@ def family_evidence(r, family_id: str, discipline: str | None = None) -> FamilyE
     sel = doc.get("selection") or {}
     comm = doc.get("community") or {}
     pair_ev, pairing = [], sel.get("pairing_state") or "unavailable"
+    pairing_kind = pairing
     for l in lean:
         if PAIRING_READER is not None:
             p = PAIRING_READER(doc, l.id)
             pair_ev.append(p.get("evidence") or "none")
             if l.id == sel.get("lean"):
                 pairing = p.get("state") or "unavailable"
+                pairing_kind = p.get("kind") or pairing
         else:
             p = next((x for x in doc.get("pairing_selections") or [] if x.get("source") == l.id), {})
             st = sel.get("pairing_state") if l.id == sel.get("lean") else ("candidate-pairing" if p.get("status") == "candidate" and p.get("target") else "unavailable")
@@ -207,6 +211,7 @@ def family_evidence(r, family_id: str, discipline: str | None = None) -> FamilyE
         agreement=cmp.get("headline_coverage") or cmp.get("state") or "unknown",
         claim=(doc.get("claim") or {}).get("state") or "unresolved",
         pairing=pairing,
+        pairing_kind=pairing_kind,
         pair_evidence=tuple(pair_ev),
         scope_context=sel.get("scope_context"),
         checks=tuple(kinds),

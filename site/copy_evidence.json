@@ -24,15 +24,17 @@
   "unknown": "Atlas records no group’s comparison of these Lean statements with OpenAI’s description of the result."
  },
  "pairing": {
-  "candidate-pairing": "Atlas selected this possible match because the two statements share words. No review of whether they mean the same thing is recorded.",
+  "candidate-pairing": "This possible match was selected because the two statements share words. No review of whether they mean the same thing is recorded.",
   "producer-cited-association": "The Lean source cites this theorem by its label. Atlas records no review of whether the two statements mean the same thing.",
   "producer-declared-binding": "OpenAI’s release explicitly links this Lean statement to the paper theorem. Atlas records no review of whether the statements mean the same thing.",
+  "source-reading": "An AI agent read the Lean source and the paper and linked them. No person has reviewed the link.",
   "unavailable": "No paper theorem is paired with this Lean statement."
  },
  "pairing_short": {
   "candidate-pairing": "possible match",
   "producer-cited-association": "cited in the Lean source",
   "producer-declared-binding": "declared by the release",
+  "source-reading": "linked by an AI agent’s source reading",
   "unavailable": "no possible match"
  },
  "claim": {
@@ -89,10 +91,11 @@
  },
  "pairing_class": {
   "_note": "How a family’s Lean statements are paired with paper theorems, as filters in the Families list; a family carries each kind any of its Lean statements has.",
-  "pair_cited": "Paired by a citation in the Lean source",
+  "pair_cited": "Paired by a citation in the Lean",
   "pair_declared": "Paired by the release’s own declaration",
-  "pair_lean_words": "Paired from the Lean statement’s own words",
-  "pair_catalogue_words": "Paired from the catalogue’s words, as a fallback",
-  "pair_none": "A Lean statement with no confident match"
+  "pair_reading": "Paired by an AI agent’s reading",
+  "pair_lean_words": "Paired by shared words",
+  "pair_catalogue_words": "Paired by catalogue words",
+  "pair_none": "No paper counterpart recorded"
  }
 }

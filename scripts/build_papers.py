@@ -117,12 +117,14 @@ TXT = {
     # The full sentence behind the pairing's few words (its title and the screen reader's).
     "lean_how": {
         "candidate-pairing": "{lean} is a possible match to this theorem, selected from shared wording. Atlas records no review that the statements mean the same thing.",
+        "source-reading": "An AI agent read the source of {lean} and this paper and linked them. No person has reviewed the link.",
         "producer-cited-association": "The source of {lean} cites this theorem by its label. Atlas records no review that the statements mean the same thing.",
         "producer-declared-binding": "OpenAI’s release explicitly links {lean} to this theorem. Atlas records no review that the statements mean the same thing.",
     },
     "lean_how_other": "{lean} is paired with this theorem.",
     "lean_tag": {
         "candidate-pairing": "possible match from shared wording, not reviewed",
+        "source-reading": "linked by an AI agent’s reading, not reviewed",
         "producer-cited-association": "cited in the Lean source, not reviewed",
         "producer-declared-binding": "linked by OpenAI, not reviewed",
         "reviewed": "reviewed pairing",
@@ -4673,7 +4675,7 @@ def lean_evidence_html(mark: dict) -> str:
     # data-tag: the pairing in a few words, as the note shows it
     link = (f'<a href="../statements/{quote(lid)}.html" data-tag="{esc_a(lean_tag(state))}">'
             f'<code>{esc_t(lid)}</code></a>')
-    line1 = (f'<p class="pr-lean pr-lean--{"candidate" if state == "candidate-pairing" else "cited"}">'
+    line1 = (f'<p class="pr-lean pr-lean--{"candidate" if state in ("candidate-pairing", "source-reading") else "cited"}">'
              f'<span class="pr-lean__k">{S.ctext("[[lean|Lean]]")}</span> {link} '
              f'<span class="pr-lean__st" title="{esc(how)}">{esc_t(lean_tag(state))}</span></p>')
     fid, doc, rec = S.lean_family_doc(lid)
@@ -5016,6 +5018,7 @@ def side_panel_html(m: dict, fam: dict | None, root: str, printed: dict | None =
         lid = rec["id"][2:]
         pinfo = S.lean_pairing(doc, rec["id"])
         state = pinfo["state"]
+        kind = S.pairing_kind(pinfo)
         if state in S.PAIRED_STATES and pinfo.get("target"):
             pm, pst, prec = S.ms_statement(doc, pinfo["target"])
             here = bool(pm) and pm["id"] == m["id"]
@@ -5031,7 +5034,7 @@ def side_panel_html(m: dict, fam: dict | None, root: str, printed: dict | None =
                     paper += f' <span class="pr-pair__away">{esc(TXT["side_here_none"])}</span>'
             else:
                 paper = f'<span class="pr-pair__away">{esc(TXT["side_match_none"])}</span>'
-            join = lean_tag(state)
+            join = lean_tag(kind)
             cls = "candidate" if state == "candidate-pairing" else "cited"
         else:
             paper = f'<span class="pr-pair__away">{esc(TXT["side_match_none"])}</span>'

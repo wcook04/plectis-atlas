@@ -350,11 +350,15 @@ class Model:
                     fams[fi]["lean"].append(li)
                     lsum = r.lean_summary(l["id"]) or {}
                     _, state = targets.get(l["id"], ([], "unavailable"))
-                    leans.append({"id": l["id"], "f": fi, "name": l["id"][2:],
-                                  "label": plain(lsum.get("name_tex") or l.get("name") or l["id"][2:]),
-                                  "acc": list(l.get("accepted_current_sources") or []),
-                                  "main": bool(l.get("main_result")), "results": [], "pairing": state,
-                                  "href": f"statements/{quote(l['id'][2:])}.html"})
+                    entry = {"id": l["id"], "f": fi, "name": l["id"][2:],
+                             "label": plain(lsum.get("name_tex") or l.get("name") or l["id"][2:]),
+                             "acc": list(l.get("accepted_current_sources") or []),
+                             "main": bool(l.get("main_result")), "results": [], "pairing": state,
+                             "href": f"statements/{quote(l['id'][2:])}.html"}
+                    # rd: linked by an attributed source reading (still an unreviewed candidate).
+                    if S.pairing_kind(S.lean_pairing(doc, l["id"])) == "source-reading":
+                        entry["rd"] = 1
+                    leans.append(entry)
                 # A Lean statement paired with several theorems hangs under each of them,
                 # the clearest first.
                 for lid, (sids, state) in targets.items():
@@ -900,10 +904,11 @@ def build_detail(M, names):
         lean_doc = {l["id"]: l for l in doc.get("lean") or []}
         # The words a candidate pairing was found by: the Lean's own words when the atlas
         # read the Lean text, the catalogue's words for the backend's fallback candidate.
-        shared = {}
+        shared, kinds = {}, {}
         for lid in lean_doc:
             pinfo = S.lean_pairing(doc, lid)
-            if pinfo.get("state") == "candidate-pairing" and pinfo.get("target"):
+            kinds[lid] = S.pairing_kind(pinfo)
+            if pinfo.get("evidence") == "lean-words" and pinfo.get("target"):
                 t = S.pairing_terms(pinfo)
                 shared[lid] = t["lean"] + t["title"] + t["note"] + t["catalogue"]
         for li in f["lean"]:
@@ -923,7 +928,7 @@ def build_detail(M, names):
                 "runs": runs,
                 "reruns": reruns_sentence(L["acc"], names),
                 "holes": [h.get("name", h) if isinstance(h, dict) else str(h) for h in holes],
-                "pairing": E.say("pairing." + L["pairing"]),
+                "pairing": E.say("pairing." + ("source-reading" if kinds.get(L["id"]) == "source-reading" else L["pairing"])),
                 "terms": shared.get(L["id"], []),
             }
     return shards
@@ -1661,7 +1666,7 @@ def main():
     h.update(canonical(layout))
     contract = [{"generation_id": gen, "drawing_sha256": h.hexdigest()[:20], "upstream_commit": S.COMMIT,
                  "ids": "Statement Map's reader ids: d:, f:, p:, r:, l:",
-                 "pairing": "build_site.lean_pairing: Statement Map's citations and bindings, else the atlas's reading of the Lean text; candidate pairings are unreviewed"}]
+                 "pairing": "build_site.lean_pairing: Statement Map's pairing decision (citations and bindings, else an attributed source reading, marked rd, else a candidate from the Lean text); candidate pairings and readings are unreviewed"}]
     data = {"generation_id": gen, "contract": contract, **data}
     layout = {"generation_id": gen, "contract": contract, **layout}
     ddir = OUT / "data"
