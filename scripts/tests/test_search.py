@@ -55,6 +55,15 @@ def search_tokens(text):
 
 def search_shard(token):
     return format(int(hashlib.sha256(token.encode()).hexdigest()[:2], 16) % 64, '02x')
+
+
+def query_tokens(text):
+    """search_tokens(text, query=True) at reader-projection/7: the folded words a query and
+    the citation lookup use, NFKD with combining marks removed, split at non-word characters."""
+    text = unicodedata.normalize('NFKC', html.unescape(text)).casefold()
+    text = re.sub(r'\\(?:mathbb|mathcal|mathrm|mathbf|text)\s*\{([^{}]*)\}', r' \1 ', text)
+    folded = ''.join(c for c in unicodedata.normalize('NFKD', text) if not unicodedata.category(c).startswith('M'))
+    return sorted(set(re.findall(r'[^\W_]+', folded, flags=re.UNICODE)))
 # --------------------------------------------------------------------------------------
 
 
@@ -81,7 +90,7 @@ var global = globalThis;
 %s
 const fs = require('fs');
 const input = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
-const out = { tokens: input.texts.map(t => searchTokens(t)), shards: input.tokens.map(t => shardSync(t)),
+const out = { tokens: input.texts.map(t => searchTokens(t)), qtokens: input.texts.map(t => queryTokens(t)), shards: input.tokens.map(t => shardSync(t)),
               urls: input.entries.map(e => urlFor(e[0], e[1])) };
 const subtle = globalThis.crypto && globalThis.crypto.subtle;
 (subtle ? Promise.all(input.tokens.slice(0, 2000).map(t => subtle.digest('SHA-256', new TextEncoder().encode(t))
@@ -143,15 +152,15 @@ vm.runInContext(src.slice(src.indexOf('(function (global) {')), context);
   const parentId = 'r:Global-Arthur-Enhancements-of-Cuspidal-Excursion-Parameters-October-5-2026:thm:parent';
   const parent = (await context.AtlasSearch.query('Ramanujan')).find(h => h.id === parentId);
   assert.ok(parent, 'citation-bearing title remains searchable');
-  assert.ok(parent.name.startsWith('Finite-level Ramanujan–Arthur decomposition ['));
+  assert.ok(parent.name.startsWith('Theorem 1.1 (Finite-level Ramanujan–Arthur decomposition ['), parent.name);
   assert.ok(parent.name.includes('Theorem 1.1'), 'retain the cited locator');
   assert.ok(!parent.name.includes('\\'), 'render citation syntax in result labels');
   assert.equal(parent.url, 'papers/Global-Arthur-Enhancements-of-Cuspidal-Excursion-Parameters-October-5-2026.html#thm:parent');
-  const citedOnly = (await context.AtlasSearch.query('ABKRT21')).find(h => h.name === '[Aaronson et al., 2021]');
+  const citedOnly = (await context.AtlasSearch.query('ABKRT21')).find(h => / \(\[Aaronson et al\., 2021\]\)$/.test(h.name));
   assert.ok(citedOnly, 'a citation-only title keeps its attribution');
   const labels = JSON.parse(fs.readFileSync(path.join(__dirname, 'data/search/labels.json'), 'utf8'));
   const packetId = 'r:Diagonal-Fourier-extension-for-positively-curved-surfaces-in-three-dimensions-September-24-2026:thm:packet';
-  assert.ok(labels.statement_names[packetId].startsWith('Packet propagation ['));
+  assert.ok(/^\S+ [\d.]+ \(Packet propagation \[/.test(labels.statement_names[packetId]), labels.statement_names[packetId]);
   assert.ok(!labels.statement_names[packetId].includes('\\'), 'undefined source locator macros stay out of navigation labels');
   assert.ok(requested.every(url => url.endsWith('.json')), 'no guessed page request');
   console.log('test_search: canonical Lean filename searches pass in original, lower and upper case; unknown name stays empty.');
@@ -258,6 +267,21 @@ def main() -> int:
         want = search_tokens(text)
         if sorted(toks) != want:
             fails.append(f"tokens of {text!r}: atlas.js {sorted(toks)}, Statement Map {want}")
+    for text, toks in zip(texts, got["qtokens"]):
+        want = query_tokens(text)
+        if sorted(toks) != want:
+            fails.append(f"query words of {text!r}: atlas.js {sorted(toks)}, Statement Map {want}")
+    # Every author and text word the citation shards index is a query word of itself, so
+    # the citation lookup (cite.js) can reach it.
+    cite_words = 0
+    for name, path in r.packet("citations-index.json")["shards"].items():
+        if name.startswith("work-"):
+            continue
+        for key in r.packet(path)["terms"]:
+            word = key.split(":", 1)[1]
+            cite_words += 1
+            if query_tokens(word) != [word]:
+                fails.append(f"citation key {key!r} is not reachable by a query")
     for tok in tokens:
         if search_tokens(tok) != [tok]:
             fails.append(f"vendored token {tok!r} does not normalise to itself in Statement Map's function")
@@ -290,7 +314,7 @@ def main() -> int:
         return 1
     print(f"test_search: {len(tokens)} vendored tokens, {len(entries)} entry names and {len(HARD)} hard queries "
           f"normalise as Statement Map does; every token's shard matches; {checked} statement links match "
-          f"the backend's reading pages.")
+          f"the backend's reading pages; query words match too, and all {cite_words} citation words are reachable.")
     return 0
 
 

@@ -1075,7 +1075,7 @@ def board_pair(c: Ctx) -> tuple:
         first = dict(s, comparator=dict(s["comparator"], theorem_names=names[:1]))
         code = f'<pre class="lean lean--snippet fx-bd__code"><code>{S.lean_breaks(S.lean_snippet_html(first, max_lines=14))}</code></pre>'
         if names and "sorry" in s["lean"]:
-            code += f'<p class="fx-bd__sorry">{W("board.sorry")}</p>'
+            code += proof_note(c, l, cls="fx-bd__sorry", fallback="board.sorry")
     title = l.get("name") or ""
     t_html = f'<span class="md-math">{esc(curly_tex(title))}</span>' if title and title != name else ""
     others = ""
@@ -1591,9 +1591,36 @@ def lean_card(c: Ctx, l) -> str:
     return (f'<article class="fx-lean" aria-labelledby="lean-{esc(name)}-h">'
             f'<h4 class="fx-lean__head" id="lean-{esc(name)}-h"><a href="{c.root}statements/{esc(name)}.html"><span class="md-math">{esc(curly_tex(l.get("name") or name))}</span></a></h4>'
             f'<p class="fx-lean__file"><code translate="no">{S.lean_breaks(">" + esc(name))[1:]}.lean</code>, {esc(role)}.</p>'
-            f'{code}' + (f'<p class="fx-lean__note">{W("compare.sorry")}</p>' if code and s["comparator"]["theorem_names"] and "sorry" in s["lean"] else "") + f'{more}{holes_html}'
+            f'{code}' + (proof_note(c, l) if code and s["comparator"]["theorem_names"] and "sorry" in s["lean"] else "") + f'{more}{holes_html}'
             + f'<p class="fx-lean__go"><a href="{c.root}statements/{esc(name)}.html">{esc(W("compare.lean_open"))}</a></p>'
             + f'<p class="fx-lean__go"><a href="#readings" data-fx-go>{esc(W("compare.runs_tab", name=name))}</a></p></article>')
+
+
+def proof_note(c: Ctx, l, cls: str = "fx-lean__note fx-lean__proof", fallback: str = "compare.sorry") -> str:
+    """Where the proof is. The challenge file shows `sorry`; the backend's source roles
+    name the solution declarations Comparator checks against it, each at its own file
+    and pinned line, and the configuration file. A reader who mistakes the placeholder
+    for the submitted proof is sent straight to the proof. Without recorded solutions the
+    general sentence stands."""
+    pv = _reader().lean_preview(c.doc["id"], l["id"])
+    roles = (pv or {}).get("source_roles") or {}
+    sols = [x for x in roles.get("solutions") or [] if (x.get("source") or {}).get("url")]
+    if not sols:
+        return f'<p class="{cls}">{W(fallback)}</p>'
+    items = []
+    for x in sols[:3]:
+        src = x["source"]
+        where = f'<code translate="no">{esc(src["file"].rsplit("/", 1)[-1])}</code>'
+        if src.get("line"):
+            where += ", " + esc(W("compare.proof_line", line=src["line"]))
+        items.append(f'<a class="ext" href="{esc(src["url"])}" rel="noopener"><code translate="no">'
+                     f'{esc(x["name"].rsplit(".", 1)[-1])}</code></a> ({where})')
+    if len(sols) > 3:
+        items.append(esc(W("compare.proof_more", n=len(sols) - 3)))
+    text = W("compare.sorry_proof" if len(sols) == 1 else "compare.sorry_proofs", proofs=join_and(c.S, items))
+    cfg = ((roles.get("configuration") or {}).get("source") or {}).get("url")
+    settings = (f' <a class="ext" href="{esc(cfg)}" rel="noopener">{esc(W("compare.proof_settings"))}</a>.' if cfg else "")
+    return f'<p class="{cls}">{text}{settings}</p>'
 
 
 def run_chips(c: Ctx, l) -> str:

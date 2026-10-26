@@ -67,6 +67,21 @@ judgement or rebuild a count from a different population. The separate
 `data/` indexes support source browsing and rendering. They are not permission
 to override the evidence packets.
 
+One documented exception remains: lexical pairing candidates. A pairing that the
+Lean source cites or OpenAI declares comes from the backend unchanged. Where only
+shared wording links a Lean statement to a paper theorem, `build_site.lean_pairing`
+reads the Lean text itself and labels the result an unreviewed candidate. On
+26 October 2026 its choices were compared with the backend's reader-projection/7
+decisions for all 416 Lean statements: 273 agree and 143 differ, and in a sample of
+16 differences the Lean-text reading was plainly the closer match in 9, the
+backend's in 3, and 4 were unclear without a mathematical comparison. Neither is
+a review. The comparison was sent to Statement Map; adopt the backend's decision
+here when its candidates are at least as accurate. Each Lean statement's source
+roles (its challenge file, OpenAI's solution declarations and the Comparator
+configuration) are read from the backend's `lean-preview` packets
+(`reader.lean_preview`), so a page links the actual proof rather than the
+challenge's `sorry`.
+
 `LICENSES/manifest.json` owns the distributed component inventory.
 `scripts/attribution.py` checks its bytes and source-licence coverage, then copies
 licence notices into each website build. See [attribution](ATTRIBUTION.md).

@@ -815,6 +815,17 @@
     for (var i = 0; i < m.length; i++) if (!seen[m[i]]) { seen[m[i]] = 1; out.push(m[i]); }
     return out.sort();
   }
+  /* The backend's query words (statement-map-web/2, reader-projection/7), used by the
+     citation lookup: the same steps, then NFKD with every combining mark removed, split
+     at anything that is not a letter or a digit. "Kähler" and "Kahler", "Landau–Siegel"
+     and "Landau Siegel" give the same words. */
+  function queryTokens(text) {
+    var t = casefold(unescapeHtml(String(text == null ? '' : text)).normalize('NFKC'));
+    t = t.replace(UNWRAP, ' $1 ').normalize('NFKD').replace(/\p{M}/gu, '');
+    var seen = Object.create(null), out = [], m = t.match(/[\p{L}\p{N}]+/gu) || [];
+    for (var i = 0; i < m.length; i++) if (!seen[m[i]]) { seen[m[i]] = 1; out.push(m[i]); }
+    return out.sort();
+  }
   /* SHA-256, for the shard of a token when crypto.subtle is unavailable (an http page
      outside localhost). Only the first byte is used. */
   var K256 = [0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, 0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070, 0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
@@ -874,7 +885,7 @@
     }
     return null;
   }
-  var NORMALISE = { searchTokens: searchTokens, casefold: casefold, shardSync: shardSync, urlFor: urlFor };
+  var NORMALISE = { searchTokens: searchTokens, queryTokens: queryTokens, casefold: casefold, shardSync: shardSync, urlFor: urlFor };
   /* search-normalise:end */
 
   if (typeof document === 'undefined') { global.AtlasSearchNormalise = NORMALISE; return; }
@@ -931,13 +942,22 @@
       });
     });
   }
+  /* A statement the backend names by its printed number ("Corollary 1.2") keeps the
+     title its paper gives it, as the paper prints both: "Corollary 1.2 (Divergent
+     reciprocal sums)". A source name that is only a TeX label or a kind adds nothing. */
+  var BARE_KIND = /^(?:Theorem|Lemma|Corollary|Proposition|Conjecture|Definition|Remark|Question|Problem|Claim|Hypothesis|Statement|Example|Observation|Fact)$/;
+  function titled(e) {
+    var s = e.source_name;
+    if (e.kind !== 'statement' || !s || s === e.name || /^[A-Za-z]+:[\w:.\-]+$/.test(s) || BARE_KIND.test(s)) return e.name;
+    return e.name + ' (' + s + ')';
+  }
   function decorate(e, lab, idx) {
     var paper = null;
     if (e.kind === 'statement') {
       var rest = e.id.slice(2), j = rest.indexOf(':');
       paper = lab.papers['p:' + rest.slice(0, j)] || null;
     }
-    var name = (lab.statement_names || {})[e.id] || e.name;
+    var name = (lab.statement_names || {})[e.id] || titled(e);
     return { id: e.id, kind: e.kind, name: name, family_ids: e.family_ids || [], url: urlFor(e.id, e.kind), paper: paper, idx: idx };
   }
 
@@ -1494,7 +1514,7 @@
     }, function () { return []; });
   }
 
-  global.AtlasSearch = { query: query, tokens: searchTokens, url: urlFor, labels: labels,
+  global.AtlasSearch = { query: query, tokens: searchTokens, queryTokens: queryTokens, shardOf: shardOf, url: urlFor, labels: labels,
     statementName: function (n) { return statementName(n); }, richName: function (n) { return richName(n); },
     displayName: displayName, names: names, snippet: snippet, suggest: suggest, kindOrder: KIND_ORDER.slice(),
     family: function (fid) { return labels().then(function (l) { return l.families[fid] || null; }); } };

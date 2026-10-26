@@ -1407,3 +1407,29 @@ th[data-tip] .sort { cursor: pointer; }
 @media (min-width: 761px) and (min-height: 700px) {
   .help__cols--page > .help__route { position: sticky; top: 16px; }
 }
+/* Which papers cite a person or a work (references-outside.html, cite.js): a search box,
+   then one card per citing paper with the matching bibliography entries under it. */
+.cite-form { display: grid; gap: var(--sp-2); max-width: 46rem; margin: var(--sp-3) 0 var(--sp-2); }
+.cite-form__l { font-size: var(--fs-meta); color: var(--muted); }
+.cite-form__row { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.cite-form__q { flex: 1 1 16rem; min-width: 0; min-height: 40px; padding: 6px 12px; font: inherit; font-size: 1rem; color: var(--ink); background: var(--surface); border: 1px solid var(--rule-control); border-radius: 6px; }
+.cite-form__in { border: 0; padding: 0; margin: 0; display: flex; gap: var(--sp-4); flex-wrap: wrap; font-size: var(--fs-meta); color: var(--ink-soft); }
+.cite-form__in label { display: inline-flex; gap: 6px; align-items: center; min-height: 28px; cursor: pointer; }
+.cite-form__try { font-size: var(--fs-meta); color: var(--muted); display: flex; gap: var(--sp-2); flex-wrap: wrap; align-items: center; margin: 0; }
+.cite-status { min-height: 1.5em; margin: var(--sp-3) 0 var(--sp-2); font-family: var(--serif); font-size: 1.05rem; color: var(--ink); }
+.cite-note { font-size: var(--fs-meta); color: var(--muted); max-width: 72ch; display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
+.cite-hits { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr)); gap: var(--sp-3); margin: var(--sp-3) 0; }
+.cite-hit { border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); padding: var(--sp-3) var(--sp-4); min-width: 0; }
+.cite-hit__h { font-family: var(--serif); font-weight: 500; font-size: 1.08rem; line-height: 1.3; margin: 0 0 2px; }
+.cite-hit__h a { color: var(--ink); }
+.cite-hit__fam { font-size: var(--fs-meta); margin: 0 0 var(--sp-2); }
+.cite-hit__fam a { color: var(--muted); }
+.cite-hit__refs { list-style: none; margin: 0; padding: 0; }
+.cite-ref { border-top: 1px solid var(--rule); padding: var(--sp-2) 0 0; margin-top: var(--sp-2); font-size: 0.92rem; overflow-wrap: anywhere; }
+.cite-ref__h { margin: 0; line-height: 1.4; }
+.cite-ref__au { color: var(--ink); }
+.cite-ref__ti { font-style: italic; }
+.cite-ref__where { margin: 2px 0 0; font-size: var(--fs-meta); color: var(--muted); }
+.cite-ref__go { font-size: var(--fs-meta); }
+.cite-more { margin: var(--sp-2) 0 var(--sp-4); }
+.cite-wide { padding: 0; min-height: 0; text-align: left; border: 0; background: none; color: var(--steel-text); text-decoration: underline; text-underline-offset: 2px; font: inherit; cursor: pointer; }

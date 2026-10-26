@@ -26,6 +26,7 @@ gives the local build commands.
 | Family pages | [copy_family.json](copy_family.json) | [family.css](assets/family.css), [family.js](assets/family.js) | [family_page.py](../scripts/family_page.py) |
 | Lean pages | [copy_lean.json](copy_lean.json) | [lean.css](assets/lean.css), [lean.js](assets/lean.js) | [build_site.py](../scripts/build_site.py), [lean_render.py](../scripts/lean_render.py) |
 | Full paper reading pages | `TXT` in [build_papers.py](../scripts/build_papers.py), plus shared [copy.json](copy.json) | [paper.css](assets/paper.css), [paper.js](assets/paper.js) | [build_papers.py](../scripts/build_papers.py) |
+| Citation lookup (who cites an author or a work) | `references_outside` in [copy.json](copy.json) | [cite.js](assets/cite.js), `.cite-*` in [atlas.css](assets/atlas.css) | `build_references_outside()` in [build_site.py](../scripts/build_site.py) |
 | Shared navigation, search and other pages | [copy.json](copy.json), [copy_evidence.json](copy_evidence.json) | [atlas.css](assets/atlas.css), [atlas.js](assets/atlas.js), [inspect.css](assets/inspect.css), [inspect.js](assets/inspect.js) | [build_site.py](../scripts/build_site.py) |
 
 [config.json](config.json) holds site URLs, the upstream checkout location,

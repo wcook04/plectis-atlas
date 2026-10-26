@@ -51,7 +51,8 @@ Both groups also report that Comparator accepted OpenAI’s proof against `PiExp
 | [The map](https://wcook04.github.io/plectis-atlas/) | Browse disciplines and families, search for a theorem or paper, and follow citations. Each family shows its papers and possible matches between paper theorems and Lean statements. |
 | [The reciprocal-sum family](https://wcook04.github.io/plectis-atlas/families/159.html) | The paper’s claim beside its linked Lean statement, OpenAI’s note on what that statement expresses, independent assessments and original proof-verification reports. |
 | [A paper](https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html) | A full reading page typeset from the paper’s TeX, with linked theorems, equations, cross-references and citations. Any conversion gap is listed on the page; the PDF stays the reference. |
-| [A Lean statement](https://wcook04.github.io/plectis-atlas/statements/ErdosReciprocal.html) | The complete statement file, links to definitions that Atlas can identify, proof-verification reports and possible paper matches. |
+| [A Lean statement](https://wcook04.github.io/plectis-atlas/statements/ErdosReciprocal.html) | The complete statement file, links to definitions that Atlas can identify, OpenAI’s proof of it in the release’s Lean library, proof-verification reports and possible paper matches. |
+| [Who cites an author](https://wcook04.github.io/plectis-atlas/references-outside.html?cites=Duminil-Copin#find-citations) | Every paper in the release whose bibliography lists an author or a work, with the entry and the section that cites it. |
 | [Sources and independent assessments](https://wcook04.github.io/plectis-atlas/sources.html) | Who compared the statements, verified proofs or calculated finite claims, with links to the original reports. |
 
 <a href="https://wcook04.github.io/plectis-atlas/papers/Quasipolynomial-Bounds-for-Arithmetic-Progressions-September-23-2026.html">
@@ -94,7 +95,7 @@ All counts describe the release at the commit in [`upstream.json`](upstream.json
 - **Independent assessments.** [MathVet](https://math.vet) and Carlos Toledo's [cert-machine](https://github.com/carlostoledo1891/cert-machine) each assessed whether every family's Lean statements express the result OpenAI advertises, independently of OpenAI and of each other. Their findings, in their own terms, are on each family page and in the Families list.
 - **Every paper in the browser.** 696 of the 719 current manuscripts have a full reading page made from their TeX, with formulas that KaTeX can typeset and links that resolve to their references, citations and theorems (figures are shown as placeholders); the other 23 have a reading page with a banner listing what did not convert. These tests validate the conversion, not the mathematics. They use the same KaTeX version as the site. The PDF stays the reference (`data/paper_acceptance.json`).
 
-Counted by Statement Map from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb), generation `a00a259f585f`. The unit, rule, state and credit behind each number, and its members, are on the site's Numbers page.
+Counted by Statement Map from [openai/math at `fd4aeeb2ee4f`](https://github.com/openai/math/tree/fd4aeeb2ee4fc729c18d98444fed42fd0529eeeb), generation `eb85d3603ec7`. The unit, rule, state and credit behind each number, and its members, are on the site's Numbers page.
 <!-- numbers:end -->
 
 </details>
