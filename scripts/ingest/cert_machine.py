@@ -49,10 +49,14 @@ def kernel_reading(row: dict, commit: str) -> dict:
         verdict = "accepted"
     else:
         lean_ok = any("Lean default kernel accepts" in k for k in kernels)
-        why = (row.get("why") or "").split(" | ")[0]
-        text = ("Re-run through Comparator did not reach a verdict"
-                + (" (Lean's default kernel accepts the solution; the nanoda replay stopped: " if lean_ok else " (")
-                + why + ").")
+        why = (row.get("why") or "").split(" | ")[0].strip()
+        text = "Re-run through Comparator did not reach a verdict"
+        if lean_ok:
+            text += ". Lean's default kernel accepts the solution; the nanoda replay stopped"
+        if why:
+            text += ": " + why
+        if not text.endswith((".", "!", "?")):
+            text += "."
         verdict = "not-decided"
     out = {"verdict": verdict, "code": row["word"], "text": text, "date": (last.get("at") or "")[:10] or None,
            "url": f"{REPO}/blob/{commit}/certs/openai-math-kernel.json"}

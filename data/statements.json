@@ -7515,7 +7515,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (Lean's default kernel accepts the solution; the nanoda replay stopped: fatal runtime error: stack overflow, aborting).",
+      "text": "Re-run through Comparator did not reach a verdict. Lean's default kernel accepts the solution; the nanoda replay stopped: fatal runtime error: stack overflow, aborting.",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -15757,7 +15757,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -21711,7 +21711,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -25647,7 +25647,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -31318,7 +31318,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -36563,7 +36563,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: The hosted runner lost communication with the server. Anything in your workflow that terminates the runner process, starves it for CPU/Memory, or blocks its network access can cause this error.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: The hosted runner lost communication with the server. Anything in your workflow that terminates the runner process, starves it for CPU/Memory, or blocks its network access can cause this error.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -54752,7 +54752,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job stopped before Comparator ran (see the run log)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job stopped before Comparator ran (see the run log).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -71519,7 +71519,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -83039,7 +83039,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job stopped before Comparator ran (see the run log)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job stopped before Comparator ran (see the run log).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -88636,7 +88636,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -93216,7 +93216,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -95287,7 +95287,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -98958,7 +98958,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (Lean's default kernel accepts the solution; the nanoda replay stopped: fatal runtime error: stack overflow, aborting).",
+      "text": "Re-run through Comparator did not reach a verdict. Lean's default kernel accepts the solution; the nanoda replay stopped: fatal runtime error: stack overflow, aborting.",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -101242,7 +101242,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job stopped before Comparator ran (see the run log)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job stopped before Comparator ran (see the run log).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -129524,7 +129524,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -151752,7 +151752,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -152065,7 +152065,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
@@ -154177,7 +154177,7 @@
      "value": {
       "verdict": "not-decided",
       "code": "REFUSED",
-      "text": "Re-run through Comparator did not reach a verdict (the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.)).",
+      "text": "Re-run through Comparator did not reach a verdict: the job ended (failure) in the step \"comparator, Lean's kernel and nanoda\" without uploading a result: the runner terminated it (GitHub: Process completed with exit code 143.).",
       "date": "2026-10-10",
       "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-kernel.json"
      },
