@@ -926,7 +926,10 @@ consequence of it) and what the link leaves out. The site renders them as such.
   an AI agent when it is, and says no person has reviewed the links and no proof was
   checked. That line is the only disclaimer: a recorded limit that only repeats it
   is not quoted again, and every other clause the reader wrote is quoted as written
-  under its row.
+  under its row. Since reader v10 the backend flags such notes (`general_disclaimer`),
+  and the site follows the flag rather than matching words; where every link names
+  one bundled declaration, the first column shows the part of it each link concerns
+  (`component`, e.g. `StrongTail.DensityAt`).
 - **The explanation opens in the inspection rail** ("Why they were linked", beside the
   relation), with the reader, the declarations in full, the relation, the limits and
   the ways to the paper passage and the Lean page, so the rows stay one line each; a

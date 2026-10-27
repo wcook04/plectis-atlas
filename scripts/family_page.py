@@ -1670,6 +1670,7 @@ def reading_links_html(c: Ctx, rec: dict, cls: str = "fx-rl", keep: int = 0) -> 
         # When every link names the same declaration (one Lean theorem bundling several
         # results), it is said once above the table rather than repeated in every row.
         one_decl = len(rd["targets"]) > 1 and len({tuple(t["declarations"]) for t in rd["targets"]}) == 1
+        has_comp = any(t.get("component") for t in rd["targets"])
         for t in rd["targets"]:
             sid = t["target"]
             decls = ", ".join(f'<code translate="no">{S.lean_breaks(">" + esc(d.rsplit(".", 1)[-1]))[1:]}</code>' for d in t["declarations"]) \
@@ -1680,28 +1681,31 @@ def reading_links_html(c: Ctx, rec: dict, cls: str = "fx-rl", keep: int = 0) -> 
             st_html = (f'<a href="{esc(href)}">{label}</a>' if href else f'<span class="fx-rl__n">{label}</span>') \
                 + (f' <span class="fx-rl__t md-math">({esc(title)})</span>' if title else "")
             rel = W("reading.rel_short").get(t.get("relation") or "", "")
-            lim = S.reading_limits(t.get("limitations"))
+            lim = S.link_limits(t)
             lim_html = f'<p class="fx-rl__lim">{esc(W("reading.limit"))} “{code_spans(lim)}”</p>' if lim else ""
             why = reading_why_button(c, rd, t, rec.get("lean_name") or "", lim)
             # The explanation opens in the relation's own cell; the reader's limits stay in view under the row.
             under = f'<div class="fx-rl__under">{lim_html}</div>' if lim_html else ""
-            lead = "" if one_decl else f'<span class="fx-rl__decl">{decls}</span><span class="vh"> {esc(W("reading.and"))} </span>'
+            if one_decl and has_comp:
+                decls = f'<code translate="no">{esc(t.get("component") or "")}</code>' if t.get("component") else esc(W("reading.no_component"))
+            lead = "" if (one_decl and not has_comp) else f'<span class="fx-rl__decl">{decls}</span><span class="vh"> {esc(W("reading.and"))} </span>'
             rows.append(f'<li class="fx-rl__i">{lead}'
                         f'<span class="fx-rl__st">{st_html}</span><span class="vh">: </span><div class="fx-rl__rel">{esc(rel)}{why}</div>{under}</li>')
         if not rows:
             continue
-        head = (f'<li class="fx-rl__hd" aria-hidden="true">' + ("" if one_decl else f'<span>{esc(W("reading.col_lean"))}</span>')
+        col = "" if (one_decl and not has_comp) else f'<span>{esc(W("reading.col_component" if one_decl else "reading.col_lean"))}</span>'
+        head = (f'<li class="fx-rl__hd" aria-hidden="true">' + col
                 + f'<span>{esc(W("reading.col_paper"))}</span><span>{esc(W("reading.col_relation"))}</span></li>') if len(rows) > 1 else ""
         all_decl = ""
         if one_decl:
             names = ", ".join(f'<code translate="no">{esc(d)}</code>' for d in rd["targets"][0]["declarations"]) or esc(W("reading.the_lean"))
-            key = "reading.all_two" if len(rows) == 2 else "reading.all_one"
+            key = "reading.all_parts" if has_comp else "reading.all_two" if len(rows) == 2 else "reading.all_one"
             all_decl = f'<p class="fx-rl__all">{esc(W(key, n=S.say(len(rows)), decls="\x00")).replace("\x00", names)}</p>'
         shown, rest = (rows[:keep], rows[keep:]) if keep else (rows, [])
         more = (f'<p class="fx-rl__more"><a href="#lean-{esc(rec.get("lean_name") or "")}">{esc(W("reading.more", n=S.say(len(rest))))}</a></p>'
                 if rest else "")
         parts.append(f'<p class="fx-rl__by">{S.ctext(reading_by(rd))}</p>{all_decl}'
-                     f'<ul class="fx-rl__l{" fx-rl__l--one" if one_decl else ""}" role="list">{head}{"".join(shown)}</ul>{more}')
+                     f'<ul class="fx-rl__l{" fx-rl__l--one" if one_decl and not has_comp else ""}" role="list">{head}{"".join(shown)}</ul>{more}')
     return f'<div class="{cls}">{"".join(parts)}</div>' if parts else ""
 
 
@@ -1717,6 +1721,7 @@ def reading_why_button(c: Ctx, rd: dict, t: dict, lean: str, lim: str) -> str:
         reader = W("reading.ins_agent" if rd.get("kind") == "agent" else "reading.ins_person", author=rd.get("author") or W("reading.someone"))
         rows = [(W("reading.ins_reader"), esc(reader)),
                 (W("reading.ins_declarations"), ", ".join(f'<code translate="no">{esc(d)}</code>' for d in t["declarations"])),
+                (W("reading.col_component"), f'<code translate="no">{esc(t["component"])}</code>' if t.get("component") else ""),
                 (W("reading.col_relation"), esc(W("reading.rel_short").get(t.get("relation") or "", ""))),
                 (W("reading.ins_limits"), code_spans(lim) if lim else ""),
                 (W("why.review"), esc(W("reading.ins_review")))]
