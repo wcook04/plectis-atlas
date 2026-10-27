@@ -258,11 +258,11 @@ Plectis is Will Cook’s programme of research and software built with AI agents
 
 | Related project | Why follow it |
 | --- | --- |
-| [Plectis Erdős](https://github.com/wcook04/plectis-erdos) · [research website](https://wcook04.github.io/plectis/maths/) | The original eight-problem research corpus whose paper-to-Lean records informed Atlas. |
+| [Plectis Erdős](https://github.com/wcook04/plectis-erdos) · [research website](https://wcook04.github.io/practical-formal-verification/maths/) | The original eight-problem research corpus whose paper-to-Lean records informed Atlas. |
 | [Plectis Erdős Lean](https://github.com/wcook04/plectis-erdos-lean) | Lean proofs and Comparator checks for selected results from that corpus. |
 
-The [Plectis website](https://wcook04.github.io/plectis/) collects all the projects
-and videos. The separate [Plectis toolkit](https://github.com/wcook04/plectis)
+The [Plectis website](https://wcook04.github.io/practical-formal-verification/) collects all the projects
+and videos. The separate [Plectis toolkit](https://github.com/wcook04/practical-formal-verification)
 contains Python experiments; this repository contains the Atlas website and its builders.
 
 ## Licences and independence
@@ -273,4 +273,4 @@ Plectis Atlas is independent of OpenAI and is not affiliated with or endorsed by
 
 ## Author
 
-Made by [Will Cook](https://wcook04.github.io/plectis/). The atlas grew out of the paper-to-Lean records built for [Plectis’s research on eight Erdős problems](https://wcook04.github.io/plectis/maths/). The results it shows belong to their authors. To cite the atlas, use [`CITATION.cff`](CITATION.cff). Cite the original paper or outside report as well when relying on its result; the Atlas citation does not replace those credits.
+Made by [Will Cook](https://wcook04.github.io/practical-formal-verification/). The atlas grew out of the paper-to-Lean records built for [Plectis’s research on eight Erdős problems](https://wcook04.github.io/practical-formal-verification/maths/). The results it shows belong to their authors. To cite the atlas, use [`CITATION.cff`](CITATION.cff). Cite the original paper or outside report as well when relying on its result; the Atlas citation does not replace those credits.
