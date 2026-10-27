@@ -5085,7 +5085,7 @@
        "verdict": "certified",
        "code": "CERTIFIED",
        "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
-       "scope": "a finite component -- the whole finite certificate of Section sec",
+       "scope": "a finite component -- the whole finite certificate of Section sec:computation (Proposition comp:finite-soundness), by an independent route",
        "detail": "a finite component -- the whole finite certificate of Section sec:computation (Proposition comp:finite-soundness), by an independent route: the 38 lattice coefficients (two ways) and |c_1| < 1; lambda, mu, K, B(l), f_0(l), f(l), -pi B(l) - lambda/2 (closed-form/Fejer route) each inside its saved pair; the exterior signs comp:tail-signs (K < 0 included); the finite-core premise; the global derivative bounds L_1..L_4; the outer primitive assertion (2 g_d(x) > K off int D_0) and the negative-part assertion on the paper's 2186 x 3612 grid; the Hessian assertions on the 601 x 401 cells of D_0; the printed arithmetic of the truncation sections. Not the headline: analytic, not finite: the reduction (sec:reduction), the geometry and dual identity (sec:geometry), Lemma cal:stationarity (used by the Hessian step), the truncation estimates of sec:tails (their printed arithmetic is checked in part 7; the sweeps add their 10^-11 query error, which is conditional on the finite-core premise decided here), Corollary cor:bhs. The paper's own radial table (midpoint propagation) and its K-integral G_ss mesh are not reproduced: the table is built here by another route (closed forms on [b, R_0], Taylor integration on [R_0, l]) and K by Fejer quadrature.",
        "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
       }
@@ -12526,7 +12526,7 @@
        "verdict": "certified",
        "code": "CERTIFIED",
        "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
-       "scope": "the whole headline (Theorem thm",
+       "scope": "the whole headline (Theorem thm:main, 21 Maker moves on Z^2) and Corollary cor:finite-board, twice",
        "detail": "the whole headline (Theorem thm:main, 21 Maker moves on Z^2) and Corollary cor:finite-board, twice: (I) the certificate evaluates to A_727 = {}, h_727 = 21 under the paper's combination rule — sound only with Lemma lem:combination, proved in prose; (II) a rule-free search shows the certificate-guided policy wins within 21 claims against every Breaker line, given three stated monotonicity/locality reductions",
        "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
       }
@@ -23503,7 +23503,7 @@
        "verdict": "certified",
        "code": "CERTIFIED",
        "text": "Exact code written independently from the paper confirms that the published object has the claimed property.",
-       "scope": "the whole of Proposition cert",
+       "scope": "the whole of Proposition cert:shoot (existence on [0,56], 1 + p > 0, |q| <= .25R, ||(Re xi, Im xi) - z*|| <= .13R for every z* in the square), by an independent validated integration; not the tail lemma, the matching or the theorem",
        "detail": "the whole of Proposition cert:shoot (existence on [0,56], 1 + p > 0, |q| <= .25R, ||(Re xi, Im xi) - z*|| <= .13R for every z* in the square), by an independent validated integration; not the tail lemma, the matching or the theorem",
        "url": "https://github.com/carlostoledo1891/cert-machine/blob/9814e4c06281e34a113ce853d7d99ccce160b750/certs/openai-math-finite.json"
       }

@@ -2865,7 +2865,7 @@ def _reading_record(r, cr: dict) -> dict:
     """One attributed source reading, as the decision names it and with the explanation
     from its full contribution (the Lean preview the reading's detail route reaches):
     {author, kind, provenance, review_state, decision, body, limitations, targets:
-    [{target, declarations, relation, limitations, explanation}]}."""
+    [{target, declarations, component, relation, limitations, general_disclaimer, explanation}]}."""
     full = {}
     try:
         full = r.resolve(cr["detail"]) if cr.get("detail") else {}
@@ -2879,8 +2879,9 @@ def _reading_record(r, cr: dict) -> dict:
     targets = []
     for t in cr.get("targets") or []:
         tid = t.get("target") or ""
-        targets.append({"target": tid, "declarations": list(t.get("declarations") or []), "relation": t.get("relation"),
-                        "limitations": t.get("limitations") or "", "explanation": expl.get(tid[2:], "")})
+        targets.append({"target": tid, "declarations": list(t.get("declarations") or []), "component": t.get("component") or "",
+                        "relation": t.get("relation"), "limitations": t.get("limitations") or "",
+                        "general_disclaimer": t.get("general_disclaimer"), "explanation": expl.get(tid[2:], "")})
     return {"author": (cr.get("author") or {}).get("name") or "", "kind": (cr.get("author") or {}).get("kind") or "",
             "provenance": (cr.get("provenance") or {}).get("kind") or "", "review_state": cr.get("review_state") or "unreviewed",
             "decision": cr.get("decision") or "", "body": (full or {}).get("body") or "",
@@ -2958,6 +2959,16 @@ _READING_DISCLAIMER = re.compile(
 READING_WORDS = json.loads((SITE / "copy_family.json").read_text(encoding="utf-8"))["reading"]
 
 
+def link_limits(t: dict) -> str:
+    """The limits a source reader recorded for one link, as written. Statement Map flags a
+    note that is only the general disclaimer (general_disclaimer, reader v10); the line
+    naming the reader says that once, so a flagged note is not repeated beside the link.
+    Without the flag, the disclaimer clauses are recognised by their words instead."""
+    if "general_disclaimer" in t and t["general_disclaimer"] is not None:
+        return "" if t["general_disclaimer"] else (t.get("limitations") or "").strip()
+    return reading_limits(t.get("limitations"))
+
+
 def reading_limits(text: str) -> str:
     """What a source reader recorded as a link's limits, clause by clause, without the
     general disclaimer that the line naming the reader already gives."""
@@ -2979,10 +2990,12 @@ def reading_how_html(doc: dict, pinfo: dict, root: str) -> str:
         items = []
         for t in rd["targets"]:
             decls = ", ".join(f'<code translate="no">{esc(d)}</code>' for d in t["declarations"]) or esc(F["the_lean"])
+            if t.get("component"):
+                decls += " " + esc(F["component_of"]).replace("{component}", f'<code translate="no">{esc(t["component"])}</code>')
             rel = F["relation"].get(t.get("relation") or "", "")
             line = F["link"].format(decls="\x00", label="\x01", relation=esc(rel)).replace("\x00", decls).replace("\x01", statement_ref_html(doc, t["target"], root))
             expl = (f'<p class="rl__expl">{esc(curly_prose(t["explanation"]))}</p>') if t.get("explanation") else ""
-            lim = reading_limits(t.get("limitations"))
+            lim = link_limits(t)
             lim_html = f'<p class="rl__lim">{esc(F["limit"])} “{esc(curly_prose(lim))}”</p>' if lim else ""
             items.append(f'<li class="rl__i"><p class="rl__link">{line}</p>{expl}{lim_html}</li>')
         if items:

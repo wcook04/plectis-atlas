@@ -17,6 +17,19 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import build_data as bd  # noqa: E402
+from ingest.cert_machine import kernel_reading
+
+
+class CertMachineReading(unittest.TestCase):
+    def test_reason_parentheses_are_not_nested(self):
+        result = kernel_reading({'word':'OPEN', 'why':'the job stopped before Comparator ran (see the run log)'}, 'a'*40)
+        self.assertEqual(result['text'], 'Re-run through Comparator did not reach a verdict: the job stopped before Comparator ran (see the run log).')
+        self.assertEqual(result['verdict'], 'not-decided')
+
+    def test_kernel_acceptance_and_reason_punctuation_are_preserved(self):
+        result = kernel_reading({'word':'OPEN', 'why':'timeout. | more detail', 'runs':[{'kernels':["Lean default kernel accepts"]}]}, 'a'*40)
+        self.assertEqual(result['text'], "Re-run through Comparator did not reach a verdict. Lean's default kernel accepts the solution; the nanoda replay stopped: timeout.")
+        self.assertEqual(kernel_reading({'word':'OPEN'}, 'a'*40)['text'], 'Re-run through Comparator did not reach a verdict.')
 
 
 class LeanParser(unittest.TestCase):
