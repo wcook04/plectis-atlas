@@ -30,6 +30,7 @@ from urllib.parse import quote, urlencode
 import evidence
 import attribution
 import reader
+import websites
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -1427,6 +1428,7 @@ def head(rel: str, title: str, description: str, *, og_block: str | None = None,
 <link rel="preload" href="{root}assets/fonts/plectis-sans.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{root}{KATEX_DIR}/katex.min.css">
 <link rel="stylesheet" href="{root}assets/{asset_v('atlas.css')}">
+<link rel="stylesheet" href="{root}assets/{asset_v('websites/family.css')}">
 <script>(function(){{var d=document.documentElement;d.classList.add('js');try{{var t=localStorage.getItem('atlas-theme');if(t==='dark'||t==='light')d.setAttribute('data-theme',t);}}catch(e){{}}}})();</script>
 <script defer src="{root}{KATEX_DIR}/katex.min.js"></script>
 <script defer src="{root}{KATEX_DIR}/contrib/auto-render.min.js"></script>
@@ -1454,14 +1456,17 @@ def header(rel: str, current: str | None) -> str:
     for href, key in NAV:
         cur = ' aria-current="page"' if key == current else (' aria-current="true"' if inside and key == "map" else "")
         links.append(f'<a href="{root}{href}"{cur}>{esc(C("nav." + key))}</a>')
+    # The wordmark is the ladder's second rung: "Will Cook / Plectis Atlas", the first rung
+    # his home page, which lists every one of his websites and films (scripts/websites.py).
+    ladder = websites.ladder(f'<a class="brand" href="{root}index.html" aria-label="{esc(C("nav.brand_label"))}">'
+                             f'{MARK_SVG}<span class="brand__name" translate="no">{esc(C("site.name"))}</span></a>')
     return f"""<body data-root="{root}" data-generation="{esc(RD().generation)}" data-copied="{esc(C('words.copied'))}" data-copy-failed="{esc(C('words.copy_failed'))}" data-tex-failed="{esc(C('words.tex_failed'))}" data-example-word="{esc(C('glossary.example'))}">
 <a class="skip" href="#main">{esc(C('site.skip'))}</a>
 <header class="top">
  <div class="frame top__in">
-  <a class="brand" href="{root}index.html" aria-label="{esc(C('nav.brand_label'))}">{MARK_SVG}<span class="brand__name" translate="no">{esc(C('site.name'))}</span></a>
+  {ladder}
   <nav class="nav" id="site-nav" aria-label="{esc(C('nav.site_nav'))}">{''.join(links)}</nav>
   <div class="top__tools">
-   <a class="plectis-link ext" href="{esc(CFG['author_url'])}" rel="noopener" title="{esc(C('nav.plectis_title'))}">{esc(C('nav.plectis'))}</a>
    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg><span>{esc(C('nav.menu'))}</span></button>
    <a class="search-open" href="{root}explain.html" aria-label="{esc(C('nav.search'))}" aria-haspopup="dialog" aria-controls="search-dialog"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="M12.6 12.6 17 17"/></svg><span class="search-open__label">{esc(C('nav.search'))}</span><kbd aria-hidden="true">/</kbd></a>
    <button class="help-open" type="button" aria-label="{esc(C('nav.help'))}" title="{esc(C('nav.help'))}" aria-haspopup="dialog" aria-controls="help-dialog"><span aria-hidden="true">?</span></button>
@@ -1539,12 +1544,17 @@ def help_dialog(root: str) -> str:
 
 
 def build_help():
-    """help.html: the same guide as a page, for readers without scripts and for links."""
+    """help.html: the same guide as a page, for readers without scripts and for links. The
+    Atlas walkthrough film stands beside its opening (scripts/websites.py), its still beside
+    its title so the steps and their example stay on the first screen; the dialog behind
+    the header's ? keeps to the steps."""
     rel = "help.html"
+    film = websites.film_slot(websites.film(), size="inline",
+                              sizes="(min-width: 1100px) 16rem, (max-width: 30rem) 7rem, 11rem")
     body = f"""<div class="frame page page--wide page--help">
 {trail("", [(esc(C("help.title")), None)])}
-<header class="phead"><h1 class="phead__title">{esc(C('help.title'))}</h1><p class="lede">{esc(C('help.what'))}</p>
-<p class="phead__facts">{esc(C('help.page_lede'))}</p></header>
+<header class="phead phead--film"><h1 class="phead__title">{esc(C('help.title'))}</h1><p class="lede">{esc(C('help.what'))}</p>
+<p class="phead__facts">{esc(C('help.page_lede'))}</p>{film}</header>
 {help_guide_html("", "h2", "step-", page_link=False)}
 <p class="help__limit">{esc(C('help.limit'))}</p>
 </div>"""
@@ -1559,7 +1569,7 @@ def footer(rel: str) -> str:
   <div class="foot__lead">
    <p class="foot__name">{MARK_SVG}<span translate="no">{esc(C('site.name'))}</span></p>
    <p>{esc(C('site.independence', author=CFG['author']))}</p>
-   <p class="foot__plectis">{esc(C('site.plectis_lead'))} <a class="ext" href="{esc(CFG['author_url'])}" rel="noopener">{esc(C('site.plectis_link'))}</a></p>
+   <p class="foot__family">{esc(C('site.family_lead'))} <a class="ext" href="{esc(CFG['author_url'])}" rel="noopener">{esc(C('site.family_link'))}</a></p>
    <p>{esc(C('site.licence', upstream='openai/math', commit_short=COMMIT_SHORT))}</p>
   </div>
   <nav class="foot__nav" aria-label="{esc(C('site.foot_nav'))}">
@@ -1580,6 +1590,7 @@ def footer(rel: str) -> str:
     <li><a href="{root}agents.md">{esc(C('site.agents_link'))}</a></li>
    </ul></div>
   </nav>
+  {websites.sister_sites()}
  </div>
 </footer>
 </body>

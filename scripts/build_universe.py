@@ -72,6 +72,7 @@ OWN_ASSETS = ("universe.js", "universe.css")
 sys.path.insert(0, str(SCRIPTS))
 import evidence as E  # noqa: E402
 import reader as R  # noqa: E402
+import websites  # noqa: E402
 S = None
 
 
@@ -1272,13 +1273,13 @@ def term_link(tid: str, text: str) -> str:
     return f'<a class="term" href="glossary.html#{esc(tid)}" data-term="{esc(tid)}">{esc(text)}</a>'
 
 
-def videos_html() -> str:
-    """One quiet line in the panel head: the Atlas walkthrough, then a smaller link to the
-    wider project's video (Will, 24 October 2026). Both are off-site."""
-    v = COPY_U["page"]["videos"]
-    out = lambda url, text, cls: f'<a class="ext {cls}" href="{esc(url)}" rel="noopener">{esc(text)}</a>'
-    return (f'<p class="u-videos" data-u-ground>{esc(v["lead"])} {out(v["atlas_url"], v["atlas"], "u-videos__atlas")}'
-            f' <span class="u-videos__more">{esc(v["or"])} {out(v["map_url"], v["map"], "u-videos__map")}</span></p>')
+def film_html() -> str:
+    """The Atlas walkthrough, offered to a newcomer in the panel head (Will, 24 October 2026)
+    as the family's inline film slot, a small still beside its title, so the head stays short
+    and the map stays the subject. The title, running time, still and link come from
+    site/family.json; it hides with the head's other ground text when a subject is open."""
+    slot = websites.film_slot(websites.film(), size="inline", sizes="8rem", text=U("page.film.text"))
+    return f'<div class="u-film" data-u-ground>{slot}</div>'
 
 
 def since_html(M) -> str:
@@ -1434,7 +1435,7 @@ def page_body(M, gen, data_version=None) -> str:
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
    <p class="u-ground" data-u-ground>{esc(U('page.job'))} <span class="u-ground__ind">{esc(U('page.independent'))}</span></p>
    <p class="u-starts" data-u-ground><a class="u-gbtn" href="help.html" data-help="">{esc(U('page.how'))}</a><a class="u-gbtn" href="families/{esc(COPY_U['example']['family'])}.html">{esc(U('example.try'))}</a></p>
-   {videos_html()}
+   {film_html()}
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
     <svg class="u-search__icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>
