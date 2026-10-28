@@ -10,14 +10,9 @@
   "nojs": "The interactive map needs JavaScript. The list below links to every group of related papers. The Agent navigation link opens instructions for reading the map as JSON.",
   "job": "Pick a result from OpenAI’s mathematics release and see, on one page, what the paper claims, the Lean statement OpenAI chose for a computer to check, and what outside groups report about both.",
   "how": "How to use the Atlas",
-  "videos": {
-   "_note": "One quiet line in the panel head (Will, 24 October 2026): the Atlas walkthrough, then a smaller link to the wider project's video. No running times.",
-   "lead": "New here?",
-   "atlas": "Watch the Atlas walkthrough",
-   "atlas_url": "https://www.youtube.com/watch?v=ugUObM3qpmM",
-   "map": "the Maths Map video",
-   "map_url": "https://www.youtube.com/watch?v=J2sX6nj3jOk",
-   "or": "or"
+  "film": {
+   "_note": "The Atlas walkthrough in the panel's head, offered to newcomers (Will, 24 October 2026). Since 28 October it is the family's small film slot: its still, running time, title and link come from site/family.json, so a newer edition needs no change here. This is the line under its title.",
+   "text": "New here? Watch this first."
   }
  },
  "release": {

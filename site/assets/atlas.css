@@ -196,7 +196,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 code, pre, kbd { font-family: var(--mono); font-size: 0.88em; }
 :where(a, button, input, summary, [tabindex]):where(:focus-visible) { outline: 2px solid var(--steel-text); outline-offset: 2px; border-radius: 3px; }
 main:focus { outline: none; }
-.vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.vh, .sr-only { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .skip { position: absolute; left: 12px; top: -48px; z-index: 50; background: var(--ink); color: var(--page); padding: 8px 12px; border-radius: var(--r-sm); }
 .skip:focus { top: 8px; }
 .muted { color: var(--muted); }
@@ -206,6 +206,26 @@ h1, h2, h3, h4 { text-wrap: balance; margin: 0; }
 p { margin: 0 0 0.8em; text-wrap: pretty; }
 
 .frame { width: var(--frame); margin-inline: auto; }
+
+/* ---- Will Cook's websites ---------------------------------------------
+   The Atlas is one of Will Cook's websites. They share the header's ladder up to his
+   home page, film slots and the footer's list of sister sites, styled by
+   assets/websites/family.css, an unchanged copy of the family's stylesheet
+   (DESIGN.md "Will Cook's other websites"). Its --fam-* names read the Atlas's own
+   palette and type, so both schemes follow the Atlas's switch. */
+:root {
+  --fam-page: var(--page);
+  --fam-surface: var(--surface);
+  --fam-ink: var(--ink);
+  --fam-ink-soft: var(--ink-soft);
+  --fam-muted: var(--muted);
+  --fam-faint: var(--faint);
+  --fam-rule: var(--rule);
+  --fam-rule-strong: var(--rule-strong);
+  --fam-accent: var(--steel-text);
+  --fam-serif: var(--serif);
+  --fam-sans: var(--sans);
+}
 
 /* ---- Header ----------------------------------------------------------- */
 .top { border-bottom: 1px solid var(--rule); background: var(--page); }
@@ -1363,13 +1383,42 @@ th[data-tip] .sort { cursor: pointer; }
 .way__who { font-size: var(--fs-small); color: var(--muted); }
 .way__d { color: var(--ink-soft); }
 
-/* The way back to Plectis, the programme the Atlas belongs to: a quiet outbound link
-   beside the tools; on narrow screens it lives in the footer only. */
-.plectis-link { display: inline-flex; align-items: center; height: 34px; padding: 0 10px; border-radius: var(--r-sm); color: var(--muted); font-size: var(--fs-meta); text-decoration: none; white-space: nowrap; }
-.plectis-link:hover { color: var(--ink); background: var(--surface); }
-.plectis-link:focus-visible { outline: 2px solid var(--steel-text); outline-offset: 2px; }
-@media (max-width: 1099px) { .plectis-link { display: none; } }
-.foot__plectis a { white-space: nowrap; }
+/* The header's one way up is the ladder before the wordmark, "Will Cook / Plectis
+   Atlas", its first rung his home page, which lists every website and film (it replaced
+   a separate "Plectis" link beside the tools on 28 October 2026). Where the header is
+   narrow the first rung stands above the wordmark, so the header keeps its one row. */
+.top .fam-ladder { flex: none; }
+/* The wordmark's own baseline is its name's, not the bottom of its mark, so "Will Cook"
+   and "/" sit on the same line as "Plectis Atlas". */
+.top .fam-ladder .brand__name { align-self: baseline; }
+/* From 901 to 1000 px the six nav links, the ladder and the tools share one row only
+   with slightly tighter pills and gaps. */
+@media (min-width: 901px) and (max-width: 1000px) {
+  .top__in { column-gap: var(--sp-4); }
+  .nav a { padding-inline: 9px; }
+}
+@media (max-width: 560px) {
+  .top .fam-ladder { flex-wrap: wrap; width: min-content; column-gap: 6px; row-gap: 0; }
+  .top .fam-ladder__up, .top .fam-ladder__sep, .top .fam-ladder .brand { line-height: 1.3; }
+}
+/* The footer names the family in one sentence and, under its columns and across its
+   width, lists every sister site, the same list on each of them. */
+.foot__family a { white-space: nowrap; }
+.foot__in > .fam-sites { grid-column: 1 / -1; padding-top: var(--sp-4); border-top: 1px solid var(--rule); }
+/* The help page opens with its title, what a page shows and who the page is for, and the
+   Atlas walkthrough film beside them on a wide screen (after them on a narrow one): the
+   family's inline slot, its still twice the map panel's, so the head keeps the height of
+   its own text and the steps and their "Try it" button stay on the first screen. */
+.phead--film > .film-slot { max-width: 34rem; margin-top: var(--sp-4); }
+@media (min-width: 900px) {
+  .phead--film { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 26rem); column-gap: var(--sp-6); align-items: start; }
+  .phead--film > * { grid-column: 1; }
+  .phead--film > .film-slot { grid-column: 2; grid-row: 1 / span 4; align-self: center; max-width: none; margin-top: 0; }
+}
+@media (min-width: 1100px) {
+  .phead--film { grid-template-columns: minmax(0, 1fr) minmax(0, 34rem); column-gap: var(--sp-7); }
+  .phead--film .film-slot--inline { grid-template-columns: 16rem minmax(0, 1fr); }
+}
 
 /* ---- Space (24 October 2026) ---------------------------------------------------
    Will: "I hate it when we don't use up the space." A list of records runs row-wise

@@ -28,10 +28,17 @@ gives the local build commands.
 | Full paper reading pages | `TXT` in [build_papers.py](../scripts/build_papers.py), plus shared [copy.json](copy.json) | [paper.css](assets/paper.css), [paper.js](assets/paper.js) | [build_papers.py](../scripts/build_papers.py) |
 | Citation lookup (who cites an author or a work) | `references_outside` in [copy.json](copy.json) | [cite.js](assets/cite.js), `.cite-*` in [atlas.css](assets/atlas.css) | `build_references_outside()` in [build_site.py](../scripts/build_site.py) |
 | Shared navigation, search and other pages | [copy.json](copy.json), [copy_evidence.json](copy_evidence.json) | [atlas.css](assets/atlas.css), [atlas.js](assets/atlas.js), [inspect.css](assets/inspect.css), [inspect.js](assets/inspect.js) | [build_site.py](../scripts/build_site.py) |
+| Will Cook's other websites: the header's ladder, the film slots and the footer's sister sites | [family.json](family.json), `websites` in [copy.json](copy.json) | [websites/family.css](assets/websites/family.css), stills in [films/](assets/films/) | [websites.py](../scripts/websites.py) |
 
 [config.json](config.json) holds site URLs, the upstream checkout location,
 issue-form settings and the KaTeX version. Local fonts and KaTeX are in
 [`assets/fonts/`](assets/fonts/) and [`assets/vendor/`](assets/vendor/).
+
+[family.json](family.json) and [websites/family.css](assets/websites/family.css) are
+unchanged copies of the list of Will Cook's websites and films and the stylesheet they
+share, kept in his home-page repository; the
+[design contract](../DESIGN.md#will-cooks-other-websites-28-october-2026) says how to
+show a newer edition of the Atlas film.
 
 [copy_evidence.json](copy_evidence.json) supplies evidence wording across the
 map, family and Lean pages through [`evidence.py`](../scripts/evidence.py).

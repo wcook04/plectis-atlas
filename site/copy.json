@@ -16,8 +16,8 @@
   "foot_atlas": "The Atlas",
   "foot_lists": "Lists and credits",
   "foot_source": "Source",
-  "plectis_lead": "The Atlas is one of Will Cook's projects.",
-  "plectis_link": "See them all on Plectis"
+  "family_lead": "The Atlas is one of Will Cook’s projects.",
+  "family_link": "See all his websites and films"
  },
  "nav": {
   "atlas": "Atlas",
@@ -46,9 +46,16 @@
   "glossary": "Glossary",
   "map": "Map",
   "menu": "Menu",
-  "help": "How to use the Atlas",
-  "plectis": "Plectis",
-  "plectis_title": "Plectis: Will Cook's mathematics and projects, of which the Atlas is one"
+  "help": "How to use the Atlas"
+ },
+ "websites": {
+  "_note": "Will Cook's websites share the header's ladder up to his home page, film slots and the footer's list of sister sites (scripts/websites.py, from site/family.json; the contract is docs/family.md in wcook04/wcook04.github.io). These words are the family's own and read the same on every site; the films' titles, running times and links come from site/family.json.",
+  "sites_label": "Will Cook's websites",
+  "sites_title": "More from Will Cook",
+  "sites_all": "All websites and films",
+  "film_youtube": ", video on YouTube, {duration}",
+  "film_pending": "In preparation",
+  "film_pending_meta": "Video in preparation"
  },
  "help": {
   "_note": "The how-to-use guide behind the ? button in every page's header, on help.html, and the 404 page's route (build_site.help_dialog). Four steps a first-time reader can follow, one link to try them on family 017, and the few words every page uses. __ROOT__ in a link is the page's root. Each step has an id so a page can open the guide at it with data-help=\"<id>\" (lean, questions and tabs are used).",
@@ -1146,8 +1153,8 @@
   "cite_heading": "How to cite",
   "cite": "Use the citation below for the Atlas, with its revision or your access date. Also cite the original paper or outside report when relying on its result; a citation to the Atlas does not replace that credit.",
   "author_heading": "Author",
-  "author": "{author} builds and maintains the atlas. His own work on Erdős problems, with its Lean proofs, is at Plectis.",
-  "author_link": "Plectis",
+  "author": "{author} builds and maintains the atlas. His home page lists his other websites and films, among them his work on Erdős problems with its Lean proofs.",
+  "author_link": "Will Cook’s websites and films",
   "cite_format": "{author}. {name}. {url}. Describing openai/math at commit {commit}.",
   "made_heading": "How this atlas was made",
   "made": "Will Cook built Atlas with AI coding agents under his direction. The repository contains the scripts that extract and count material from the recorded release version. AI-drafted assessments of what the Lean statements express are labelled as drafts with no recorded human review. Named comparisons with papers and reports of proof verification are recorded separately.",

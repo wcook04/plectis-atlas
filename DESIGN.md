@@ -541,7 +541,7 @@ is reading, delay the mathematics, or run in a loop.
 | `statements/<id>.html` | Read the Lean statement whole, and what you must check |
 | `explain.html` | Every family as a list, with who has explained it |
 | `sources.html`, `glossary.html`, `numbers.html`, `contribute.html` (footer only), `about.html` | Credit, terms, counts with receipts, how to contribute, why it is built this way |
-| `help.html`, and the `?` guide in every header | How to use the Atlas: four steps to read any result, a link to try them on π, and five words |
+| `help.html`, and the `?` guide in every header | How to use the Atlas: four steps to read any result, a link to try them on π, and five words; the page adds the walkthrough film beside its opening |
 
 ## What the October rebuild taught
 
@@ -754,10 +754,13 @@ subject's map bar carries; the search hint that repeated the placeholder is
 kept only for screen readers; the "Try an example" button that pointed at the
 example directly below it is gone; the family view drops the full catalogue
 quote, the assessment-scope sentence, the headline-selection note and the
-citation caveat, all of which the family page holds. One quiet line under "How
-to use the Atlas" offers the videos (Will, 24 October 2026): "New here? Watch
-the Atlas walkthrough", then, smaller and fainter, "or the Maths Map video",
-both plain off-site links that hide with the rest of the head's ground text.
+citation caveat, all of which the family page holds. Under "How to use the
+Atlas" the head offers a newcomer the Atlas walkthrough (Will, 24 October 2026).
+Since 28 October it is the family's inline film slot (see "Will Cook's other
+websites"): a small still, with its play mark and running time, beside the film's
+title, which is the one link, and the line "New here? Watch this first." It hides
+with the rest of the head's ground text when a subject opens. The Maths Map film
+belongs to the maths site, which the footer links.
 
 On desktop, the colour key stands on the map at the release and in a subject;
 the sidebar starts with the release's figures and where to start, then the
@@ -830,6 +833,9 @@ readable, while keeping those circles clickable.
   (`--frame`, left edge at `--gutter`). No general page centres a narrow column:
   About, Contribute, Glossary and the 404 page start at the same left edge as the
   lists, so the title never jumps between pages.
+- **The header starts with the ladder**: "Will Cook / Plectis Atlas", its first
+  rung Will's home page (see "Will Cook's other websites"). That is the header's
+  one way off the Atlas.
 - **Use the width with grids, keep the measure in cards.** Lists of things are
   `auto-fit` card grids (sources, numbers, cited works, ways to contribute); the
   Glossary and About read in newspaper columns; an explanation sits beside its
@@ -867,8 +873,9 @@ readable, while keeping those circles clickable.
   every term A to Z. A term's `example` follows its definition there and in
   the hover popover.
 - **The footer** is the name, independence and licence, then three short labelled
-  lists (the Atlas, lists and credits, source). It sits directly after the page's
-  last section, with no stacked margins above it.
+  lists (the Atlas, lists and credits, source), then, across the frame, Will Cook's
+  other websites. It sits directly after the page's last section, with no stacked
+  margins above it.
 
 ## Space
 
@@ -963,6 +970,39 @@ more), one button to try them on family 017, and five words beside the steps. Ea
 says what is on the screen and what to do with it; Lean and Comparator are defined in
 the step that first needs them. The steps keep the ids `lean`, `questions` and `tabs`
 that pages use to open the guide at a step.
+
+## Will Cook's other websites (28 October 2026)
+
+The Atlas is one of Will Cook's websites. Will asked for somewhere for the Atlas video
+to go, and for one home page that links every site. Each site carries the same three
+parts, built from one list and one stylesheet kept in Will's home-page repository
+(`wcook04/wcook04.github.io`, whose `docs/family.md` sets the markup):
+
+- **The ladder.** The header starts "Will Cook / Plectis Atlas". "Will Cook" links his
+  home page, which lists every website and film. It is the header's only way off the
+  Atlas, so the separate "Plectis" link beside the tools went. On a phone the first rung
+  stands above the wordmark, so the header keeps one row.
+- **The film slot.** The Atlas walkthrough appears as its still, with a play mark and
+  running time, and its title. The title is the one link: it opens YouTube in a new tab
+  and tells a screen reader the running time. Nothing is embedded and the still image is
+  served from the Atlas, so no page requests anything from another host. The map's panel
+  and the help page both use the family's inline slot, a still beside its title: small
+  in the panel, twice as wide beside the help page's opening (after it on a narrow
+  screen). The large slot was tried on the help page and pushed the steps' "Try it"
+  button below the first screen at 1440×790. The guide behind the header's `?` keeps to
+  its steps.
+- **The sister sites.** Under the footer's columns, every site in the list's order, the
+  Atlas marked as the current one, then "All websites and films". The footer's sentence
+  "The Atlas is one of Will Cook's projects" links the same home page.
+
+`site/family.json` is an unchanged copy of the home page's `sites.json`, and
+`site/assets/websites/family.css` an unchanged copy of its `assets/family/family.css` (in
+its own folder because the Atlas's `family.css` styles the family pages); `atlas.css` maps
+its `--fam-*` names onto the Atlas's colours and type. The stills are in
+`site/assets/films/`. `scripts/websites.py` renders the three parts and stops the build
+when the list no longer fits the Atlas. To show a newer edition of the film, copy the new
+`sites.json` here as `family.json` with its two stills, then rebuild: no copy file holds
+the film's address. The README links the film separately and needs the same change.
 
 ## Quality floor
 
