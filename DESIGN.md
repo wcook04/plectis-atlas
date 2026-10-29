@@ -833,9 +833,9 @@ readable, while keeping those circles clickable.
   (`--frame`, left edge at `--gutter`). No general page centres a narrow column:
   About, Contribute, Glossary and the 404 page start at the same left edge as the
   lists, so the title never jumps between pages.
-- **The header starts with the ladder**: "Will Cook / Plectis Atlas", its first
-  rung Will's home page (see "Will Cook's other websites"). That is the header's
-  one way off the Atlas.
+- **The header starts with the lockup**: the Plectis plait, which opens Will's home
+  page, a short upright rule, then the Atlas's tiles and name, which open the map (see
+  "Will Cook's other websites"). The plait is the header's one way off the Atlas.
 - **Use the width with grids, keep the measure in cards.** Lists of things are
   `auto-fit` card grids (sources, numbers, cited works, ways to contribute); the
   Glossary and About read in newspaper columns; an explanation sits beside its
@@ -978,10 +978,16 @@ to go, and for one home page that links every site. Each site carries the same t
 parts, built from one list and one stylesheet kept in Will's home-page repository
 (`wcook04/wcook04.github.io`, whose `docs/family.md` sets the markup):
 
-- **The ladder.** The header starts "Will Cook / Plectis Atlas". "Will Cook" links his
-  home page, which lists every website and film. It is the header's only way off the
-  Atlas, so the separate "Plectis" link beside the tools went. On a phone the first rung
-  stands above the wordmark, so the header keeps one row.
+- **The lockup.** The header starts with the family's lockup (29 October 2026; it
+  replaced the "Will Cook / Plectis Atlas" ladder). The Plectis plait links Will's home
+  page, which lists every website and film; its name for a screen reader is "Will Cook:
+  all websites and films". A short upright rule follows, then the Atlas's tiles and name,
+  which open the map. The plait is `site/assets/websites/plectis.svg`, an unchanged copy
+  of the family's mark served from the Atlas, with its own day and night palettes; the
+  tiles are inline and follow the theme switch. It is the header's only way off the
+  Atlas. Below 381 px the name gives way first (it stays the link's name for screen
+  readers), and on a phone the menu button shows its icon only, so the header keeps one
+  row and its height.
 - **The film slot.** The Atlas walkthrough appears as its still, with a play mark and
   running time, and its title. The title is the one link: it opens YouTube in a new tab
   and tells a screen reader the running time. Nothing is embedded and the still image is

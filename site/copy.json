@@ -49,11 +49,13 @@
   "help": "How to use the Atlas"
  },
  "websites": {
-  "_note": "Will Cook's websites share the header's ladder up to his home page, film slots and the footer's list of sister sites (scripts/websites.py, from site/family.json; the contract is docs/family.md in wcook04/wcook04.github.io). These words are the family's own and read the same on every site; the films' titles, running times and links come from site/family.json.",
+  "_note": "Will Cook's websites share the header's lockup (the Plectis plait to his home page, then the site's own mark and name), film slots and the footer's list of sister sites (scripts/websites.py, from site/family.json; the contract is docs/family.md in wcook04/wcook04.github.io). These words are the family's own and read the same on every site; the films' titles, running times and links come from site/family.json.",
   "sites_label": "Will Cook's websites",
   "sites_title": "More from Will Cook",
   "sites_all": "All websites and films",
-  "film_youtube": ", video on YouTube, {duration}",
+  "home_label": "Will Cook: all websites and films",
+ "home_title": "All of Will Cook's websites and films",
+ "film_youtube": ", video on YouTube, {duration}",
   "film_pending": "In preparation",
   "film_pending_meta": "Video in preparation"
  },

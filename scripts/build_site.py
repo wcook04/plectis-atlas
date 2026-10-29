@@ -1456,15 +1456,15 @@ def header(rel: str, current: str | None) -> str:
     for href, key in NAV:
         cur = ' aria-current="page"' if key == current else (' aria-current="true"' if inside and key == "map" else "")
         links.append(f'<a href="{root}{href}"{cur}>{esc(C("nav." + key))}</a>')
-    # The wordmark is the ladder's second rung: "Will Cook / Plectis Atlas", the first rung
-    # his home page, which lists every one of his websites and films (scripts/websites.py).
-    ladder = websites.ladder(f'<a class="brand" href="{root}index.html" aria-label="{esc(C("nav.brand_label"))}">'
-                             f'{MARK_SVG}<span class="brand__name" translate="no">{esc(C("site.name"))}</span></a>')
+    # The header starts with the family's lockup: the Plectis plait to Will's home page,
+    # which lists every one of his websites and films, then the Atlas's tiles and name
+    # (scripts/websites.py).
+    lockup = websites.lockup(root, f"{root}index.html", MARK_SVG, C("site.name"), C("nav.brand_label"))
     return f"""<body data-root="{root}" data-generation="{esc(RD().generation)}" data-copied="{esc(C('words.copied'))}" data-copy-failed="{esc(C('words.copy_failed'))}" data-tex-failed="{esc(C('words.tex_failed'))}" data-example-word="{esc(C('glossary.example'))}">
 <a class="skip" href="#main">{esc(C('site.skip'))}</a>
 <header class="top">
  <div class="frame top__in">
-  {ladder}
+  {lockup}
   <nav class="nav" id="site-nav" aria-label="{esc(C('nav.site_nav'))}">{''.join(links)}</nav>
   <div class="top__tools">
    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg><span>{esc(C('nav.menu'))}</span></button>
