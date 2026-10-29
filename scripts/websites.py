@@ -1,16 +1,18 @@
-"""Will Cook's websites: the header's ladder, film slots and the footer's sister sites.
+"""Will Cook's websites: the header's lockup, film slots and the footer's sister sites.
 
 The Atlas is one of several websites by Will Cook that share three things, rendered
 here from site/family.json (DESIGN.md, "Will Cook's other websites"):
 
-  the ladder        "Will Cook / Plectis Atlas" at the start of every header;
+  the lockup        the Plectis plait (his home page), a short rule, then the Atlas's
+                    tiles and name (its front page), at the start of every header;
   a film slot       the Atlas walkthrough's still, play mark and running time, its
                     title the one link, opening YouTube in a new tab;
   the sister sites  every website by name in the footer, this one marked current.
 
 site/family.json is an unchanged copy of sites.json in Will's home-page repository
 (wcook04/wcook04.github.io), site/assets/websites/family.css an unchanged copy of its
-assets/family/family.css, and site/assets/films/ holds the stills this site shows; that
+assets/family/family.css, site/assets/websites/plectis.svg an unchanged copy of its
+assets/family/marks/plectis.svg, and site/assets/films/ holds the stills this site shows; that
 repository's docs/family.md is the markup contract, and film_slot() follows its
 scripts/build_hub.py. No page requests anything from another host: the still is served
 from this site and YouTube opens only when a reader follows the link. To show a newer
@@ -54,6 +56,8 @@ def problems(reg: dict, site_root: Path = SITE) -> list[str]:
     films = {f.get("id"): f for f in reg.get("films", [])}
     if not sites[0].get("films") or sites[0]["films"][0] not in films:
         return out + [f"the {SITE_ID} site names no film the registry holds"]
+    if not (site_root / "assets/websites/plectis.svg").is_file():
+        out.append("copy the Plectis plait (assets/family/marks/plectis.svg) to site/assets/websites/plectis.svg")
     film = films[sites[0]["films"][0]]
     if film.get("youtube"):
         if not YOUTUBE.fullmatch(film["youtube"]):
@@ -128,11 +132,20 @@ def film_slot(f: dict, *, root: str = "", size: str = "", sizes: str = "100vw", 
             f'{para}</figcaption></figure>')
 
 
-def ladder(wordmark: str) -> str:
-    """The header's way up: "Will Cook / <wordmark>", the first rung his home page."""
+def lockup(root: str, href: str, mark: str, name: str, label: str = "") -> str:
+    """The start of the header (docs/family.md, "The lockup"): the Plectis plait, which
+    opens Will's home page (every website and film), a short upright rule, then this
+    site's own mark and name, which open this site's front page. The plait is
+    assets/websites/plectis.svg, served from this site; root is the page's way back to
+    the site root."""
     owner = REG["owner"]
-    return (f'<span class="fam-ladder"><a class="fam-ladder__up" href="{esc(owner["home"])}" rel="author">{esc(owner["name"])}</a>'
-            f'<span class="fam-ladder__sep" aria-hidden="true">/</span>{wordmark}</span>')
+    aria = f' aria-label="{esc(label)}"' if label else ""
+    return (f'<span class="fam-lockup">'
+            f'<a class="fam-lockup__home" href="{esc(owner["home"])}" rel="author" title="{esc(WORDS["home_title"])}">'
+            f'<img src="{esc(root)}assets/websites/plectis.svg" alt="{esc(WORDS["home_label"])}" width="26" height="26"></a>'
+            f'<span class="fam-lockup__rule" aria-hidden="true"></span>'
+            f'<a class="fam-lockup__site" href="{esc(href)}"{aria}>{mark}'
+            f'<span class="fam-lockup__name" translate="no">{esc(name)}</span></a></span>')
 
 
 def sister_sites() -> str:

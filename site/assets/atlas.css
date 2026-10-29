@@ -191,7 +191,7 @@ a.ext::after { content: "\2009\2197"; color: var(--link-ext); font-family: var(-
 /* Long file paths and identifiers in running text wrap on a phone instead of widening the page. */
 p a, li a, .phead a, p code, li code { overflow-wrap: anywhere; }
 .prose a, .lede a, .intro a, p > a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.18em; text-decoration-color: color-mix(in oklab, currentColor 40%, transparent); }
-.btn, .btn:hover, .nav a, .brand, .trail a, .leanc__title a, .ms__title a, .rel__title, .work__h a, .vocab a, .idx a, .nums a, .tbl a, .chip, .seg__b { text-decoration: none; }
+.btn, .btn:hover, .nav a, .trail a, .leanc__title a, .ms__title a, .rel__title, .work__h a, .vocab a, .idx a, .nums a, .tbl a, .chip, .seg__b { text-decoration: none; }
 button, input, select, textarea { font: inherit; color: inherit; }
 code, pre, kbd { font-family: var(--mono); font-size: 0.88em; }
 :where(a, button, input, summary, [tabindex]):where(:focus-visible) { outline: 2px solid var(--steel-text); outline-offset: 2px; border-radius: 3px; }
@@ -208,8 +208,8 @@ p { margin: 0 0 0.8em; text-wrap: pretty; }
 .frame { width: var(--frame); margin-inline: auto; }
 
 /* ---- Will Cook's websites ---------------------------------------------
-   The Atlas is one of Will Cook's websites. They share the header's ladder up to his
-   home page, film slots and the footer's list of sister sites, styled by
+   The Atlas is one of Will Cook's websites. They share the header's lockup (the Plectis
+   plait to his home page, then the site's own mark and name), film slots and the footer's list of sister sites, styled by
    assets/websites/family.css, an unchanged copy of the family's stylesheet
    (DESIGN.md "Will Cook's other websites"). Its --fam-* names read the Atlas's own
    palette and type, so both schemes follow the Atlas's switch. */
@@ -225,13 +225,13 @@ p { margin: 0 0 0.8em; text-wrap: pretty; }
   --fam-accent: var(--steel-text);
   --fam-serif: var(--serif);
   --fam-sans: var(--sans);
+  --fam-mark-warm: var(--brick);
+  --fam-mark-cool: var(--steel);
 }
 
 /* ---- Header ----------------------------------------------------------- */
 .top { border-bottom: 1px solid var(--rule); background: var(--page); }
 .top__in { display: flex; align-items: center; gap: 24px; min-height: var(--top-h); }
-.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-family: var(--serif); font-size: 1.25rem; font-weight: 500; letter-spacing: -0.01em; white-space: nowrap; }
-.brand:hover { color: var(--ink); }
 .mark { width: 22px; height: 22px; flex: none; }
 .mark rect { stroke: var(--page); stroke-width: 0.8; }
 .mk-a { fill: var(--brick); }
@@ -796,12 +796,12 @@ th[aria-sort="ascending"], th[aria-sort="descending"] { color: var(--ink); }
   :root.js .nav { display: none; position: absolute; top: 100%; right: 0; left: auto; z-index: 40; width: min(260px, 100%); margin: 0; flex-direction: column; gap: 0; padding: 6px; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: var(--r-md); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18); }
   :root.js .nav.nav--open { display: flex; }
   :root.js .nav a { border-radius: var(--r-sm); padding: 10px 12px; min-height: 40px; }
-  :root.js .brand { font-size: 1.125rem; }
   :root.js .top__tools { gap: 8px; }
 }
-/* At 320 to 380 px the header's row ran 9 px past the screen: the menu button keeps its
-   icon and its name for screen readers, and drops the visible word. */
-@media (max-width: 380px) {
+/* On a phone the lockup and the tools share one row only if the menu button keeps its
+   icon and its name for screen readers and drops the visible word (at 390 px the row
+   ran 35 px past the screen once the plait joined the header, 29 October 2026). */
+@media (max-width: 460px) {
   :root.js .nav-toggle { padding: 0 9px; }
   :root.js .nav-toggle span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   :root.js .top__in { gap: 8px; }
@@ -1383,23 +1383,24 @@ th[data-tip] .sort { cursor: pointer; }
 .way__who { font-size: var(--fs-small); color: var(--muted); }
 .way__d { color: var(--ink-soft); }
 
-/* The header's one way up is the ladder before the wordmark, "Will Cook / Plectis
-   Atlas", its first rung his home page, which lists every website and film (it replaced
-   a separate "Plectis" link beside the tools on 28 October 2026). Where the header is
-   narrow the first rung stands above the wordmark, so the header keeps its one row. */
-.top .fam-ladder { flex: none; }
-/* The wordmark's own baseline is its name's, not the bottom of its mark, so "Will Cook"
-   and "/" sit on the same line as "Plectis Atlas". */
-.top .fam-ladder .brand__name { align-self: baseline; }
-/* From 901 to 1000 px the six nav links, the ladder and the tools share one row only
+/* The header starts with the family's lockup (assets/websites/family.css): the Plectis
+   plait, which opens Will's home page and lists every website and film, a short rule,
+   then the Atlas's tiles and name, which open the map. It replaced the "Will Cook /
+   Plectis Atlas" ladder on 29 October 2026. The lockup never shrinks, so the header
+   keeps one row; the tiles keep their own size beside the family's name. */
+.top .fam-lockup { flex: none; }
+.top .fam-lockup__site .mark { width: 22px; height: 22px; }
+/* Below 381 px the lockup and the tools do not fit one row, so the long name gives way
+   first (the family's rule): the plait, the rule and the tiles stay, and the link keeps
+   its name for screen readers ("Plectis Atlas, home"). */
+@media (max-width: 380px) {
+  .top .fam-lockup__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+/* From 901 to 1000 px the six nav links, the lockup and the tools share one row only
    with slightly tighter pills and gaps. */
 @media (min-width: 901px) and (max-width: 1000px) {
   .top__in { column-gap: var(--sp-4); }
   .nav a { padding-inline: 9px; }
-}
-@media (max-width: 560px) {
-  .top .fam-ladder { flex-wrap: wrap; width: min-content; column-gap: 6px; row-gap: 0; }
-  .top .fam-ladder__up, .top .fam-ladder__sep, .top .fam-ladder .brand { line-height: 1.3; }
 }
 /* The footer names the family in one sentence and, under its columns and across its
    width, lists every sister site, the same list on each of them. */

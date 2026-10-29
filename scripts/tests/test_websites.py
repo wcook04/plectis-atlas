@@ -1,6 +1,7 @@
 """Checks for the parts the Atlas shares with Will Cook's other websites (scripts/websites.py,
 from site/family.json; DESIGN.md "Will Cook's other websites"): every header starts with the
-ladder up to his home page and has no other way off the Atlas; every footer lists the sister
+lockup (the Plectis plait to his home page, served from this site, then the Atlas's tiles
+and name) and has no other way off the Atlas; every footer lists the sister
 sites in the list's order with the Atlas marked current; the map's panel and the help page
 show the Atlas film as the family's film slot, its title the one link and its still served
 from this site; every page links the shared stylesheet; and a copy of the list that no longer
@@ -76,19 +77,31 @@ class Registry(unittest.TestCase):
 
 
 class Header(unittest.TestCase):
-    def test_header_starts_with_the_ladder_and_has_one_way_off_the_atlas(self):
+    def test_header_starts_with_the_lockup_and_has_one_way_off_the_atlas(self):
         home = W.REG["owner"]["home"]
         for rel in ("index.html", "families/017.html", "explanations/017/x/index.html"):
             root = "../" * rel.count("/")
             h = S.header(rel, None)
             top = h[h.index('<header class="top">'):h.index("</header>")]
             a = links(top)
-            self.assertEqual(a[0], {"class": "fam-ladder__up", "href": home, "rel": "author"}, rel)
-            self.assertEqual((a[1]["class"], a[1]["href"]), ("brand", f"{root}index.html"), rel)
-            ladder = top[top.index('<span class="fam-ladder">'):top.index('<nav class="nav"')]
-            self.assertRegex(ladder, r'>Will Cook</a><span class="fam-ladder__sep" aria-hidden="true">/</span><a class="brand"')
+            self.assertEqual(a[0], {"class": "fam-lockup__home", "href": home, "rel": "author",
+                                    "title": "All of Will Cook's websites and films"}, rel)
+            self.assertEqual((a[1]["class"], a[1]["href"]), ("fam-lockup__site", f"{root}index.html"), rel)
+            lockup = top[top.index('<span class="fam-lockup">'):top.index('<nav class="nav"')].rstrip()
+            img = [x for t, x in Tags(lockup).tags if t == "img"]
+            self.assertEqual(img, [{"src": f"{root}assets/websites/plectis.svg", "alt": "Will Cook: all websites and films",
+                                    "width": "26", "height": "26"}], rel)
+            self.assertRegex(lockup, r'</a><span class="fam-lockup__rule" aria-hidden="true"></span><a class="fam-lockup__site"')
+            self.assertRegex(lockup, r'<svg class="mark"[^>]*aria-hidden="true".*<span class="fam-lockup__name" translate="no">Plectis Atlas</span></a></span>$')
             off_site = [x["href"] for x in a if x["href"].startswith("http")]
             self.assertEqual(off_site, [home], rel)
+
+    def test_the_plait_is_served_from_the_atlas(self):
+        svg = (ROOT / "site/assets/websites/plectis.svg").read_text(encoding="utf-8")
+        self.assertTrue(svg.lstrip().startswith("<svg"))
+        self.assertNotRegex(svg, r'(href|src)\s*=\s*"(https?:)?//')
+        self.assertNotIn("@import", svg)
+        self.assertNotIn("url(http", svg)
 
     def test_every_page_links_the_shared_stylesheet_after_the_atlas_one(self):
         for rel in ("index.html", "families/159.html", "papers/x.html"):
@@ -99,10 +112,10 @@ class Header(unittest.TestCase):
             self.assertIn(f"{root}assets/websites/family.css", names)
             self.assertLess(names.index(f"{root}assets/atlas.css"), names.index(f"{root}assets/websites/family.css"))
         css = (ROOT / "site/assets/websites/family.css").read_text(encoding="utf-8")
-        for cls in (".fam-ladder", ".film-slot__frame", ".film-slot__play", ".film-slot__time", ".fam-sites__list"):
+        for cls in (".fam-lockup", ".fam-lockup__home", ".fam-lockup__rule", ".film-slot__frame", ".film-slot__play", ".film-slot__time", ".fam-sites__list"):
             self.assertIn(cls, css)
         atlas = (ROOT / "site/assets/atlas.css").read_text(encoding="utf-8")
-        for name in ("page", "surface", "ink", "ink-soft", "muted", "faint", "rule", "rule-strong", "accent", "serif", "sans"):
+        for name in ("page", "surface", "ink", "ink-soft", "muted", "faint", "rule", "rule-strong", "accent", "serif", "sans", "mark-warm", "mark-cool"):
             self.assertRegex(atlas, rf"--fam-{name}: var\(--")
         self.assertIn(".sr-only", atlas)
 

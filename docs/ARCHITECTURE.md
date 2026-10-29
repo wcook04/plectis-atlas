@@ -55,7 +55,7 @@ these attributes do not change the build or its validation rules.
 | Source extraction into the baseline JSON indexes | [`build_data.py`](../scripts/build_data.py); this does not rebuild Statement Map's export. |
 | Family reading layout | [`family_page.py`](../scripts/family_page.py), orchestrated by [`build_site.py`](../scripts/build_site.py). |
 | Other site pages, copy and settings | [`build_site.py`](../scripts/build_site.py), `copy*.json` and `config.json` in [`site/`](../site/), and [`site/assets/`](../site/assets/). |
-| The header's ladder, film slots and footer's sister sites shared with Will Cook's other websites | [`websites.py`](../scripts/websites.py), from `site/family.json` and `site/assets/websites/family.css`, unchanged copies from Will's home-page repository. |
+| The header's lockup, film slots and footer's sister sites shared with Will Cook's other websites | [`websites.py`](../scripts/websites.py), from `site/family.json`, `site/assets/websites/family.css` and `site/assets/websites/plectis.svg`, unchanged copies from Will's home-page repository. |
 | TeX reading pages and their acceptance metadata | [`build_papers.py`](../scripts/build_papers.py). |
 | The release map and front page | [`build_universe.py`](../scripts/build_universe.py), run after the site build. |
 | Lean source rendering and cross-references | [`lean_render.py`](../scripts/lean_render.py) and [`build_lean_xref.py`](../scripts/build_lean_xref.py). |

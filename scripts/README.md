@@ -18,7 +18,7 @@ through the same static map packets built here.
 | [reader.py](reader.py) | Validates and reads the pinned Statement Map export. `python3 scripts/reader.py` checks its packets. |
 | [build_site.py](build_site.py) | Builds family and Lean pages, lists, search and shared assets. Clears its output directory first. |
 | [family_page.py](family_page.py) | Renders family pages for the site builder. |
-| [websites.py](websites.py) | Renders the header's ladder, the film slots and the footer's sister sites shared with Will Cook's other websites, from `site/family.json`. |
+| [websites.py](websites.py) | Renders the header's lockup, the film slots and the footer's sister sites shared with Will Cook's other websites, from `site/family.json`. |
 | [build_papers.py](build_papers.py) | Converts the paper sources into full reading pages and writes their rendering metadata. |
 | [build_universe.py](build_universe.py) | Builds the release map, its existing JSON exports and agent navigation (`llms.txt`, `agents.md`); replaces the front page after the site build. |
 | [lean_render.py](lean_render.py) | Renders Lean source for the page builders. |
@@ -68,7 +68,7 @@ python3 scripts/tests/test_family_page.py
 | Paper rendering | [test_build_papers.py](tests/test_build_papers.py) |
 | Family layouts and statement snippets | [test_family_page.py](tests/test_family_page.py) |
 | Previous and next links between families, Lean statements and papers | [test_sibling_nav.py](tests/test_sibling_nav.py) |
-| The header's ladder, the film slots and the footer's sister sites | [test_websites.py](tests/test_websites.py) |
+| The header's lockup, the film slots and the footer's sister sites | [test_websites.py](tests/test_websites.py) |
 | A contribution file or its validation | [check_contributions.py](check_contributions.py); see [Contributing](../CONTRIBUTING.md) |
 | Links between built paper and Lean pages | [test_check_paper_links.py](tests/test_check_paper_links.py); [check_paper_links.py](check_paper_links.py), after the complete build |
 
