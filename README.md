@@ -2,7 +2,7 @@
 
 Plectis Atlas brings the papers in [OpenAI’s mathematics release](https://github.com/openai/math) alongside their formal statements and outside checking reports. Follow one result from the paper to what each group checked, without searching across repositories.
 
-**[Explore the map](https://wcook04.github.io/plectis-atlas/)** · [Watch the walkthrough](https://www.youtube.com/watch?v=ugUObM3qpmM) · [Follow its π example](#one-paper-two-coverage-labels)
+**[Explore the map](https://wcook04.github.io/plectis-atlas/)** · [Watch the walkthrough](https://www.youtube.com/watch?v=ga5_wfSStdk) · [Follow its π example](#one-paper-two-coverage-labels)
 
 [Browse by subject](https://wcook04.github.io/plectis-atlas/explain.html) · [Build it locally](#build-it-yourself) · [Source map](#repository) · [Contribute](CONTRIBUTING.md)
 
@@ -38,7 +38,7 @@ OpenAI’s release contains PDFs, their TeX typesetting source, a catalogue and 
 
 ## One paper, two coverage labels
 
-Open the [paper family about the irrationality exponent of π](https://wcook04.github.io/plectis-atlas/families/017.html), also used in the [Atlas walkthrough](https://www.youtube.com/watch?v=ugUObM3qpmM). OpenAI’s description claims a result about approximating π by fractions and a consequence about convergence of the Flint Hills series. The selected Lean statement, `PiExponent`, includes the first claim and leaves out the second.
+Open the [paper family about the irrationality exponent of π](https://wcook04.github.io/plectis-atlas/families/017.html), also used in the [Atlas walkthrough](https://www.youtube.com/watch?v=ga5_wfSStdk). OpenAI’s description claims a result about approximating π by fractions and a consequence about convergence of the Flint Hills series. The selected Lean statement, `PiExponent`, includes the first claim and leaves out the second.
 
 MathVet labels the coverage **full**, taking the π result as the headline, and notes that the series consequence is absent. Carlos Toledo’s cert-machine labels it **narrower and declared**, counting both claims and noting that OpenAI already identifies the omission. Their notes agree about what is missing even though their labels differ. MathVet describes its assessment as preliminary, before referee review.
 
@@ -241,7 +241,7 @@ Henry Cohn’s [essay on the technical debt of AI-generated mathematics](https:/
 
 ## Videos and related projects
 
-In the [Atlas walkthrough](https://www.youtube.com/watch?v=ugUObM3qpmM),
+In the [Atlas walkthrough](https://www.youtube.com/watch?v=ga5_wfSStdk),
 Will opens the paper about π and compares MathVet's and Carlos Toledo's
 cert-machine reports. You can follow the same example at your own pace:
 
@@ -249,7 +249,7 @@ cert-machine reports. You can follow the same example at your own pace:
 - [Open family 017](https://wcook04.github.io/plectis-atlas/families/017.html) for the paper, selected Lean statement and original reports.
 - [Read the source and citation guide](docs/ATTRIBUTION.md) before reusing a result or assessment.
 
-The [Plectis introduction](https://www.youtube.com/watch?v=U1z2-XaLe_w)
+The [Plectis introduction](https://www.youtube.com/watch?v=MBmVMMogXTA)
 explains the wider maths and software projects.
 
 ### Where Atlas fits
