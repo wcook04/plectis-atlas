@@ -14,7 +14,7 @@ guides. For file-level navigation, use [site source](../site/README.md) or
 ```text
 upstream.json                 exact OpenAI source commit
 backend/                      imported Statement Map reader packets and receipts
-curated/                      attributed outside records and draft scope readings
+curated/                      attributed outside records, scope readings and two legacy CLI launchers
 contributions/                authored notes, checks, explanations and templates
 data/                         generated source indexes and rendering metadata
 scripts/                      ingestion, rendering and validation
@@ -30,6 +30,9 @@ docs/                         repository explanation and README images
 ```
 
 The folders separate authored material, imported evidence and generated output.
+The two `curated/check_*.py` commands delegate to the maintained validators in
+`scripts/`; they preserve published command paths without mixing validator
+implementations with their source records. New checks belong in `scripts/`.
 The website is built by scripts; it needs no application server or installable
 Python package. Tests live in `scripts/tests/`, import their script owners explicitly and are listed in
 the [scripts guide](../scripts/README.md#check-a-change).

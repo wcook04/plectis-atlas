@@ -14,10 +14,12 @@ class StructureTests(unittest.TestCase):
         accepted = structure.REQUIRED | structure.ROOT_FILES | {
             'scripts/build_data.py', 'scripts/ingest/mathvet.py',
             'scripts/tests/test_example.js', 'docs/images/family-dark.png',
-            'docs/README.md', 'backend/manifest.json', 'data/statements.json'}
+            'docs/README.md', 'backend/manifest.json', 'data/statements.json',
+            *structure.CURATED_LAUNCHERS}
         self.assertEqual(structure.check(accepted), [])
         for path in ('scripts/test_leak.py', 'test_root.py', 'docs/test_tool.js',
-                     'docs/map.png', 'docs/helper.py', 'scratch.md', 'site/_build/index.html'):
+                     'docs/map.png', 'docs/helper.py', 'scratch.md', 'site/_build/index.html',
+                     'curated/check_extra.py', 'curated/tools/helper.sh'):
             with self.subTest(path=path):
                 self.assertTrue(any(e.startswith(path + ':') for e in structure.check(accepted | {path})))
         self.assertTrue(structure.check(accepted - {'scripts/reader.py'}))

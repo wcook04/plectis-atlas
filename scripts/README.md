@@ -39,6 +39,8 @@ through the same static map packets built here.
 | [build_data.py](build_data.py) | Extracts baseline JSON indexes from the pinned sources. |
 | [build_lean_claims.py](build_lean_claims.py), [build_lean_xref.py](build_lean_xref.py) | Extract Lean declaration records and cross-references. |
 | [ingest/](ingest/) | Imports source-specific outside findings. |
+| [curate_community_seed.py](curate_community_seed.py) | Filters research seed records by explicit rules and existing findings before import. |
+| [merge_community_seeds.py](merge_community_seeds.py) | Combines seed records into `curated/community.json`; writes only with `--write`. Run the community validator afterwards. |
 | [vendor_backend.py](vendor_backend.py) | Imports an accepted Statement Map export and records its identity and hashes. |
 
 An ordinary site build uses the included data and export. Changing the source
@@ -46,6 +48,16 @@ pin requires a matching backend export and refreshed dependent data; follow
 [Refreshing inputs](../docs/ARCHITECTURE.md#refreshing-inputs).
 
 ## Check a change
+
+Curated source validators live here, beside the other checks:
+
+| Tool | Input and command |
+|---|---|
+| [check_community.py](check_community.py) | `python3 scripts/check_community.py` validates `curated/community.json`; add `--self-test` to exercise invalid records. |
+| [check_scope_coverage.py](check_scope_coverage.py) | `python3 scripts/check_scope_coverage.py --upstream ../openai-math-upstream` checks draft scope rows against the pinned notes and manuscript sources. |
+
+The two old `curated/check_*.py` commands remain compatibility launchers. The
+implementations and new automation belong in `scripts/`.
 
 Regression suites live in `tests/`; builders and shared modules remain above.
 Run `python3 scripts/check_repository_structure.py` to check placement, and

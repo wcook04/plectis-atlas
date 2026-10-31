@@ -10,7 +10,10 @@ ROOT_FILES = {
     'NOTICE', 'README.md', 'SECURITY.md', 'STYLE.md', 'upstream.json',
 }
 REQUIRED = {'scripts/reader.py', 'scripts/build_site.py', 'docs/ARCHITECTURE.md',
-            'scripts/tests/test_reader.py', 'docs/images/map-light.png'}
+            'scripts/tests/test_reader.py', 'scripts/check_community.py',
+            'scripts/check_scope_coverage.py', 'docs/images/map-light.png'}
+# Published commands retained as launchers, not homes for new validator code.
+CURATED_LAUNCHERS = {'curated/check_community.py', 'curated/check_scope_coverage.py'}
 
 
 def candidates(root: Path) -> set[str]:
@@ -32,6 +35,8 @@ def check(paths: set[str]) -> list[str]:
             errors.append(f'{name}: documentation images belong in docs/images/')
         if p.parts[0] == 'docs' and p.suffix in {'.py', '.js', '.mjs', '.sh'}:
             errors.append(f'{name}: executable tooling belongs in scripts/')
+        if p.parts[0] == 'curated' and p.suffix in {'.py', '.js', '.mjs', '.sh'} and name not in CURATED_LAUNCHERS:
+            errors.append(f'{name}: curated records are data; executable tooling belongs in scripts/')
         if p.parts[:2] == ('site', '_build'):
             errors.append(f'{name}: generated website output must not be tracked')
     return errors

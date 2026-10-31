@@ -175,7 +175,7 @@ For more, [explain a result](skills/explain-a-result/SKILL.md), [compare a state
 | Folder | What lives here |
 |---|---|
 | [contributions/](contributions/) | Explanations, statement checks, credits and replay receipts |
-| [curated/](curated/) | Attributed outside reports and draft scope readings |
+| [curated/](curated/) | Attributed outside reports and draft scope readings; validators in `scripts/` |
 | [backend/](backend/) | Pinned evidence records exported by Statement Map |
 | [data/](data/) | Generated source indexes and paper-rendering metadata |
 | [site/](site/README.md) | Page copy, styles and browser code |
