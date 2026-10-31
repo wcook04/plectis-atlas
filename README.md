@@ -187,18 +187,16 @@ For more, [explain a result](skills/explain-a-result/SKILL.md), [compare a state
 
 ## Repository
 
-| Folder | What lives here |
-|---|---|
-| [contributions/](contributions/) | Templates for explanations, statement comparisons, credits and records of repeated proof checks |
-| [curated/](curated/) | Outside reports and draft assessments of what the Lean statements cover; checks in `scripts/` |
-| [backend/](backend/) | Saved source records from the separate Statement Map program |
-| [data/](data/) | Generated source indexes and paper-rendering metadata |
-| [site/](site/README.md) | Page copy, styles and browser code |
-| [scripts/](scripts/README.md) | Builders, importers and checks; regression suites in `scripts/tests/` |
-| [docs/images/](docs/images/) | Light and dark README screenshots |
-| [docs/](docs/README.md) | Documentation index and architecture guide |
-| [skills/](skills/) | Task instructions for coding agents |
-| [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/) | Issue forms for reader notes and unreviewed agent observations |
+- [contributions/](contributions/): Templates for explanations, statement comparisons, credits and records of repeated proof checks.
+- [curated/](curated/): Outside reports and draft assessments of what the Lean statements cover; checks in `scripts/`.
+- [backend/](backend/): Saved source records from the separate Statement Map program.
+- [data/](data/): Generated source indexes and paper-rendering metadata.
+- [site/](site/README.md): Page copy, styles and browser code.
+- [scripts/](scripts/README.md): Builders, importers and checks; regression suites in `scripts/tests/`.
+- [docs/images/](docs/images/): Light and dark README screenshots.
+- [docs/](docs/README.md): Documentation index and architecture guide.
+- [skills/](skills/): Task instructions for coding agents.
+- [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/): Issue forms for reader notes and unreviewed agent observations.
 
 The [documentation index](docs/README.md) collects the guides for contributors and developers.
 `python3 scripts/check_repository_structure.py` enforces these roles in CI; it checks
