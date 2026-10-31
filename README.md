@@ -1,5 +1,7 @@
 # Plectis Atlas
 
+[Will Cook’s home page: all projects and videos](https://wcook04.github.io/)
+
 Plectis Atlas is a website for reading [OpenAI's mathematics papers](https://github.com/openai/math)
 and the reports other groups have written about them. Open a result to read its
 paper, see any accompanying Lean code, and compare the outside assessments.
