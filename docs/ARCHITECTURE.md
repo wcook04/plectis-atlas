@@ -14,7 +14,7 @@ guides. For file-level navigation, use [site source](../site/README.md) or
 ```text
 upstream.json                 exact OpenAI source commit
 backend/                      imported Statement Map reader packets and receipts
-curated/                      attributed outside records and draft scope readings
+curated/                      attributed outside records, scope readings and two legacy CLI launchers
 contributions/                authored notes, checks, explanations and templates
 data/                         generated source indexes and rendering metadata
 scripts/                      ingestion, rendering and validation
@@ -30,6 +30,9 @@ docs/                         repository explanation and README images
 ```
 
 The folders separate authored material, imported evidence and generated output.
+The two `curated/check_*.py` commands delegate to the maintained validators in
+`scripts/`; they preserve published command paths without mixing validator
+implementations with their source records. New checks belong in `scripts/`.
 The website is built by scripts; it needs no application server or installable
 Python package. Tests live in `scripts/tests/`, import their script owners explicitly and are listed in
 the [scripts guide](../scripts/README.md#check-a-change).
@@ -297,10 +300,12 @@ map, with its discipline regions, family dots, release summary and colour key.
 Both link to the public Atlas front page. The paper reader now sits beside the
 “What you can do” feature table.
 
-The overview pair was captured on 15 October 2026 from a local build of main
-commit `96d9f05d8f1a5cf4fefbc47879b4dfbc1278ccc6`, using the documented quick
-preview commands above. The map reads Statement Map generation
-`sha256:e44fe048bf34d4e55b76af0e42f931ce1121c5c189edf0e8cd6061a5902b3e47`.
+The overview pair was captured on 31 October 2026 from the public deployment
+of main commit `8c51b66453e01b3640f1d8466067d10d9c672730`, verified against
+[the successful Pages build](https://github.com/wcook04/plectis-atlas/actions/runs/40967284841).
+It includes the π example, the inline colour key and the shared site header.
+The map reads Statement Map generation
+`sha256:fda4c3462963b650c538e2177794811eb1c221b267efea4b091fd6e397533f81`.
 The native owners are `scripts/build_universe.py`, `site/assets/universe.js`
 and `site/assets/universe.css`, with the shared `atlas.css`, fonts and theme
 control. No map, labels, data or interface elements were reconstructed.
@@ -322,11 +327,19 @@ The paper reader pair, `reader-light.jpg` and `reader-dark.jpg`, shows
 [the successful Pages build](https://github.com/wcook04/plectis-atlas/actions/runs/38424773534).
 It uses the actual output of `scripts/build_papers.py`, `site/assets/paper.css`
 and the shared typography, fonts and theme control, at a 1440 × 900 CSS pixel
-viewport. The PDF remains the reference. The family page pair,
-`family-light.png` and `family-dark.png`, shows family 003's first screen: the
-catalogue's claim beside what each group found, above the tabs. It was captured
-on 19 October 2026 from a local build of the redesign branch at a 1440 × 900 CSS
-pixel viewport.
+viewport. The PDF remains the reference.
+
+The family page pair, `family-light.png` and `family-dark.png`, shows family
+003's evidence tab: a paper theorem beside a selected Lean challenge, with
+OpenAI's proof linked below it and the unreviewed pairing labelled. It was
+captured on 31 October 2026 from the documented local quick preview at main
+commit `8c51b66453e01b3640f1d8466067d10d9c672730`, using a 1440 × 900 CSS pixel
+viewport and device scale 1. The view uses Statement Map generation
+`sha256:fda4c3462963b650c538e2177794811eb1c221b267efea4b091fd6e397533f81`.
+Both files are whole-viewport browser captures through the native theme switch;
+no text, mathematics or interface elements were reconstructed. Open the linked
+family page to read the outside assessments and proof-verification reports
+below the captured area.
 
 The old map pair (`map-light.png` and `map-dark.png`) remains historical imagery.
 It was captured on 12 October 2026 from the local `reader-v2` build at `d32c790`,

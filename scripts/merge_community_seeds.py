@@ -7,7 +7,7 @@ Each seed has the community_v1 shape (`efforts`, `findings`). Efforts merge on
 `id`, then on URL; findings merge on URL plus family plus statement. Existing
 curated rows win, so a reviewed row is never overwritten by a seed. Without
 --write the merged result is printed as a summary only. Run
-curated/check_community.py afterwards. Standard library only.
+scripts/check_community.py afterwards. Standard library only.
 """
 from __future__ import annotations
 
