@@ -13,7 +13,7 @@ whether its statement covers the paper's claims.
 <a href="https://wcook04.github.io/plectis-atlas/">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/overview-dark.png">
-    <img src="docs/images/overview-light.png" width="1440" alt="The full Atlas release map: disciplines contain their families, coloured by outside readings of the Lean’s scope, with the release summary and colour key beside them.">
+    <img src="docs/images/overview-light.png" width="1440" alt="The Atlas release map: disciplines contain their families, coloured by outside readings of the Lean’s scope, with the π example beside the map and the colour key above it.">
   </picture>
 </a>
 
@@ -30,11 +30,11 @@ OpenAI’s release contains PDFs, their TeX typesetting source, a catalogue and 
 <a href="https://wcook04.github.io/plectis-atlas/families/003.html">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/family-dark.png">
-    <img src="docs/images/family-light.png" width="1440" alt="The page for family 003, the quasi-Riemann hypothesis: OpenAI’s catalogue description beside a table of what each outside group found, with each group’s own word for how much of the result the Lean states and whether OpenAI’s proof passed Comparator, and tabs for the papers, the Lean and the reports, connections, discussion and contributions.">
+    <img src="docs/images/family-light.png" width="1440" alt="Family 003, the quasi-Riemann hypothesis: a paper theorem beside a selected Lean challenge, with links to OpenAI’s proof and the outside reports. The pairing is labelled as unreviewed.">
   </picture>
 </a>
 
-*A family’s page: the claim beside what each group found, in their own words, with links to their records.*
+*A family’s evidence page: the paper theorem beside a selected Lean statement, with the pairing’s limits below. Continue down the page for the outside groups’ attributed assessments and proof-verification reports.*
 
 ## One paper, two coverage labels
 
@@ -261,7 +261,7 @@ Plectis is Will Cook’s programme of research and software built with AI agents
 | [Plectis Erdős](https://github.com/wcook04/plectis-erdos) · [research website](https://wcook04.github.io/practical-formal-verification/maths/) | The original eight-problem research corpus whose paper-to-Lean records informed Atlas. |
 | [Plectis Erdős Lean](https://github.com/wcook04/plectis-erdos-lean) | Lean proofs and Comparator checks for selected results from that corpus. |
 
-The [Plectis website](https://wcook04.github.io/practical-formal-verification/) collects all the projects
+The [Plectis home page](https://wcook04.github.io/) collects Will’s websites
 and videos. The separate [Plectis toolkit](https://github.com/wcook04/practical-formal-verification)
 contains Python experiments; this repository contains the Atlas website and its builders.
 
@@ -273,4 +273,4 @@ Plectis Atlas is independent of OpenAI and is not affiliated with or endorsed by
 
 ## Author
 
-Made by [Will Cook](https://wcook04.github.io/practical-formal-verification/). The atlas grew out of the paper-to-Lean records built for [Plectis’s research on eight Erdős problems](https://wcook04.github.io/practical-formal-verification/maths/). The results it shows belong to their authors. To cite the atlas, use [`CITATION.cff`](CITATION.cff). Cite the original paper or outside report as well when relying on its result; the Atlas citation does not replace those credits.
+Made by [Will Cook](https://wcook04.github.io/). The atlas grew out of the paper-to-Lean records built for [Plectis’s research on eight Erdős problems](https://wcook04.github.io/practical-formal-verification/maths/). The results it shows belong to their authors. To cite the atlas, use [`CITATION.cff`](CITATION.cff). Cite the original paper or outside report as well when relying on its result; the Atlas citation does not replace those credits.
