@@ -85,11 +85,11 @@ class Header(unittest.TestCase):
             top = h[h.index('<header class="top">'):h.index("</header>")]
             a = links(top)
             self.assertEqual(a[0], {"class": "fam-lockup__home", "href": home, "rel": "author",
-                                    "title": "All of Will Cook's websites and films"}, rel)
+                                    "title": "All of Will Cook's projects and videos"}, rel)
             self.assertEqual((a[1]["class"], a[1]["href"]), ("fam-lockup__site", f"{root}index.html"), rel)
             lockup = top[top.index('<span class="fam-lockup">'):top.index('<nav class="nav"')].rstrip()
             img = [x for t, x in Tags(lockup).tags if t == "img"]
-            self.assertEqual(img, [{"src": f"{root}assets/websites/plectis.svg", "alt": "Will Cook: all websites and films",
+            self.assertEqual(img, [{"src": f"{root}assets/websites/plectis.svg", "alt": "Will Cook: all projects and videos",
                                     "width": "26", "height": "26"}], rel)
             self.assertRegex(lockup, r'</a><span class="fam-lockup__rule" aria-hidden="true"></span><a class="fam-lockup__site"')
             self.assertRegex(lockup, r'<svg class="mark"[^>]*aria-hidden="true".*<span class="fam-lockup__name" translate="no">Plectis Atlas</span></a></span>$')
