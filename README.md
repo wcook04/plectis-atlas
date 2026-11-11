@@ -256,6 +256,8 @@ Henry Cohn’s [essay on the technical debt of AI-generated mathematics](https:/
 
 ## Videos and related projects
 
+[Introduction to the projects](https://www.youtube.com/watch?v=Yk_kUQUCylc) · [Atlas short: one paper, two coverage labels](https://www.youtube.com/watch?v=cDA5b6aWeyA)
+
 In the [Atlas walkthrough](https://www.youtube.com/watch?v=ga5_wfSStdk),
 Will opens the paper about π and compares MathVet's and Carlos Toledo's
 cert-machine reports. You can follow the same example at your own pace:
@@ -263,9 +265,6 @@ cert-machine reports. You can follow the same example at your own pace:
 - [Read the comparison above](#one-paper-two-coverage-labels).
 - [Open family 017](https://wcook04.github.io/plectis-atlas/families/017.html) for the paper, selected Lean statement and original reports.
 - [Read the source and citation guide](docs/ATTRIBUTION.md) before reusing a result or assessment.
-
-The [Plectis introduction](https://www.youtube.com/watch?v=MBmVMMogXTA)
-explains the wider maths and software projects.
 
 ### Where Atlas fits
 
