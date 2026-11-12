@@ -3819,7 +3819,8 @@
    "traction": "0 stars, 0 forks, last push 2026-10-11 (GitHub API, 11 Oct 2026)",
    "reuse": "link",
    "families": [
-    "227"
+    "227",
+    "281"
    ],
    "statements": [],
    "source_seed": "C_community_seed.curated.json"
@@ -18310,6 +18311,16 @@
    "date": "2026-10-08",
    "verified": "Read the README via the GitHub API on 2026-10-19; figures not re-computed by us",
    "source_seed": "coverage_research_20261019"
+  },
+  {
+   "effort": "github-jnshi-math-lineage-precedence-reviews-of-mis-f377e",
+   "family": "281",
+   "statement": null,
+   "kind": "commentary",
+   "summary": "An agent-generated review published by Jonathan Shi lists seven precedence findings for the full-support SK manuscript. F4 points to Yuxin Zhou’s lower-history ratio inequalities. The repository states that the review has not been vetted by a human.",
+   "url": "https://github.com/jnshi/math-lineage/blob/da8c0e694f00c2575ccf9d26c0ea560543ef0a1b/preprints/Full-support-of-the-zero-temperature-Sherrington-Kirkpatrick-order-parameter-September-27-2026/precedence-findings.json",
+   "date": "2026-10-13",
+   "verified": "Read the review README and precedence-findings.json at da8c0e694f00c2575ccf9d26c0ea560543ef0a1b on 12 November 2026. Link-only source attribution, not a mathematical review or proof check."
   }
  ]
 }
