@@ -1273,13 +1273,22 @@ def term_link(tid: str, text: str) -> str:
     return f'<a class="term" href="glossary.html#{esc(tid)}" data-term="{esc(tid)}">{esc(text)}</a>'
 
 
+def tries_html() -> str:
+    """Example searches under the search field (11 November 2026): each button types its
+    words into the field, so a reader arriving from the short video, where Will searches for
+    "irrationality exponent", can repeat that search with one click. The words are in
+    copy_universe.json; they hide with the ground text when a subject is open."""
+    words = COPY_U["search"]["tries"]
+    buttons = "".join(f'<button type="button" class="u-try" data-u-try="{esc(w)}">{esc(w)}</button>' for w in words)
+    return f'<p class="u-tries" data-u-ground><span class="u-tries__k">{esc(U("search.tries_label"))}</span>{buttons}</p>'
+
+
 def film_html() -> str:
-    """The Atlas walkthrough, offered to a newcomer in the panel head (Will, 24 October 2026)
-    as the family's inline film slot, a small still beside its title, so the head stays short
-    and the map stays the subject. The title, running time, still and link come from
-    site/family.json; it hides with the head's other ground text when a subject is open."""
-    slot = websites.film_slot(websites.film(), size="inline", sizes="8rem", text=U("page.film.text"))
-    return f'<div class="u-film" data-u-ground>{slot}</div>'
+    """Both Atlas videos in the panel head (11 November 2026): the short video leads with the
+    larger still and the full video is a smaller row under it (websites.film_pair). Titles,
+    running times, stills and links come from site/family.json; the pair hides with the
+    head's other ground text when a subject is open."""
+    return f'<div class="u-film" data-u-ground>{websites.film_pair()}</div>'
 
 
 def since_html(M) -> str:
@@ -1433,18 +1442,18 @@ def page_body(M, gen, data_version=None) -> str:
    <nav class="trail u-trail" aria-label="{esc(U('levels.trail_label'))}" data-u-trail hidden></nav>
    <nav class="u-step" aria-label="{esc(U('step.label'))}" data-u-step hidden></nav>
    <h1 class="u-title" id="u-title">{esc(U('page.title'))}</h1>
-   <p class="u-ground" data-u-ground>{esc(U('page.job'))} <span class="u-ground__ind">{esc(U('page.independent'))}</span></p>
-   <p class="u-starts" data-u-ground><a class="u-gbtn" href="help.html" data-help="">{esc(U('page.how'))}</a><a class="u-gbtn" href="families/{esc(COPY_U['example']['family'])}.html">{esc(U('example.try'))}</a></p>
-   {film_html()}
+   <p class="u-ground" data-u-ground>{esc(U('page.job'))} <span class="u-ground__ind">{esc(U('page.independent'))} <a class="u-ground__how" href="help.html" data-help="">{esc(U('page.how'))}</a></span></p>
    <form class="u-search" role="search" data-u-search-form onsubmit="return false">
     <label class="u-visually-hidden" for="u-search-in">{esc(U('search.label'))}</label>
     <svg class="u-search__icon" viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.6"/><path d="M10.4 10.4 14 14"/></svg>
     <input id="u-search-in" class="u-search__in" type="search" autocomplete="off" spellcheck="false" placeholder="{esc(U('search.placeholder'))}" aria-describedby="u-search-hint" data-u-search>
     <p class="u-search__hint u-visually-hidden" id="u-search-hint">{esc(U('search.hint'))}</p>
    </form>
+   {tries_html()}
   </div>
   <div class="u-panel__body" data-u-scroll>
    <div class="u-results" data-u-results hidden></div>
+   {film_html()}
    <div class="u-view" data-u-view>
     {example_html(M)}
     <section class="u-statsec">{stats_html(M)}</section>

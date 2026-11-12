@@ -170,6 +170,9 @@
     var shards = {}, shardLoading = {};
     var drawPending = false;
     var pin = -1;                     // the other end of the pair the reader shows (a Lean or result index)
+    // The key chips filter: one colour at a time, the others stepped back on the drawing
+    // and in a subject's list. keyFade eases the dots between filters (KEY_FADE_MS).
+    var keyTone = null, keyFade = null, KEY_DIM = 0.18, KEY_REGION_DIM = 0.35, KEY_FADE_MS = 150;
     // Motion (DESIGN.md "Motion and hover"). Pointing previews; selecting commits: when the
     // chart settles on a chosen discipline, one ring widens and fades round it (RING_MS).
     var RING_MS = 700, RING_GROW = 16;
@@ -485,9 +488,99 @@
       }
       return best;
     }
+    // A subject's families in colour order, so its circle reads as a small tally: the
+    // packed places (rows top to bottom, left to right) take the solid blues first and
+    // the hollow dots last; within a colour the families keep their list order.
+    var TONE_RANK = { all: 0, part: 1, other: 2, split: 3, none: 4, unread: 5 };
+    function byTone(list) {
+      var rank = function (fi) { var t = (D.families[fi] && D.families[fi].tone) || 'none'; return TONE_RANK[t] === undefined ? 4 : TONE_RANK[t]; };
+      return list.map(function (fi, k) { return { fi: fi, k: k, t: rank(fi) }; })
+        .sort(function (a, b) { return a.t - b.t || a.k - b.k; })
+        .map(function (e) { return e.fi; });
+    }
+    /* ---- The release on a phone ------------------------------------------------ */
+    // Squeezing seventeen circles into a phone's width left some too small for their own
+    // names: the name took the whole circle and its families fell to a speck. On a phone
+    // each circle is sized from the inside out instead (its name and counts at a readable
+    // size, then every family on a lattice a fingertip apart), and the circles settle down
+    // the stage one by one, largest first, each into the highest place it fits. The stage
+    // grows to hold them and scrolls with the page.
+    var PHONE_DOT = 22, PHONE_DOT_MIN = 8;
+    function phoneLabel(di, R) {
+      var d = D.disciplines[di];
+      var size = clamp(R * 0.12, 13, 16), sub = 12, lead = size * 1.16;
+      var nf = '600 ' + size.toFixed(1) + 'px ' + SERIF, cf = '400 ' + sub + 'px ' + SANS;
+      var t = fitLines(d.name, nf, R * 1.5, 3), c = fitLines(discCounts(d), cf, R * 1.5, 2);
+      if (!t || !c) return null;
+      return { lines: t.lines, nf: nf, cf: cf, lead: lead, count: c.lines, sub: sub,
+               h: t.lines.length * lead + c.lines.length * sub * 1.3 + sub * 0.1, w: Math.max(t.width, c.width) };
+    }
+    // The smallest circle (centred on 0, 0) that holds the name in its top cap and every
+    // family below it at spacing dot; null when none up to maxR does.
+    function phoneRegion(di, dot, maxR) {
+      var need = D.disciplines[di].families.length;
+      for (var R = 32; R <= maxR; R++) {
+        var lab = phoneLabel(di, R);
+        if (!lab) continue;
+        var halfW = lab.w / 2 + 8;
+        if (halfW >= R) continue;
+        var ly = Math.max(-Math.sqrt(R * R - halfW * halfW) + 2, -R + R * 0.1), foot = ly + lab.h;
+        if (foot > 0 && 2 * Math.sqrt(Math.max(0, R * R - foot * foot)) < lab.w + 8) continue;
+        var below = foot + 4, cR = R - 3, pts = latticeIn(0, 0, cR, below, dot);
+        if (pts.length < need) continue;
+        var ccy = (below + cR) / 2;
+        pts.sort(function (a, b) { return Math.hypot(a[0], a[1] - ccy) - Math.hypot(b[0], b[1] - ccy); });
+        pts = pts.slice(0, need).sort(function (a, b) { return a[1] - b[1] || a[0] - b[0]; });
+        return { R: R, lab: lab, ly: ly, pts: pts };
+      }
+      return null;
+    }
+    function phonePack(top) {
+      var key = 'p|' + W + '|' + top;
+      if (layoutCache[key] !== undefined) return layoutCache[key];
+      var pad = 8, gap = 8, maxR = Math.floor((W - 2 * pad) / 2), n = D.disciplines.length, regs = null, dot = PHONE_DOT;
+      for (; dot >= PHONE_DOT_MIN; dot--) {
+        regs = [];
+        for (var di = 0; di < n && regs; di++) { var g = phoneRegion(di, dot, maxR); if (g) regs.push(g); else regs = null; }
+        if (regs) break;
+      }
+      if (!regs) return (layoutCache[key] = null);
+      var order = regs.map(function (g, i) { return i; }).sort(function (a, b) { return regs[b].R - regs[a].R || a - b; });
+      var placed = [], height = top;
+      order.forEach(function (i) {
+        var R = regs[i].R, best = null;
+        for (var x = pad + R; x <= W - pad - R + 1e-6; x++) {
+          var y = top + R;
+          for (var k = 0; k < placed.length; k++) {
+            var p = placed[k], dx = Math.abs(x - p.x), s = R + p.R + gap;
+            if (dx < s) y = Math.max(y, p.y + Math.sqrt(s * s - dx * dx));
+          }
+          if (!best || y < best.y - 0.5 || (y <= best.y + 0.5 && Math.abs(x - W / 2) < Math.abs(best.x - W / 2))) best = { x: x, y: y };
+        }
+        regs[i].x = best.x; regs[i].y = best.y;
+        placed.push({ x: best.x, y: best.y, R: R });
+        height = Math.max(height, best.y + R);
+      });
+      return (layoutCache[key] = { regs: regs, dot: dot, height: Math.ceil(height + pad + 4) });
+    }
+    function phoneReleaseLayout(pk) {
+      var nodes = new Array(fams.length), regions = [];
+      D.disciplines.forEach(function (d, di) {
+        var g = pk.regs[di];
+        byTone(d.families).forEach(function (fi, k) {
+          var p = g.pts[k];
+          nodes[fi] = { x: g.x + p[0], y: g.y + p[1], r: pk.dot / 2 * 0.86 * (0.74 + 0.26 * famWeight[fi]), a: 1 };
+        });
+        regions.push({ x: g.x, y: g.y, r: g.R, a: 1, lab: g.lab, ly: g.y + g.ly });
+      });
+      return { level: 'release', nodes: nodes, regions: regions };
+    }
+    /* ---- end of the phone release ---------------------------------------------- */
     function releaseLayout() {
       var top = topBand(), bot = bottomBand(), key = 'r|' + W + 'x' + H + '|' + top + '|' + bot;
       if (layoutCache[key]) return layoutCache[key];
+      var phone = narrow() ? phonePack(top) : null;
+      if (phone) return (layoutCache[key] = phoneReleaseLayout(phone));
       var pk = packRegions(top, bot);
       var nodes = new Array(fams.length), regions = [];
       D.disciplines.forEach(function (d, di) {
@@ -507,7 +600,7 @@
         var ccy = (below + cy + cR) / 2;
         pts.sort(function (a, b) { return Math.hypot(a[0] - cx, a[1] - ccy) - Math.hypot(b[0] - cx, b[1] - ccy); });
         pts = pts.slice(0, need).sort(function (a, b) { return a[1] - b[1] || a[0] - b[0]; });
-        list.forEach(function (fi, k) {
+        byTone(list).forEach(function (fi, k) {
           var p = pts[k] || [cx, cy];
           nodes[fi] = { x: p[0], y: p[1], r: dLo / 2 * 0.86 * (0.74 + 0.26 * famWeight[fi]), a: 1 };
         });
@@ -578,9 +671,10 @@
       var tg = chartTarget();
       // On a phone a discipline's discs keep their size and the stage grows to hold them.
       if (stage) {
-        // At the release a phone's stage is three widths tall, so each region keeps room
-        // for its name and its families.
-        var tall = !narrow() ? 0 : tg.level === 'disc' ? discHeight(tg.di) : tg.level === 'release' ? Math.round(W * 3) : 0;
+        // At the release a phone's stage is as tall as its packed circles (phonePack), so
+        // each region keeps room for its name and every one of its families.
+        var phone = narrow() && tg.level === 'release' ? phonePack(topBand()) : null;
+        var tall = !narrow() ? 0 : tg.level === 'disc' ? discHeight(tg.di) : tg.level === 'release' ? (phone ? phone.height : Math.round(W * 3)) : 0;
         var want = tall && tall > Math.round(window.innerHeight * 0.72) ? tall + 'px' : '';
         if (stage.style.height !== want) { stage.style.height = want; if (resize()) return; }
       }
@@ -619,6 +713,42 @@
     }
 
     /* ---- Painting -------------------------------------------------------------- */
+    // How far a family's dot steps back under the key filter, and a subject's circle
+    // when it holds no family of the chosen colour; eased while the filter changes.
+    function keyFamOn(tone, fi) { return !tone || (D.families[fi].tone || 'none') === tone ? 1 : KEY_DIM; }
+    function keyDiscOn(tone, di) {
+      return !tone || D.disciplines[di].families.some(function (fi) { return (D.families[fi].tone || 'none') === tone; }) ? 1 : KEY_REGION_DIM;
+    }
+    function keyFadeAt() {
+      if (!keyFade) return 1;
+      var u = reduceMotion ? 1 : clamp((nowMs() - keyFade.start) / KEY_FADE_MS, 0, 1);
+      if (u >= 1) keyFade = null;
+      return u;
+    }
+    // A hovered dot's growth (0 to 1), eased over HOVER_MS each way; instant under
+    // reduced motion. growing stays true while any dot is still changing size.
+    var HOVER_GROW = 0.15, HOVER_MS = 120, grows = {}, growing = false;
+    function growOf(fi, want) {
+      var to = want ? 1 : 0, g = grows[fi], now = nowMs();
+      if (!g) { if (!to) return 0; g = grows[fi] = { from: 0, to: 0, start: 0 }; }
+      var cur = g.start ? g.from + (g.to - g.from) * easeOut((now - g.start) / HOVER_MS) : g.to;
+      if (g.to !== to) { g.from = cur; g.to = to; g.start = now; }
+      if (reduceMotion || (g.start && now - g.start >= HOVER_MS)) { g.start = 0; g.from = g.to; }
+      cur = g.start ? g.from + (g.to - g.from) * easeOut((now - g.start) / HOVER_MS) : g.to;
+      if (g.start) growing = true;
+      else if (!g.to) delete grows[fi];
+      return cur;
+    }
+    function keyMix(on, u, i) { return keyFade && u < 1 ? on(keyFade.prev, i) + (on(keyTone, i) - on(keyFade.prev, i)) * u : on(keyTone, i); }
+    function setKeyTone(tone) {
+      tone = tone && tone !== keyTone ? tone : null;
+      if (tone === keyTone) return;
+      keyFade = reduceMotion ? null : { prev: keyTone, start: nowMs() };
+      keyTone = tone;
+      if (tone) root.setAttribute('data-u-key', tone); else root.removeAttribute('data-u-key');
+      updateKeyStrip(sel ? obj(sel) : null);
+      draw();
+    }
     function draw() {
       if (drawPending) return;
       drawPending = true;
@@ -751,17 +881,22 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, W, H);
       chartBoxes = [];
+      growing = false;
       var hk = hover ? obj(hover) : null, lvl = S.level;
+      if (lvl !== 'release') grows = {};
       var words = moving ? clamp((e - 0.55) / 0.45, 0, 1) : 1;
       var hd = hk && hk.kind === 'd' ? hk.i : -1, hf = hk && hk.kind === 'f' ? hk.i : -1;
-      // Regions: a flat slice of the ground, edged by a hairline, a heavier edge when pointed at.
+      var ku = keyFadeAt();
+      // Regions: a flat slice of the ground, edged by a hairline; the subject under the
+      // pointer (or holding the dot under it) takes its edge in the stronger rule grey.
+      var hdOver = hd >= 0 ? hd : lvl === 'release' && hf >= 0 ? fams[hf].d : -1;
       S.regions.forEach(function (g, di) {
         if (g.a < 0.01) return;
         ctx.save();
-        ctx.globalAlpha = g.a;
+        ctx.globalAlpha = g.a * keyMix(keyDiscOn, ku, di);
         ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, TAU);
         ctx.fillStyle = palette.slice; ctx.fill();
-        ctx.lineWidth = di === hd ? 2 : 1; ctx.strokeStyle = di === hd ? palette.focus : palette.structFaint; ctx.stroke();
+        ctx.lineWidth = di === hdOver ? 1.5 : 1; ctx.strokeStyle = di === hdOver ? palette.struct : palette.structFaint; ctx.stroke();
         ctx.restore();
       });
       // At a discipline, the citations of the family pointed at: brick to the families its
@@ -802,17 +937,22 @@
         var f = fams[fi].data, tone = f.tone || 'none', hollow = tone === 'none' || tone === 'unread';
         var a = q.a;
         if (matchFam && !searchFolded && !matchFam[fi]) a *= 0.22;
+        a *= keyMix(keyFamOn, ku, fi);
         // Context recedes but stays legible: discs drop further than their names, so the
         // next family to visit can still be read while the selection's citations lead.
         if (lvl === 'disc' && hf >= 0 && !near[fi]) a *= 0.32;
         var hot = fi === hf || (sel && obj(sel) && obj(sel).kind === 'f' && obj(sel).i === fi);
+        // At the release the dot under the pointer (or the keyboard's focus) grows by
+        // about a sixth and wears a thin ring in the ink: no glow, no shadow.
+        var grow = lvl === 'release' ? growOf(fi, fi === hf && !moving) : 0;
+        var rr = q.r * (1 + HOVER_GROW * grow), ringed = lvl === 'release' && fi === hf;
         ctx.save();
         ctx.globalAlpha = a;
-        ctx.beginPath(); ctx.arc(q.x, q.y, q.r, 0, TAU);
+        ctx.beginPath(); ctx.arc(q.x, q.y, rr, 0, TAU);
         ctx.fillStyle = hollow ? palette.ground : (lvl === 'disc' || lvl === 'fam' ? palette.tone[tone + 'Tint'] : palette.tone[tone]);
         ctx.fill();
-        ctx.lineWidth = hot ? 2.6 : lvl === 'release' ? (hollow ? 1.1 : 0.8) : clamp(q.r * 0.05, 2, 4);
-        ctx.strokeStyle = hot ? palette.focus : palette.tone[tone + 'Edge'];
+        ctx.lineWidth = ringed ? 1.5 : hot ? 2.6 : lvl === 'release' ? (hollow ? 1.1 : 0.8) : clamp(q.r * 0.05, 2, 4);
+        ctx.strokeStyle = ringed ? palette.ink : hot ? palette.focus : palette.tone[tone + 'Edge'];
         if (lvl !== 'release' && !hot) ctx.strokeStyle = hollow ? palette.struct : palette.tone[tone];
         ctx.stroke();
         ctx.restore();
@@ -824,7 +964,7 @@
         var xq = S.nodes[exampleFi];
         if (xq && xq.a > 0.05) {
           ctx.save();
-          ctx.globalAlpha = xq.a * (matchFam && !searchFolded && !matchFam[exampleFi] ? 0.22 : 1) * (lvl === 'disc' && hf >= 0 && !near[exampleFi] ? 0.32 : 1);
+          ctx.globalAlpha = xq.a * keyMix(keyFamOn, ku, exampleFi) * (matchFam && !searchFolded && !matchFam[exampleFi] ? 0.22 : 1) * (lvl === 'disc' && hf >= 0 && !near[exampleFi] ? 0.32 : 1);
           ctx.strokeStyle = palette.focus; ctx.lineWidth = lvl === 'release' ? 1.5 : 2;
           ctx.beginPath(); ctx.arc(xq.x, xq.y, xq.r + (lvl === 'release' ? 3.5 : 5), 0, TAU); ctx.stroke();
           ctx.restore();
@@ -836,7 +976,7 @@
           S.regions.forEach(function (g, di) {
             if (g.a < 0.05) return;
             var lab = g.lab;
-            ctx.save(); ctx.globalAlpha = g.a * words;
+            ctx.save(); ctx.globalAlpha = g.a * words * keyMix(keyDiscOn, ku, di);
             drawText(lab.lines, g.x, g.ly, lab.nf, palette.ink, lab.lead, 'center', palette.ground);
             drawText(lab.count, g.x, g.ly + lab.lines.length * lab.lead + 1, lab.cf, palette.muted, lab.sub * 1.3, 'center', palette.ground);
             ctx.restore();
@@ -858,7 +998,7 @@
             while (textWidth(cntText, cf) > room && cfs > 9) { cfs -= 0.5; cf = '400 ' + cfs.toFixed(1) + 'px ' + SANS; }
             var showCnt = true;
             var blockH = t.lines.length * t.lead + cl;
-            var a2 = n.a * words * (matchFam && !searchFolded && !matchFam[fj] ? 0.3 : 1) * (hf >= 0 && !near[fj] ? 0.55 : 1);
+            var a2 = n.a * words * keyMix(keyFamOn, ku, fj) * (matchFam && !searchFolded && !matchFam[fj] ? 0.3 : 1) * (hf >= 0 && !near[fj] ? 0.55 : 1);
             ctx.save(); ctx.globalAlpha = a2;
             // Fit once at the destination, then scale that fit with the moving disc.
             // Wrapping at every fractional animation radius stalls slower machines.
@@ -874,7 +1014,7 @@
       // What the pointer names is said in the caption above the drawing, never in a
       // card on it: a floating card covered the very dots the reader was reaching for.
       updateHoverCap();
-      if (chart.start || ring) draw();
+      if (chart.start || ring || keyFade || growing) draw();
       if (window.__universeDebug) window.__universeDebug.boxes = chartBoxes;
     }
     function paintRing() {
@@ -1220,12 +1360,21 @@
       var list = o && o.kind === 'd' ? D.disciplines[o.i].families : D.families.map(function (f, i) { return i; });
       var n = {};
       list.forEach(function (fi) { var t = D.families[fi].tone || 'none'; n[t] = (n[t] || 0) + 1; });
-      keyStripEl.innerHTML = '<span class="u-keystrip__lead">' + escapeHtml(T('keyshort.lead')) + '</span><ul class="u-keystrip__list">' +
-        KEY_TONES.filter(function (t) { return n[t]; }).map(function (t) {
-          return '<li class="u-chip-k" title="' + escapeHtml(T('key.' + t)) + '">' + dot(t) + escapeHtml(T('keyshort.' + t)) +
-            ' <span class="u-chip-k__n">' + fmtNum(n[t]) + '</span></li>';
+      var active = document.activeElement, focusTone = active && keyStripEl.contains(active) ? active.getAttribute('data-u-tone') : null;
+      // Each chip is a filter: pressing one steps the other colours back. The chosen
+      // colour keeps its chip at a level that has none, so it can be released there.
+      keyStripEl.innerHTML = '<span class="u-keystrip__lead">' + escapeHtml(T('keyshort.lead')) + '</span><ul class="u-keystrip__list" aria-label="' + escapeHtml(T('keyshort.group')) + '">' +
+        KEY_TONES.filter(function (t) { return n[t] || t === keyTone; }).map(function (t) {
+          var on = t === keyTone;
+          return '<li><button type="button" class="u-chip-k' + (on ? ' is-on' : '') + '" data-u-tone="' + t + '" aria-pressed="' + on + '" title="' + escapeHtml(T('key.' + t)) + '">' + dot(t) + escapeHtml(T('keyshort.' + t)) +
+            ' <span class="u-chip-k__n">' + fmtNum(n[t] || 0) + '</span></button></li>';
         }).join('') + '</ul>';
+      if (focusTone) { var again = keyStripEl.querySelector('[data-u-tone="' + focusTone + '"]'); if (again) again.focus({ preventScroll: true }); }
     }
+    if (keyStripEl) keyStripEl.addEventListener('click', function (e) {
+      var chip = e.target.closest ? e.target.closest('[data-u-tone]') : null;
+      if (chip && D) setKeyTone(chip.getAttribute('data-u-tone'));
+    });
     function hoverCapHtml(o) {
       var strong = function (html) { return '<strong class="u-cap__name">' + html + '</strong> '; };
       if (o.kind === 'd') {
@@ -1236,9 +1385,10 @@
       var n = [count('papers', f.papers.length)];
       if (f.lean.length) n.push(count('lean', f.lean.length));
       var counts = n.length > 1 ? T('card.counts', { papers: n[0], lean: n[1] }) : n[0];
-      return strong('<span class="tex-auto">' + (det && det.titleHtml ? det.titleHtml : escapeHtml(f.title)) + '</span>') +
-        escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name }) + ': ' + counts + '. ') +
-        dot(f.tone) + ' ' + escapeHtml(T('key.' + f.tone) + '. ' + T('chart.hover_family'));
+      // The family's colour leads its title; the rest of the line is the quieter sans.
+      return dot(f.tone) + strong('<span class="tex-auto">' + (det && det.titleHtml ? det.titleHtml : escapeHtml(f.title)) + '</span>') +
+        escapeHtml(T('family.kicker', { num: f.num, discipline: D.disciplines[f.d].name }) + ': ' + counts + '. ' +
+          T('key.' + f.tone) + '. ' + T('chart.hover_family'));
     }
     function updateHoverCap() {
       if (!hoverCapEl || !hoverLineEl) return;
@@ -1530,7 +1680,7 @@
     }
     function entryHtml(fi) {
       var f = D.families[fi], det = detail(obj(f.id));
-      return '<li><a class="u-entry" href="' + escapeHtml(f.href) + '" data-go="' + escapeHtml(f.id) + '">' +
+      return '<li data-tone="' + escapeHtml(f.tone || 'none') + '"><a class="u-entry" href="' + escapeHtml(f.href) + '" data-go="' + escapeHtml(f.id) + '">' +
         '<span class="u-entry__t">' + dot(f.tone) + '<span class="tex-auto">' + (det ? det.titleHtml : escapeHtml(f.title)) + '</span></span>' +
         '<span class="u-entry__s">' + escapeHtml(statusLine(f)) + '</span>' +
         (det ? '<span class="u-entry__more">' + miniHtml(f, det, false) + '</span>' : '') + '</a></li>';
@@ -2158,6 +2308,14 @@
     if (searchIn) {
       var t = 0;
       searchIn.addEventListener('focus', function () { if (D && !window.AtlasSearch) loadSearch().catch(function () {}); });
+      // Example searches under the field: a button types its words and runs the search.
+      root.addEventListener('click', function (e) {
+        var b = e.target.closest && e.target.closest('[data-u-try]');
+        if (!b) return;
+        searchIn.value = b.getAttribute('data-u-try');
+        searchIn.focus();
+        searchIn.dispatchEvent(new Event('input', { bubbles: true }));
+      });
       searchIn.addEventListener('input', function () { searchEdited = true; clearTimeout(t); t = setTimeout(runSearch, 120); });
       searchIn.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
@@ -2185,6 +2343,8 @@
         if (document.querySelector('dialog[open], .nav-toggle[aria-expanded="true"]')) return;
         // The input clears its query before a later Escape steps out of the map selection.
         if (e.target === searchIn && searchIn.value) return;
+        // A colour filter is released before Escape steps out of the map selection.
+        if (keyTone) { e.preventDefault(); setKeyTone(null); return; }
         if (sel) { e.preventDefault(); stepBack(); focusArrival(); }
         return;
       }

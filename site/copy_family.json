@@ -1,5 +1,14 @@
 {
  "_note": "Words for the family page (scripts/family_page.py). Evidence states take their words from copy_evidence.json; these are the page's own labels and sentences. Every state is said in words; no symbol needs a key. Sentence case, plain, no em dashes.",
+ "strip": {
+  "_note": "Under the title, before the tabs: one cell per outside group, its verdict words taken from board.short, glance.run and glance.left_atlas.",
+  "label": "What each group reports",
+  "run_lead": "Comparator run:",
+  "for_k": "for {k} of {n} Lean statements"
+ },
+ "films": {
+  "h": "Videos about Plectis Atlas"
+ },
  "trail": {
   "map": "Map",
   "family": "Family {num}",
@@ -537,12 +546,11 @@
   "more_many": "OpenAI selected {n} more Lean statements for this family: {which}.",
   "join": {
    "_note": "The sheet's foot: how the paper statement and the Lean came to stand side by side, said once. The groups compared the Lean with OpenAI's description, so this never implies they reviewed the pairing.",
-   "candidate-pairing": "{paper} and {lean} were matched by the words of the Lean statement; nobody has reviewed whether the two say the same thing.",
-   "producer-cited-association": "The source of {lean} cites {paper}; nobody has reviewed whether they say the same thing.",
-   "producer-declared-binding": "OpenAI links {lean} to {paper}; nobody has reviewed whether they say the same thing.",
+   "candidate-pairing": "{paper} and {lean} were matched by the words of the Lean statement; nobody has reviewed whether the two mean the same thing.",
+   "producer-cited-association": "The source of {lean} cites {paper}; nobody has reviewed whether they mean the same thing.",
+   "producer-declared-binding": "OpenAI links {lean} to {paper}; nobody has reviewed whether they mean the same thing.",
    "unavailable": "No paper theorem is paired with {lean}."
   },
-  "verdicts_h": "The outside groups, below:",
   "finds": "{who} finds {what}",
   "short": {
    "all": "the whole result stated",

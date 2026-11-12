@@ -78,6 +78,23 @@ map for where things are, the list for reading them.
   (credited to OpenAI's catalogue), and one sentence saying what the Lean
   states and who checked it. Pointing at an entry lights its node; clicking
   opens the family's page.
+- **Second pass on the front door** (11 November 2026, before the outreach emails).
+  Readers arrive from one email link, many after the short video, in which Will searches
+  for "irrationality exponent", opens the π family and compares two labels. The panel now
+  follows that order: purpose, search with two example searches (buttons that type their
+  words into the field), then both videos, then the worked example. The videos and the
+  example scroll with the list, so only the title, purpose and search stay fixed.
+  A subject's dots are laid out in colour order (whole result, part, another result,
+  disagree, no Lean), so each circle reads as a small tally; positions inside a subject
+  never meant anything else. The key's chips are buttons: pressing one steps the other
+  colours back on the drawing and in an open subject's list, pressing it again or Escape
+  releases it. The dot under the pointer grows a little and takes an ink ring, and its
+  title is set in the serif on the caption line. On a phone the release is laid out from
+  the inside out, every subject large enough for its name and all its dots, and the
+  drawing scrolls with the page; the earlier layout shrank seventeen circles into the
+  screen and several lost their dots. In the dark scheme the "part" blue is darker
+  (`#5a6f84`) so it separates from the "whole result" blue at dot size. Search excerpts
+  read the catalogue's `&gt;` back to a character before escaping it once.
 - **One place to read a family: its page** (19 October 2026). Clicking a dot
   used to replace the map with a board of cards while the list showed a second
   summary and a third "Open the family page" route; Will could not tell how the
@@ -236,6 +253,19 @@ beside the statements it was given for. With no Lean the paper takes the whole
 sheet. On a phone the Lean follows its own theorem and the tab bar fades at its
 edge. Declined: having Atlas explain a group's label in its own words (MathVet's
 "full" concerns the headline), since Atlas does not characterise anyone's work.
+
+**Both labels on the first screen** (11 November 2026). In both videos Will
+says that both groups' labels stand next to each other on a family page, but at
+1440×790 they sat below the sheet. Now a quiet strip under the title, between two hairlines and
+before the tab bar, names **What each group reports**: per group, its name
+linking to its card, its own term as the cards' tag, what it finds in the
+sheet foot's words ("finds a narrower statement") and, on a second line, its
+Comparator outcome word; then "Atlas links these reports and has not repeated
+any run." It costs 62px for two groups at 1440px and takes the title's and tab
+bar's margins. The sheet's foot keeps only the pairing sentence; a family with
+no Lean gets the one no-Lean sentence there instead of in the Lean column.
+`glance_strip` owns it. Both Atlas videos close the main column on every tab
+(`fx-films`, `websites.film_pair`).
 
 **The first screen answers the page's question** (19 October 2026). The page
 was 8,800px tall at 1440×900, and the comparison of what each group said
@@ -971,6 +1001,18 @@ says what is on the screen and what to do with it; Lean and Comparator are defin
 the step that first needs them. The steps keep the ids `lean`, `questions` and `tabs`
 that pages use to open the guide at a step.
 
+## The Lean statements list scrolls with the page (11 November 2026)
+
+The table used to sit in its own scroll box under pinned filters, which left about two
+rows on a 1440×790 screen. Now the page scrolls, the table's header row sticks to the top,
+and six rows are typical on that screen. Four column headers are short ("Comparator
+accepted", "Main result", "Definitions", "Lines") and keep their full wording as the
+header's accessible name and title; Notes hides when no shown row has a note. On a wide
+screen the note on what each group assesses stands beside the intro. On a phone each
+statement is a compact card: the two groups' findings side by side with each group's own
+term directly under it, then the family, the possible paper match and the numbers.
+Statement pages mark "Lean statements" in the header, and file paths break after a slash.
+
 ## Will Cook's other websites (28 October 2026)
 
 The Atlas is one of Will Cook's websites. Will asked for somewhere for the Atlas video
@@ -988,27 +1030,37 @@ parts, built from one list and one stylesheet kept in Will's home-page repositor
   Atlas. Below 381 px the name gives way first (it stays the link's name for screen
   readers), and on a phone the menu button shows its icon only, so the header keeps one
   row and its height.
-- **The film slot.** The Atlas walkthrough appears as its still, with a play mark and
-  running time, and its title. The title is the one link: it opens YouTube in a new tab
-  and tells a screen reader the running time. Nothing is embedded and the still image is
-  served from the Atlas, so no page requests anything from another host. The map's panel
-  and the help page both use the family's inline slot, a still beside its title: small
-  in the panel, twice as wide beside the help page's opening (after it on a narrow
-  screen). The large slot was tried on the help page and pushed the steps' "Try it"
-  button below the first screen at 1440×790. The guide behind the header's `?` keeps to
-  its steps.
+- **The two videos** (11 November 2026). The Atlas has a short video (1:42) and a full
+  video (5:35), and readers arrive from emails that link one page. `websites.film_pair`
+  sets them as one unequal pair: the short video leads with the larger still, the full
+  video is a smaller row under it, each labelled "Short video" or "Full video" over its
+  title. Each is the family's inline film slot: its still, a play mark and running time,
+  and its title, which is the one link; it opens YouTube in a new tab and tells a screen
+  reader the running time. Nothing is embedded and the stills are served from the Atlas,
+  so no page requests anything from another host. The pair stands in the map's panel
+  under the search, beside the help page's opening, and at the foot of every family
+  page. In the panel the search comes before the videos because the videos' own route
+  begins with a search, and the two start buttons went: the guide is a link at the end
+  of the independence line and the worked example's card, directly below, is the one
+  route to family 017. The caption "New here? Watch this first." was removed: the page
+  does not tell the reader what to do. The guide behind the header's `?` keeps to its
+  steps.
 - **The sister sites.** Under the footer's columns, every site in the list's order, the
   Atlas marked as the current one, then "All websites and films". The footer's sentence
   "The Atlas is one of Will Cook's projects" links the same home page.
 
-`site/family.json` is an unchanged copy of the home page's `sites.json`, and
-`site/assets/websites/family.css` an unchanged copy of its `assets/family/family.css` (in
-its own folder because the Atlas's `family.css` styles the family pages); `atlas.css` maps
-its `--fam-*` names onto the Atlas's colours and type. The stills are in
-`site/assets/films/`. `scripts/websites.py` renders the three parts and stops the build
-when the list no longer fits the Atlas. To show a newer edition of the film, copy the new
-`sites.json` here as `family.json` with its two stills, then rebuild: no copy file holds
-the film's address. The README links the film separately and needs the same change.
+`site/family.json` began as a copy of the home page's `sites.json` in its first schema
+(`will_cook_site_family_v1`); the home page's list has since moved to a different shape,
+so the Atlas keeps its copy by hand. Its Atlas entry names the full video first and the
+short video second, and each film's title, address and running time are checked against
+the published videos. `site/assets/websites/family.css` is an unchanged copy of the home
+page's `assets/family/family.css` (in its own folder because the Atlas's `family.css`
+styles the family pages); `atlas.css` maps its `--fam-*` names onto the Atlas's colours
+and type and holds the pair's own layout (`.film-pair`). The stills are in
+`site/assets/films/`. `scripts/websites.py` renders the parts and stops the build when the
+list no longer fits the Atlas. To show a newer edition of a film, edit its entry in
+`family.json`, add its two stills, then rebuild: no copy file holds a film's address. The
+README links the films separately and needs the same change.
 
 ## Quality floor
 

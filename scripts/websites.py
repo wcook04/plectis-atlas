@@ -91,6 +91,28 @@ def film() -> dict:
     return next(f for f in REG["films"] if f["id"] == first)
 
 
+def short_film() -> dict | None:
+    """The Atlas's short video (about a minute and a half), when the registry entry names one
+    after its full video; pages lead with it and set the full video smaller beside it."""
+    ids = this_site()["films"][1:]
+    return next((f for f in REG["films"] if ids and f["id"] == ids[0]), None)
+
+
+def film_pair(*, root: str = "", label: str | None = None) -> str:
+    """Both Atlas videos as one unequal pair (DESIGN.md, "The two videos"): the short video
+    leads with the larger still, the full video is a smaller row under it. Each is the
+    family's inline film slot, so the title is the one link and the still echoes it; the
+    line under each title says which of the two it is."""
+    lead, full = short_film(), film()
+    slots = []
+    if lead:
+        slots.append(film_slot(lead, root=root, size="inline", sizes="11rem", text=WORDS["film_short"]).replace(
+            'class="film-slot film-slot--inline"', 'class="film-slot film-slot--inline film-pair__lead"', 1))
+    slots.append(film_slot(full, root=root, size="inline", sizes="6rem", text=WORDS["film_full"]).replace(
+        'class="film-slot film-slot--inline"', 'class="film-slot film-slot--inline film-pair__more"', 1))
+    return f'<div class="film-pair" role="group" aria-label="{esc(label or WORDS["film_pair_label"])}">{"".join(slots)}</div>'
+
+
 def clock(seconds: int) -> str:
     return f"{seconds // 60}:{seconds % 60:02d}"
 
@@ -108,7 +130,7 @@ def film_slot(f: dict, *, root: str = "", size: str = "", sizes: str = "100vw", 
     while the film is in preparation. root is the page's way back to the site root; text,
     when given, is the caption's sentence under the title (plain text)."""
     classes = "film-slot" + (f" film-slot--{size}" if size else "")
-    title = esc(f["title"])
+    title = esc(f["title"]).replace("&#x27;", "’")  # the registry types a straight apostrophe
     para = f'<p class="film-slot__text">{esc(text)}</p>' if text else ""
     if f.get("youtube"):
         link, still, seconds = esc(f["youtube"]), esc(root + f["still"]), f["duration_seconds"]

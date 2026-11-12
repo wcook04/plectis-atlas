@@ -56,6 +56,9 @@
   "home_label": "Will Cook: all projects and videos",
  "home_title": "All of Will Cook's projects and videos",
  "film_youtube": ", video on YouTube, {duration}",
+  "film_short": "Short video",
+  "film_full": "Full video",
+  "film_pair_label": "Videos about Plectis Atlas",
   "film_pending": "In preparation",
   "film_pending_meta": "Video in preparation"
  },
@@ -71,7 +74,7 @@
    ],
    [
     "lean",
-    "<strong>Read the first screen.</strong> The paper’s theorem is on the left. On the right is the statement OpenAI wrote in Lean, a language in which a computer checks every step of a proof. The line underneath says how the two were linked and whether anyone has reviewed that they say the same thing."
+    "<strong>Read the first screen.</strong> The paper’s theorem is on the left. On the right is the statement OpenAI wrote in Lean, a language in which a computer checks every step of a proof. The line underneath gives how the two were linked and whether anyone has reviewed that they mean the same thing."
    ],
    [
     "questions",
@@ -757,7 +760,11 @@
    "f_proof": "Show statements by whether a group reports that Comparator accepted OpenAI’s proof.",
    "f_reader": "Show statements by {name}’s verdict on their family."
   },
-  "col_runs": "Groups reporting Comparator accepted"
+  "col_runs": "Groups reporting Comparator accepted",
+  "head_runs": "Comparator accepted",
+  "head_main": "Main result",
+  "head_vocab": "Definitions",
+  "head_lines": "Lines"
  },
  "numbers": {
   "title": "Numbers",

@@ -707,7 +707,7 @@
     if (a.hasAttribute('data-tip')) {
       if (current !== a) return;
       var p0 = ensurePop(), lab = a.querySelector('label, .sort, a.term, .th-tip') || a;
-      fill(p0, (lab.textContent || '').trim(), a.getAttribute('data-tip'));
+      fill(p0, a.getAttribute('data-tip-head') || (lab.textContent || '').trim(), a.getAttribute('data-tip'));
       p0.hidden = false; described(a).setAttribute('aria-describedby', 'term-pop');
       place(a);
       return;
@@ -1409,7 +1409,9 @@
   function snippet(r, res) {
     if (r.idx == null || r.kind === 'discipline') return Promise.resolve(null);
     return textBlock(r.idx).then(function (b) {
-      var text = b.text[r.idx - b.start] || '';
+      // The catalogue's descriptions arrive with &gt;, &lt; and &amp; already written as
+      // entities; read them back to characters so escText below writes each once.
+      var text = (b.text[r.idx - b.start] || '').replace(/&(gt|lt|amp|quot);/g, function (_, n) { return { gt: '>', lt: '<', amp: '&', quot: '"' }[n]; });
       if (!text) return null;
       var words = [];
       (res.forms || []).forEach(function (f) { f.forEach(function (t) { if (t.length > 1 || (res.forms.length === 1 && !res.atoms.length)) words.push(t); }); });

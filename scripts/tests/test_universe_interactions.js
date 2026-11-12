@@ -567,6 +567,41 @@ async function main() {
     assert.deepEqual(detailCaches, ['default', 'reload'], 'failed detail retry bypasses browser cache');
     assert.equal(detailState.shards[0].generation_id, 'g');
   }
+  // The key chips filter one colour at a time; pressing again or Escape releases it.
+  const keyFilter = range('    function keyFamOn(', '    function draw() {');
+  let keyDraws = 0, keyStrips = 0, keyBacks = 0, keyDocumentKey;
+  const keyAttrs = {};
+  const keyState = context({
+    D: { families: [{ tone: 'all' }, { tone: 'part' }, {}], disciplines: [{ families: [0, 1] }, { families: [2] }] },
+    keyTone: null, keyFade: null, KEY_DIM: 0.18, KEY_REGION_DIM: 0.35, KEY_FADE_MS: 150, reduceMotion: true,
+    clamp: (v, a, b) => Math.max(a, Math.min(b, v)), nowMs: () => 0, sel: null, searchIn: null,
+    root: { setAttribute(k, v) { keyAttrs[k] = v; }, removeAttribute(k) { delete keyAttrs[k]; } },
+    updateKeyStrip() { keyStrips++; }, draw() { keyDraws++; }, focusArrival() {},
+    document: { addEventListener(type, fn) { keyDocumentKey = fn; }, querySelector: () => null }
+  });
+  keyState.stepBack = () => { keyBacks++; };
+  vm.runInContext(keyFilter + documentKeys, keyState);
+  keyState.setKeyTone('part');
+  assert.equal(keyState.keyTone, 'part');
+  assert.equal(keyAttrs['data-u-key'], 'part', 'the pressed colour is named on the map root');
+  assert.deepEqual([0, 1, 2].map(i => keyState.keyMix(keyState.keyFamOn, 1, i)), [0.18, 1, 0.18], 'other colours step back');
+  assert.deepEqual([0, 1].map(i => keyState.keyMix(keyState.keyDiscOn, 1, i)), [1, 0.35], 'a subject without the colour steps back');
+  keyState.setKeyTone('all');
+  assert.equal(keyState.keyTone, 'all', 'another chip switches the filter');
+  keyState.setKeyTone('all');
+  assert.equal(keyState.keyTone, null, 'pressing the same chip again releases it');
+  assert.equal(keyAttrs['data-u-key'], undefined);
+  keyState.setKeyTone('none');
+  assert.equal(keyState.keyMix(keyState.keyFamOn, 1, 2), 1, 'a family with no tone counts as no Lean released');
+  keyState.sel = 'd:test';
+  const esc = { key: 'Escape', target: { tagName: 'DIV' }, preventDefault() { this.prevented = true; } };
+  keyDocumentKey(esc);
+  assert.equal(keyState.keyTone, null, 'Escape releases the filter first');
+  assert.equal(keyBacks, 0, 'and does not step out of the subject at the same time');
+  keyDocumentKey({ ...esc });
+  assert.equal(keyBacks, 1, 'a later Escape steps back as before');
+  assert.equal(keyStrips, 5, 'every change redraws the chips'); assert.equal(keyDraws, 5, 'and the map');
   console.log('universe interactions: moving hits, ground clicks, parts retry and latest-selection races pass');
+  console.log('universe key filter: one colour at a time, Escape releases it before stepping back');
 }
 main().catch(err => { console.error(err); process.exitCode = 1; });

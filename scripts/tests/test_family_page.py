@@ -102,6 +102,12 @@ def main() -> int:
         panels = re.findall(r'id="(p-[a-z]+)" role="tabpanel"', html)
         check(tabs == panels and tabs and tabs[0] == "p-overview", f"tabs {tabs} do not match panels {panels}")
         check("index.html#o=f%3A" not in html, "a map link to the family, which now opens this page")
+        # The glance strip sits between the title and the tab bar; both videos close the main column.
+        check(html.index('class="fx-strip') < html.index('class="fx-tabs"') and html.index("</h1>") < html.index('class="fx-strip'),
+              "the glance strip is not between the title and the tabs")
+        films = html.split('<aside class="fx-films" aria-labelledby="fx-films-h">', 1)
+        check(len(films) == 2 and 'class="film-pair"' in films[1].split("</aside>", 1)[0]
+              and films[0].rfind('data-fx-panel') > films[0].rfind('class="fx-main"'), "the two videos do not close the main column")
     fails += tone_tokens_equal()
     fails += status_group_counts()
     fails += tied_order()
@@ -109,10 +115,46 @@ def main() -> int:
     fails += complete_theorem_snippets(tmp)
     fails += attributed_source_note()
     fails += producer_left_out_quoted()
+    fails += glance_strip_pinned(tmp)
     for f in fails:
         print("FAIL", f)
     print(f"family page: {len(SPECIMENS)} specimens, {len(fails)} failures")
     return 1 if fails else 0
+
+
+def glance_strip_pinned(tmp: Path) -> list:
+    """The strip under the title (DESIGN.md, "Reading a family"): on 017 each group's name
+    links to its card, with its own term, what it finds in the sheet foot's words and its
+    Comparator outcome word, then the one sentence on what Atlas did; the sheet's foot no
+    longer repeats the findings. A family with no Lean gets the one no-Lean sentence."""
+    fails = []
+    text = lambda h: re.sub(r"\s+", " ", unescape(re.sub(r"<[^>]+>", " ", h))).strip()
+    html = (tmp / "families" / "017.html").read_text(encoding="utf-8")
+    strip = html.split('<section class="fx-strip"', 1)[1].split(">", 1)[1].split("</section>", 1)[0]
+    want = ("What each group reports MathVet “full” finds the whole result stated Comparator run: acceptance reported "
+            "cert-machine “NARROWER — DECLARED” finds a narrower statement Comparator run: acceptance reported "
+            "Atlas links these reports and has not repeated any run.")
+    if text(strip) != want:
+        fails.append(f"017: strip reads {text(strip)!r}")
+    for src in ("mathvet", "cert-machine"):
+        if f'href="#vd-{src}"' not in strip:
+            fails.append(f"017: the strip does not link {src} to its card")
+    # The sentence on what Atlas did is said once, in the strip; the cards' row does not repeat it.
+    atlas = family_page.W("glance.left_atlas")
+    if text(html).count(atlas) != 1:
+        fails.append(f"017: {atlas!r} is said {text(html).count(atlas)} times, not once")
+    foot = html.split('class="fx-bd__foot2"', 1)[1].split("</div>", 1)[0]
+    if " finds " in text(foot):
+        fails.append("017: the sheet's foot still repeats what each group finds")
+    family_page.build(S, S.FAM["001"])
+    html = (tmp / "families" / "001.html").read_text(encoding="utf-8")
+    said = re.sub(r"\[\[[^|\]]*\|([^\]]*)\]\]", r"\1", family_page.W("board.nolean"))
+    strip = html.split('class="fx-strip fx-strip--none"', 1)
+    if len(strip) != 2 or said not in text(strip[1].split("</p>", 1)[0]):
+        fails.append("001: the strip does not say the release has no Lean")
+    if text(html).count(said) != 1:
+        fails.append("001: the no-Lean sentence is said more than once")
+    return fails
 
 
 def tone_tokens_equal() -> list:
