@@ -1551,7 +1551,7 @@ def build_help():
     full video smaller under it) so the steps and their example stay on the first screen; the dialog behind
     the header's ? keeps to the steps."""
     rel = "help.html"
-    film = websites.film_pair()
+    film = websites.film_pair(eager=True)
     body = f"""<div class="frame page page--wide page--help">
 {trail("", [(esc(C("help.title")), None)])}
 <header class="phead phead--film"><h1 class="phead__title">{esc(C('help.title'))}</h1><p class="lede">{esc(C('help.what'))}</p>

@@ -98,17 +98,18 @@ def short_film() -> dict | None:
     return next((f for f in REG["films"] if ids and f["id"] == ids[0]), None)
 
 
-def film_pair(*, root: str = "", label: str | None = None) -> str:
+def film_pair(*, root: str = "", label: str | None = None, eager: bool = False) -> str:
     """Both Atlas videos as one unequal pair (DESIGN.md, "The two videos"): the short video
     leads with the larger still, the full video is a smaller row under it. Each is the
     family's inline film slot, so the title is the one link and the still echoes it; the
-    line under each title says which of the two it is."""
+    line under each title says which of the two it is. eager is for a pair on a page's
+    first screen (the map's panel, the help page), whose stills load at once."""
     lead, full = short_film(), film()
     slots = []
     if lead:
-        slots.append(film_slot(lead, root=root, size="inline", sizes="11rem", text=WORDS["film_short"]).replace(
+        slots.append(film_slot(lead, root=root, size="inline", sizes="11rem", text=WORDS["film_short"], eager=eager).replace(
             'class="film-slot film-slot--inline"', 'class="film-slot film-slot--inline film-pair__lead"', 1))
-    slots.append(film_slot(full, root=root, size="inline", sizes="6rem", text=WORDS["film_full"]).replace(
+    slots.append(film_slot(full, root=root, size="inline", sizes="6rem", text=WORDS["film_full"], eager=eager).replace(
         'class="film-slot film-slot--inline"', 'class="film-slot film-slot--inline film-pair__more"', 1))
     return f'<div class="film-pair" role="group" aria-label="{esc(label or WORDS["film_pair_label"])}">{"".join(slots)}</div>'
 
@@ -125,7 +126,7 @@ def spoken(seconds: int) -> str:
     return " ".join(parts)
 
 
-def film_slot(f: dict, *, root: str = "", size: str = "", sizes: str = "100vw", text: str | None = None) -> str:
+def film_slot(f: dict, *, root: str = "", size: str = "", sizes: str = "100vw", text: str | None = None, eager: bool = False) -> str:
     """The family's film slot (docs/family.md): a still that opens YouTube, or a held frame
     while the film is in preparation. root is the page's way back to the site root; text,
     when given, is the caption's sentence under the title (plain text)."""
@@ -137,7 +138,7 @@ def film_slot(f: dict, *, root: str = "", size: str = "", sizes: str = "100vw", 
         return (f'<figure class="{classes}">'
                 f'<a class="film-slot__frame" href="{link}" target="_blank" rel="noopener noreferrer" aria-hidden="true" tabindex="-1">'
                 f'<img src="{still}-640.webp" srcset="{still}-640.webp 640w, {still}-1280.webp 1280w" sizes="{esc(sizes)}" '
-                f'alt="" width="1280" height="720" loading="lazy" decoding="async">'
+                f'alt="" width="1280" height="720" loading="{"eager" if eager else "lazy"}" decoding="async">'
                 f'<span class="film-slot__play"></span><span class="film-slot__time">{clock(seconds)}</span></a>'
                 f'<figcaption class="film-slot__caption">'
                 f'<p class="film-slot__title"><a href="{link}" target="_blank" rel="noopener noreferrer">{title}'
