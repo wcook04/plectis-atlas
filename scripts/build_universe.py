@@ -1288,7 +1288,7 @@ def film_html() -> str:
     larger still and the full video is a smaller row under it (websites.film_pair). Titles,
     running times, stills and links come from site/family.json; the pair hides with the
     head's other ground text when a subject is open."""
-    return f'<div class="u-film" data-u-ground>{websites.film_pair()}</div>'
+    return f'<div class="u-film" data-u-ground>{websites.film_pair(eager=True)}</div>'
 
 
 def since_html(M) -> str:
