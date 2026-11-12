@@ -34,9 +34,10 @@ gives the local build commands.
 issue-form settings and the KaTeX version. Local fonts and KaTeX are in
 [`assets/fonts/`](assets/fonts/) and [`assets/vendor/`](assets/vendor/).
 
-[family.json](family.json) and [websites/family.css](assets/websites/family.css) are
-unchanged copies of the list of Will Cook's websites and films and the stylesheet they
-share, kept in his home-page repository; the
+[family.json](family.json) is the Atlas's copy of the list of Will Cook's websites and
+films (kept by hand since the home page's list changed shape), and
+[websites/family.css](assets/websites/family.css) an unchanged copy of the stylesheet
+they share, kept in his home-page repository; the
 [design contract](../DESIGN.md#will-cooks-other-websites-28-october-2026) says how to
 show a newer edition of the Atlas film.
 

@@ -6,6 +6,7 @@ Run suites directly from the repository root, for example:
 python3 scripts/tests/test_reader.py
 python3 scripts/tests/test_search.py
 node scripts/tests/test_universe_labels.js
+node scripts/tests/test_universe_phone.js
 ```
 
 Some suites use a main function rather than unittest discovery. Run the commands

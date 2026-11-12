@@ -32,7 +32,17 @@
         var on = fxTabs[j].getAttribute('data-fx-tab') === id;
         fxTabs[j].setAttribute('aria-selected', on ? 'true' : 'false');
         fxTabs[j].tabIndex = on ? 0 : -1;
+        if (on) showTab(fxTabs[j]);
       }
+    };
+    // A tab bar wider than the screen scrolls sideways (a phone): the chosen tab is
+    // brought into it, horizontally only, so the page itself never jumps.
+    var showTab = function (tab) {
+      var list = tab.closest('.fx-tabs__list');
+      if (!list || list.scrollWidth <= list.clientWidth) return;
+      var l = tab.offsetLeft - list.offsetLeft, r = l + tab.offsetWidth, pad = 32;
+      if (l - pad < list.scrollLeft) list.scrollLeft = Math.max(0, l - pad);
+      else if (r + pad > list.scrollLeft + list.clientWidth) list.scrollLeft = r + pad - list.clientWidth;
     };
     // A chosen tab starts its panel just under the tab bar, never mid-way down the last
     // one. The bar sticks at the top once the page scrolls, so measure the panel, not the

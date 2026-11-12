@@ -9,11 +9,7 @@
   "independent": "An independent guide to OpenAI’s papers, not affiliated with OpenAI.",
   "nojs": "The interactive map needs JavaScript. The list below links to every group of related papers. The Agent navigation link opens instructions for reading the map as JSON.",
   "job": "Pick a result from OpenAI’s mathematics release and see, on one page, what the paper claims, the Lean statement OpenAI chose for a computer to check, and what outside groups report about both.",
-  "how": "How to use the Atlas",
-  "film": {
-   "_note": "The Atlas walkthrough in the panel's head, offered to newcomers (Will, 24 October 2026). Since 28 October it is the family's small film slot: its still, running time, title and link come from site/family.json, so a newer edition needs no change here. This is the line under its title.",
-   "text": "New here? Watch this first."
-  }
+  "how": "How to use the Atlas"
  },
  "release": {
   "s1": "OpenAI published {manuscripts_current} current papers across {disciplines} disciplines. It groups related papers into {families} “families”.",
@@ -38,20 +34,20 @@
  },
  "key": {
   "heading": "What the colours mean",
-  "intro": "Each colour answers one question: do {mathvet} and {certmachine} say a family’s {lean} states the whole result OpenAI describes? It does not say whether a proof is right.",
+  "intro": "A dot’s colour depends on one question: do {mathvet} and {certmachine} say a family’s {lean} states the whole result OpenAI describes? The colour is not a judgement on whether a proof is right.",
   "all": "Both groups find the whole result stated or implied",
   "part": "Only part of the result, or a narrower statement",
   "other": "A supporting step or a different result",
   "split": "The groups disagree about what the Lean statements express",
   "none": "No Lean statement in the release",
   "unread": "No comparison recorded from either group",
-  "size": "A disc’s area grows with the number of paper results and Lean statements it shows.",
+  "size": "A disc’s area grows with the number of paper results and Lean statements drawn inside it.",
   "citations": "Inside a discipline, pointing at a family draws its citations to the families beside it: brick where its papers cite, grey where they are cited.",
-  "readers": "The groups are MathVet and Carlos Toledo’s cert-machine. Open a family page to read each group’s assessment and method. These colours do not say whether a paper’s proof is correct.",
+  "readers": "The groups are MathVet and Carlos Toledo’s cert-machine. Open a family page to read each group’s assessment and method. These colours are not a judgement on whether a paper’s proof is correct.",
   "count_link": "{n} families: show them on the Families list",
   "counted": "These counts are groups of related papers. {numbers} also counts the release’s {files} individually and lists an AI agent’s {drafts}. Those unreviewed drafts do not determine the colours.",
   "counted_files": "{n} Lean statements",
-  "counted_numbers": "the Numbers page",
+  "counted_numbers": "The Numbers page",
   "counted_drafts": "draft comparisons with the papers"
  },
  "counts": {
@@ -107,6 +103,8 @@
  "search": {
   "label": "Find a family, paper, theorem or Lean statement",
   "placeholder": "Search families, theorems, Lean files",
+  "tries_label": "Example searches",
+  "tries": ["irrationality exponent", "PiExponent"],
   "loading": "Loading the search…",
   "failed": "The search could not load. The list of disciplines below names every family.",
   "none": "Nothing in the release matches.",
@@ -313,7 +311,7 @@
  "mapkey": {
   "button": "Map key",
   "colour": "Colour: whether MathVet and cert-machine find that the Lean statements express OpenAI’s advertised result.",
-  "size": "Size: a disc’s area grows with the number of paper results and Lean statements it shows.",
+  "size": "Size: a disc’s area grows with the number of paper results and Lean statements drawn inside it.",
   "arrow": "An arrow runs from the citing family to the cited one. A citation joins papers; it is not a proof dependency.",
   "disc_inks": "Brick arrows leave a family in {name}; grey arrows arrive at one from another discipline.",
   "fam_inks": "Brick arrows leave {name}; grey arrows arrive at it.",
@@ -346,13 +344,14 @@
  },
  "keyshort": {
   "_note": "The colour key standing on the map, read as one sentence: the lead, then each colour's short ending. The full sentence (key.*) is each chip's tooltip and stands in the sidebar.",
-  "lead": "Colour: do MathVet and cert-machine say the family’s Lean states the whole result? It does not say whether a proof is right.",
+  "lead": "Colour: do MathVet and cert-machine say the family’s Lean states the whole result? The colour is not a judgement on whether a proof is right.",
   "all": "yes, both groups",
   "part": "part of it, or narrower",
   "other": "a step or another result",
   "split": "they disagree, as for π",
   "none": "no Lean released",
-  "unread": "not yet compared"
+  "unread": "not yet compared",
+  "group": "Show one colour"
  },
  "example": {
   "_note": "The worked example under the search, as the evidence itself in miniature (Klara Kaleb's reading, 23 October 2026): what the paper states, the Lean statement, each group's own label and the Comparator reports, then the family page. build_universe.example_html fills the names, labels and Lean statement from Statement Map and stops the build if the family no longer fits these sentences.",

@@ -1452,9 +1452,11 @@ def header(rel: str, current: str | None) -> str:
     links = []
     # A page inside a family (family, Lean statement, paper, explanation) sits under the
     # map in the breadcrumb, so the nav marks Map as its section (aria-current="true").
+    # A Lean statement's page marks Lean statements, the list it is reached from.
     inside = current is None and rel.split("/")[0] in ("families", "statements", "papers", "explanations")
+    inside_key = "statements" if rel.split("/")[0] == "statements" else "map"
     for href, key in NAV:
-        cur = ' aria-current="page"' if key == current else (' aria-current="true"' if inside and key == "map" else "")
+        cur = ' aria-current="page"' if key == current else (' aria-current="true"' if inside and key == inside_key else "")
         links.append(f'<a href="{root}{href}"{cur}>{esc(C("nav." + key))}</a>')
     # The header starts with the family's lockup: the Plectis plait to Will's home page,
     # which lists every one of his websites and films, then the Atlas's tiles and name
@@ -1545,12 +1547,11 @@ def help_dialog(root: str) -> str:
 
 def build_help():
     """help.html: the same guide as a page, for readers without scripts and for links. The
-    Atlas walkthrough film stands beside its opening (scripts/websites.py), its still beside
-    its title so the steps and their example stay on the first screen; the dialog behind
+    two Atlas videos stand beside its opening (websites.film_pair: the short video leading, the
+    full video smaller under it) so the steps and their example stay on the first screen; the dialog behind
     the header's ? keeps to the steps."""
     rel = "help.html"
-    film = websites.film_slot(websites.film(), size="inline",
-                              sizes="(min-width: 1100px) 16rem, (max-width: 30rem) 7rem, 11rem")
+    film = websites.film_pair()
     body = f"""<div class="frame page page--wide page--help">
 {trail("", [(esc(C("help.title")), None)])}
 <header class="phead phead--film"><h1 class="phead__title">{esc(C('help.title'))}</h1><p class="lede">{esc(C('help.what'))}</p>
@@ -2318,6 +2319,12 @@ def camel_breaks(name: str) -> str:
     """An escaped identifier or file name that may break on a phone only between its
     capitalised words or before its extension: CharacterVarieties<wbr>AllSeams..."""
     return re.sub(r"(?<=[a-z0-9])(?=[A-Z])|(?=\.lean$)", "<wbr>", esc(name))
+
+
+def path_breaks(path: str) -> str:
+    """An escaped file path or module name that may break only after a slash or after a
+    dot between module names: lean/<wbr>ComparatorChallenges/<wbr>PiExponent.lean."""
+    return re.sub(r"(/)(?=.)|(\.)(?=[A-Z])", lambda mm: mm.group(0) + "<wbr>", esc(path))
 
 
 def lean_breaks(h: str) -> str:
@@ -3680,15 +3687,15 @@ def build_statement(stmt):
     main = (lrec or summ).get("main_result")
     main_line = C("statement.main_yes") if main else C("statement.main_no", id=(fid or "f:")[2:])
     # supporting material
-    sol_html = ", ".join(f'<a class="ext" href="{esc(x["url"])}" rel="noopener"><code>{esc(x["file"])}</code></a>' for x in sol) or f'<code>{esc(stmt["comparator"].get("solution_module") or "")}</code>'
+    sol_html = ", ".join(f'<a class="ext" href="{esc(x["url"])}" rel="noopener"><code>{path_breaks(x["file"])}</code></a>' for x in sol) or f'<code>{path_breaks(stmt["comparator"].get("solution_module") or "")}</code>'
     nm = stmt["non_mathlib_imports"]
     facts = [
-        (C("statement.file_label"), f'<a class="ext" href="{esc(stmt["url"])}" rel="noopener"><code>{esc(stmt["file"])}</code></a>'),
+        (C("statement.file_label"), f'<a class="ext" href="{esc(stmt["url"])}" rel="noopener"><code>{path_breaks(stmt["file"])}</code></a>'),
         (C("statement.main_key"), esc(main_line)),
         (C("statement.solution"), sol_html),
         (C("statement.permitted_axioms"), ", ".join(f"<code>{esc(a)}</code>" for a in stmt["comparator"]["permitted_axioms"]) + f'<span class="dl__note">{esc(C("statement.permitted_axioms_note"))}</span>'),
-        (C("statement.imports"), ", ".join(f"<code>{esc(a)}</code>" for a in stmt["imports"])),
-        (C("statement.non_mathlib"), ", ".join(f"<code>{esc(a)}</code>" for a in nm) if nm else esc(C("statements.none"))),
+        (C("statement.imports"), ", ".join(f"<code>{path_breaks(a)}</code>" for a in stmt["imports"])),
+        (C("statement.non_mathlib"), ", ".join(f"<code>{path_breaks(a)}</code>" for a in nm) if nm else esc(C("statements.none"))),
         (C("statement.vocab_key"), esc(vocab_text(stmt))),
         (C("statement.lines"), num(stmt["statement_lines"])),
         (C("statement.nanoda_key"), esc(C("statement.nanoda_yes") if (lrec or summ).get("nanoda_enabled") else C("statement.nanoda_no"))),
@@ -3906,12 +3913,13 @@ def head_term(tid, label_html: str) -> str:
     return term_link(tid, label_html) if tid and tid in GLOSSARY else label_html
 
 
-def sort_head(i: int, typ: str, label: str, tid=None) -> str:
+def sort_head(i: int, typ: str, label: str, tid=None, full: str | None = None) -> str:
     """A sortable column head. With a glossary term, the words link the term and the
-    arrow beside them sorts; otherwise the whole head is the sort button."""
+    arrow beside them sorts; otherwise the whole head is the sort button. full is the
+    head's whole wording when label is a shortened form of it."""
     if tid and tid in GLOSSARY:
         return (f'{term_link(tid, esc(label))}<button type="button" class="sort sort--arrow" data-sort="{i}" data-type="{typ}" '
-                f'aria-label="{esc(C("explain.sort_by", col=label))}"></button>')
+                f'aria-label="{esc(C("explain.sort_by", col=full or label))}"></button>')
     return f'<button type="button" class="sort" data-sort="{i}" data-type="{typ}">{esc(label)}</button>'
 
 
@@ -4276,9 +4284,13 @@ def build_statements_table():
     for side, src in enumerate(order):
         heads.append(f'<th scope="col" class="t-reader" aria-sort="none"{tip_attr(C("statements.tips.reader", name=short_name[src]))}>{sort_head(4 + side, "s", T("col_reader", name=short_name[src]), reader_term(src))}</th>')
     base = 4 + len(order)
-    for j, (k, c) in enumerate((("runs", "t-num"), ("main", "t-c"), ("vocab", "t-num"), ("lines", "t-num"), ("notes", ""))):
-        label = C("statements.col_runs") if k == "runs" else T("col_" + k)
-        heads.append(f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""} aria-sort="none"{tip_attr(C("statements.tips." + k))}>{sort_head(base + j, "n", label, head_terms.get(k))}</th>')
+    # Short visible heads keep the table's columns narrow; each head's whole wording is
+    # its accessible name and the heading of its explanation on hover and focus.
+    for j, (k, c) in enumerate((("runs", "t-num t-runs"), ("main", "t-c"), ("vocab", "t-num"), ("lines", "t-num"), ("notes", "t-notes"))):
+        full = C("statements.col_runs") if k == "runs" else T("col_" + k)
+        short = C("statements.head_" + k) if k != "notes" else full
+        whole = f' aria-label="{esc(full)}" data-tip-head="{esc(full)}"' if short != full else ""
+        heads.append(f'<th scope="col"{(" class=" + chr(34) + c + chr(34)) if c else ""}{whole} aria-sort="none"{tip_attr(C("statements.tips." + k))}>{sort_head(base + j, "n", short, head_terms.get(k), full=full)}</th>')
 
     def select(id_, label, key, opts, term=None, tip=None):
         return (f'<div class="filters__g"{tip_attr(tip, above=True)}><label class="filters__h" for="{id_}">{head_term(term, esc(label))}</label>'
@@ -4311,12 +4323,13 @@ def build_statements_table():
                    + "".join(f'<option value="{v}">{esc(T(k))}</option>' for v, k in sort_menu) + "</select></div>")
     total = len(STATEMENTS)
     lede = C("statements.lede", lean=NUM("statements_lean"), main=NUM("statements_lean_main_results"))
-    readers_note = T("readers_note", names=evidence.join_names([prose_credit(reader_names.get(s_, s_)) for s_ in order]))
+    readers_note = T("readers_note", names=words_list([prose_credit(reader_names.get(s_, s_)) for s_ in order]))
     body = f"""<div class="frame page page--families page--stmts">
 {section_trail("", "statements")}
 <header class="phead phead--compact">
  <h1 class="phead__title">{esc(C('statements.title'))}</h1>
  <p class="phead__lede">{esc(lede)}</p>
+ <p class="phead__note">{esc(readers_note)} {esc(T('pair_note'))}</p>
 </header>
 <section class="band band--table" aria-labelledby="h-stmt-list">
 <h2 class="h2 vh" id="h-stmt-list">{esc(T('list_heading'))}</h2>
@@ -4328,7 +4341,6 @@ def build_statements_table():
   <p class="filters__n" aria-live="polite" data-shown-template="{esc(T('shown', n='{n}', total=num(total)))}" data-criteria-lead="{esc(T('criteria_lead'))}">{esc(T('shown', n=num(total), total=num(total)))}</p>
   <button type="button" class="btn btn--quiet filters__reset" hidden>{esc(T('reset'))}</button>
  </div>
- <p class="filters__note">{esc(readers_note)} {esc(T('pair_note'))}</p>
 </div>
 <p class="filters__empty" hidden>{esc(T('none_match'))}</p>
 <div class="table-wrap"><table class="tbl tbl--sortable tbl--families tbl--stmts" id="stmt-table">

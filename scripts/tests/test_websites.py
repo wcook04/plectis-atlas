@@ -135,8 +135,8 @@ class Footer(unittest.TestCase):
 
 
 class FilmSlot(unittest.TestCase):
-    def check_released(self, fragment: str, root: str, size: str):
-        f = W.film()
+    def check_released(self, fragment: str, root: str, size: str, f: dict | None = None):
+        f = f or W.film()
         tags = Tags(fragment).tags
         self.assertNotIn("iframe", [t for t, _ in tags])
         fig = [a for t, a in tags if t == "figure"]
@@ -153,24 +153,38 @@ class FilmSlot(unittest.TestCase):
             for attr in ("src", "srcset"):
                 self.assertFalse(a.get(attr, "").startswith(("http:", "https:", "//")), (t, a))
         self.assertIn(f'<span class="film-slot__time">{W.clock(f["duration_seconds"])}</span>', fragment)
-        self.assertIn(f'{S.esc(f["title"])}<span class="sr-only">, video on YouTube, {W.spoken(f["duration_seconds"])}</span></a></p>',
+        self.assertIn(f'{S.esc(f["title"]).replace("&#x27;", "’")}<span class="sr-only">, video on YouTube, {W.spoken(f["duration_seconds"])}</span></a></p>',
                       fragment)
 
-    def test_map_panel_offers_the_small_slot_and_hides_it_with_the_ground_text(self):
+    def pair(self, h: str, root: str):
+        """The two videos as one unequal pair: the short video's slot first, the full video's
+        second, each a released inline slot saying which of the two it is."""
+        self.assertIn('<div class="film-pair" role="group" aria-label="Videos about Plectis Atlas">', h)
+        lead, more = h.index("film-pair__lead"), h.index("film-pair__more")
+        self.assertLess(lead, more)
+        short, full = W.short_film(), W.film()
+        self.assertEqual((short["youtube"], short["duration_seconds"]), ("https://www.youtube.com/watch?v=cDA5b6aWeyA", 102))
+        self.assertEqual((full["youtube"], full["duration_seconds"]), ("https://www.youtube.com/watch?v=ga5_wfSStdk", 335))
+        first, second = h[h.index("<figure"):h.index("<figure", more - 60)], h[h.index("<figure", more - 60):]
+        self.check_released(first, root, "inline film-pair__lead", short)
+        self.check_released(second, root, "inline film-pair__more", full)
+        self.assertIn('<p class="film-slot__text">Short video</p>', first)
+        self.assertIn('<p class="film-slot__text">Full video</p>', second)
+
+    def test_map_panel_offers_both_videos_and_hides_them_with_the_ground_text(self):
         U.import_site()
         h = U.film_html()
         self.assertTrue(h.startswith('<div class="u-film" data-u-ground>'))
-        self.check_released(h, "", "inline")
-        self.assertIn(f'<p class="film-slot__text">{S.esc(U.U("page.film.text"))}</p>', h)
+        self.pair(h, "")
         self.assertNotIn("youtube.com", (ROOT / "site/copy_universe.json").read_text(encoding="utf-8"))
 
-    def test_help_page_shows_the_slot_after_its_opening(self):
+    def test_help_page_shows_both_videos_after_its_opening(self):
         S.OUT = Path(tempfile.mkdtemp(prefix="atlas-websites-"))
         S.build_help()
         h = (S.OUT / "help.html").read_text(encoding="utf-8")
         head = h[h.index('<header class="phead phead--film">'):]
         head = head[:head.index("</header>")]
-        self.check_released(head[head.index("<figure"):], "", "inline")
+        self.pair(head[head.index('<div class="film-pair"'):], "")
         self.assertLess(head.index('class="phead__facts"'), head.index("<figure"))
         self.assertNotIn("film-slot", S.help_dialog(""))
 

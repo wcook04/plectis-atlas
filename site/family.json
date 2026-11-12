@@ -133,7 +133,8 @@
       "capture": "assets/sites/atlas",
       "capture_caption": "The Atlas map: each circle is a subject and each dot a family of papers.",
       "films": [
-        "atlas"
+        "atlas",
+        "short-atlas"
       ],
       "repos": [
         "plectis-atlas"
@@ -405,12 +406,21 @@
     },
     {
       "id": "atlas",
-      "title": "Atlas: why two people gave one OpenAI maths paper different verdicts on its completeness",
+      "title": "Atlas: Why two groups gave different coverage labels to OpenAI's π paper",
       "short": "Plectis Atlas",
-      "description": "I compare two checking reports for an OpenAI maths paper about pi, using Plectis Atlas.",
+      "description": "In two reports on an OpenAI paper about π, both groups say Comparator accepted the Lean proof, but they label the Lean statement’s coverage differently. I go through what each label means.",
       "youtube": "https://www.youtube.com/watch?v=ga5_wfSStdk",
       "duration_seconds": 335,
       "still": "assets/films/atlas-v3"
+    },
+    {
+      "id": "short-atlas",
+      "title": "Atlas: Two coverage labels for OpenAI's paper about π",
+      "short": "Atlas",
+      "description": "Find OpenAI’s maths papers in Plectis Atlas, then compare MathVet and cert-machine’s different coverage labels for one paper about π.",
+      "youtube": "https://www.youtube.com/watch?v=cDA5b6aWeyA",
+      "duration_seconds": 102,
+      "still": "assets/films/short-atlas"
     },
     {
       "id": "plectis-verification",

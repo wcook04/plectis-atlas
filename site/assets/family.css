@@ -520,9 +520,9 @@ a.fx-find__name:hover { text-decoration-color: currentColor; }
 /* The map's tone inks (universe.css), held equal by scripts/tests/test_family_page.py. */
 .fx { --u-t-all: #2a5982; --u-t-part: #86a8c6; --u-t-other: #8a77a8; --u-t-split: #b5801f; --u-t-none: #978a7c; --u-t-unread: #978a7c; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .fx { --u-t-all: #7fb4e8; --u-t-part: #6c8399; --u-t-other: #a493c6; --u-t-split: #dba84c; --u-t-none: #8a8396; --u-t-unread: #8a8396; }
+  :root:not([data-theme="light"]) .fx { --u-t-all: #7fb4e8; --u-t-part: #5a6f84; --u-t-other: #a493c6; --u-t-split: #dba84c; --u-t-none: #8a8396; --u-t-unread: #8a8396; }
 }
-:root[data-theme="dark"] .fx { --u-t-all: #7fb4e8; --u-t-part: #6c8399; --u-t-other: #a493c6; --u-t-split: #dba84c; --u-t-none: #8a8396; --u-t-unread: #8a8396; }
+:root[data-theme="dark"] .fx { --u-t-all: #7fb4e8; --u-t-part: #5a6f84; --u-t-other: #a493c6; --u-t-split: #dba84c; --u-t-none: #8a8396; --u-t-unread: #8a8396; }
 .fx-glance { border: 1px solid var(--rule-strong); border-radius: var(--r-md, 8px); background: var(--surface); padding: 18px 22px 16px; }
 /* The first screen reads as one argument: each heading is the reader's question, each
    first sentence its answer. */
@@ -558,6 +558,39 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-glance__left .fx-qa { margin: 0; }
 .fx-glance__note { margin: 8px 0 0; font-size: var(--fs-meta); line-height: 1.45; color: var(--muted); }
 
+/* ---- The glance strip: what each group reports, between the title and the tabs ----
+   One quiet row under a hairline (glance_strip): each group's name, its own term as the
+   cards' tag, what it finds, and its Comparator outcome on a second line. It takes the
+   space the title's margin and the tab bar's margin used to hold. */
+.fx-head .fx-title { margin-bottom: 10px; }
+.fx-head + .fx-tabs { margin-top: 0; }
+.fx-strip { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 32px; margin: 0; padding: 9px 0 10px; max-width: none;
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); font: 400 var(--fs-meta)/1.45 var(--sans); color: var(--ink-soft); }
+.fx-strip__h { flex: none; margin: 0; font: 600 var(--fs-meta)/1.45 var(--sans); color: var(--muted); }
+.fx-strip__l { display: flex; flex-wrap: wrap; gap: 6px 32px; margin: 0; min-width: 0; }
+.fx-strip__g { min-width: 0; }
+.fx-strip__g dt { margin: 0; color: var(--ink); }
+.fx-strip__g dd { margin: 0; }
+.fx-strip__who { font-weight: 600; color: var(--ink); text-decoration-color: var(--rule-control); }
+.fx-strip__who:hover { text-decoration-color: currentColor; }
+.fx-strip__term .fx-vt { padding: 0 7px; border: 1px solid var(--rule); border-radius: 999px; background: none; color: var(--muted); font-weight: 400; font-size: 0.8125rem; }
+.fx-strip__term a.fx-vt:hover { border-color: var(--rule-control); color: var(--ink); }
+.fx-strip__none { color: var(--muted); }
+.fx-strip__run { color: var(--muted); }
+.fx-strip__atlas { flex: 1 1 14rem; margin: 0; max-width: none; text-align: right; color: var(--muted); }
+.fx-strip .u-dot { margin-right: 7px; }
+.fx-strip--none { display: block; }
+.fx-strip--none p { margin: 0; }
+@media (max-width: 640px) {
+  .fx-strip, .fx-strip__l { flex-direction: column; align-items: stretch; gap: 6px; }
+  .fx-strip__atlas { flex: none; text-align: left; }
+}
+
+/* The two Atlas videos, after every panel: only the outer spacing (the pair's own layout
+   is atlas.css's .film-pair). */
+.fx-films { max-width: 34rem; margin: 2rem 0 0; padding-top: var(--fx-gap); border-top: 1px solid var(--rule); }
+.fx-films__h { margin: 0 0 var(--fx-tight); font: 600 var(--fs-meta)/1.3 var(--sans); color: var(--muted); }
+
 /* ---- Tabs: one reading question per panel, the bar kept in view ------------- */
 .fx-tabs { position: sticky; top: 0; z-index: 20; margin-top: var(--fx-block); background: var(--page); border-bottom: 1px solid var(--rule-strong); }
 .fx-tabs { display: flex; align-items: center; gap: var(--fx-gap); }
@@ -592,7 +625,14 @@ a.fx-vt:hover { border-color: var(--ink); }
   .fx { padding-top: 12px; }
   .fx-bar { flex-wrap: nowrap; gap: var(--fx-tight); }
   .fx-bar .trail { min-width: 0; font-size: var(--fs-small); }
-  .fx-tools .btn { min-height: 32px; padding: 4px 10px; font-size: var(--fs-small); }
+  .fx-tools { flex: none; }
+  .fx-tools .btn { min-height: 32px; padding: 4px 8px; font-size: var(--fs-small); white-space: nowrap; }
+  /* Previous and next close the page rather than standing above the title: the header's
+     rows join the page's column, and the sibling row is ordered after the body. */
+  .fx { display: flex; flex-direction: column; }
+  .fx > * { min-width: 0; }
+  .fx-head { display: contents; }
+  .fx-head > .sib { order: 1; margin: var(--fx-block) 0 0; }
   .fx-tools .btn:first-child { display: none; }
   .fx-head .sib__pos { display: none; }
   .fx-title { margin-bottom: var(--fx-gap); }
@@ -663,9 +703,7 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-bd__side--paper { color: var(--brick-text); }
 .fx-bd__side--lean, .fx-bd__side--lean a { color: var(--steel-text); }
 .fx-bd__foot2 { grid-area: foot; padding: 10px 24px 12px; border-top: 1px solid var(--rule); }
-.fx-bd__join, .fx-bd__verdicts { margin: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); max-width: none !important; }
-.fx-bd__verdicts { margin-top: 4px; color: var(--ink); }
-.fx-bd__verdicts a { font-weight: 600; }
+.fx-bd__join { margin: 0; font-size: var(--fs-small); line-height: 1.5; color: var(--ink-soft); max-width: none !important; }
 .fx-bd__jh { font-weight: 600; color: var(--ink); }
 .fx-bd__join .fx-why { margin-left: 4px; }
 
@@ -701,7 +739,6 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-main .fx-rl :is(p, li) { max-width: none; }
 .fx-rl--join .fx-rl__i, .fx-rl--join .fx-rl__hd { padding-left: 0; border-left: 0; }
 .fx-rl--none .fx-rl__lim { margin-top: 4px; }
-.fx-rl + .fx-bd__verdicts { margin-top: 8px; }
 .fx-rl__rel .fx-why { margin-left: 8px; white-space: normal; }
 
 /* A statement on the sheet is the paper's text set on the page: no card inside a card. */
@@ -744,8 +781,16 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-vd__term .fx-vt { display: inline-block; padding: 1px 9px; border: 1px solid var(--rule); border-radius: 999px; color: var(--muted); text-decoration: none; font-weight: 400; font-size: 0.8125rem; }
 .fx-vd__term a.fx-vt:hover { border-color: var(--rule-control); color: var(--ink); }
 .fx-vd__out { font-size: var(--fs-body); font-weight: 600; line-height: 1.45; color: var(--ink); }
-.fx-vd .u-dot { display: inline-block; width: 9px; height: 9px; margin-right: 8px; border-radius: 50%; vertical-align: 0.04em; background: var(--u-t-none); }
-.fx-vd .u-dot--all { background: var(--u-t-all); } .fx-vd .u-dot--part { background: var(--u-t-part); } .fx-vd .u-dot--other { background: var(--u-t-other); }
+/* A group's dot: its map tone (the --u-t inks, kept equal to universe.css) inside a ring of the
+   same tone taken towards the ink, so the dot holds at least 3:1 against the card in both
+   schemes; a group with no coverage assessment gets the map's hollow "none" dot. */
+.fx-vd .u-dot, .fx-strip .u-dot { --dot: var(--u-t-none); box-sizing: border-box; display: inline-block; flex: none; width: 10px; height: 10px; margin-right: 8px; border-radius: 50%;
+  vertical-align: 0.02em; background: var(--dot); border: 1.5px solid color-mix(in oklab, var(--dot) 55%, var(--ink)); }
+.fx-vd .u-dot--all, .fx-strip .u-dot--all { --dot: var(--u-t-all); }
+.fx-vd .u-dot--part, .fx-strip .u-dot--part { --dot: var(--u-t-part); }
+.fx-vd .u-dot--other, .fx-strip .u-dot--other { --dot: var(--u-t-other); }
+.fx-vd .u-dot--none, .fx-strip .u-dot--none { background: transparent; }
+.fx-vd > .fx-ev__none { font-size: var(--fs-body); line-height: 1.45; }
 .fx-vd__why { margin: 10px 0 0; padding: 0 0 0 14px; border-left: 2px solid var(--rule-strong); }
 .fx-vd__why p { font-family: var(--serif); font-size: 1.0625rem; line-height: 1.55; color: var(--ink-soft); }
 .fx-vd__why--none { margin-top: 8px !important; font-size: var(--fs-small); color: var(--muted); border: 0; padding: 0; }
@@ -771,18 +816,36 @@ a.fx-vt:hover { border-color: var(--ink); }
 .fx-bd__endrow { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 32px; }
 .fx-bd__endrow .fx-bd__foot { margin: 0; flex: 1 1 32rem; }
 .fx-bd__endrow .fx-glance__go { margin: 0; }
+/* The route keeps its place at the row's right end on a wider screen. */
+@media (min-width: 641px) { .fx-bd__endrow > .fx-glance__go { margin-left: auto; } }
 .fx-bd__lean--none .fx-brief { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--rule); }
 @media (max-width: 640px) {
   .fx-bd__paper, .fx-bd__lean { padding: 16px 16px 12px; }
   .fx-bd__foot2 { padding: 10px 16px 12px; }
   .fx-bd__extra { margin: 0 16px 14px; }
   /* The tab bar scrolls sideways: fade its edge so a cut-off tab reads as more to come. */
-  .fx-tabs__list { -webkit-mask-image: linear-gradient(to right, #000 85%, transparent); mask-image: linear-gradient(to right, #000 85%, transparent); padding-right: 24px; }
+  .fx-tabs__list { -webkit-mask-image: linear-gradient(to right, #000 85%, transparent); mask-image: linear-gradient(to right, #000 85%, transparent); padding-right: 24px;
+    overscroll-behavior-x: contain; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; }
   .fx-vd { padding: 14px 16px 12px; }
 }
 .fx-vd__run .fx-vt { font-weight: 400; color: var(--muted); }
+/* The cards share four row tracks (head, verdict, quoted reason, Comparator run), so each
+   starts on the same line across the row whatever the reasons' lengths. Without subgrid the
+   cards stay equal-height flex columns with the run at the foot. */
+@supports (grid-template-rows: subgrid) {
+  .fx-vd { display: grid; grid-template-rows: subgrid; grid-row: span 4; row-gap: 0; }
+  .fx-vd > .fx-vd__hd { grid-row: 1; }
+  .fx-vd > .fx-vd__out { grid-row: 2; }
+  .fx-vd > .fx-ev__none { grid-row: 2 / span 2; align-self: start; }
+  .fx-vd > .fx-vd__why { grid-row: 3; align-self: start; }
+  .fx-vd > .fx-vd__run { grid-row: 4; margin-top: 0; }
+}
 .fx-bd__groups .fx-quote { margin: 4px 0 0; max-width: 72ch; }
-.fx-bd__groups .fx-quote__q p { font-size: 1.0625rem; line-height: 1.55; }
+.fx-bd__groups .fx-quote__q p { font-size: 1.0625rem; line-height: 1.55; max-width: 34em; }
+/* Typeset maths in a link: KaTeX draws in inline-blocks, which text-decoration does not
+   cross, so such a link is underlined by its own bottom rule, unbroken across the formula. */
+.fx p > a:has(.katex) { text-decoration: none; border-bottom: 1px solid color-mix(in oklab, currentColor 40%, transparent); -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.fx a:has(.katex):hover { text-decoration: none; border-bottom: 1px solid currentColor; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .fx-bd__agree { margin: 12px 0 14px; font-size: var(--fs-body); line-height: 1.5; color: var(--ink); }
 /* No-Lean side column: the status, OpenAI's description, the papers and facts. */
 .fx-bd__lean--none .fx-bd__none { font-size: var(--fs-small); }

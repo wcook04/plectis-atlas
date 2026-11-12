@@ -41,6 +41,7 @@ from urllib.parse import quote, urlparse
 
 import evidence
 import reader
+import websites
 
 ROOT = Path(__file__).resolve().parent.parent
 WORDS = json.loads((ROOT / "site" / "copy_family.json").read_text(encoding="utf-8"))
@@ -786,6 +787,7 @@ def head_html(c: Ctx) -> str:
  <div class="fx-bar">{trail}{tools}</div>
  {S.sibling_nav("family", S.family_siblings(c.num, root), discipline=disc)}
  <h1 class="fx-title{' fx-title--long' if len(title_plain) > 64 else ''}"><span class="tex-auto">{S.rich(curly_tex(f["title"]))}</span></h1>
+ {glance_strip(c)}
 </header>"""
     # The overview is the first tab, so every other tab opens straight into its own task.
     return header, f'<section class="fx-sec fx-sec--overview" id="overview" aria-label="{esc(W("tabs.overview"))}"><span class="fx-alias" id="left"></span><span class="fx-alias" id="explain"></span>{"".join(f'<span class="fx-alias" id="{a}"></span>' for a in ("h-left", "h-explain", "h-contrib"))}{overview}</section>'
@@ -1020,17 +1022,63 @@ def group_assessments(c: Ctx) -> list:
     return out
 
 
-def board_verdicts(c: Ctx) -> str:
-    """One line in the sheet's foot naming what each group finds, each name a link to its
-    card below, so the assessments reach the first screen without repeating the cards."""
+def strip_run(c: Ctx, src: str, mine: list) -> str:
+    """A group's Comparator outcome in the glance strip, in the outcome words the cards use
+    (run_word), from the backend's accepted_current_sources; with several Lean statements,
+    each word says how many of them it holds for."""
+    if not mine:
+        return W("glance.runs_none")
+    acc = {l["id"][2:]: set(l.get("accepted_current_sources") or []) for l in c.leans}
+    n = len(c.leans)
+    words: dict = {}
+    for name, ru in mine:
+        ok = src in acc.get(name, set())
+        words.setdefault(run_word(ru, ok), set()).add(name)
+    if n == 1:
+        return next(iter(words))
+    acc_w = W("glance.run.accepted")
     bits = []
-    for rd in c.ev.readers:
-        if rd.source not in c.readings:
+    for word in sorted(words, key=lambda w: w != acc_w):
+        k = len(words[word])
+        which = (W("glance.for_both") if n == 2 else W("glance.for_all", n=c.S.say(n))) if k == n else W("strip.for_k", k=c.S.say(k), n=c.S.say(n))
+        bits.append(f"{word} {which}")
+    return "; ".join(bits)
+
+
+def glance_strip(c: Ctx) -> str:
+    """Under the title, before the tabs: one cell per outside group with a coverage
+    assessment or a Comparator run, in the page's group order. Each cell holds the group's
+    name (a link to its card), its own term as the cards' quoted tag, what it finds in the
+    words the sheet's foot used ("finds a narrower statement"), and its Comparator outcome
+    word; one closing line says Atlas links the reports and repeated no run. Every word of
+    a verdict comes from group_assessments, board.short and run_word; Atlas adds none."""
+    S = c.S
+    if not c.leans:
+        return f'<p class="fx-strip fx-strip--none">{S.ctext(W("board.nolean"))}</p>'
+    runs, order, names = glance_runs(c)
+    states = {rd.source: rd.state for rd in c.ev.readers}
+    cells = []
+    for src, _who, tone, term, gloss, _why, _run in group_assessments(c):
+        if src not in c.readings and not runs.get(src):
             continue
-        short = W("board.short").get(rd.state or "", "")
-        if short:
-            bits.append(W("board.finds", who=f'<a href="#vd-{slug_id(rd.source)}">{esc(c.disp(rd.name))}</a>', what=esc(short)))
-    return f'<p class="fx-bd__verdicts">{esc(W("board.verdicts_h"))} {"; ".join(bits)}.</p>' if bits else ""
+        name = f'<a class="fx-strip__who" href="#vd-{slug_id(src)}">{esc(names.get(src, src))}</a>'
+        if src in c.readings:
+            short = W("board.short").get(states.get(src) or "", "")
+            finds = esc(W("board.finds", who="\x00", what=short).replace("\x00", "").strip()) if short else esc(gloss)
+            dot = f'<span class="u-dot u-dot--{tone}" title="{esc(W("glance.dot"))}" aria-hidden="true"></span>'
+            top = f'{dot}{name} <span class="fx-strip__term">{term}</span> {finds}'
+        else:
+            # The map's hollow "none" dot, so every cell carries the same mark.
+            dot = f'<span class="u-dot u-dot--none" title="{esc(W("glance.dot"))}" aria-hidden="true"></span>'
+            top = f'{dot}{name} <span class="fx-strip__none">{esc(W("glance.not_read"))}</span>'
+        run = esc(strip_run(c, src, runs.get(src) or []))
+        if "Comparator" not in run:  # name the program whose result the word reports
+            run = f'<span class="fx-strip__k">{esc(W("strip.run_lead"))}</span> {run[:1].lower()}{run[1:]}'
+        cells.append(f'<div class="fx-strip__g"><dt>{top}</dt><dd class="fx-strip__run">{run}</dd></div>')
+    if not cells:
+        return f'<p class="fx-strip fx-strip--none">{esc(W("glance.not_read"))} {esc(W("glance.runs_none"))}</p>'
+    return (f'<section class="fx-strip" aria-labelledby="fx-strip-h"><h2 class="fx-strip__h" id="fx-strip-h">{esc(W("strip.label"))}</h2>'
+            f'<dl class="fx-strip__l">{"".join(cells)}</dl><p class="fx-strip__atlas">{esc(W("glance.left_atlas"))}</p></section>')
 
 
 def board_pair(c: Ctx) -> tuple:
@@ -1076,7 +1124,7 @@ def board_pair(c: Ctx) -> tuple:
         # travelling beside a long theorem so no part of the sheet stands empty.
         side = (f'<div class="fx-bd__lean fx-bd__lean--none"><div class="fx-bd__in">'
                 f'<h2 class="fx-bd__side fx-bd__side--lean">{S.ctext(W("board.lean_none_h"))}</h2>'
-                f'<p class="fx-bd__none">{S.ctext(W("board.nolean"))}</p>\x03</div></div>')
+                f'\x03</div></div>')  # board.nolean is said once, in the strip under the title
         return (f'<section class="fx-bd__pair fx-bd__pair--nolean" aria-labelledby="ov-paper-h">'
                 f'<div class="fx-bd__paper"><div class="fx-bd__in">{paper_h}{paper}</div></div>{side}{extra_html}</section>'), shown
     name = l["id"][2:]
@@ -1120,7 +1168,8 @@ def board_pair(c: Ctx) -> tuple:
         words = esc(W("board.join." + state, paper="\x00", lean="\x01")).replace("\x00", pair_labels).replace(
             "\x01", f'<code translate="no">{esc(name)}</code>')
         join = f'<p class="fx-bd__join fx-bd__join--{esc(state)}">{words[:1].upper() + words[1:]}{why}</p>'
-    foot = f'<div class="fx-bd__foot2">{join}{board_verdicts(c)}</div>'
+    # What each group finds is said once, in the strip under the title (glance_strip).
+    foot = f'<div class="fx-bd__foot2">{join}</div>'
     # A paper side holding only OpenAI's description is short: it takes the sheet's whole
     # height and travels beside the Lean (family.js), with the papers under it.
     travel = " fx-bd__pair--travel" if not shown and not extra_html else ""
@@ -1138,8 +1187,11 @@ def groups_board(c: Ctx, desc: str = "", papers: str = "") -> str:
     cards = []
     for src, who, tone, term, gloss, why, run in group_assessments(c):
         head = f'<header class="fx-vd__hd"><h3 class="fx-vd__who">{who}</h3>{f"<p class=\"fx-vd__term\">{term}</p>" if term else ""}</header>'
-        body = (f'<p class="fx-vd__out"><span class="u-dot u-dot--{tone}" title="{esc(W("glance.dot"))}" aria-hidden="true"></span>{esc(gloss)}</p>{why}'
-                if gloss else f'<p class="fx-ev__none">{esc(W("glance.not_read"))}</p>')
+        # Every card carries its group's dot; a group with no coverage assessment has the
+        # map's hollow "none" dot (tone "none" from group_assessments), never a tone of its own.
+        dot = f'<span class="u-dot u-dot--{tone}" title="{esc(W("glance.dot"))}" aria-hidden="true"></span>'
+        body = (f'<p class="fx-vd__out">{dot}{esc(gloss)}</p>{why}'
+                if gloss else f'<p class="fx-ev__none">{dot}{esc(W("glance.not_read"))}</p>')
         run_h = f'<div class="fx-vd__run"><p class="fx-vd__rk">{S.ctext(W("board.run_k"))}</p>{run}</div>' if run else ""
         cards.append(f'<article class="fx-vd fx-vd--{tone}" id="vd-{slug_id(src)}">{head}{body}{run_h}</article>')
     k = len(c.readings)
@@ -1204,8 +1256,9 @@ def glance_left(c: Ctx, board: bool = False, papers: str = "") -> str:
     lt = (f'<div class="fx-glance__lt"><h2 class="fx-q" id="left-q">{esc(W("first.left_pairing" if pairing and not said_at_join else "first.left"))}</h2>'
           f'<p class="fx-qa">{" ".join(bits)}</p></div>') if bits else ""
     if board:
-        # The board ends on Comparator's limit and the route to the groups' full reasons, in one row.
-        foot = f'<p class="fx-bd__foot">{esc(W("glance.left_atlas"))}</p>' if c.leans else ""
+        # The board ends on the route to the groups' full reasons. That Atlas links the reports
+        # and repeated no run is said once, in the strip under the title (glance_strip).
+        foot = ""
         if papers:
             # The papers on the left of the closing row; the note and the route on the right.
             return (f'<div class="fx-glance__left fx-bd__end">{lt}<div class="fx-bd__endrow fx-bd__endrow--papers">'
@@ -2678,6 +2731,7 @@ def build(S, f) -> None:
 <div class="fx-body">
  <div class="fx-main">
 {body_panels}{TAB_PAINT_SCRIPT if len(groups) > 1 else ""}
+<aside class="fx-films" aria-labelledby="fx-films-h"><h2 class="fx-films__h" id="fx-films-h">{esc(W("films.h"))}</h2>{websites.film_pair(root=c.root)}</aside>
  </div>
  <aside class="fx-aside" aria-label="{esc(W('inspect.pinned'))}">{rail_html()}</aside>
 </div>

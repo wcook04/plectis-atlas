@@ -342,9 +342,9 @@
    inks are the map's (universe.css), as family.css copies them. */
 .page--lean { --u-t-all: #2a5982; --u-t-part: #86a8c6; --u-t-other: #8a77a8; --u-t-none: #978a7c; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .page--lean { --u-t-all: #7fb4e8; --u-t-part: #6c8399; --u-t-other: #a493c6; --u-t-none: #8a8396; }
+  :root:not([data-theme="light"]) .page--lean { --u-t-all: #7fb4e8; --u-t-part: #5a6f84; --u-t-other: #a493c6; --u-t-none: #8a8396; }
 }
-:root[data-theme="dark"] .page--lean { --u-t-all: #7fb4e8; --u-t-part: #6c8399; --u-t-other: #a493c6; --u-t-none: #8a8396; }
+:root[data-theme="dark"] .page--lean { --u-t-all: #7fb4e8; --u-t-part: #5a6f84; --u-t-other: #a493c6; --u-t-none: #8a8396; }
 
 .page--lean .lxb { padding-top: 8px; }
 .lxb-pair { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "paper" "lean" "join";

@@ -230,7 +230,7 @@
   "criteria_lead": "{n} of {total} shown:",
   "reset": "Clear the filters",
   "none_match": "No Lean statement matches these filters.",
-  "readers_note": "The groups, {names}, assess whether each family’s Lean statements express the whole result OpenAI describes in its catalogue. Each row shows that family-level assessment.",
+  "readers_note": "{names} assess whether each family’s Lean statements express the whole result OpenAI describes in its catalogue. That family-level assessment is given in each row.",
   "pair_note": "A possible match selected from shared wording has no recorded review of whether the statements mean the same thing."
  },
  "glance": {
