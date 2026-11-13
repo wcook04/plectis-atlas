@@ -256,7 +256,7 @@ Henry Cohn’s [essay on the technical debt of AI-generated mathematics](https:/
 
 ## Videos and related projects
 
-[Introduction to the projects](https://www.youtube.com/watch?v=Yk_kUQUCylc) · [Atlas short: one paper, two coverage labels](https://www.youtube.com/watch?v=cDA5b6aWeyA)
+[Introduction to the projects](https://www.youtube.com/watch?v=FwgaZYH2otY) · [Atlas short: one paper, two coverage labels](https://www.youtube.com/watch?v=CHsdoVpPp-c)
 
 In the [Atlas walkthrough](https://www.youtube.com/watch?v=ga5_wfSStdk),
 Will opens the paper about π and compares MathVet's and Carlos Toledo's

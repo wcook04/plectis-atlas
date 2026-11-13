@@ -163,7 +163,7 @@ class FilmSlot(unittest.TestCase):
         lead, more = h.index("film-pair__lead"), h.index("film-pair__more")
         self.assertLess(lead, more)
         short, full = W.short_film(), W.film()
-        self.assertEqual((short["youtube"], short["duration_seconds"]), ("https://www.youtube.com/watch?v=cDA5b6aWeyA", 102))
+        self.assertEqual((short["youtube"], short["duration_seconds"]), ("https://www.youtube.com/watch?v=CHsdoVpPp-c", 102))
         self.assertEqual((full["youtube"], full["duration_seconds"]), ("https://www.youtube.com/watch?v=ga5_wfSStdk", 335))
         first, second = h[h.index("<figure"):h.index("<figure", more - 60)], h[h.index("<figure", more - 60):]
         self.check_released(first, root, "inline film-pair__lead", short)
