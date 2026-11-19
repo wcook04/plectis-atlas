@@ -156,8 +156,8 @@ def film_slot(f: dict, *, root: str = "", size: str = "", sizes: str = "100vw", 
 
 
 def lockup(root: str, href: str, mark: str, name: str, label: str = "") -> str:
-    """The start of the header (docs/family.md, "The lockup"): the Plectis plait, which
-    opens Will's home page (every website and film), a short upright rule, then this
+    """The start of the header (docs/family.md, "The lockup"): the Plectis plait and the
+    name "Will Cook", which open Will's home page (every website and film), a short upright rule, then this
     site's own mark and name, which open this site's front page. The plait is
     assets/websites/plectis.svg, served from this site; root is the page's way back to
     the site root."""
@@ -165,7 +165,8 @@ def lockup(root: str, href: str, mark: str, name: str, label: str = "") -> str:
     aria = f' aria-label="{esc(label)}"' if label else ""
     return (f'<span class="fam-lockup">'
             f'<a class="fam-lockup__home" href="{esc(owner["home"])}" rel="author" title="{esc(WORDS["home_title"])}">'
-            f'<img src="{esc(root)}assets/websites/plectis.svg" alt="{esc(WORDS["home_label"])}" width="26" height="26"></a>'
+            f'<img src="{esc(root)}assets/websites/plectis.svg" alt="" width="26" height="26">'
+            f'<span class="fam-lockup__owner" translate="no">{esc(owner["name"])}</span></a>'
             f'<span class="fam-lockup__rule" aria-hidden="true"></span>'
             f'<a class="fam-lockup__site" href="{esc(href)}"{aria}>{mark}'
             f'<span class="fam-lockup__name" translate="no">{esc(name)}</span></a></span>')

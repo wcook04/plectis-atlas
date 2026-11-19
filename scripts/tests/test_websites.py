@@ -89,8 +89,9 @@ class Header(unittest.TestCase):
             self.assertEqual((a[1]["class"], a[1]["href"]), ("fam-lockup__site", f"{root}index.html"), rel)
             lockup = top[top.index('<span class="fam-lockup">'):top.index('<nav class="nav"')].rstrip()
             img = [x for t, x in Tags(lockup).tags if t == "img"]
-            self.assertEqual(img, [{"src": f"{root}assets/websites/plectis.svg", "alt": "Will Cook: all projects and videos",
+            self.assertEqual(img, [{"src": f"{root}assets/websites/plectis.svg", "alt": "",
                                     "width": "26", "height": "26"}], rel)
+            self.assertIn('width="26" height="26"><span class="fam-lockup__owner" translate="no">Will Cook</span></a>', lockup, rel)
             self.assertRegex(lockup, r'</a><span class="fam-lockup__rule" aria-hidden="true"></span><a class="fam-lockup__site"')
             self.assertRegex(lockup, r'<svg class="mark"[^>]*aria-hidden="true".*<span class="fam-lockup__name" translate="no">Plectis Atlas</span></a></span>$')
             off_site = [x["href"] for x in a if x["href"].startswith("http")]
