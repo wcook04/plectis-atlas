@@ -434,11 +434,12 @@ function installPaperSplit(grid, left, right, key) {
     grip.setAttribute("aria-valuetext", `Reading pane ${now}%`);
   };
   const draw = (value) => {
-    if (!width) return;
-    share = value === null ? null : Math.min(1 - limit(), Math.max(limit(), value));
-    if (share === null) grid.style.removeProperty("--split-paper");
-    else grid.style.setProperty("--split-paper", `${Math.round(share * width)}px`);
-    grid.toggleAttribute("data-paper-split", share !== null);
+    if (!width) return value;
+    const next = value === null ? null : Math.min(1 - limit(), Math.max(limit(), value));
+    if (next === null) grid.style.removeProperty("--split-paper");
+    else grid.style.setProperty("--split-paper", `${Math.round(next * width)}px`);
+    grid.toggleAttribute("data-paper-split", next !== null);
+    return next;
   };
   const save = () => {
     try {
@@ -446,14 +447,19 @@ function installPaperSplit(grid, left, right, key) {
       else localStorage.setItem(key, String(share));
     } catch { /* storage is optional */ }
   };
-  const reset = () => { draw(null); save(); };
+  const reset = () => { share = draw(null); save(); };
   grip.addEventListener("dblclick", reset);
   grip.addEventListener("keydown", (event) => {
     if (!["ArrowLeft", "ArrowRight", "Enter", "Home"].includes(event.key)) return;
     event.preventDefault();
     event.stopPropagation();
     if (event.key === "Enter" || event.key === "Home") reset();
-    else { draw(left.clientWidth / width + (event.key === "ArrowRight" ? .025 : -.025)); save(); }
+    else {
+      const requestedWidth = Number.parseFloat(grid.style.getPropertyValue("--split-paper"));
+      const current = (requestedWidth || left.clientWidth) / width;
+      share = draw(current + (event.key === "ArrowRight" ? .025 : -.025));
+      save();
+    }
   });
   grip.addEventListener("pointerdown", (event) => {
     if (event.button !== 0 || !width) return;
@@ -467,7 +473,7 @@ function installPaperSplit(grid, left, right, key) {
     let frame = 0;
     const apply = () => {
       frame = 0;
-      if (position !== start) draw((leftStart + position - start) / width);
+      if (position !== start) share = draw((leftStart + position - start) / width);
     };
     const move = (next) => {
       position = next.clientX;

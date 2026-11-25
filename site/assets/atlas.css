@@ -1492,11 +1492,13 @@ th[data-tip] .sort { cursor: pointer; }
    keeps one row; the tiles keep their own size beside the family's name. */
 .top .fam-lockup { flex: none; }
 .top .fam-lockup__site .mark { width: 22px; height: 22px; }
-/* Below 381 px the lockup and the tools do not fit one row, so the long name gives way
-   first (the family's rule): the plait, the rule and the tiles stay, and the link keeps
-   its name for screen readers ("Plectis Atlas, home"). */
-@media (max-width: 380px) {
+/* Keep the menu, search, help and theme controls reachable on phones.
+   The Atlas home link retains its accessible name beside the tiles. */
+@media (max-width: 500px) {
   .top .fam-lockup__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+@media (max-width: 360px) {
+  :root.js .top__in { flex-wrap: wrap; row-gap: 4px; padding-block: 4px; }
 }
 /* From 901 to 1000 px the six nav links, the lockup and the tools share one row only
    with slightly tighter pills and gaps. */
