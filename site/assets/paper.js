@@ -152,6 +152,8 @@
      typeset; a citation of another paper of the release fetches that page once. The
      link still jumps. Escape or moving away closes it; touch has no preview. */
   var pop = null, popFor = null, showT = 0, hideT = 0, lastTouch = 0, pages = {};
+  // Keep detached copies of recently rendered cross-paper previews.
+  var previews = new Map();
   function hostOf(el) {
     var host = el.classList.contains('pr-lbl') ? el.parentElement : el;
     return (host && host.closest('.pr-thm, .pr-eq, .pr-float, .pr-sec, .pr-part, .pr-runin, .pr-list > li, .pr-bib-item, .pr-fn, .pr-proof, p')) || el;
@@ -253,8 +255,15 @@
     fill(a, W('loading'));
     var url = new URL(href, location.href);
     fetchPage(url.pathname).then(function (page) {
+      if (popFor !== a) return;
       var el = page.getElementById(id);
       if (!el) return fill(a, W('unavailable'));
+      var cached = previews.get(el);
+      if (cached) {
+        previews.delete(el);
+        previews.set(el, cached);
+        return fill(a, cached.cloneNode(true));
+      }
       var mac = {};
       var ms = page.getElementById('pr-macros');
       if (ms) { try { mac = JSON.parse(ms.textContent); } catch (e) { mac = {}; } }
@@ -267,6 +276,10 @@
         wrap.appendChild(from);
       }
       wrap.appendChild(cloneOf(doc.importNode(hostOf(el), true), mac));
+      if (window.katex) {
+        previews.set(el, wrap.cloneNode(true));
+        if (previews.size > 16) previews.delete(previews.keys().next().value);
+      }
       fill(a, wrap);
     }, function () { fill(a, W('unavailable')); });
   }
