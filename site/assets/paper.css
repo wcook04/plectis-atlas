@@ -338,3 +338,27 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
 /* A display a little wider than the column is set smaller to fit (atlas.js fitMath);
    the box keeps its own scroll only for the rare formula wider than that. */
 .pr-eq, .pr-col .katex-display { scrollbar-width: thin; }
+
+.pr-grid > .paper-split { display: none; }
+@media (min-width: 1000px) {
+  .pr-page--side .pr-grid[data-paper-split] {
+    grid-template-columns: minmax(0, var(--split-paper)) minmax(0, calc(var(--pr-col) + var(--pr-side) - var(--split-paper)));
+  }
+  .pr-grid > .paper-split {
+    grid-area: side; display: grid; align-self: start; position: sticky;
+    top: calc(var(--top-h, 64px) + 16px); height: calc(100vh - var(--top-h, 64px) - 32px);
+    place-items: center; width: 16px; margin-left: calc(-0.5 * var(--pr-gap) - 8px);
+    z-index: 1; cursor: col-resize; touch-action: none;
+  }
+  .pr-grid > .paper-split span { width: 4px; height: 30px; border-radius: 4px; background: var(--rule-strong); }
+  .pr-grid > .paper-split:is(:hover, :focus-visible) span, .pr-grid.is-resizing .paper-split span { background: var(--ink); }
+  .pr-grid.is-resizing { cursor: col-resize; user-select: none; }
+}
+@media (min-width: 1280px) {
+  .pr-page--toc.pr-page--side .pr-grid[data-paper-split] {
+    grid-template-columns: var(--pr-toc) minmax(0, var(--split-paper)) minmax(0, calc(var(--pr-col) + var(--pr-side) - var(--split-paper)));
+  }
+}
+
+.paper-split:focus-visible { outline: none; }
+.paper-split:focus-visible span { outline: 2px solid var(--ink); outline-offset: 2px; }

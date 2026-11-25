@@ -394,3 +394,112 @@
   window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fit, 250); });
   whenReady();
 })();
+
+// The paper/proof divider uses the Proof Reader's pointer-capture and CSS-width pattern.
+function installPaperSplit(grid, left, right, key) {
+  if (!grid || !left || !right) return () => {};
+  const grip = document.createElement("div");
+  grip.className = "paper-split";
+  grip.tabIndex = 0;
+  grip.setAttribute("role", "separator");
+  grip.setAttribute("aria-orientation", "vertical");
+  grip.setAttribute("aria-label", "Resize the reading and companion panes");
+  grip.title = "Drag to resize. Use arrow keys to adjust or double-click to reset.";
+  grip.append(document.createElement("span"));
+  right.before(grip);
+
+  let share = null;
+  try {
+    const saved = Number(localStorage.getItem(key));
+    if (saved > .2 && saved < .8) share = saved;
+  } catch { /* storage is optional */ }
+  let finish;
+  let width = 0;
+  const measure = () => {
+    if (!grip.getClientRects().length) return;
+    const next = left.clientWidth + right.clientWidth;
+    if (width !== next) {
+      width = next;
+      draw(share);
+    }
+    describe();
+  };
+  const limit = () => Math.min(.42, Math.max(.22, 245 / width));
+  const describe = () => {
+    const min = Math.round(100 * limit());
+    const now = Math.round(100 * left.clientWidth / width);
+    grip.setAttribute("aria-valuemin", min);
+    grip.setAttribute("aria-valuemax", 100 - min);
+    grip.setAttribute("aria-valuenow", now);
+    grip.setAttribute("aria-valuetext", `Reading pane ${now}%`);
+  };
+  const draw = (value) => {
+    if (!width) return;
+    share = value === null ? null : Math.min(1 - limit(), Math.max(limit(), value));
+    if (share === null) grid.style.removeProperty("--split-paper");
+    else grid.style.setProperty("--split-paper", `${Math.round(share * width)}px`);
+    grid.toggleAttribute("data-paper-split", share !== null);
+  };
+  const save = () => {
+    try {
+      if (share === null) localStorage.removeItem(key);
+      else localStorage.setItem(key, String(share));
+    } catch { /* storage is optional */ }
+  };
+  const reset = () => { draw(null); save(); };
+  grip.addEventListener("dblclick", reset);
+  grip.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Enter", "Home"].includes(event.key)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.key === "Enter" || event.key === "Home") reset();
+    else { draw(left.clientWidth / width + (event.key === "ArrowRight" ? .025 : -.025)); save(); }
+  });
+  grip.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0 || !width) return;
+    event.preventDefault();
+    grip.focus({ preventScroll: true });
+    grip.setPointerCapture(event.pointerId);
+    grid.classList.add("is-resizing");
+    const start = event.clientX;
+    const leftStart = left.clientWidth;
+    let position = start;
+    let frame = 0;
+    const apply = () => {
+      frame = 0;
+      if (position !== start) draw((leftStart + position - start) / width);
+    };
+    const move = (next) => {
+      position = next.clientX;
+      if (!frame) frame = requestAnimationFrame(apply);
+    };
+    finish = () => {
+      if (frame) cancelAnimationFrame(frame);
+      apply();
+      save();
+      grid.classList.remove("is-resizing");
+      grip.removeEventListener("pointermove", move);
+      grip.removeEventListener("lostpointercapture", finish);
+      finish = null;
+    };
+    grip.addEventListener("pointermove", move);
+    grip.addEventListener("lostpointercapture", finish);
+  });
+  const observer = new ResizeObserver(measure);
+  observer.observe(left);
+  observer.observe(right);
+  measure();
+  return () => {
+    finish?.();
+    observer.disconnect();
+    grip.remove();
+  };
+}
+
+function addPaperSplit() {
+  const grid = document.querySelector(".pr-grid");
+  if (!grid?.closest(".pr-page--side")) return;
+  installPaperSplit(grid, grid.querySelector(".pr-col"), grid.querySelector(".pr-side"), "plectis-atlas-paper-share");
+}
+if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", addPaperSplit);
+else addPaperSplit();
