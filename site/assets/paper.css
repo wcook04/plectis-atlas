@@ -333,9 +333,8 @@ p .pr-ph, li .pr-ph { display: inline-flex; min-height: 0; padding: 2px 8px; }
 }
 /* A formula waiting for KaTeX shows nothing rather than its raw TeX, which flashed as
    code while a long paper loaded. If typesetting never comes, the TeX shows after 6s. */
-:root.js .pr-m:not(.pr-m--ok):not(.pr-m--fail) { color: transparent; animation: pr-tex-late 0s linear 6s forwards; }
-:root[data-paper-math="unavailable"] .pr-m:not(.pr-m--ok) { color: var(--muted); animation: none; }
-@keyframes pr-tex-late { to { color: var(--muted); } }
+:root.pr-math-wait .pr-m:not(.pr-m--ok):not(.pr-m--fail) { color: transparent; }
+:root[data-paper-math="unavailable"] .pr-m:not(.pr-m--ok) { color: var(--muted); }
 /* A display a little wider than the column is set smaller to fit (atlas.js fitMath);
    the box keeps its own scroll only for the rare formula wider than that. */
 .pr-eq, .pr-col .katex-display { scrollbar-width: thin; }

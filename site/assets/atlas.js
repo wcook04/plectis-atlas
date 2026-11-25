@@ -105,10 +105,16 @@
      Each display is refitted whenever its column changes width (a resize, a tab or
      panel opening). */
   var fitRO = 'ResizeObserver' in window ? new ResizeObserver(function (es) {
-    for (var i = 0; i < es.length; i++) fitLater(es[i].target);
+    for (var i = 0; i < es.length; i++) {
+      var display = es[i].target, width = es[i].contentRect.width;
+      // Resizing a formula changes its height. Refit only when its column changes width.
+      if (display.__fitWidth === width) continue;
+      display.__fitWidth = width;
+      fitLater(display);
+    }
   }) : null;
-  // Fitting is batched: every queued display is measured first and only the few that
-  // overflow are changed, so a paper of 200 displays costs one layout, not 200.
+  // Fitting is batched: every queued display is measured first and only the few
+  // that overflow are changed. Each sizing round shares one layout.
   var fitQ = [], fitT = 0;
   function fitLater(d) {
     if (fitQ.indexOf(d) < 0) fitQ.push(d);
@@ -120,27 +126,35 @@
     fitQ = [];
     for (var i = 0; i < q.length; i++) {
       var d = q[i], k = d.querySelector(':scope > .katex');
-      if (k && (k.style.fontSize || d.scrollWidth > d.clientWidth + 1)) todo.push(d);
+      if (k && (k.style.fontSize || d.scrollWidth > d.clientWidth + 1)) todo.push({ display: d, math: k });
     }
-    for (var j = 0; j < todo.length; j++) fitDisplay(todo[j]);
-  }
-  function fitDisplay(d) {
-    var k = d.querySelector(':scope > .katex');
-    if (!k) return;
-    k.style.fontSize = '';
-    var cw = d.clientWidth;
-    if (!cw) return;
-    var sw = d.scrollWidth;
-    if (sw <= cw + 1) { d.removeAttribute('data-fit'); return; }
-    // Not every part of a formula scales with its size (a tag's gap, rule widths), so
-    // measure again after each step.
-    var base = parseFloat(getComputedStyle(k).fontSize), r = 1;
-    for (var n = 0; n < 4 && sw > cw + 1 && r > 0.7; n++) {
-      r = Math.max(0.7, r * (cw - 2) / sw);
-      k.style.fontSize = (base * r).toFixed(2) + 'px';
-      sw = d.scrollWidth;
+    // Reset every candidate before reading any widths. A fitted formula must be
+    // measured at its original size again when the column grows.
+    todo.forEach(function (f) { f.math.style.fontSize = ''; });
+    todo.forEach(function (f) {
+      f.width = f.display.clientWidth;
+      f.scroll = f.display.scrollWidth;
+      f.ratio = 1;
+      if (f.width && f.scroll > f.width + 1) f.base = parseFloat(getComputedStyle(f.math).fontSize);
+    });
+    // Tags and rules may not scale with the text. Measure again between steps,
+    // batching each round's writes and reads to share one layout across the page.
+    var active = todo.filter(function (f) { return f.base; });
+    for (var step = 0; step < 4 && active.length; step++) {
+      active.forEach(function (f) {
+        f.ratio = Math.max(0.7, f.ratio * (f.width - 2) / f.scroll);
+        f.math.style.fontSize = (f.base * f.ratio).toFixed(2) + 'px';
+      });
+      active = active.filter(function (f) {
+        f.scroll = f.display.scrollWidth;
+        return f.scroll > f.width + 1 && f.ratio > 0.7;
+      });
     }
-    d.setAttribute('data-fit', sw > cw + 1 ? 'scroll' : 'fit');
+    todo.forEach(function (f) {
+      if (!f.width) return;
+      if (f.base) f.display.setAttribute('data-fit', f.scroll > f.width + 1 ? 'scroll' : 'fit');
+      else f.display.removeAttribute('data-fit');
+    });
   }
   // KaTeX's fonts can arrive after the first fit and widen a formula: fit everything again.
   if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(function () {

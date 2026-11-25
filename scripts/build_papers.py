@@ -5187,7 +5187,13 @@ def render_page(p: Paper, row: dict, fails: dict, rel: str) -> str:
 <script type="application/json" id="pr-words">{json.dumps(TXT["ui"], ensure_ascii=False)}</script>"""
     desc = S.tex_plain(m.get("abstract") or "") or TXT["description"].format(title=title_plain)
     # copy-tex: a selection of typeset formulas copies as their TeX, once each.
-    extra = (f'{PAGE_MARK}\n<link rel="stylesheet" href="{root}assets/{S.asset_v("paper.css")}">\n'
+    extra = (f'{PAGE_MARK}\n'
+             '<script>(function(){'
+             'if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;'
+             'var root=document.documentElement;root.classList.add("pr-math-wait");'
+             'setTimeout(function(){root.classList.remove("pr-math-wait");},6000);'
+             '})();</script>\n'
+             f'<link rel="stylesheet" href="{root}assets/{S.asset_v("paper.css")}">\n'
              f'<script defer src="{root}{COPY_TEX}"></script>\n'
              f'<script defer src="{root}assets/{S.asset_v("paper.js")}"></script>')
     # Two current papers can share a title: each tab then carries its date.
